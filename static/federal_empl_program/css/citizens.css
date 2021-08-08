@@ -1,0 +1,29 @@
+#import_form{
+    margin: auto;
+    width: 40%;
+    margin-top: 10%;
+}
+form{
+    margin: auto;
+    width: 50%;
+    min-width: 300px;
+}
+.h1{
+    margin: auto;
+    text-align: center;
+}
+.submit{
+    width: 25%;
+    min-width: 70px;
+    margin: auto;
+}
+#navbar{
+    height: 100px;
+    width: 100%;
+}
+.alert-success{
+    width: 100%;
+    text-align: center;
+    margin: auto;
+    margin-bottom: 10px;
+}
