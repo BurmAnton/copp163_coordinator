@@ -43,10 +43,16 @@ def express_import(form):
                 application = load_application(sheet_dict, row, citizen)
             if sheet_dict["Компетенция"][row] is not None:
                 competence = load_Competence(sheet_dict, row, application)
+                application.competence = competence
+                application.save()
                 if sheet_dict["Вид, подвид программы"][row] is not None:
                     education_program = load_EducationProgram(sheet_dict, row, competence, application)
+                    application.education_program = education_program
+                    application.save()
                 if sheet_dict["Выбранное место обучения"][row] is not None:
                     education_center = load_EducationCenter(sheet_dict, row, competence, application)
+                    application.education_center = education_center
+                    application.save()
                     if sheet_dict["Адрес выбранного место обучения"][row] is not None:
                         workshop = load_Workshop(sheet_dict, row, competence, education_center)
                         if sheet_dict["Группа"][row] is not None:
@@ -270,13 +276,13 @@ def load_Competence(sheet_dict, row, application):
     title=sheet_dict["Компетенция"][row]
     title = title.replace('(Ворлдскиллс)', '')
     #checking competence existance in DB
-    if len(Competence.objects.filter(title=title)) == 0:
+    competencies = Competence.objects.filter(title=title)
+    if len(competencies) == 0:
         competence = add_competence(title)
     else:
-        competence = Competence.objects.get(title=title)
-    if application.competence != competence:
-        application.competence = competence
-        application.save()
+        competence = competencies[0]
+    application.competence = competence
+    application.save()
     return competence
 
 def add_competence(title):
@@ -353,9 +359,8 @@ def load_EducationCenter(sheet_dict, row, competence, application):
     else:
         education_center = EducationCenter.objects.get(name=name)
         education_center.competences.add(competence)
-    if application.education_center != education_center:
-        application.education_center = education_center
-        application.save()
+    application.education_center = education_center
+    application.save()
     return education_center
 
 def load_Workshop(sheet_dict, row, competence, education_center):
@@ -379,9 +384,8 @@ def load_Group(sheet_dict, row, workshop, education_program, application):
         application.save()
     else:
         group = update_Group(sheet_dict, row, workshop, education_program, name)
-        if application.group != group:
-            application.group = group
-            application.save()
+    application.group = group
+    application.save()
     return group
 
 def add_Group(sheet_dict, row, name, workshop, education_program):
@@ -532,6 +536,9 @@ def set_application_status_gd(gd_status, application):
     elif gd_status == "дубликат":
         admit_status = application.admit_status
         appl_status = 'DUPL'
+    elif gd_status == 'другой ФО':
+        admit_status = application.admit_status
+        appl_status = 'OTH'
     else:
         admit_status = application.admit_status
         appl_status = application.appl_status

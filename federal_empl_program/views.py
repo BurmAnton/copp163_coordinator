@@ -22,11 +22,7 @@ def import_express(request):
         else:
             data = form.errors
         form = ImportDataForm()
-        return render(request, "federal_empl_program/import_express.html",{
-            'form': form,
-            'message': message
-        })
-        #return HttpResponseRedirect(reverse('admin:federal_empl_program_application_changelist'))
+        return HttpResponseRedirect(reverse('admin:federal_empl_program_application_changelist'))
     else:
         form = ImportDataForm()
         return render(request, "federal_empl_program/import_express.html",{
@@ -43,11 +39,7 @@ def import_gd(request):
         else:
             data = form.errors
         form = ImportDataForm()
-        return render(request, "federal_empl_program/import_gd.html",{
-            'form': form,
-            'message': message
-        })
-        #return HttpResponseRedirect(reverse('admin:PromOfEmployment_application_changelist'))
+        return HttpResponseRedirect(reverse('admin:PromOfEmployment_application_changelist'))
     else:
         form = ImportDataForm()
         return render(request, "federal_empl_program/import_gd.html",{
