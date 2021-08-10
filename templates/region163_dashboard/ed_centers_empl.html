@@ -29,7 +29,7 @@
                             <td scope="row" class="ed-center">{{center_key}}</td>
                             {% for stage_key, stage_value in center_value.items %}
                                 {% if stage_key != 'Empty' %}
-                                    <td class="stages">
+                                    <td class="stages" data-stage={{stage_key}}>
                                         {{stage_value}}
                                     </td>
                                 {% endif %}
