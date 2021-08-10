@@ -12,12 +12,13 @@
     <table class="table table-striped">
         <tr>
             <th scope="col" class="comp">Компетенция</th>
-            <th scope="col" class="stage">Заявка получена</th>
-            <th scope="col" class="stage">Связались/Ждём документы</th>
-            <th scope="col" class="stage">Получили часть документов</th>
-            <th scope="col" class="stage">Подтвердили статус</th>
-            <th scope="col" class="stage">Допустили на платформе</th>
-            <th scope="col" class="stage">Отказали</th>
+            <th scope="col" class="stage">Новая заявка</th>
+            <th scope="col" class="stage">Верификация</th>
+            <th scope="col" class="stage">Допущен</th>
+            <th scope="col" class="stage">Начал обучение</th>
+            <th scope="col" class="stage">Завершил обучение</th>
+            <th scope="col" class="stage">Отчислен</th>
+            <th scope="col" class="stage">Резерв</th>
         </tr>
         {% for comp_key, comp_value in ed_centers.items %}
              {% if comp_value|get_item:'Empty' == False %}

@@ -10,14 +10,14 @@ def ed_centers_empl(request):
     stat = {}
     compentencies = Competence.objects.all()
     education_centers = EducationCenter.objects.all()
-    statuses = Application.ADM_STATUS_CHOICES
     statuses_dict = {
-        'RECA': "Заявка получена",
-        'CONT': "Связались/Ждём документы",
-        'RECD': "Получили часть документов",
-        'CONF': "Подтвердили статус",
-        'ADM': "Допустили на платформе",
-        'REF': "Отказали"
+        'NEW': "Новая заявка",
+        'VER': "Верификация",
+        'ADM': "Допущен",
+        'SED': "Начал обучение",
+        'COMP': "Завершил обучение",
+        'NCOM': "Отчислен",
+        'RES': "Резерв"
     }
 
     for competence in compentencies:
@@ -30,8 +30,8 @@ def ed_centers_empl(request):
             if len(applications) > 0:
                 stat[competence][ed_center]['Empty'] = False
                 stat[competence]['Empty'] = False
-                for status in statuses:
-                    stat[competence][ed_center][status[0]] = len(applications.filter(admit_status=status[0]))
+                for status in statuses_dict:
+                    stat[competence][ed_center][status] = len(applications.filter(admit_status=status))
 
     return render(request, 'region163_dashboard/ed_centers_empl.html', {
         'ed_centers': stat,
