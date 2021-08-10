@@ -18,6 +18,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('federal_programs/employment/', include('federal_empl_program.urls')),
+    path('dashboard/', include('region163_dashboard.urls')),
     path('', admin.site.urls),
 ]
 
