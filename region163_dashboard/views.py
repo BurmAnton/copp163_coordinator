@@ -27,11 +27,11 @@ def ed_centers_empl(request):
             stat[competence][ed_center] = {}
             stat[competence][ed_center]['Empty'] = True
             applications = Application.objects.filter(education_center=ed_center, competence=competence)
-            if len(applications) > 0:
-                stat[competence][ed_center]['Empty'] = False
-                stat[competence]['Empty'] = False
-                for status in statuses_dict:
-                    stat[competence][ed_center][status] = len(applications.filter(admit_status=status))
+            for status in statuses_dict:
+                stat[competence][ed_center][status] = len(applications.filter(admit_status=status))
+                if stat[competence][ed_center][status] > 0:
+                    stat[competence][ed_center]['Empty'] = False
+                    stat[competence]['Empty'] = False
 
     return render(request, 'region163_dashboard/ed_centers_empl.html', {
         'ed_centers': stat,
