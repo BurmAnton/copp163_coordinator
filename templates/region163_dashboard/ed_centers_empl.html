@@ -22,7 +22,7 @@
         </tr>
         {% for comp_key, comp_value in ed_centers.items %}
              {% if comp_value|get_item:'Empty' == False %}
-                <tr class="table-dark"><td colspan="7" scope="row">{{comp_key}}</td></tr>
+                <tr class="table-dark"><td colspan="8" scope="row">{{comp_key}}</td></tr>
                 {% for center_key, center_value in comp_value.items %}
                     <tr>
                         {% if center_value|get_item:'Empty' == False %}
