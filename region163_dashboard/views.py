@@ -26,9 +26,9 @@ def ed_centers_empl(request):
         for ed_center in education_centers:
             stat[competence][ed_center] = {}
             stat[competence][ed_center]['Empty'] = True
-            applications = Application.objects.filter(education_center=ed_center, competence=competence)
             for status in statuses_dict:
-                stat[competence][ed_center][status] = len(applications.filter(admit_status=status))
+                applications = Application.objects.filter(education_center=ed_center, competence=competence, admit_status=status)
+                stat[competence][ed_center][status] = len(applications)
                 if stat[competence][ed_center][status] > 0:
                     stat[competence][ed_center]['Empty'] = False
                     stat[competence]['Empty'] = False
