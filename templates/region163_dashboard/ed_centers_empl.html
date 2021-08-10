@@ -1,0 +1,42 @@
+{% extends "region163_dashboard/layout.html" %}
+{% load static %}
+
+{% block title %}Статистика по ЦО{% endblock %}
+{% block style %}
+    <link href="{% static 'region163_dashboard/css/ed_centers_empl.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}{% endblock %}
+
+{% block body %}
+    <!--{{ed_centers}}-->
+    <table class="table table-striped">
+        <tr>
+            <th scope="col" class="comp">Компетенция</th>
+            <th scope="col" class="stage">Заявка получена</th>
+            <th scope="col" class="stage">Связались/Ждём документы</th>
+            <th scope="col" class="stage">Получили часть документов</th>
+            <th scope="col" class="stage">Подтвердили статус</th>
+            <th scope="col" class="stage">Допустили на платформе</th>
+            <th scope="col" class="stage">Отказали</th>
+        </tr>
+        {% for comp_key, comp_value in ed_centers.items %}
+             {% if comp_value|get_item:'Empty' == False %}
+                <tr class="table-dark"><td colspan="7" scope="row">{{comp_key}}</td></tr>
+                {% for center_key, center_value in comp_value.items %}
+                    <tr>
+                        {% if center_value|get_item:'Empty' == False %}
+                            <td scope="row" class="ed-center">{{center_key}}</td>
+                            {% for stage_key, stage_value in center_value.items %}
+                                {% if stage_key != 'Empty' %}
+                                    <td class="stages">
+                                        {{stage_value}}
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    </table>
+{% endblock %}
