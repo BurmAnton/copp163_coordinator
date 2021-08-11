@@ -8,7 +8,8 @@
 {% block script %}{% endblock %}
 
 {% block body %}
-    <!--{{ed_centers}}-->
+
+
     <table class="table table-striped">
         <tr>
             <th scope="col" class="comp">Компетенция</th>
@@ -20,22 +21,24 @@
             <th scope="col" class="stage">Отчислен</th>
             <th scope="col" class="stage">Резерв</th>
         </tr>
-        {% for comp_key, comp_value in ed_centers.items %}
-             {% if comp_value|get_item:'Empty' == False %}
+        {% for comp_key, comp_value in stat.items %}
+            {% if comp_value|get_item:'Empty' == False %}
                 <tr class="table-dark"><td colspan="8" scope="row">{{comp_key}}</td></tr>
-                {% for center_key, center_value in comp_value.items %}
-                    <tr>
-                        {% if center_value|get_item:'Empty' == False %}
-                            <td scope="row" class="ed-center">{{center_key}}</td>
-                            {% for stage_key, stage_value in center_value.items %}
-                                {% if stage_key != 'Empty' %}
-                                    <td class="stages" data-stage={{stage_key}}>
-                                        {{stage_value}}
-                                    </td>
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
-                    </tr>
+                {% for ed_key, ed_value in comp_value.items %}
+                    {% if ed_value|get_item:'Empty' == False %}
+                        <tr>
+                            {% if ed_key != 'Empty'%}
+                                <td scope="row" class="ed-center">{{ed_key}}</td>
+                                {% for stage_key, stage_value in ed_value.items %}
+                                    {% if stage_key != 'Empty' %}
+                                        <td class="stages" data-stage={{stage_key}}>
+                                            {{stage_value}}
+                                        </td>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </tr>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
         {% endfor %}

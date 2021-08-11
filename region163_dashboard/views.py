@@ -3,39 +3,35 @@ from django.shortcuts import render
 from education_centers.models import Competence, EducationCenter, EducationProgram
 from federal_empl_program.models import Group, Application
 from django.template.defaulttags import register
-...
 
 # Create your views here.
 def ed_centers_empl(request):
     stat = {}
-    compentencies = Competence.objects.all()
-    education_centers = EducationCenter.objects.all()
-    statuses_dict = {
-        'NEW': "Новая заявка",
-        'VER': "Верификация",
-        'ADM': "Допущен",
-        'SED': "Начал обучение",
-        'COMP': "Завершил обучение",
-        'NCOM': "Отчислен",
-        'RES': "Резерв"
-    }
+    stages = ['NEW', 'VER', 'ADM', 'SED', 'COMP', 'NCOM', 'RES']
+    applications = [application for application in Application.objects.filter(appl_status__in = stages).values('competence__title', 'education_center__name', 'appl_status')]
+    competencies = [competence for competence in Competence.objects.all().values('title')]
+    education_centers = [education_center for education_center in EducationCenter.objects.all().values('name')]
 
-    for competence in compentencies:
+    for competence in competencies:
+        competence = competence['title']
         stat[competence] = {}
         stat[competence]['Empty'] = True
-        for ed_center in education_centers:
-            stat[competence][ed_center] = {}
-            stat[competence][ed_center]['Empty'] = True
-            for status in statuses_dict:
-                applications = Application.objects.filter(education_center=ed_center, competence=competence, admit_status=status)
-                stat[competence][ed_center][status] = len(applications)
-                if stat[competence][ed_center][status] > 0:
-                    stat[competence][ed_center]['Empty'] = False
-                    stat[competence]['Empty'] = False
+        for education_center in education_centers:
+            education_center = education_center['name']
+            stat[competence][education_center] = {}
+            stat[competence][education_center]['Empty'] = True
+            for stage in stages:
+                stat[competence][education_center][stage] = 0
 
+    for application in applications:
+        stat[application['competence__title']][application['education_center__name']][application['appl_status']] += 1
+        if stat[application['competence__title']][application['education_center__name']][application['appl_status']] > 0:
+            stat[application['competence__title']]['Empty'] = False
+            stat[application['competence__title']][application['education_center__name']]['Empty'] = False
+            
     return render(request, 'region163_dashboard/ed_centers_empl.html', {
-        'ed_centers': stat,
-        'stages': statuses_dict
+        'stat': stat,
+        'stages': stages
     })
 
 @register.filter
