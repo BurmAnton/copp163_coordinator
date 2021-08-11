@@ -8,7 +8,34 @@
 {% block script %}{% endblock %}
 
 {% block body %}
-
+    <div class="container">
+        <div class="row justify-content-around">
+            <div class="card text-center mb-3" style="max-width: 12rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Компетенций:</h5>
+                    <h4 class="card-title">{{competencies_count}}</h4>
+                </div>
+            </div>
+            <div class="card text-center mb-3" style="max-width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Программ подготовки:</h5>
+                    <h4 class="card-title">{{education_programs_count}}</h4>
+                </div>
+            </div>
+            <div class="card text-center mb-3" style="max-width: 15rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Центров обучения:</h5>
+                    <h4 class="card-title">{{education_centers_count}}</h4>
+                </div>
+            </div>
+            <div class="card text-center mb-3" style="max-width: 15rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Заявок:</h5>
+                    <h4 class="card-title">{{appl_count}}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <table class="table table-striped">
         <tr>
