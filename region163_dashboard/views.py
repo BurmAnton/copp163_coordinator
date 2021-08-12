@@ -7,13 +7,14 @@ from django.template.defaulttags import register
 # Create your views here.
 def ed_centers_empl(request):
     stat = {}
-    stages = ['NEW', 'VER', 'ADM', 'SED', 'COMP', 'NCOM', 'RES']
+    stat_programs = {}
     stages_dict = {}
-    applications = [application for application in Application.objects.all().values('competence__title', 'education_center__name', 'appl_status')]
+    stages = ['NEW', 'VER', 'ADM', 'SED', 'COMP', 'NCOM', 'RES']
+    
+    applications = [application for application in Application.objects.all().values('competence__title', 'education_center__name', 'appl_status', 'education_program__program_name')]
     competencies = [competence for competence in Competence.objects.all().values('title')]
     education_centers = [education_center for education_center in EducationCenter.objects.all().values('name')]
     education_programs = [education_program for education_program in EducationProgram.objects.all().values('program_name')]
-
 
     for competence in competencies:
         competence = competence['title']
@@ -26,6 +27,17 @@ def ed_centers_empl(request):
             for stage in stages:
                 stat[competence][education_center][stage] = 0
 
+    for education_program in education_programs:
+        education_program = education_program['program_name']
+        stat_programs[education_program] = {}
+        stat_programs[education_program]['Empty'] = True
+        for education_center in education_centers:
+            education_center = education_center['name']
+            stat_programs[education_program][education_center] = {}
+            stat_programs[education_program][education_center]['Empty'] = True
+            for stage in stages:
+                stat_programs[education_program][education_center][stage] = 0
+
     for stage in stages:
         stages_dict[stage] = 0
 
@@ -36,13 +48,19 @@ def ed_centers_empl(request):
             if stat[application['competence__title']][application['education_center__name']][application['appl_status']] > 0:
                 stat[application['competence__title']]['Empty'] = False
                 stat[application['competence__title']][application['education_center__name']]['Empty'] = False
-    
+            if application['education_program__program_name'] is not None:
+                    stat_programs[application['education_program__program_name']][application['education_center__name']][application['appl_status']] += 1
+                    if stat_programs[application['education_program__program_name']][application['education_center__name']][application['appl_status']] > 0:
+                        stat_programs[application['education_program__program_name']]['Empty'] = False
+                        stat_programs[application['education_program__program_name']][application['education_center__name']]['Empty'] = False
+                
     stages_count = []
     for stage in stages:
         stages_count.append(stages_dict[stage])
             
     return render(request, 'region163_dashboard/ed_centers_empl.html', {
         'stat': stat,
+        'stat_programs': stat_programs,
         'stages': stages,
         'appl_count': len(applications),
         'education_centers_count': len(education_centers),

@@ -12,6 +12,11 @@
     width: 90%;
     box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, .2);
 }
+tbody, td, tfoot, th, thead, tr {
+    border-color: inherit;
+    border-style: none;
+    border-width: 0;
+}
 .stages{
     width: 10%;
     text-align: center;
@@ -36,4 +41,8 @@
 }
 .card-title{
     margin: 0;
+}
+.filter{
+    width: 90%;
+    margin: auto;
 }
