@@ -8,6 +8,7 @@ from django.template.defaulttags import register
 def ed_centers_empl(request):
     stat = {}
     stages = ['NEW', 'VER', 'ADM', 'SED', 'COMP', 'NCOM', 'RES']
+    stages_dict = {}
     applications = [application for application in Application.objects.all().values('competence__title', 'education_center__name', 'appl_status')]
     competencies = [competence for competence in Competence.objects.all().values('title')]
     education_centers = [education_center for education_center in EducationCenter.objects.all().values('name')]
@@ -25,12 +26,20 @@ def ed_centers_empl(request):
             for stage in stages:
                 stat[competence][education_center][stage] = 0
 
+    for stage in stages:
+        stages_dict[stage] = 0
+
     for application in applications:
         if application['appl_status'] in stages:
             stat[application['competence__title']][application['education_center__name']][application['appl_status']] += 1
+            stages_dict[application['appl_status']] += 1
             if stat[application['competence__title']][application['education_center__name']][application['appl_status']] > 0:
                 stat[application['competence__title']]['Empty'] = False
                 stat[application['competence__title']][application['education_center__name']]['Empty'] = False
+    
+    stages_count = []
+    for stage in stages:
+        stages_count.append(stages_dict[stage])
             
     return render(request, 'region163_dashboard/ed_centers_empl.html', {
         'stat': stat,
@@ -38,7 +47,8 @@ def ed_centers_empl(request):
         'appl_count': len(applications),
         'education_centers_count': len(education_centers),
         'competencies_count': len(competencies),
-        'education_programs_count': len(education_programs)
+        'education_programs_count': len(education_programs),
+        'stages_count': stages_count
     })
 
 @register.filter
