@@ -25,6 +25,7 @@ function program_switch(){
     })
     document.getElementById('program_switch').style.display = 'none';
     document.getElementById('competence_switch').style.display = 'flex';
+    document.getElementById('view_name').innerText = 'Программа подготовки';
 }
 
 function competence_switch(){
@@ -42,4 +43,5 @@ function competence_switch(){
     })
     document.getElementById('competence_switch').style.display = 'none';
     document.getElementById('program_switch').style.display = 'flex';
+    document.getElementById('view_name').innerText = 'Компетенция';
 }
