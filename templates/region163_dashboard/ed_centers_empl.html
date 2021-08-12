@@ -105,14 +105,14 @@
         {% endfor %}
         {% for comp_key, comp_value in stat_programs.items %}
             {% if comp_value|get_item:'Empty' == False %}
-                <tr class="table-dark program-row"><td colspan="8" scope="row">{{comp_key}}</td></tr>
+                <tr class="table-dark program-row"><td colspan="8" scope="row">{{comp_value|get_item:'program_type'}} {{comp_key}} ({{comp_value|get_item:'duration'}}ч.)</td></tr>
                 {% for ed_key, ed_value in comp_value.items %}
                     {% if ed_value|get_item:'Empty' == False %}
                         <tr>
-                            {% if ed_key != 'Empty'%}
+                            {% if ed_key != 'Empty' %}
                                 <td scope="row" class="ed-center program-cell">{{ed_key}}</td>
                                 {% for stage_key, stage_value in ed_value.items %}
-                                    {% if stage_key != 'Empty' %}
+                                    {% if stage_key != 'Empty'  and stage_key != 'duration' and stage_key != 'program_type' %}
                                         <td class="stages program-cell" data-stage={{stage_key}}>
                                             {{stage_value}}
                                         </td>

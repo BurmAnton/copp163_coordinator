@@ -10,11 +10,18 @@ def ed_centers_empl(request):
     stat_programs = {}
     stages_dict = {}
     stages = ['NEW', 'VER', 'ADM', 'SED', 'COMP', 'NCOM', 'RES']
+    program_types = {
+        'DPOPK': 'ДПО ПК',
+        'DPOPP': 'ДПО ПП',
+        'POP': 'ПО П',
+        'POPP': 'ПО ПП',
+        'POPK': 'ПО ПК',
+    }
     
     applications = [application for application in Application.objects.all().values('competence__title', 'education_center__name', 'appl_status', 'education_program__program_name')]
     competencies = [competence for competence in Competence.objects.all().values('title')]
     education_centers = [education_center for education_center in EducationCenter.objects.all().values('name')]
-    education_programs = [education_program for education_program in EducationProgram.objects.all().values('program_name')]
+    education_programs = [education_program for education_program in EducationProgram.objects.all().values('program_name', 'duration', 'program_type')]
 
     for competence in competencies:
         competence = competence['title']
@@ -28,8 +35,12 @@ def ed_centers_empl(request):
                 stat[competence][education_center][stage] = 0
 
     for education_program in education_programs:
+        duration = education_program['duration']
+        program_type = education_program['program_type']
         education_program = education_program['program_name']
         stat_programs[education_program] = {}
+        stat_programs[education_program]['duration'] = duration
+        stat_programs[education_program]['program_type'] = program_types[program_type]
         stat_programs[education_program]['Empty'] = True
         for education_center in education_centers:
             education_center = education_center['name']
@@ -49,6 +60,7 @@ def ed_centers_empl(request):
                 stat[application['competence__title']]['Empty'] = False
                 stat[application['competence__title']][application['education_center__name']]['Empty'] = False
             if application['education_program__program_name'] is not None:
+    
                     stat_programs[application['education_program__program_name']][application['education_center__name']][application['appl_status']] += 1
                     if stat_programs[application['education_program__program_name']][application['education_center__name']][application['appl_status']] > 0:
                         stat_programs[application['education_program__program_name']]['Empty'] = False
