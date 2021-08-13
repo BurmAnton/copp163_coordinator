@@ -11,7 +11,7 @@
 
 {% block body %}
     <div class="container">
-        <div class="row justify-content-around">
+        <div class="row justify-content-between">
             <div class="card text-center mb-3" style="max-width: 12rem;">
                 <div class="card-body">
                     <h5 class="card-title">Компетенций:</h5>
@@ -37,7 +37,7 @@
                 </div>
             </div>
         </div>
-        <div class="row justify-content-around">
+        <div class="row justify-content-between">
             <div class="card text-center mb-3" style="max-width: 15rem;">
                 <div class="card-body">
                     <h5 class="card-title">Новых заявка: {{stages_count.0}}</h5>
@@ -55,7 +55,7 @@
             </div>
             <div class="card text-center mb-3" style="max-width: 16rem;">
                 <div class="card-body">
-                    <h5 class="card-title">Начали обучение: {{stages_count.3}}</h5>
+                    <h5 class="card-title">Учатся: {{stages_count.3}}</h5>
                 </div>
             </div>
             <div class="card text-center mb-3" style="max-width: 17rem;">
@@ -74,12 +74,12 @@
     <table class="table table-striped">
         <tr class="sticky-top table-dark"> 
             <th scope="col" class='comp' id="view_name">Компетенция</th>
-            <th scope="col" class="stage">Новая заявка</th>
-            <th scope="col" class="stage">Верификация</th>
-            <th scope="col" class="stage">Допущен</th>
-            <th scope="col" class="stage">Начал обучение</th>
-            <th scope="col" class="stage">Завершил обучение</th>
-            <th scope="col" class="stage">Отчислен</th>
+            <th scope="col" class="stage">Новых заявок</th>
+            <th scope="col" class="stage">На верификации</th>
+            <th scope="col" class="stage">Допущено</th>
+            <th scope="col" class="stage">Учатся</th>
+            <th scope="col" class="stage">Завершили обучение</th>
+            <th scope="col" class="stage">Отчислено</th>
             <th scope="col" class="stage">Резерв</th>
         </tr>
         {% for comp_key, comp_value in stat.items %}

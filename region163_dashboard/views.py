@@ -4,12 +4,11 @@ from education_centers.models import Competence, EducationCenter, EducationProgr
 from federal_empl_program.models import Group, Application
 from django.template.defaulttags import register
 
-# Create your views here.
 def ed_centers_empl(request):
     stat = {}
     stat_programs = {}
     stages_dict = {}
-    stages = ['NEW', 'VER', 'ADM', 'SED', 'COMP', 'NCOM', 'RES']
+    stages = ['NEW', 'VER', 'ADM', 'SED', 'COMP', 'NCOM', 'RES'] 
     program_types = {
         'DPOPK': 'ДПО ПК',
         'DPOPP': 'ДПО ПП',
@@ -51,21 +50,28 @@ def ed_centers_empl(request):
 
     for stage in stages:
         stages_dict[stage] = 0
-
+    stages = ['NEW', 'VER', 'ADM', 'SED', 'COMP', 'NCOM', 'RES', 'EXAM']
+    
     for application in applications:
         if application['appl_status'] in stages:
-            stat[application['competence__title']][application['education_center__name']][application['appl_status']] += 1
-            stages_dict[application['appl_status']] += 1
-            if stat[application['competence__title']][application['education_center__name']][application['appl_status']] > 0:
-                stat[application['competence__title']]['Empty'] = False
-                stat[application['competence__title']][application['education_center__name']]['Empty'] = False
-            if application['education_program__program_name'] is not None:
-    
+            if application['appl_status'] == 'EXAM':
+                stat[application['competence__title']][application['education_center__name']]['SED'] += 1
+                stages_dict['SED'] += 1     
+                if application['education_program__program_name'] is not None:
+                    stat_programs[application['education_program__program_name']][application['education_center__name']]['SED'] += 1
+                    stat_programs[application['education_program__program_name']]['Empty'] = False
+                    stat_programs[application['education_program__program_name']][application['education_center__name']]['Empty'] = False         
+            else:
+                stat[application['competence__title']][application['education_center__name']][application['appl_status']] += 1
+                stages_dict[application['appl_status']] += 1
+                if application['education_program__program_name'] is not None:
                     stat_programs[application['education_program__program_name']][application['education_center__name']][application['appl_status']] += 1
-                    if stat_programs[application['education_program__program_name']][application['education_center__name']][application['appl_status']] > 0:
-                        stat_programs[application['education_program__program_name']]['Empty'] = False
-                        stat_programs[application['education_program__program_name']][application['education_center__name']]['Empty'] = False
-                
+                    stat_programs[application['education_program__program_name']]['Empty'] = False
+                    stat_programs[application['education_program__program_name']][application['education_center__name']]['Empty'] = False
+            stat[application['competence__title']]['Empty'] = False
+            stat[application['competence__title']][application['education_center__name']]['Empty'] = False
+
+    stages = ['NEW', 'VER', 'ADM', 'SED', 'COMP', 'NCOM', 'RES'] 
     stages_count = []
     for stage in stages:
         stages_count.append(stages_dict[stage])
