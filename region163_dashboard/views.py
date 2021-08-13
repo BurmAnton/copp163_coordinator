@@ -52,6 +52,7 @@ def ed_centers_empl(request):
         stages_dict[stage] = 0
     stages = ['NEW', 'VER', 'ADM', 'SED', 'COMP', 'NCOM', 'RES', 'EXAM']
     
+    appl_count = 0
     for application in applications:
         if application['appl_status'] in stages:
             if application['appl_status'] == 'EXAM':
@@ -75,12 +76,14 @@ def ed_centers_empl(request):
     stages_count = []
     for stage in stages:
         stages_count.append(stages_dict[stage])
+        if stage != 'RES' and stage != 'NCOM':
+            appl_count += stages_dict[stage]
             
     return render(request, 'region163_dashboard/ed_centers_empl.html', {
         'stat': stat,
         'stat_programs': stat_programs,
         'stages': stages,
-        'appl_count': len(applications),
+        'appl_count': appl_count,
         'education_centers_count': len(education_centers),
         'competencies_count': len(competencies),
         'education_programs_count': len(education_programs),
