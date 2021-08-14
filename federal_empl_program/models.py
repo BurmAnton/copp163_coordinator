@@ -12,6 +12,20 @@ from organizations.models import Company
 from education_centers.models import Competence, EducationProgram, EducationCenter, Group
 
 class Application(models.Model):
+    test = models.ForeignKey(
+        'self',
+        models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='related_test_models'
+    )
+    for_inline = models.ForeignKey(
+        'self',
+        models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='inline_test_models'
+    )
     legacy_id = models.IntegerField('ID', blank=True, null=True)
     applicant = models.ForeignKey(Citizen, verbose_name="Заявитель", on_delete=CASCADE, related_name='POE_applications')
     creation_date = models.DateTimeField("Дата создания", blank=True, null=True, default=now)

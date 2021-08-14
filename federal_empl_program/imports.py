@@ -39,24 +39,18 @@ def express_import(form):
     for row in range(len(sheet_dict['СНИЛС'])):
         citizen = load_citizen(sheet_dict, row)
         if sheet_dict["Статус заявки на обучение"][row] is not None:
-            if sheet_dict["Статус заявки на обучение"][row]not in ['Заявка отменена', 'другой ФО']:
-                application = load_application(sheet_dict, row, citizen)
+            application = load_application(sheet_dict, row, citizen)
             if sheet_dict["Компетенция"][row] is not None:
                 competence = load_Competence(sheet_dict, row, application)
-                application.competence = competence
-                application.save()
                 if sheet_dict["Вид, подвид программы"][row] is not None:
                     education_program = load_EducationProgram(sheet_dict, row, competence, application)
-                    application.education_program = education_program
-                    application.save()
                 if sheet_dict["Выбранное место обучения"][row] is not None:
                     education_center = load_EducationCenter(sheet_dict, row, competence, application)
-                    application.education_center = education_center
-                    application.save()
                     if sheet_dict["Адрес выбранного место обучения"][row] is not None:
                         workshop = load_Workshop(sheet_dict, row, competence, education_center)
                         if sheet_dict["Группа"][row] is not None:
                             group = load_Group(sheet_dict, row, workshop, education_program, application)
+            
     return [True, 'OK']
 
 def cheak_col_match(sheet, fields_names_set):    
@@ -155,16 +149,23 @@ def load_application(sheet_dict, row, applicant):
     application_date = datetime.strptime(application_date, "%Y-%m-%d %H:%M:%S")
     application_date = timezone.make_aware(application_date)
     applications = Application.objects.filter(applicant=applicant)
-    if len(applications) == 0:
-        application = add_application(sheet_dict, row, applicant)
-    elif applications.filter(creation_date=application_date) == 0:
-        for application in applications.exclude(creation_date=application_date):
-            application.appl_status = 'DUPL'
-            application.save()
-        application = add_application(sheet_dict, row, applicant)
+    if sheet_dict["Статус заявки на обучение"][row] == 'Заявка отменена':
+        applications = applications.filter(creation_date=application_date)
+        if len(applications) > 0:
+            applications[0].appl_status = 'NCOM'
+            return applications[0]
     else:
-        application = update_application(sheet_dict, row, applicant, application_date)
-    return application
+        applications = Application.objects.filter(applicant=applicant)
+        if len(applications) == 0:
+            application = add_application(sheet_dict, row, applicant)
+        elif applications.filter(creation_date=application_date) == 0:
+            for application in applications.exclude(creation_date=application_date):
+                application.appl_status = 'DUPL'
+                application.save()
+            application = add_application(sheet_dict, row, applicant)
+        elif applications.filter(creation_date=application_date) != 0:
+            application = update_application(sheet_dict, row, applicant, application_date)
+        return application
 
 def add_application(sheet_dict, row, applicant):
     creation_date = datetime.strptime(sheet_dict["Дата создания заявки на обучение"][row], "%Y-%m-%d %H:%M:%S")
@@ -281,8 +282,9 @@ def load_Competence(sheet_dict, row, application):
         competence = add_competence(title)
     else:
         competence = competencies[0]
-    application.competence = competence
-    application.save()
+    if application is not None:
+        application.competence = competence
+        application.save()
     return competence
 
 def add_competence(title):
@@ -302,7 +304,7 @@ def load_EducationProgram(sheet_dict, row, competence, application):
         education_program = add_EducationProgram(program_name, competence)
     else:
         education_program = education_program[0]
-    if application.education_program != education_program:
+    if application is not None and application.education_program != education_program:
         application.education_program = education_program
         application.save()
     return education_program
@@ -359,8 +361,9 @@ def load_EducationCenter(sheet_dict, row, competence, application):
     else:
         education_center = EducationCenter.objects.get(name=name)
         education_center.competences.add(competence)
-    application.education_center = education_center
-    application.save()
+    if application is not None:
+        application.education_center = education_center
+        application.save()
     return education_center
 
 def load_Workshop(sheet_dict, row, competence, education_center):
@@ -384,8 +387,9 @@ def load_Group(sheet_dict, row, workshop, education_program, application):
         application.save()
     else:
         group = update_Group(sheet_dict, row, workshop, education_program, name)
-    application.group = group
-    application.save()
+    if application is not None:
+        application.group = group
+        application.save()
     return group
 
 def add_Group(sheet_dict, row, name, workshop, education_program):

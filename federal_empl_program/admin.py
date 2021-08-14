@@ -31,6 +31,7 @@ class InteractionHistoryInLine(admin.TabularInline):
             return extra
         return extra
 
+
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):
     inlines = [InteractionHistoryInLine, QuestionnaireInline]

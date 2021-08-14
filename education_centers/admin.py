@@ -23,29 +23,14 @@ class EducationProgramInline(admin.TabularInline):
     
 @admin.register(Competence)
 class CompetencesAdmin(admin.ModelAdmin):
-    list_display = ['title', 'get_applications']
     inlines = [
         EducationProgramInline,
     ]
 
-    def get_applications(self, competence):
-        appl_statuses = ['NEW', 'VER', 'ADM']
-        applications = Application.objects.filter(competence=competence, appl_status__in=appl_statuses)
-        return len(applications)
-    get_applications.short_description = "Кол-во заявков"
-
 @admin.register(EducationProgram)
 class EducationProgramAdmin(admin.ModelAdmin):
-    list_display = ['program_name', 'get_applications', 'program_type', 'duration', 'competence']
+    list_display = ['program_name', 'program_type', 'duration', 'competence']
     list_filter = ['program_type', 'duration', 'competence']
-
-    def get_applications(self, education_program):
-        appl_statuses = ['NEW', 'VER', 'ADM']
-        applications = education_program.programm_applicants.filter(education_program=education_program, appl_status__in=appl_statuses)
-        return len(applications)
-
-    get_applications.short_description = "Кол-во заявков"
-
 
 class StudentsInline(admin.StackedInline):
     model = Application
