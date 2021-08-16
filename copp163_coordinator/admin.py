@@ -16,8 +16,6 @@ class MyAdminSite(admin.AdminSite):
             'пользователи и группы': 7
         }
         app_dict = self._build_app_dict(request)
-        # a.sort(key=lambda x: b.index(x[0]))
-        # Sort the apps alphabetically.
         app_list = sorted(app_dict.values(), key=lambda x: ordering[x['name'].lower()])
 
         # Sort the models alphabetically within each app.

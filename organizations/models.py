@@ -32,5 +32,14 @@ class ContactPersone(models.Model):
         return  f"{self.first_name} {self.first_name} ({self.company})"
 
 class Vacancy(models.Model):
-    company = models.ForeignKey(Company, verbose_name="Вакансии", on_delete=CASCADE)
+    company = models.ForeignKey(Company, verbose_name="Компания", on_delete=CASCADE, related_name='vacancies')
+    job_title = models.CharField("Имя", max_length=50, default='')
+    salary = models.IntegerField('Зарплата', blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Вакасия"
+        verbose_name_plural = "Вакансии"
+
+    def __str__(self):
+        return  f"{self.job_title (self.company)}"
 

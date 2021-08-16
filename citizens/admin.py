@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.contrib.auth.models import User
 import django.contrib.auth.models
 from django.utils.safestring import mark_safe
 from django.urls import reverse
@@ -8,7 +7,8 @@ from datetime import datetime, timedelta
 
 from .models import Citizen, Job
 from federal_empl_program.models import Application
-from education_centers.models import EducationCenter, Workshop, Group
+from education_centers.models import EducationCenter
+from users.models import User
 
 class JobInline(admin.TabularInline):
     model = Job
@@ -64,17 +64,15 @@ class CitizensAdmin(admin.ModelAdmin):
         return self_employed_history.strftime('%d/%m/%y %H:%M')
     get_self_employed_history.short_description='Дата последнего изменения'
 
+
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         cl_group = django.contrib.auth.models.Group.objects.filter(name='Представитель ЦО')
+
         if len(cl_group) != 0:
-            if len(User.objects.filter(groups=cl_group[0], username=request.user.username)) != 0:
+            if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
                 education_centers = EducationCenter.objects.filter(contact_person=request.user)
-                if len(education_centers) != 0:     
-                    workshops = Workshop.objects.filter(education_center=education_centers[0])
-                    if len(workshops) != 0:             
-                        groups = Group.objects.filter(workshop__in=workshops)
-                        applications = Application.objects.filter(group__in=groups)
-                        queryset = Citizen.objects.filter(POE_applications__in=applications)
-                        return queryset
+                applications = Application.objects.filter(education_center__in=education_centers)     
+                queryset = Citizen.objects.filter(POE_applications__in=applications)
+                return queryset
         return queryset

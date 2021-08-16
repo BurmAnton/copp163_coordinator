@@ -2,7 +2,7 @@
 
 {% if app_list %}
   {% for app in app_list %}
-    {% if app.app_label != "auth" %}
+    {% if app.app_label != "auth" and app.app_label != 'field_history'%}
       <div class="app-{{ app.app_label }} module{% if app.app_url in request.path %} current-app{% endif %}">
         <table>
           <caption>

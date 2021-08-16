@@ -58,7 +58,7 @@ class Application(models.Model):
         ('NEW', "Трехсторонний договор с новым работодателем"),
         ('SELF', "Двухсторонный договор"),
     ]
-    contract_type = models.CharField("Тип контракта", max_length=4, choices=CONTR_TYPE_CHOICES, default="--empty--", blank=True, null=True)
+    contract_type = models.CharField("Тип контракта", max_length=4, choices=CONTR_TYPE_CHOICES, blank=True, null=True)
     citizen_consultant = models.ForeignKey(User, verbose_name='Специалист по работе с клиентами', related_name='consulted_applicants', on_delete=models.SET_NULL, blank=True, null=True)
     employer = models.ForeignKey(Company, verbose_name='Работодатель', on_delete=DO_NOTHING, blank=True, null=True)
     empoyment_specialist = models.ForeignKey(User, verbose_name='Специалист по трудоустройству', related_name='consulted_citizens', on_delete=models.SET_NULL, blank=True, null=True)

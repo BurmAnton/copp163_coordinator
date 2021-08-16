@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.deletion import DO_NOTHING, CASCADE
 
 from users.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 class Competence(models.Model):
     title = models.CharField("Название компетенции", max_length=100)
@@ -109,5 +110,39 @@ class Group(models.Model):
     class Meta:
         verbose_name = "Группа"
         verbose_name_plural = "Группы"
+
     def __str__(self):
         return  f"{self.name}"
+
+class EducationCenterGroup(models.Model):
+    education_center = models.ForeignKey(EducationCenter, verbose_name='Центр обучения', on_delete=CASCADE, related_name='ed_center_groups')
+    competence = models.ForeignKey(Competence, verbose_name='Компетенция', on_delete=CASCADE, related_name='ed_center_groups')
+    program = models.ForeignKey(EducationProgram, verbose_name='Программа подготовки', on_delete=CASCADE, related_name='ed_center_groups')
+
+    min_group_size = models.IntegerField('Минимальный размер')
+    max_group_size = models.IntegerField('Максимальный размер')
+
+    start_date = models.DateField('Дата старта')
+    end_date = models.DateField('Дата окончания', blank=True, null=True)
+    TIME_SLOTS = [
+        ('MRNG', "09.00-13.00"),
+        ('DAYT', "13.00-17.00"),
+        ('EVNG', "17.00-21.00")
+    ]
+    study_period = models.CharField("Период проведения занятий", max_length=4, blank=True, null=True, choices=TIME_SLOTS)
+    study_days_count = models.IntegerField("Занятий в неделю", validators=[MaxValueValidator(7),MinValueValidator(1)], blank=True, null=True)
+    ed_schedule_link = models.URLField("Ссылка на график обучения", max_length=256, blank=True, null=True)
+
+    group = models.OneToOneField(Group, verbose_name='Группа Express', on_delete=CASCADE, related_name='ed_center_group', blank=True, null=True)
+
+    class Meta:
+        verbose_name = "ЦО группа"
+        verbose_name_plural = "ЦО группы"
+        
+    def __str__(self):
+        if self.end_date == None:
+            return  f"{self.education_center} {self.program} (с {self.start_date})"            
+        else:
+            return  f"{self.education_center} {self.program} ({self.start_date}–{self.end_date})"
+
+    

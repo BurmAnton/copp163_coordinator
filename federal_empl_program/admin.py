@@ -9,13 +9,10 @@ from .models import Application, Questionnaire, InteractionHistory
 from education_centers.models import EducationCenter
 from users.models import Group
 
-from django_admin_listfilter_dropdown.filters import  DropdownFilter, ChoiceDropdownFilter, RelatedDropdownFilter
+from django_admin_listfilter_dropdown.filters import  RelatedDropdownFilter, ChoiceDropdownFilter, RelatedOnlyDropdownFilter
 from field_history.models import FieldHistory
 from datetime import datetime, timedelta
 
-@admin.register(Questionnaire)
-class QuestionnaireAdmin(admin.ModelAdmin):
-    pass
 
 class QuestionnaireInline(admin.StackedInline):
     model = Questionnaire
@@ -90,18 +87,19 @@ class ApplicationAdmin(admin.ModelAdmin):
         'applicant', 
         'appl_status', 
         'category',
-        'creation_date'
+        'creation_date',
+        'contract_type'
     )
 
     list_filter = (
         ('citizen_consultant', RelatedDropdownFilter),
         ('admit_status', ChoiceDropdownFilter), 
         ('appl_status', ChoiceDropdownFilter),
-        ('competence', RelatedDropdownFilter),
-        ('education_program', RelatedDropdownFilter),
-        ('education_center', RelatedDropdownFilter),
+        ('competence', RelatedOnlyDropdownFilter),
+        ('education_program', RelatedOnlyDropdownFilter),
+        ('education_center', RelatedOnlyDropdownFilter),
         ('category', ChoiceDropdownFilter),
-        ('group', RelatedDropdownFilter),
+        ('group', RelatedOnlyDropdownFilter),
         ('contract_type', ChoiceDropdownFilter), 
     )
 
@@ -115,7 +113,7 @@ class ApplicationAdmin(admin.ModelAdmin):
         cl_group = Group.objects.filter(name='Представитель ЦО')
 
         if len(cl_group) != 0:
-            if len(User.objects.filter(groups=cl_group[0], username=request.user.username)) != 0:
+            if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
                 education_centers = EducationCenter.objects.filter(contact_person=request.user)
                 return queryset.filter(education_center__in=education_centers)
         return queryset
@@ -125,11 +123,3 @@ class ApplicationAdmin(admin.ModelAdmin):
         if (db_field.name == "citizen_consultant") and (len(group) != 0):
             kwargs["queryset"] = User.objects.filter(groups=group[0])
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    class CustomFilter(SimpleListFilter):
-        template = 'django_admin_listfilter_dropdown/dropdown_filter.html'
-
-        def queryset(self, request, queryset):
-            group = Group.objects.filter(name='Специалист по работе с клиентами')
-            users = User.objects.filter(groups=group[0])
-            return queryset(citizen_consultant__in = users)
