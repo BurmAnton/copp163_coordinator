@@ -213,7 +213,7 @@ def update_application(sheet_dict, row, applicant, application_date):
     if application.contract_type != contract_type:
         application.contract_type = contract_type
     express_status = sheet_dict["Статус заявки на обучение"][row]
-    aplication_status = set_application_status(express_status)
+    aplication_status = update_application_status(express_status, application)
     appl_status = aplication_status[0]
     admit_status = aplication_status[1]
     if application.appl_status != appl_status:
@@ -262,6 +262,30 @@ def set_application_status(express_status):
     else:
         admit_status = 'RECA'
         appl_status = 'NEW'
+    return [appl_status, admit_status]
+
+def update_application_status(express_status, application):
+    if express_status == "Направлен в ЦО":
+        admit_status = 'ADM'
+        appl_status = 'ADM'
+    elif express_status == 'Зачислен':
+        admit_status = 'ADM'
+        appl_status = 'SED'
+    elif express_status == 'Направлен на экзамен':
+        admit_status = 'ADM'
+        appl_status = 'EXAM'      
+    elif express_status == 'Завершил обучение':
+        admit_status = 'ADM'
+        appl_status = 'COMP'
+    elif express_status == 'Отказался от обучения':
+        admit_status = 'ADM'
+        appl_status = 'NCOM'
+    elif express_status == 'Заявка отменена':
+        admit_status = 'REF'
+        appl_status = 'NADM'   
+    else:
+        admit_status = application.admit_status
+        appl_status = application.appl_status
     return [appl_status, admit_status]
 
 def set_contract_type(contract_type):
