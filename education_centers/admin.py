@@ -115,8 +115,8 @@ class GroupAdmin(admin.ModelAdmin):
             ('start_date'),
             ('end_date')
         )
-        search_fields = ['education_center', 'competence', 'program', 'start_date', 'end_date']
-        list_display = ('education_center', 'competence', 'program', 'education_period')
+        search_fields = ['get_id', 'education_center', 'competence', 'program', 'start_date', 'end_date']
+        list_display = ('get_id', 'education_center', 'competence', 'program', 'education_period')
         fieldsets = (
             (None, {
                 'fields': ('education_center', 'competence', 'program')
@@ -143,3 +143,9 @@ class GroupAdmin(admin.ModelAdmin):
             return period
         education_period.short_description = 'Период обучения'
         education_period.admin_order_field = 'start_date'
+
+        def get_id(self, group):
+            id = f'ЦО-{group.id}'
+            return id
+        get_id.short_description = 'ID'
+        get_id.admin_order_field = 'id'

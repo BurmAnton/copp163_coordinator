@@ -8,41 +8,58 @@
 {% block script %}{% endblock %}
 
 {% block body %}
-    {% for suggestion in suggestions %}
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="card" style="width: 18rem;">
-                <div class="card-header">
-                    <b>Группа №</b>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><b>ЦО:</b> {{suggestion.7}}</b> </li>
-                    <li class="list-group-item"><b>Программа подготовки:</b> {{suggestion.8}}</li>
-                    <li class="list-group-item"><b>Студентов:</b> {{suggestion.9}}</li>
-                </ul>
-            </div>
-            <div style="width: 5rem;">
-                <div class="svg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                        <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"/>
-                    </svg>
-                </div>
-            </div>
-             <div class="card" style="width: 18rem;">
-                <div class="card-header">
-                    <b>Группа №</b>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><b>ЦО:</b> {{suggestion.0}}</b> </li>
-                    <li class="list-group-item"><b>Программа подготовки:</b> {{suggestion.1}}</b> </li>
-                    <li class="list-group-item"><b>Дата начала:</b> {{suggestion.4}}</li>
-                    {% if suggestion.5 is not None %}
-                        <li class="list-group-item"><b>Дата окончания:</b>{{suggestion.5. }}</li>
-                        <li class="list-group-item"><b>Требуется студентов:</b> <br>от {{suggestion.2}} до {{suggestion.3}}</li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </div>
+    {% for match in matches %}
+        <table class="table table-striped group">
+            <thead class="table-dark">
+                <th scope="col" id="group-id">Группа&nbsp№{{match.1.id}}</th>
+                <th scope="col" colspan="2">ЦО:</b> {{match.1.education_center}}</th>
+            </thead>
+            <tbody>
+                <tr><td scope="row" class="competence-cell" colspan="3"><b>Компетенция:</b> {{match.2}}</td></tr>
+                <tr><td scope="row" class="competence-cell" colspan="3"><b>Программа:</b> {{match.1.program}}</td></tr>
+                <tr>
+                    <td scope="row" class="competence-cell" colspan="2"><b>Требуется&nbspстудентов:</b> {{match.1.min_group_size}}</td>
+                    <td scope="row" class="competence-cell" colspan="1"><b>Заявок:</b> {{match.3}}</td>            
+                </tr>
+                <tr><td scope="row" class="competence-cell" colspan="3"><b>Дата начала:</b> {{match.1.start_date}}</td></tr>
+            </tbody>
+        </table>
+        <table class="table table-striped suggestions">
+            <thead class="table-dark">
+                <th scope="col" colspan="1">№</th>
+                <th scope="col" colspan="1">Объект</th>
+                <th scope="col" colspan="1">Текущее состояние</th>
+                <th scope="col" colspan="1">Действие</th>
+            </thead>
+            <tbody>
+               
+                    <tr>
+                        <td scope="row" class="competence-cell" colspan="1">{{match.0}}</td>
+                        <td scope="row" class="competence-cell" colspan="1">{{match.4}}</td>
+                        <td scope="row" class="competence-cell" colspan="1">{{match.5}}</td>
+                        <td scope="row" class="competence-cell" colspan="1">
+                        <a href={{match.7}}>
+                            {{match.6}}
+                        </a>
+                        </td>
+                    </tr>
+                
+            </tbody>
+        </table>
     {% endfor %}
 {% endblock %}
+
+
+    <!--<h2>Статистика по компетенциям и колледжам</h2>
+    <div>
+        {% for comp_key, comp_value in competencies_dict.items %}
+            <b><div>{{comp_key}}: {{comp_value|get_item:'Count'}}</div></b>
+            {% for key, value in  comp_value.items %}
+                {% if key == 'Programs' %}
+                    {% for ed_key, ed_value in  value.items %}
+                        <div>{{ed_key}}: {{ed_value|get_item:'Count'}}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>-->
