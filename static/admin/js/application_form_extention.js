@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
 })
 
 function change_docs_list(category){
+    console.log(category);
     console.log('change_docs_list');
     var doc = document.querySelector('.field-consent_pers_data').parentElement;
     var children = doc.children;

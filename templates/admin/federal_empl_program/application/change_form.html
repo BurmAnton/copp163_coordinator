@@ -3,8 +3,11 @@
 
 {% block extrahead %}{{ block.super }}
 <script src="{% url 'admin:jsi18n' %}"></script>
-<script src="{% static 'admin/js/application_form_extention_readonly.js' %}"></script>
-<script src="{% static 'admin/js/application_form_extention.js' %}"></script>
+{% if has_change_permission %}
+  <script src="{% static 'admin/js/application_form_extention.js' %}"></script>
+{% else %}
+  <script src="{% static 'admin/js/application_form_extention_readonly.js' %}"></script>
+{% endif %}
 {{ media }}
 {% endblock %}
 

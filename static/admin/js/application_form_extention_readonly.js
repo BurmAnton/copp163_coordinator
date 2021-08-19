@@ -1,14 +1,33 @@
 document.addEventListener('DOMContentLoaded', function() {
-    let category = document.querySelector('.field-category');
-    category.addEventListener('change', function(){
-         change_docs_list(category.value);
-    });
+    let category = document.querySelector('.field-category').firstElementChild.lastElementChild.innerHTML;
+    if (category === "Граждане, ищущие работу и обратившиеся в органы службы занятости, включая безработных граждан"){
+        category = 'EMPS'
+    }
+    if (category === "Ищущий работу"){
+        category = 'JOBS'
+    }
+    if (category === "Безработный"){
+        category = 'UEMP'
+    }
+    if (category === "Женщины, находящиеся в отпуске по уходу за ребенком в возрасте до трех лет"){
+        category = 'VACK'
+    }
+    if (category === "Женщины, имеющие детей дошкольного возраста и не состоящие в трудовых отношениях"){
+        category = 'SCHK'
+    }
+    if (category === "Граждане в возрасте 50-ти лет и старше"){
+        category = '50+'
+    }
+    if (category === "Гражданин предпенсионного возраста"){
+        category = 'SC'
+    }
+
     mark_fields_with_Categories();
-    change_docs_list(category.value);
+    change_docs_list(category);
+
 })
 
 function change_docs_list(category){
-    console.log('change_docs_list');
     var doc = document.querySelector('.field-consent_pers_data').parentElement;
     var children = doc.children;
     for (var i = 0; i < children.length; i++) {
