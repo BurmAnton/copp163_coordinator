@@ -3,7 +3,7 @@
 
 {% block extrahead %}{{ block.super }}
 <script src="{% url 'admin:jsi18n' %}"></script>
-{% if has_change_permission %}
+{% if has_change_permission and has_delete_permission %}
   <script src="{% static 'admin/js/application_form_extention.js' %}"></script>
 {% else %}
   <script src="{% static 'admin/js/application_form_extention_readonly.js' %}"></script>

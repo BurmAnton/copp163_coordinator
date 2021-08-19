@@ -1,6 +1,5 @@
 from django.contrib.admin.filters import SimpleListFilter
 from users.models import User
-import django.contrib.auth.models
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.urls import reverse
@@ -34,6 +33,7 @@ class ApplicationAdmin(admin.ModelAdmin):
     inlines = [InteractionHistoryInLine, QuestionnaireInline]
 
     readonly_fields = ['get_applicant', 'get_history', 'legacy_id', 'get_phone', 'get_email']
+
     fieldsets = (
         (None, {
             'fields': ('get_applicant', 'legacy_id', 'get_phone', 'get_email')
@@ -92,7 +92,7 @@ class ApplicationAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
-        ('citizen_consultant', RelatedDropdownFilter),
+        ('citizen_consultant', RelatedOnlyDropdownFilter),
         ('admit_status', ChoiceDropdownFilter), 
         ('appl_status', ChoiceDropdownFilter),
         ('competence', RelatedOnlyDropdownFilter),
@@ -123,3 +123,18 @@ class ApplicationAdmin(admin.ModelAdmin):
         if (db_field.name == "citizen_consultant") and (len(group) != 0):
             kwargs["queryset"] = User.objects.filter(groups=group[0])
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+           
+    def get_readonly_fields(self, request, obj=None):
+        cl_group = Group.objects.filter(name='Представитель ЦО')
+
+        if len(cl_group) != 0:
+            if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
+                return self.readonly_fields + [
+                    'citizen_consultant','admit_status', 'appl_status', 
+                    'category', 'competence', 'education_program', 'education_center',
+                    'group', 'is_enrolled', 'is_deducted', 'education_document', 'pasport', 'resume', 'worksearcher_certificate',
+                    'consent_pers_data', 'workbook', 'unemployed_certificate', 'senior_certificate',
+                    'parental_leave_confirm','birth_certificate', 'birth_certificate_undr_seven', 
+                    'notIP_certificate', 'empoyment_specialist', 'contract_type', 'is_working', 'find_work', 'get_history', 'employer'
+                ]
+        return self.readonly_fields
