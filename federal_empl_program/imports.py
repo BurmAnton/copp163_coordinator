@@ -182,7 +182,9 @@ def add_application(sheet_dict, row, applicant):
             break
     if len(Group.objects.filter(name=sheet_dict["Группа"][row])) == 0:
         group = None
+        ed_ready_time = None
     else:
+        ed_ready_time = 'ALR'
         group = sheet_dict["Группа"][row].value.partition('(')[0]
         if len(Group.objects.filter(name=sheet_dict["Группа"][row])) != 0:
             group = Group.objects.get(name=sheet_dict["Группа"][row])
@@ -195,7 +197,8 @@ def add_application(sheet_dict, row, applicant):
         appl_status=appl_status,
         category=category,
         group=group,
-        contract_type=contract_type
+        contract_type=contract_type,
+        ed_ready_time=ed_ready_time
     )
     application.save()
     application.legacy_id = application.id
@@ -232,6 +235,7 @@ def update_application(sheet_dict, row, applicant, application_date):
         group = None
     else:
         group = Group.objects.get(name=sheet_dict["Группа"][row])
+        application.ed_ready_time = 'ALR'
     if application.group != group:
         application.group = group
     application.save()
@@ -413,6 +417,7 @@ def load_Group(sheet_dict, row, workshop, education_program, application):
         group = update_Group(sheet_dict, row, workshop, education_program, name)
     if application is not None:
         application.group = group
+        application.ed_ready_time = 'ALR'
         application.save()
     return group
 

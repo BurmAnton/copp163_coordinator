@@ -62,6 +62,15 @@ class Application(models.Model):
     citizen_consultant = models.ForeignKey(User, verbose_name='Специалист по работе с клиентами', related_name='consulted_applicants', on_delete=models.SET_NULL, blank=True, null=True)
     employer = models.ForeignKey(Company, verbose_name='Работодатель', on_delete=DO_NOTHING, blank=True, null=True)
     empoyment_specialist = models.ForeignKey(User, verbose_name='Специалист по трудоустройству', related_name='consulted_citizens', on_delete=models.SET_NULL, blank=True, null=True)
+    ED_TIMELINE_CHOICES = [
+        ('CG', "В планируемой группе"),
+        ('NG', "В следующей группе"),
+        ('OCT', "В октябре"),
+        ('NOV', "В ноябре"),
+        ('NY', "В следующем году"),
+        ('ALR', "Уже зачислен")
+    ]
+    ed_ready_time = models.CharField("Хочет начать учиться", max_length=4, choices=ED_TIMELINE_CHOICES, blank=True, null=True)
     
     #Общее
     consent_pers_data = models.BooleanField("Согласие на обработку перс. данных", default=False)

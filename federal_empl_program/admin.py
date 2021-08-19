@@ -40,7 +40,7 @@ class ApplicationAdmin(admin.ModelAdmin):
         }),
         ('Работа с заявкой', {
             'fields': ('citizen_consultant', 'admit_status', 'appl_status', 
-            'category', 'competence', 'education_program', 'education_center',
+            'category', 'competence', 'education_program', 'education_center', 'ed_ready_time',
             'group', 'is_enrolled', 'is_deducted'),
         }),
         ('Документы', {
