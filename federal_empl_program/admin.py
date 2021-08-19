@@ -81,7 +81,7 @@ class ApplicationAdmin(admin.ModelAdmin):
     def get_comment_date(self, application):
         comment = InteractionHistory.objects.filter(application=application).latest().interaction_date
         return comment
-    get_comment.short_description='Последний комментарий'
+    get_comment_date.short_description='Дата комментария'
 
     def get_history(self, application):
         history = application.field_history.latest('date_created').date_created + timedelta(hours=4)
