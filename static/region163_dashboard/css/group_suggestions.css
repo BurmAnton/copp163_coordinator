@@ -13,13 +13,13 @@
     text-align: center;
 }
 .group{
-    width: 30%;
+    width: 60%;
     margin: auto;
     margin-top: 10px;
     box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, .2);
 }
 .suggestions{
-    width: 30%;
+    width: 60%;
     margin: auto;
     box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, .2);
 }

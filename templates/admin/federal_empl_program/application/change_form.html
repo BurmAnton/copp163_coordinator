@@ -3,6 +3,7 @@
 
 {% block extrahead %}{{ block.super }}
 <script src="{% url 'admin:jsi18n' %}"></script>
+<script src="{% static 'admin/js/application_form_extention_readonly.js' %}"></script>
 <script src="{% static 'admin/js/application_form_extention.js' %}"></script>
 {{ media }}
 {% endblock %}

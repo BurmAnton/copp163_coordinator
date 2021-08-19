@@ -98,7 +98,7 @@ def groups_suggestions(request):
     applications = [application for application in Application.objects.filter(appl_status__in=['VER','ADM'])]
     group_applications = [application for application in EducationCenterGroup.objects.filter(group=None)]
     competencies = [competence for competence in Competence.objects.all().values('title')]
-    education_centers = [education_center for education_center in EducationCenter.objects.all().values('name')]
+    education_centers = [education_center for education_center in EducationCenter.objects.all().values('name', 'id')]
     education_programs = [education_program for education_program in EducationProgram.objects.all().values('program_name', 'duration', 'program_type')]
     
     competencies_dict = {}
@@ -142,6 +142,21 @@ def groups_suggestions(request):
             if application.education_center != None:
                 competencies_dict[application.competence.title]['Programs']['Нет']['Education_centers'][application.education_center.name]['Count'] += 1
                 competencies_dict[application.competence.title]['Programs']['Нет']['Education_centers'][application.education_center.name]['Empty'] = False
+    
+    empty_comp = []
+    empty_programs = []
+    empty_ed_ceters = []
+    for competence in competencies_dict:
+        if competencies_dict[competence]['Empty']:
+            empty_comp.append(competence)
+        else:
+            for program in competencies_dict[competence]['Programs']:
+                if competencies_dict[competence]['Programs'][program]['Empty']:
+                    empty_programs.append([competence, program])
+                elif program != 'Нет':
+                    for center in competencies_dict[competence]['Programs'][program]['Education_centers']:
+                        if competencies_dict[competence]['Programs'][program]['Education_centers'][center]['Empty']:
+                            empty_ed_ceters.append([competence, program, center])
 
     matches = []
     match_number = 1
@@ -155,21 +170,32 @@ def groups_suggestions(request):
         program_none_count = competencies_dict[competence]['Programs']['Нет']['Count']
         ed_center_count = competencies_dict[competence]['Programs'][program]['Education_centers'][education_center]['Count']
         ed_center_none_count = competencies_dict[competence]['Programs']['Нет']['Education_centers'][education_center]['Count']
+        ed_centers = competencies_dict[competence]['Programs'][program]['Education_centers']
+        url = 'http://127.0.0.1:8000/federal_empl_program/application/'
+        match = []
         if comp_count >= min_group_size:
             if program_count >= min_group_size:
                 if ed_center_count  >= min_group_size:
                     appl_count = competencies_dict[competence]['Programs'][program]['Education_centers'][education_center]['Count']
-                    url_adress = 'http://127.0.0.1:8000/federal_empl_program/application/'
-                    url_adress = f'http://127.0.0.1:8000/federal_empl_program/application/?competence__id__exact={group_appl.competence.id}&education_center__id__exact={group_appl.education_center.id}&education_program__id__exact={group_appl.program.id}'
-                    matches.append([match_number, group_appl, competence, appl_count, 'Группа', 'Отсутствует','Создать группу', url_adress])
+                    url_adress = f'{url}?competence__id__exact={group_appl.competence.id}&education_center__id__exact={group_appl.education_center.id}&education_program__id__exact={group_appl.program.id}'
+                    match.append([match_number, appl_count, 'Группа', 'Отсутствует','Создать группу', url_adress])
                     match_number += 1
+                else:
+                    for ed_center in ed_centers:
+                        if (ed_centers[ed_center]['Empty'] == False) and (ed_center != education_center):
+                            appl_count = ed_centers[ed_center]['Count']
+                            ed_id = EducationCenter.objects.get(name=ed_center).id
+                            url_adress = f'{url}?competence__id__exact={group_appl.competence.id}&education_center__id__exact={ed_id}&education_program__id__exact={group_appl.program.id}'
+                            match.append([match_number, appl_count, 'ЦО', ed_center,f'Сменить ЦО на {education_center}', url_adress])
+                            match_number += 1
             elif program_count + program_none_count >= min_group_size:
                 if ed_center_none_count + ed_center_count >= min_group_size:
                     appl_count = competencies_dict[competence]['Programs'][program]['Education_centers'][education_center]['Count']
-                    url_adress = 'http://127.0.0.1:8000/federal_empl_program/application/'
-                    url_adress = f'http://127.0.0.1:8000/federal_empl_program/application/?competence__id__exact={group_appl.competence.id}&education_center__id__exact={group_appl.education_center.id}&education_program__isnull=True'
-                    matches.append([match_number, group_appl, competence, appl_count, 'Программа подготовки', 'Отсутствует',f'Добавить {program}', url_adress])
+                    url_adress = f'{url}?competence__id__exact={group_appl.competence.id}&education_center__id__exact={group_appl.education_center.id}&education_program__isnull=True'
+                    match.append([match_number, appl_count, 'Программа подготовки', 'Отсутствует',f'Добавить {program}', url_adress])
                     match_number += 1
+        appl_count = competencies_dict[competence]['Programs'][program]['Education_centers'][education_center]['Count']
+        matches.append([group_appl, competence, appl_count, match])
 
                     
 
@@ -178,17 +204,4 @@ def groups_suggestions(request):
         'matches': matches
     })
 
-    # empty_comp = []
-    # empty_programs = []
-    # empty_ed_ceters = []
-    # for competence in competencies_dict:
-    #    if competencies_dict[competence]['Empty']:
-    #        empty_comp.append(competence)
-    #    else:
-    #        for program in competencies_dict[competence]['Programs']:
-    #            if competencies_dict[competence]['Programs'][program]['Empty']:
-    #                empty_programs.append([competence, program])
-    #            elif program != 'Нет':
-    #                for center in competencies_dict[competence]['Programs'][program]['Education_centers']:
-    #                    if competencies_dict[competence]['Programs'][program]['Education_centers'][center]['Empty']:
-    #                        empty_ed_ceters.append([competence, program, center])
+
