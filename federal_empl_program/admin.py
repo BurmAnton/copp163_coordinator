@@ -73,6 +73,16 @@ class ApplicationAdmin(admin.ModelAdmin):
         return email
     get_email.short_description='Email'
 
+    def get_comment(self, application):
+        comment = InteractionHistory.objects.filter(application=application).latest().short_description
+        return comment
+    get_comment.short_description='Последний комментарий'
+        
+    def get_comment_date(self, application):
+        comment = InteractionHistory.objects.filter(application=application).latest().interaction_date
+        return comment
+    get_comment.short_description='Последний комментарий'
+
     def get_history(self, application):
         history = application.field_history.latest('date_created').date_created + timedelta(hours=4)
         return history.strftime('%d/%m/%y %H:%M') 
@@ -88,7 +98,9 @@ class ApplicationAdmin(admin.ModelAdmin):
         'appl_status', 
         'category',
         'creation_date',
-        'contract_type'
+        'contract_type',
+        'get_comment',
+        'get_comment_date'
     )
 
     list_filter = (

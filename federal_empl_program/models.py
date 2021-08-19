@@ -134,6 +134,7 @@ class InteractionHistory(models.Model):
     class Meta:
         verbose_name = "Взаимодействие с гражданином"
         verbose_name_plural = "История взаимодействия"
+        get_latest_by = "interaction_date"
 
 class Questionnaire(models.Model):
     applicant = OneToOneField(Application, on_delete=CASCADE, primary_key=True, related_name='anketa')
@@ -161,6 +162,7 @@ class Questionnaire(models.Model):
     class Meta:
         verbose_name = "Анкета"
         verbose_name_plural = "Анкета"
+        
     
     def __str__(self):
         return  f"{self.applicant} (анкета)"
