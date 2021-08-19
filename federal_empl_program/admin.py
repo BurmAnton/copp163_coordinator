@@ -111,8 +111,9 @@ class ApplicationAdmin(admin.ModelAdmin):
         ('education_program', RelatedOnlyDropdownFilter),
         ('education_center', RelatedOnlyDropdownFilter),
         ('category', ChoiceDropdownFilter),
+        ('ed_ready_time',ChoiceDropdownFilter),
         ('group', RelatedOnlyDropdownFilter),
-        ('contract_type', ChoiceDropdownFilter), 
+        ('contract_type', ChoiceDropdownFilter),
     )
 
     def allow_applications(self, request, queryset):
@@ -147,6 +148,7 @@ class ApplicationAdmin(admin.ModelAdmin):
                     'group', 'is_enrolled', 'is_deducted', 'education_document', 'pasport', 'resume', 'worksearcher_certificate',
                     'consent_pers_data', 'workbook', 'unemployed_certificate', 'senior_certificate',
                     'parental_leave_confirm','birth_certificate', 'birth_certificate_undr_seven', 
-                    'notIP_certificate', 'empoyment_specialist', 'contract_type', 'is_working', 'find_work', 'get_history', 'employer'
+                    'notIP_certificate', 'empoyment_specialist', 'contract_type', 'is_working', 'find_work', 'get_history', 'employer',
+                    'ed_ready_time'
                 ]
         return self.readonly_fields
