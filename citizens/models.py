@@ -56,7 +56,7 @@ class Citizen(models.Model):
 
     class Meta:
         verbose_name = "Гражданин"
-        verbose_name_plural = "Граждани"
+        verbose_name_plural = "Граждане"
 
     def __str__(self):
         if self.middle_name is not None:

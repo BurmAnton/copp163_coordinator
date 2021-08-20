@@ -119,7 +119,7 @@ class GroupAdmin(admin.ModelAdmin):
         list_display = ('get_id', 'education_center', 'competence', 'program', 'education_period')
         fieldsets = (
             (None, {
-                'fields': ('education_center', 'competence', 'program')
+                'fields': ('education_center', 'competence', 'program', 'is_visible')
             }),
             ('Размер группы', {
                 'fields': ('min_group_size', 'max_group_size')

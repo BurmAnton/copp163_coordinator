@@ -118,6 +118,7 @@ class EducationCenterGroup(models.Model):
     education_center = models.ForeignKey(EducationCenter, verbose_name='Центр обучения', on_delete=CASCADE, related_name='ed_center_groups')
     competence = models.ForeignKey(Competence, verbose_name='Компетенция', on_delete=CASCADE, related_name='ed_center_groups')
     program = models.ForeignKey(EducationProgram, verbose_name='Программа подготовки', on_delete=CASCADE, related_name='ed_center_groups')
+    is_visible = models.BooleanField("Показывать в списке планируемого обучения", default=False)
 
     min_group_size = models.IntegerField('Минимальный размер')
     max_group_size = models.IntegerField('Максимальный размер')

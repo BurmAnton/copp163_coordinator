@@ -1,8 +1,15 @@
 from django.shortcuts import render
 
-from education_centers.models import Competence, EducationCenter, EducationProgram, EducationCenterGroup, Workshop
+from education_centers.models import Competence, EducationCenter, EducationProgram, EducationCenterGroup
 from federal_empl_program.models import Group, Application
 from django.template.defaulttags import register
+
+def dashboard(request):
+    group_list = [EducationCenterGroup.objects.exclude(is_visible=False)]
+
+    return render(request, 'region163_dashboard/dashboard.html', {
+        'group_list': group_list,
+    })
 
 def ed_centers_empl(request):
     stat = {}
