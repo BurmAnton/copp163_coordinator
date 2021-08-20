@@ -1,0 +1,57 @@
+{% extends "region163_dashboard/layout.html" %}
+{% load static %}
+
+{% block title %}Статистика по ЦО{% endblock %}
+{% block style %}
+        <link href="{% static 'region163_dashboard/css/dashboard.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}{% endblock %}
+
+{% block body %}
+    <div class="container px-4">
+        <div class="row justify-content-center">
+            <div class="col text-center">
+                <h1>Список ближайщих групп по программе "Содействие занятость"</h1>
+            </div>
+        </div>
+        <div class="row row-cols-2 g-3">
+            {% for group in group_list.0 %}
+            <div class="col">
+                <div class="card border-dark">
+                    <h5 class="card-header border-dark">Группа №{{group.id}}</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">{{group.competence}}</h5>
+                        <h6 class="card-title">Обучение проводит {{group.education_center}}</h6>
+                        <p class="card-text ed_program"><b>Программа подготовки:</b> {{group.program.program_name}}</p>
+                        <p class="card-text ed_program"><b>Длительность подготовки:</b> {{group.program.duration}}ч.</p>
+                        {%if group.study_period == 'MRNG'%}
+                            <p class="card-text ed_program"><b>Период проведения занятий:</b> 09:00-13:00</p>
+                        {% endif %}
+                        {%if group.study_period == 'DAYT'%}
+                            <p class="card-text ed_program"><b>Период проведения занятий:</b> 13:00-17:00</p>
+                        {% endif %}
+                        {%if group.study_period == 'EVNG'%}
+                            <p class="card-text ed_program"><b>Период проведения занятий:</b> 17:00-21:00</p>
+                        {% endif %}
+                        {%if group.study_days_count != None%}
+                            <p class="card-text"><b>Занятий в неделю:</b> {{group.study_days_count}}</p>
+                        {% endif %}
+                        <p class="card-text start-date"><b>Дата начала:</b> {{group.start_date}}</p>
+                        {% if group.end_date != None %}
+                            <p class="card-text"><b>Дата окончание:</b> {{group.end_date}}</p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer text-end border-dark">
+                        {% if group.ed_schedule_link != None %}
+                            <a href={{group.ed_schedule_link}} class="btn btn-dark">График обучения</a>
+                        {% endif %}
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdmzY-KjLvBOUEnCMQFx6P-wnFYmlCyvRi77LsosDPBCT941A/viewform" class="btn btn-primary">
+                            Записаться на обучение
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

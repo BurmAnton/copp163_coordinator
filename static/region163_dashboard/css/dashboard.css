@@ -1,0 +1,10 @@
+.card{
+    --bs-gutter-x: 0rem;
+    height: 100%;
+}
+.start-date, .ed_program{
+    margin-bottom: 0;
+}
+.btn{
+    vertical-align: bottom;
+}
