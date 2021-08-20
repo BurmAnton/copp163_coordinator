@@ -11,7 +11,7 @@
     <div class="container px-4">
         <div class="row justify-content-center">
             <div class="col text-center">
-                <h1>Список ближайщих групп по программе "Содействие занятость"</h1>
+                <h1>Список ближайщих групп по федеральный проект "Содействие занятости"</h1>
             </div>
         </div>
         <div class="row row-cols-2 g-3">
@@ -22,7 +22,18 @@
                     <div class="card-body">
                         <h5 class="card-title">{{group.competence}}</h5>
                         <h6 class="card-title">Обучение проводит {{group.education_center}}</h6>
-                        <p class="card-text ed_program"><b>Программа подготовки:</b> {{group.program.program_name}}</p>
+                        <p class="card-text ed_program">
+                            <b>
+                                Программа подготовки:
+                            </b> 
+                            {%if group.program.program_link != None%}
+                                <a href={{group.program.program_link}} target="_blank">
+                                    {{group.program.program_name}}
+                                </a>
+                            {% else %}
+                                {{group.program.program_name}}
+                            {% endif %}
+                        </p>
                         <p class="card-text ed_program"><b>Длительность подготовки:</b> {{group.program.duration}}ч.</p>
                         {%if group.study_period == 'MRNG'%}
                             <p class="card-text ed_program"><b>Период проведения занятий:</b> 09:00-13:00</p>
@@ -38,14 +49,14 @@
                         {% endif %}
                         <p class="card-text start-date"><b>Дата начала:</b> {{group.start_date}}</p>
                         {% if group.end_date != None %}
-                            <p class="card-text"><b>Дата окончание:</b> {{group.end_date}}</p>
+                            <p class="card-text"><b>Дата окончания:</b> {{group.end_date}}</p>
                         {% endif %}
                     </div>
                     <div class="card-footer text-end border-dark">
                         {% if group.ed_schedule_link != None %}
-                            <a href={{group.ed_schedule_link}} class="btn btn-dark">График обучения</a>
+                            <a href={{group.ed_schedule_link}} class="btn btn-dark" target="_blank">График обучения</a>
                         {% endif %}
-                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdmzY-KjLvBOUEnCMQFx6P-wnFYmlCyvRi77LsosDPBCT941A/viewform" class="btn btn-primary">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdmzY-KjLvBOUEnCMQFx6P-wnFYmlCyvRi77LsosDPBCT941A/viewform" class="btn btn-primary" target="_blank">
                             Записаться на обучение
                         </a>
                     </div>
