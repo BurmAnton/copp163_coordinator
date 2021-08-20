@@ -149,3 +149,11 @@ class GroupAdmin(admin.ModelAdmin):
             return id
         get_id.short_description = 'ID'
         get_id.admin_order_field = 'id'
+        
+        def get_readonly_fields(self, request, obj=None):
+            cl_group = users.models.Group.objects.filter(name='Представитель ЦО')
+
+            if len(cl_group) != 0:
+                if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
+                    return self.readonly_fields + ('is_visible',)
+            return self.readonly_fields
