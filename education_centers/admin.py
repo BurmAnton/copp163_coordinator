@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.admin.filters import SimpleListFilter
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from django import forms
 
 from django_admin_listfilter_dropdown.filters import  RelatedOnlyDropdownFilter, RelatedDropdownFilter, ChoiceDropdownFilter
 
@@ -105,65 +106,67 @@ class GroupAdmin(admin.ModelAdmin):
                     queryset = Group.objects.filter(workshop__in=workshops)
                     return queryset
         return queryset
+
+
+@admin.register(EducationCenterGroup)
+class EducationCenterGroupAdmin(admin.ModelAdmin):
+    list_filter = (
+        ('education_center', RelatedOnlyDropdownFilter),
+        ('competence', RelatedOnlyDropdownFilter),
+        ('program', RelatedOnlyDropdownFilter),
+        ('start_date'),
+        ('end_date')
+    )
+
+    search_fields = ['education_center', 'get_id', 'competence', 'program', 'start_date', 'end_date']
+    list_display = ('get_id', 'competence', 'program', 'education_center', 'education_period')
+    fieldsets = (
+        (None, {
+            'fields': ('education_center', 'competence', 'program', 'is_visible')
+        }),
+        ('Размер группы', {
+            'fields': ('min_group_size', 'max_group_size')
+        }),
+        ('Период', {
+            'fields': ('start_date', 'end_date', 'study_period', 'study_days_count', 'ed_schedule_link'),
+        }),
+        ('Express', {
+            'fields': ('group',),
+        }),
+    )
+
+    def education_period(self, ed_group):
+        start_date = ed_group.start_date.strftime('%d/%m/%y')
+        end_date = ed_group.end_date
+        if end_date is not None:
+            end_date = end_date.strftime('%d/%m/%y')
+            period = f"{start_date}\xa0–\xa0{end_date}"
+        else:
+            period = f"с {start_date}"
+        return period
+    education_period.short_description = 'Период обучения'
+    education_period.admin_order_field = 'start_date'
+
+    def get_id(self, group):
+        id = f'ЦО-{group.id}'
+        return id
+    get_id.short_description = 'ID'
+    get_id.admin_order_field = 'id'
     
-    @admin.register(EducationCenterGroup)
-    class EducationCenterGroupAdmin(admin.ModelAdmin):
-        list_filter = (
-            ('education_center', RelatedOnlyDropdownFilter),
-            ('competence', RelatedOnlyDropdownFilter),
-            ('program', RelatedOnlyDropdownFilter),
-            ('start_date'),
-            ('end_date')
-        )
-        search_fields = ['get_id', 'education_center', 'competence', 'program', 'start_date', 'end_date']
-        list_display = ('get_id', 'education_center', 'competence', 'program', 'education_period')
-        fieldsets = (
-            (None, {
-                'fields': ('education_center', 'competence', 'program', 'is_visible')
-            }),
-            ('Размер группы', {
-                'fields': ('min_group_size', 'max_group_size')
-            }),
-            ('Период', {
-                'fields': ('start_date', 'end_date', 'study_period', 'study_days_count', 'ed_schedule_link'),
-            }),
-            ('Express', {
-                'fields': ('group',),
-            }),
-        )
+    def get_readonly_fields(self, request, obj=None):
+        cl_group = users.models.Group.objects.filter(name='Представитель ЦО')
 
-        def education_period(self, ed_group):
-            start_date = ed_group.start_date.strftime('%d/%m/%y')
-            end_date = ed_group.end_date
-            if end_date is not None:
-                end_date = end_date.strftime('%d/%m/%y')
-                period = f"{start_date}\xa0–\xa0{end_date}"
-            else:
-                period = f"с {start_date}"
-            return period
-        education_period.short_description = 'Период обучения'
-        education_period.admin_order_field = 'start_date'
+        if len(cl_group) != 0:
+            if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
+                return self.readonly_fields + ('is_visible',)
+        return self.readonly_fields
 
-        def get_id(self, group):
-            id = f'ЦО-{group.id}'
-            return id
-        get_id.short_description = 'ID'
-        get_id.admin_order_field = 'id'
-        
-        def get_readonly_fields(self, request, obj=None):
-            cl_group = users.models.Group.objects.filter(name='Представитель ЦО')
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        cl_group = users.models.Group.objects.filter(name='Представитель ЦО')
 
-            if len(cl_group) != 0:
-                if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
-                    return self.readonly_fields + ('is_visible',)
-            return self.readonly_fields
-
-        def get_queryset(self, request):
-            queryset = super().get_queryset(request)
-            cl_group = users.models.Group.objects.filter(name='Представитель ЦО')
-
-            if len(cl_group) != 0:
-                if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
-                    education_centers = EducationCenter.objects.filter(contact_person=request.user)
-                    return queryset.filter(education_center__in=education_centers)
-            return queryset
+        if len(cl_group) != 0:
+            if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
+                education_centers = EducationCenter.objects.filter(contact_person=request.user)
+                return queryset.filter(education_center__in=education_centers)
+        return queryset

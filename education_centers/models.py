@@ -72,6 +72,11 @@ class EducationCenter(models.Model):
     name = models.CharField("Название организации", max_length=150)
     contact_person = models.ForeignKey(User, verbose_name="Контактное лицо", related_name="education_centers", on_delete=DO_NOTHING, blank=True, null=True)
     competences = models.ManyToManyField(Competence, related_name="educationCenters", verbose_name="Компетенции", blank=True)
+    
+    def serialize(self):
+        return {
+            "contact_person": self.contact_person
+        }
 
     class Meta:
         verbose_name = "Центр обучения"

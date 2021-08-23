@@ -3,7 +3,6 @@ from users.models import User
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.urls import reverse
-from django import forms
 
 from .models import Application, Questionnaire, InteractionHistory
 from education_centers.models import EducationCenter, EducationProgram
@@ -28,6 +27,7 @@ class InteractionHistoryInLine(admin.TabularInline):
         if obj:
             return extra
         return extra
+
 
 
 @admin.register(Application)
