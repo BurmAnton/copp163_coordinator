@@ -157,3 +157,13 @@ class GroupAdmin(admin.ModelAdmin):
                 if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
                     return self.readonly_fields + ('is_visible',)
             return self.readonly_fields
+
+        def get_queryset(self, request):
+            queryset = super().get_queryset(request)
+            cl_group = users.models.Group.objects.filter(name='Представитель ЦО')
+
+            if len(cl_group) != 0:
+                if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
+                    education_centers = EducationCenter.objects.filter(contact_person=request.user)
+                    return queryset.filter(education_center__in=education_centers)
+            return queryset

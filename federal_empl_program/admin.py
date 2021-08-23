@@ -3,10 +3,12 @@ from users.models import User
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from django import forms
 
 from .models import Application, Questionnaire, InteractionHistory
-from education_centers.models import EducationCenter
+from education_centers.models import EducationCenter, EducationProgram
 from users.models import Group
+
 
 from django_admin_listfilter_dropdown.filters import  RelatedDropdownFilter, ChoiceDropdownFilter, RelatedOnlyDropdownFilter
 from field_history.models import FieldHistory
