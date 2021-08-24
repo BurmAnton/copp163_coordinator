@@ -101,6 +101,8 @@ class ApplicationAdmin(admin.ModelAdmin):
         'category',
         'creation_date',
         'contract_type',
+        'competence',
+        'get_phone',
         'get_comment',
         'get_comment_date'
     )
