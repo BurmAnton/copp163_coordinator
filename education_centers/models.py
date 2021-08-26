@@ -1,8 +1,8 @@
 from django.db import models
 from django.db.models.deletion import DO_NOTHING, CASCADE
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from users.models import User
-from django.core.validators import MaxValueValidator, MinValueValidator
 
 class Competence(models.Model):
     title = models.CharField("Название компетенции", max_length=100)
@@ -149,6 +149,4 @@ class EducationCenterGroup(models.Model):
         if self.end_date == None:
             return  f"{self.education_center} {self.program} (с {self.start_date})"            
         else:
-            return  f"{self.education_center} {self.program} ({self.start_date}–{self.end_date})"
-
-    
+            return  f"{self.education_center} {self.program} ({self.start_date}–{self.end_date})"    

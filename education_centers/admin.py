@@ -4,10 +4,11 @@ from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django import forms
 
-from django_admin_listfilter_dropdown.filters import  RelatedOnlyDropdownFilter, RelatedDropdownFilter, ChoiceDropdownFilter
+from django_admin_listfilter_dropdown.filters import  RelatedOnlyDropdownFilter
 
 from .models import Workshop, EducationCenter, EducationProgram, Competence, Group, EducationCenterGroup
 from federal_empl_program.models import Application
+from citizens.models import Citizen, School, SchoolClass
 from users.models import User
 import users
 
@@ -170,3 +171,33 @@ class EducationCenterGroupAdmin(admin.ModelAdmin):
                 education_centers = EducationCenter.objects.filter(contact_person=request.user)
                 return queryset.filter(education_center__in=education_centers)
         return queryset
+
+class SchoolClassInline(admin.TabularInline):
+    model = SchoolClass
+
+@admin.register(School)
+class SchoolsAdmin(admin.ModelAdmin):
+    inlines = [
+        SchoolClassInline
+    ]
+
+class CitizenInline(admin.TabularInline):
+    model = Citizen
+    fieldsets = (
+        (None, {
+            "fields": (
+                "first_name",
+                "last_name",
+                "middle_name",
+                "email"
+            ),
+        }),
+    )
+    short_description='Студенты'
+    
+
+@admin.register(SchoolClass)
+class SchoolClassesAdmin(admin.ModelAdmin):
+    inlines = [
+        CitizenInline
+    ]

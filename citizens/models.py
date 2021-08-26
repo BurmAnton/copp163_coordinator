@@ -1,8 +1,37 @@
 from django.db import models
+from django.db.models.enums import Choices
 from field_history.tracker import FieldHistoryTracker
 from django.db.models.deletion import DO_NOTHING, CASCADE
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from organizations.models import Company
+
+class School(models.Model):
+    name = models.CharField("Название школы", max_length=100)
+    specialty = models.CharField("Уклон школы", max_length=50, blank=True, null=True)
+
+    city = models.CharField("Город", max_length=100, blank=True, null=True)
+    adress = models.CharField("Адрес", max_length=250, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Школа"
+        verbose_name_plural = "Школы"
+
+    def __str__(self):
+        return  f"{self.name}({self.city})"
+    
+class SchoolClass(models.Model):
+    school = models.ForeignKey(School, verbose_name="Школа", related_name="classes", on_delete=CASCADE)
+    grade_number = models.IntegerField("Номер класса", validators=[MaxValueValidator(11),MinValueValidator(1)])
+    grade_letter = models.CharField("Буква класса", max_length=4)
+    specialty = models.CharField("Уклон класса", max_length=50, blank=True, null=True)
+    
+    class Meta:
+        verbose_name = "Класс"
+        verbose_name_plural = "Классы"
+
+    def __str__(self):
+        return  f"{self.grade_number}{self.grade_letter} – {self.school}"
 
 class Citizen(models.Model):
     first_name = models.CharField("Имя", max_length=30)
@@ -14,6 +43,7 @@ class Citizen(models.Model):
         ('F', "Женский")
     ]
     sex = models.CharField("Пол", max_length=1, choices=SEX_CHOICES, blank=True, null=True)
+    birthday = models.DateField("Дата рождения", blank=True, null=True)
 
     email = models.EmailField("Email", max_length=320, blank=True, null=True)
     phone_number = models.CharField("Номер телефона", max_length=16, blank=True, null=True)
@@ -37,6 +67,8 @@ class Citizen(models.Model):
         ('OTHR', "Другой")
     ]
     social_status = models.CharField("Социальный статус", max_length=4, choices=STATUS_CHOICES, blank=True, null=True)
+    school = models.ForeignKey(School, verbose_name="Школа", related_name="students", blank=True, null=True, on_delete=DO_NOTHING)
+    school_class = models.ForeignKey(SchoolClass, verbose_name="Школный класс", related_name="students", blank=True, null=True, on_delete=DO_NOTHING)
     EDUCATION_CHOICES = [
         ('SPO', "СПО"),
         ('VO', "ВО"),

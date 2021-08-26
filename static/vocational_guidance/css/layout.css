@@ -1,0 +1,19 @@
+html, body {
+    height: 100%;
+    margin: 0;
+  }
+.container{
+    height: 100%;
+}
+nav{
+  padding-left: 10%;
+  padding-right: 10%;
+  box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, .2);
+}
+h2{
+  margin: 0;
+  padding: 0;
+}
+.navbar-nav{
+  
+}
