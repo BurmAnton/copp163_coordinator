@@ -11,29 +11,60 @@
         {% block script %}{% endblock %}
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <div class="container-fluid">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-                </button>
-                <a class="navbar-brand" href="#"><h2>БИЛЕТ В БУДУЩЕЕ</h2></a>
-                <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">{{page_name}}</a>
-                        </li>
-                    </ul>
-                </div>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'signout' %}">
-                        <button class="btn btn-outline-light" type="submit">Выйти</button>
-                    </a>
-                {% endif %}
+        <div id="page-container">
+            <div id="content-wrap">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+                    <div class="container-fluid">
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <a class="navbar-brand" href="#">БИЛЕТ В БУДУЩЕЕ</a>
+                        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="#">{{page_name}}</a>
+                                </li>
+                            </ul>
+                        </div>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'signout' %}">
+                                <button class="btn btn-outline-light" type="submit">Выйти</button>
+                            </a>
+                        {% endif %}
+                    </div>
+                </nav>
+                {% block body %}
+                {% endblock %}
             </div>
-        </nav>
-        <div class="container">
-            {% block body %}
-            {% endblock %}
+            <footer class="navbar navbar-expand-lg navbar-dark bg-primary">
+                <div class="container justify-content-between" id="footer-nav">
+                    <div class="logo-copp"></div>
+                    <div>
+                        <ul class="navbar-nav flex-column me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                445007, Самарская область, г. Тольятти, улица Победы, 7 <br>
+                                По рабочим дням с 10:00 до 18:00
+                            </li>
+                            <li class="nav-item">
+                                8 (800) 350-42-07; 8 (8482) 29-00-51
+                            </li>
+                            <li class="nav-item">
+                                copp163.info@gmail.com
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <ul class="navbar-nav flex-column me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                Наш Instagram
+                            </li>
+                            <li class="nav-item">
+                                Наш Facebook
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
         </div>
     </body>
 </html>

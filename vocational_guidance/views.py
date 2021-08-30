@@ -5,6 +5,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.db import IntegrityError
+
+from users.models import User
+from citizens.models import Citizen, School
 
 # Create your views here.
 @login_required(login_url='bilet/login')
@@ -34,9 +38,44 @@ def signin(request):
 @csrf_exempt
 def signup(request):
     if request.method == "POST":
-        return HttpResponseRedirect(reverse("signin"))
+        email = request.POST["email"]
+        password = request.POST["password"]
+        confirmation = request.POST["confirmation"]
+        first_name = request.POST['name']
+        last_name = request.POST['last_name']
+        birthday = request.POST['birthday']
+        post=request.POST
+        school_name = request.POST['school']
+        school = School.objects.get(name=school_name)
+        if password != confirmation:
+            return render(request, "vocational_guidance/registration.html", {
+                "message": "Passwords must match."
+            })
+        try:
+            user = User.objects.create_user(email, password)
+            user.save()
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save()
+            citizen = Citizen(
+                first_name=first_name,
+                last_name=last_name,
+                birthday=birthday,
+                social_status='SCHS',
+                school = school
+            )
+            citizen.save()
+        except IntegrityError:
+            return render(request, "vocational_guidance/registration.html", {
+                "message": "Email"
+            })
+        login(request, user)
+        return HttpResponseRedirect(reverse("index"))
     else:
-        return render(request, "vocational_guidance/registration.html") 
+        schools = School.objects.all()
+        return render(request, "vocational_guidance/registration.html", {
+            'schools': schools
+        })
 
 @login_required(login_url='bilet/login')
 def signout(request):

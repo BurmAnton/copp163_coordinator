@@ -1,10 +1,11 @@
-.card{
-    padding-top: 10px;
-    padding-bottom: 10px;
+.card {
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
-.h2{
-    text-align: center;
+
+.h2 {
+  text-align: center;
+  margin-top: 20vh;
 }
-.row{
-    min-height: 25%;
-}
+
+/*# sourceMappingURL=login.css.map */

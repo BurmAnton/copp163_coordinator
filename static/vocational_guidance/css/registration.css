@@ -1,10 +1,12 @@
-.card{
-    padding-top: 10px;
-    padding-bottom: 10px;
+.card {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 5vh;
 }
-.h2{
-    text-align: center;
+
+.h2 {
+  text-align: center;
+  margin-top: 5vh;
 }
-.row{
-    min-height: 15%;
-}
+
+/*# sourceMappingURL=registration.css.map */

@@ -1,19 +1,53 @@
-html, body {
-    height: 100%;
-    margin: 0;
-  }
-.container{
-    height: 100%;
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+h1 {
+  font-family: "Roboto", sans-serif;
+  font-size: 36px;
+  margin-bottom: 25px;
+  font-weight: 300;
 }
-nav{
+
+h2 {
+  font-family: "Roboto", sans-serif;
+  font-size: 28px;
+  margin-bottom: 25px;
+}
+
+#page-container {
+  position: relative !important;
+  min-height: 100vh;
+}
+
+#content-wrap {
+  padding-bottom: 200px;
+}
+
+footer {
+  position: absolute !important;
+  bottom: 0;
+  width: 100%;
+  height: 200px;
+}
+
+nav {
   padding-left: 10%;
   padding-right: 10%;
-  box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, .2);
+  box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
 }
-h2{
+
+h2 {
   margin: 0;
   padding: 0;
 }
-.navbar-nav{
-  
+
+.logo-copp {
+  width: 187px;
+  height: 100px;
+  background-image: url("http://copp63.ru/images/footer-logo.svg");
 }
+
+#footer-nav {
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+/*# sourceMappingURL=layout.css.map */

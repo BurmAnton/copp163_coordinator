@@ -396,7 +396,7 @@ def load_EducationCenter(sheet_dict, row, competence, application):
 
 def load_Workshop(sheet_dict, row, competence, education_center):
     adress = sheet_dict["Адрес выбранного место обучения"][row]
-    if len(Workshop.objects.filter(adress=adress)) == 0:
+    if len(Workshop.objects.filter(adress=adress, competence=competence)) == 0:
         workshop = Workshop(
             competence=competence,
             education_center=education_center,
@@ -404,7 +404,7 @@ def load_Workshop(sheet_dict, row, competence, education_center):
         )
         workshop.save()
     else:
-        workshop = Workshop.objects.get(adress=adress)
+        workshop = Workshop.objects.get(adress=adress, competence=competence)
     return workshop
 
 def load_Group(sheet_dict, row, workshop, education_program, application):
@@ -485,26 +485,26 @@ def import_in_db_gd(form):
 
 def load_row_gd(citizen, sheet_dict, row):
     if sheet_dict['Статус заявки'][row] != 'дубликат':
-        if sheet_dict['Зарегистрирован на ЦП ЦОПП'][row] is not None:
-            citizen.copp_registration = sheet_dict['Зарегистрирован на ЦП ЦОПП'][row]
-        citizen.education_type = get_education(sheet_dict['Уровень образования'][row])
+#       if sheet_dict['Зарегистрирован на ЦП ЦОПП'][row] is not None:
+#            citizen.copp_registration = sheet_dict['Зарегистрирован на ЦП ЦОПП'][row]
+#        citizen.education_type = get_education(sheet_dict['Уровень образования'][row])
         application = Application.objects.filter(applicant=citizen)
         if len(application) != 0:
             application = application[0]
 
-            if sheet_dict['ID'][row] is not None:
-                application.legacy_id = int(sheet_dict['ID'][row])
+            #if sheet_dict['ID'][row] is not None:
+            #    application.legacy_id = int(sheet_dict['ID'][row])
 
-            if sheet_dict['Цель'][row] is not None:
-                purpose = get_goal(sheet_dict, row)
-                questionnaire = Questionnaire(
-                    applicant=application,
-                    purpose = purpose
-                )
-                questionnaire.save()
-            set_application_status_gd(sheet_dict['Статус заявки'][row], application)
-
-            application.is_working = sheet_dict['Трудоустроен до начала обучения'][row]
+            #if sheet_dict['Цель'][row] is not None:
+            #    purpose = get_goal(sheet_dict, row)
+            #    questionnaire = Questionnaire(
+            #        applicant=application,
+            #        purpose = purpose
+            #    )
+            #    questionnaire.save()
+            #set_application_status_gd(sheet_dict['Статус заявки'][row], application)
+#
+#            application.is_working = sheet_dict['Трудоустроен до начала обучения'][row]
             if sheet_dict['Специалист по работе с клиентами'][row] is not None:
                 name = sheet_dict['Специалист по работе с клиентами'][row].split()
                 try:
@@ -518,8 +518,8 @@ def load_row_gd(citizen, sheet_dict, row):
                 except:
                     pass
 
-            if sheet_dict['Курсы ИП'][row] is not None:
-                application.ib_course = sheet_dict['Курсы ИП'][row]
+#            if sheet_dict['Курсы ИП'][row] is not None:
+#                application.ib_course = sheet_dict['Курсы ИП'][row]
 
             application.save()
         citizen.save()

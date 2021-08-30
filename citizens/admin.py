@@ -50,7 +50,7 @@ class CitizensAdmin(admin.ModelAdmin):
             'fields': ('email', 'phone_number', 'res_region', 'res_city', "copp_registration"),
         }),
         ('Статус', {
-            'fields': ('social_status', 'education_type', 'is_employed',
+            'fields': ('social_status', 'education_type', 'school', 'is_employed',
             'get_is_employed_history', 'self_employed', 'get_self_employed_history','is_verified'),
         })
     )
