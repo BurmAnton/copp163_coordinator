@@ -18,6 +18,13 @@ h2 {
   box-shadow: 5px 5px 5px 2px rgba(0, 0, 0, 0.2);
 }
 
+.profile-section .card {
+  border: 1px solid black;
+}
+.profile-section .card-body {
+  border: 1px;
+}
+
 .justify-content-center {
   margin-top: 20px;
   margin-bottom: 10px;

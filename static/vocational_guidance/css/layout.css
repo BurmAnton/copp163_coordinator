@@ -27,6 +27,13 @@ footer {
   width: 100%;
   height: 200px;
 }
+footer .nav-item {
+  color: white;
+  padding-bottom: 4px;
+}
+footer .nav-item a {
+  color: white;
+}
 
 nav {
   padding-left: 10%;

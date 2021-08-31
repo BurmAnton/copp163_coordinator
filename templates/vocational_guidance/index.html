@@ -10,26 +10,98 @@
 {% endblock %}
 
 {% block body %}
-    <div class="section introduction-section">
+    <div class="section profile-section">
         <div class="container">
             <div class="row row-cols-3 g-3">
                 <div class="col-12 justify-content-center text-left">
                     <div class="row row-cols-6 g-5">
-                        <div class="col-6 cover-img">
-                            <img src="http://copp63.ru/files/4dd197310515829745d66f10353c1057.jpg" class="card-img-top" alt="...">
+                        <div class="col-5">
+                            <div class="card card-profile border-dark">
+                                <h2 class="card-header border-dark">
+                                    Профиль ученика
+                                </h2>
+                                <div class="card-body border-dark">
+                                    <h5>{{user.last_name}} {{user.first_name}} {{user.middle_name}}</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item"><b>Email:</b> {{user.email}}</li>
+                                        <li class="list-group-item"><b>Дата рождения:</b> {{user.birthday}}</li>
+                                        <li class="list-group-item"><b>Школа:</b> {{user.school.name}}</li>
+                                        <li class="list-group-item"><b>Класс:</b> {{user.school_class.grade_number}}{{user.school_class.grade_letter}}</li>
+                                    </ul>
+                                </div>
+                                <div class="card-footer text-end border-dark">
+                                    <div class="d-grid gap-2 d-md-block">
+                                        <button type="submit" class="btn btn-primary">Изменить личные данные</button>
+                                        <button type="submit" class="btn border-secondary">Сменить пароль</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <h1>
-                                Возможности для прохождения профориентоционных мероприятий
-                            </h1>
-                            <p>Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus.</p> 
-                            <p>Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus.</p> 
+                        <div class="col-7">
+                            <h2>
+                                Выбранные профориентационные мероприятия
+                            </h2>
+                            <div class="row row-cols-4 g-3">
+                                {% for bundle_key, bundle_value in choosen_bundles.items %}
+                                    <div class="col-6">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{bundle_key}}</h5>
+                                                <p class="card-text">{{bundle_value|get_item:'description'}}</p>
+                                                <ul class="list-group list-group-flush">
+                                                    {%for value in bundle_value|get_item:'competences'%}
+                                                        <li class="list-group-item">{{value}}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                                <p></p>
+                                                <div class="d-grid gap-2">
+                                                    <form action="{%url 'reject_bundle' %}" method="post">
+                                                        <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
+                                                        <input type="input" class="form-control" name="bundle_name" value="{{bundle_key}}" style="display: none;">
+                                                        <div class="d-grid gap-2">
+                                                            <button type="submit" class="btn border-primary">Отказаться</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                {% for bundle_key, bundle_value in choosen_online_bundles.items %}
+                                    <div class="col-6">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{bundle_key}}</h5>
+                                                <p class="card-text">{{bundle_value|get_item:'description'}}</p>
+                                                <ul class="list-group list-group-flush">
+                                                    {%for value in bundle_value|get_item:'competences'%}
+                                                        <li class="list-group-item">{{value}}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                                <p></p>
+                                                <div class="d-grid gap-2">
+                                                    <form action="{%url 'reject_bundle' %}" method="post">
+                                                        <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
+                                                        <input type="input" class="form-control" name="bundle_name" value="{{bundle_key}}" style="display: none;">
+                                                        <div class="d-grid gap-2">
+                                                            <button type="submit" class="btn border-primary">Отказаться</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                
+                            </div>
+                            <p>{{message}}</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="section park-section">
         <div class="container">
             <div class="row row-cols-4 g-3">
@@ -37,23 +109,32 @@
                     <h2>Профессиональные пробы на площадке исторический парк «Россия – Моя история» </h2>
                     <p>Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus.</p> 
                 </div>
-                <div class="col">
-                    <div class="card">
-                        <img src="http://copp63.ru/files/4dd197310515829745d66f10353c1057.jpg" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title">Интернет</h5>
-                            <p class="card-text">В данном направлении вы сможете опробывать компетенции связанные с созданием веб-сервисов, а также продвижением товаров и услуг в сети.</p>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">Веб-дизайн и разработка</li>
-                                <li class="list-group-item">Интернет маркетинг</li>
-                            </ul>
-                            <p></p>
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">Выбрать</button>
+                {% for bundle_key, bundle_value in bundles.items %}
+                    <div class="col">
+                        <div class="card">
+                            <img src="http://copp63.ru/files/4dd197310515829745d66f10353c1057.jpg" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">{{bundle_key}}</h5>
+                                <p class="card-text">{{bundle_value|get_item:'description'}}</p>
+                                <ul class="list-group list-group-flush">
+                                    {%for value in bundle_value|get_item:'competences'%}
+                                        <li class="list-group-item">{{value}}</li>
+                                    {% endfor %}
+                                </ul>
+                                <p></p>
+                                <div class="d-grid gap-2">
+                                    <form action="{%url 'choose_bundle' %}" method="post">
+                                        <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
+                                        <input type="input" class="form-control" name="bundle_name" value="{{bundle_key}}" style="display: none;">
+                                        <div class="d-grid gap-2">
+                                            <button type="submit" class="btn btn-primary">Выбрать</button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -61,26 +142,35 @@
         <div class="container">
             <div class="row row-cols-4 g-3">
                 <div class="col-12 justify-content-center text-center">
-                    <h2>Профессиональные пробы на площадке исторический парк «Россия – Моя история» </h2>
+                    <h2>Профессиональны пробы в онлайн формате </h2>
                     <p>Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus.</p> 
                 </div>
-                <div class="col">
-                    <div class="card">
-                        <img src="http://copp63.ru/files/4dd197310515829745d66f10353c1057.jpg" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title">Интернет</h5>
-                            <p class="card-text">В данном направлении вы сможете опробывать компетенции связанные с созданием веб-сервисов, а также продвижением товаров и услуг в сети.</p>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">Веб-дизайн и разработка</li>
-                                <li class="list-group-item">Интернет маркетинг</li>
-                            </ul>
-                            <p></p>
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">Выбрать</button>
+                {% for bundle_key, bundle_value in bundles_online.items %}
+                    <div class="col">
+                        <div class="card">
+                            <img src="http://copp63.ru/files/4dd197310515829745d66f10353c1057.jpg" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">{{bundle_key}}</h5>
+                                <p class="card-text">{{bundle_value|get_item:'description'}}</p>
+                                <ul class="list-group list-group-flush">
+                                    {%for value in bundle_value|get_item:'competences'%}
+                                        <li class="list-group-item">{{value}}</li>
+                                    {% endfor %}
+                                </ul>
+                                <p></p>
+                                <div class="d-grid gap-2">
+                                    <form action="{%url 'choose_bundle' %}" method="post">
+                                        <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
+                                        <input type="input" class="form-control" name="bundle_name" value="{{bundle_key}}" style="display: none;">
+                                        <div class="d-grid gap-2">
+                                            <button type="submit" class="btn btn-primary">Выбрать</button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </div>

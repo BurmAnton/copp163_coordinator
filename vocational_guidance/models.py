@@ -9,7 +9,7 @@ class VocGuidGroup(models.Model):
     participants = models.ManyToManyField(
         Citizen, 
         verbose_name="Участники", 
-        related_name='voc_guid_group'
+        related_name='voc_guid_groups'
     )
     AGE_GROUP_CHOICES = [
         ('6-7', "6-7 класс"),
@@ -26,10 +26,23 @@ class VocGuidGroup(models.Model):
         return  f"Группа №{self.id}"
 
 class VocGuidBundle(models.Model):
-    programs_count = models.IntegerField(verbose_name="Количество проб")
+    name = models.CharField("Название пакета", max_length=100, blank=True, null=True, default="")
+    description = models.TextField("Описание", blank=True, null=True, default="")
     programs = models.ManyToManyField(EducationProgram, verbose_name="Список проб")
-    education_center = models.ForeignKey(EducationCenter, verbose_name="Организатор", on_delete=CASCADE)
-    workshop = models.ForeignKey(Workshop, verbose_name="Место проведения", on_delete=CASCADE)
+    education_center = models.ForeignKey(EducationCenter, verbose_name="Организатор", on_delete=CASCADE, blank=True, null=True)
+    workshop = models.ForeignKey(Workshop, verbose_name="Место проведения", on_delete=CASCADE, blank=True, null=True)
+    participants = models.ManyToManyField(
+        Citizen, 
+        verbose_name="Участники", 
+        related_name='voc_guid_bundles',
+        blank=True, 
+        null=True
+    )
+    TYPE_CHOICES = [
+        ('SPO', "Моя Россия"),
+        ('VO', "Онлайн")
+    ]
+    guid_type = models.CharField("Тип проб", max_length=4, choices=TYPE_CHOICES, blank=True, null=True)
     
     class Meta:
         verbose_name = "Бандл"

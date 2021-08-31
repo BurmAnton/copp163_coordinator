@@ -26,7 +26,7 @@
                                 </li>
                             </ul>
                         </div>
-                        {% if user.is_authenticated %}
+                        {% if request.user.is_authenticated %}
                             <a href="{% url 'signout' %}">
                                 <button class="btn btn-outline-light" type="submit">Выйти</button>
                             </a>
@@ -46,7 +46,7 @@
                                 По рабочим дням с 10:00 до 18:00
                             </li>
                             <li class="nav-item">
-                                8 (800) 350-42-07; 8 (8482) 29-00-51
+                                8 (800) 350-42-07
                             </li>
                             <li class="nav-item">
                                 copp163.info@gmail.com
@@ -56,10 +56,14 @@
                     <div>
                         <ul class="navbar-nav flex-column me-auto mb-2 mb-lg-0">
                             <li class="nav-item">
-                                Наш Instagram
+                                <a href="https://www.instagram.com/copp_63/">
+                                    Наш Instagram
+                                </a>
                             </li>
                             <li class="nav-item">
-                                Наш Facebook
+                                <a href="https://www.facebook.com/copp63">
+                                    Наш Facebook
+                                </a>
                             </li>
                         </ul>
                     </div>
