@@ -23,12 +23,14 @@ def index(request):
     choosen_bundles = VocGuidBundle.objects.filter(guid_type="SPO", participants=citizen).values(
         "name",
         "description",
+        "img_link"
     )
     choosen_bundles_dict = {}
     for bundle in choosen_bundles:
         choosen_bundles_dict[bundle['name']] = {
             'name': bundle['name'],
             'description': bundle['description'],
+            'img_link': bundle['img_link'],
             'competences': []
         }
         competences = [VocGuidBundle.objects.filter(guid_type="SPO", name=bundle['name']).values(
@@ -39,6 +41,7 @@ def index(request):
     bundles = VocGuidBundle.objects.filter(guid_type="SPO", ).exclude(participants=citizen).values(
         "name",
         "description",
+        "img_link"
     )
 
     bundles_dict = {}
@@ -46,6 +49,7 @@ def index(request):
         bundles_dict[bundle['name']] = {
             'name': bundle['name'],
             'description': bundle['description'],
+            'img_link': bundle['img_link'],
             'competences': []
         }
         competences = [VocGuidBundle.objects.filter(guid_type="SPO", name=bundle['name']).values(
@@ -57,12 +61,14 @@ def index(request):
     choosen_online_bundles = VocGuidBundle.objects.filter(guid_type="VO", participants=citizen).values(
         "name",
         "description",
+        "img_link"
     )
     choosen_online_bundles_dict = {}
     for bundle in choosen_online_bundles:
         choosen_online_bundles_dict[bundle['name']] = {
             'name': bundle['name'],
             'description': bundle['description'],
+            'img_link': bundle['img_link'],
             'competences': []
         }
         competences = [VocGuidBundle.objects.filter(guid_type="VO", name=bundle['name']).values(
@@ -73,6 +79,7 @@ def index(request):
     bundles_online = VocGuidBundle.objects.filter(guid_type="VO", ).exclude(participants=citizen).values(
         "name",
         "description",
+        "img_link"
     )
 
     bundles_online_dict = {}
@@ -80,6 +87,7 @@ def index(request):
         bundles_online_dict[bundle['name']] = {
             'name': bundle['name'],
             'description': bundle['description'],
+            'img_link': bundle['img_link'],
             'competences': []
         }
         competences = [VocGuidBundle.objects.filter(guid_type="VO", name=bundle['name']).values(

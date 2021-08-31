@@ -28,6 +28,7 @@ class VocGuidGroup(models.Model):
 class VocGuidBundle(models.Model):
     name = models.CharField("Название пакета", max_length=100, blank=True, null=True, default="")
     description = models.TextField("Описание", blank=True, null=True, default="")
+    img_link = models.CharField("Ссылка на изображение", max_length=250, blank=True, null=True, default="")
     programs = models.ManyToManyField(EducationProgram, verbose_name="Список проб")
     education_center = models.ForeignKey(EducationCenter, verbose_name="Организатор", on_delete=CASCADE, blank=True, null=True)
     workshop = models.ForeignKey(Workshop, verbose_name="Место проведения", on_delete=CASCADE, blank=True, null=True)

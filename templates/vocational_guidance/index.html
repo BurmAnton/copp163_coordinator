@@ -94,7 +94,7 @@
                                 {% endfor %}
                                 
                             </div>
-                            <p>{{message}}</p>
+                            <p>{{message}}</p> 
                         </div>
                     </div>
                 </div>
@@ -112,7 +112,7 @@
                 {% for bundle_key, bundle_value in bundles.items %}
                     <div class="col">
                         <div class="card">
-                            <img src="http://copp63.ru/files/4dd197310515829745d66f10353c1057.jpg" class="card-img-top" alt="...">
+                            <img src="{{bundle_value|get_item:'img_link'}}" class="card-img-top" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">{{bundle_key}}</h5>
                                 <p class="card-text">{{bundle_value|get_item:'description'}}</p>
@@ -148,7 +148,7 @@
                 {% for bundle_key, bundle_value in bundles_online.items %}
                     <div class="col">
                         <div class="card">
-                            <img src="http://copp63.ru/files/4dd197310515829745d66f10353c1057.jpg" class="card-img-top" alt="...">
+                            <img src="{{bundle_value|get_item:'img_link'}}" class="card-img-top" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">{{bundle_key}}</h5>
                                 <p class="card-text">{{bundle_value|get_item:'description'}}</p>
