@@ -48,22 +48,23 @@
                             <div class="row row-cols-4 g-3">
                                 {% for bundle_key, bundle_value in choosen_bundles.items %}
                                     <div class="col-6">
-                                        <div class="card">
+                                        <div class="card h-100">
                                             <div class="card-body">
                                                 <h5 class="card-title">{{bundle_key}}</h5>
                                                 <p class="card-text">{{bundle_value|get_item:'description'}}</p>
-                                                <ul class="list-group list-group-flush">
+                                               <!-- <ul class="list-group list-group-flush">
                                                     {%for value in bundle_value|get_item:'competences'%}
                                                         <li class="list-group-item">{{value}}</li>
                                                     {% endfor %}
-                                                </ul>
-                                                <p></p>
+                                                </ul>-->
+                                            </div>
+                                            <div class="card-footer">
                                                 <div class="d-grid gap-2">
                                                     <form action="{%url 'reject_bundle' %}" method="post">
                                                         <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
                                                         <input type="input" class="form-control" name="bundle_name" value="{{bundle_key}}" style="display: none;">
                                                         <div class="d-grid gap-2">
-                                                            <button type="submit" class="btn border-primary">Отказаться</button>
+                                                            <button type="submit" class="btn btn-primary">Отказаться</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -73,7 +74,7 @@
                                 {% endfor %}
                                 {% for bundle_key, bundle_value in choosen_online_bundles.items %}
                                     <div class="col-6">
-                                        <div class="card">
+                                        <div class="card h-100">
                                             <div class="card-body">
                                                 <h5 class="card-title">{{bundle_key}}</h5>
                                                 <p class="card-text">{{bundle_value|get_item:'description'}}</p>
@@ -82,13 +83,14 @@
                                                         <li class="list-group-item">{{value}}</li>
                                                     {% endfor %}
                                                 </ul>-->
-                                                <p></p>
+                                            </div>
+                                            <div class="card-footer">
                                                 <div class="d-grid gap-2">
                                                     <form action="{%url 'reject_bundle' %}" method="post">
                                                         <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
                                                         <input type="input" class="form-control" name="bundle_name" value="{{bundle_key}}" style="display: none;">
                                                         <div class="d-grid gap-2">
-                                                            <button type="submit" class="btn border-primary">Отказаться</button>
+                                                            <button type="submit" class="btn btn-primary">Отказаться</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -115,7 +117,7 @@
                 </div>
                 {% for bundle_key, bundle_value in bundles.items %}
                     <div class="col">
-                        <div class="card">
+                        <div class="card h-100">
                             <img src="{{bundle_value|get_item:'img_link'}}" class="card-img-top" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title">{{bundle_key}}</h5>
@@ -126,6 +128,8 @@
                                     {% endfor %}
                                 </ul>-->
                                 <p></p>
+                            </div>
+                            <div class="card-footer">
                                 <div class="d-grid gap-2">
                                     <form action="{%url 'choose_bundle' %}" method="post">
                                         <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
@@ -150,7 +154,7 @@
                     <p>Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus.</p> 
                 </div>
                 {% for bundle_key, bundle_value in bundles_online.items %}
-                    <div class="col">
+                    <div class="col h-100">
                         <div class="card">
                             <img src="{{bundle_value|get_item:'img_link'}}" class="card-img-top" alt="...">
                             <div class="card-body">
@@ -161,7 +165,8 @@
                                         <li class="list-group-item">{{value}}</li>
                                     {% endfor %}
                                 </ul>-->
-                                <p></p>
+                            </div>
+                            <div class="card-footer">
                                 <div class="d-grid gap-2">
                                     <form action="{%url 'choose_bundle' %}" method="post">
                                         <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
