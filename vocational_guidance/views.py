@@ -1,3 +1,4 @@
+from django.db.models.query import QuerySet
 from django.db.models.query_utils import refs_expression
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -13,6 +14,9 @@ from citizens.models import Citizen, School, SchoolClass
 from vocational_guidance.models import VocGuidBundle
 
 # Create your views here.
+def test(request):
+    return render(request, "vocational_guidance/test.html")
+
 @login_required(login_url='bilet/login')
 def index(request):
     citizen = Citizen.objects.get(
@@ -101,6 +105,8 @@ def index(request):
         message = "На данные момент Вы не записались не на одно из доступных профориентационных мероприятий. Вы можете просмотреть и выбрать интересующие вас их ниже."
     
     schools = School.objects.exclude(name=citizen.school.name)
+
+    disability_types = Citizen.disability_types
     return render(request, "vocational_guidance/index.html",{
         'page_name': 'Личный кабинет',
         'user': citizen,
@@ -110,7 +116,8 @@ def index(request):
         'bundles_online': bundles_online_dict,
         'message': message,
         "birthday": citizen.birthday.isoformat(),
-        'schools': schools
+        'schools': schools,
+        "disability_types": disability_types
     })
 
 @csrf_exempt
@@ -174,6 +181,14 @@ def signup(request):
         grade_letter = request.POST['school_class_latter']
         school_name = request.POST['school']
         school = School.objects.get(name=school_name)
+        try:
+            disability_check = request.POST['disability-check']
+        except:
+            disability_check = False
+        if disability_check != False:
+            disability_type = request.POST['disability_type']
+        else:
+            disability_type = None
         if password != confirmation:
             return render(request, "vocational_guidance/registration.html", {
                 "message": "Введённые пароли не совпадают"
@@ -183,7 +198,6 @@ def signup(request):
             user.save()
             user.first_name = first_name
             user.last_name = last_name
-            user.phone_number = phone
             user.save()
             school_class = SchoolClass.objects.filter(
                 school=school,
@@ -207,21 +221,34 @@ def signup(request):
                 email=email,
                 social_status='SCHS',
                 school=school,
-                school_class=school_class
+                school_class=school_class,
+                phone_number = phone,
+                disability_type = disability_type
             )
             citizen.save()
         except IntegrityError:
             schools = School.objects.all()
+            cities = set()
+            for school in schools:
+                cities.add(school.city) 
             return render(request, "vocational_guidance/registration.html", {
                 "message": "Email уже использован",
-                'schools': schools
+                'schools': schools,
+                'cities': cities,
+                "disability_types": Citizen.disability_types
             })
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
         schools = School.objects.all()
+        cities = set()
+        for school in schools:
+            cities.add(school.city) 
+    
         return render(request, "vocational_guidance/registration.html", {
-            'schools': schools
+            'schools': schools,
+            'cities': cities,
+            "disability_types": Citizen.disability_types
         })
 
 @login_required(login_url='bilet/login')
@@ -244,6 +271,15 @@ def change_profile(request):
         citizen.school = school
         grade_number = request.POST['school_class']
         grade_letter = request.POST['school_class_latter']
+        try:
+            disability_check = request.POST['disability-check']
+        except:
+            disability_check = False
+        if disability_check != False:
+            disability_type = request.POST['disability_type']
+        else:
+            disability_type = None
+        citizen.disability_type = disability_type
         school_class = SchoolClass.objects.filter(
                 school=school,
                 grade_number=grade_number,

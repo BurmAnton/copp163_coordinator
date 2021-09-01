@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block script %}
+    <script src="{% static 'vocational_guidance/js/registration.js' %}"></script>
 {% endblock %}
 {% block body %}
     <div class="container">
@@ -31,11 +32,19 @@
                     <input type="date" class="form-control" name="birthday" id="Birthday" placeholder="Дата рождения" required>
                     <label for="Birthday">Дата рождения</label>
                 </div>
+                <div class="form form-city mb-3">
+                    <select class="selectpicker" data-width="100%" data-live-search="true" name="city" id="City" required>
+                        <option value="">Выберите город проживания</option>
+                        {% for city in cities %}
+                            <option class="city" value="{{city.name}}">{{city}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <div class="form mb-3">
-                    <select class="form-select" name="school" id="School" required>
+                    <select class="selectpicker" data-width="100%" data-live-search="true" name="school" id="School" required>
                         <option value="">Выберите школу</option>
                         {% for school in schools %}
-                            <option value="{{school.name}}">{{school.name}}</option>
+                            <option value="{{school.name}}" class="school" data-school="{{school.city}}">{{school.name}}</option>
                         {% endfor %}
                     </select>
                     <div class="invalid-feedback">Example invalid select feedback</div>
@@ -66,12 +75,27 @@
                     <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номер телефона" required>
                     <label for="Phone">Номер телефона</label>
                 </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="disability-check" name="disability-check">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        У меня есть инвалидность
+                    </label>
+                </div>
+                <div class="form mb-3" id="form-disability" style="display:none;">
+                    <select class="selectpicker" data-width="100%" data-live-search="true" name="disability_type" id="disability_type">
+                        <option>Выберите вид нарушения</option>
+                        {% for type in disability_types %}
+                            <option value="{{type.0}}" class="disability_type" data-school="{{type}}">{{type.1}}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="invalid-feedback">Example invalid select feedback</div>
+                </div>
                 <div class="form-floating mb-3">
                     <input type="password" class="form-control" name="password" id="InputPassword" placeholder="Пароль" required>
                     <label for="InputPassword">Придумайте пароль</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="password" class="form-control" name="confirmation" id="InputPassword" placeholder="Пароль" required>
+                    <input type="password" class="form-control" name="confirmation" id="Сonfirmation" placeholder="Пароль" required>
                     <label for="InputPassword">Повторите пароль</label>
                     <div id="SignUpHelp" class="form-text">Уже есть аккаунт? <a href="{% url 'signin' %}">Войти</a></div>
                 </div>

@@ -83,6 +83,17 @@ class Citizen(models.Model):
     is_employed = models.BooleanField("Трудоустроен", default=False)
     is_verified = models.BooleanField("Верифицирован", default=False)
     copp_registration = models.BooleanField("Зарегистрирован на copp63.ru", default=False)
+    disability_types = [
+        ('1', "Нарушениями слуха"),
+        ('2', "Нарушениями зрения"),
+        ('3', "Нарушениями речи"),
+        ('4', "Нарушениями интеллекта"),
+        ('5', "Задержкой психического развития"),
+        ('6', "Нарушениями опорно-двигательного аппарата"),
+        ('7', "Нарушениями эмоционально-волевой сферы"),
+        ('8', "Множественными нарушениями"),
+    ]
+    disability_type = models.CharField("Инвалидность", max_length=4, choices=EDUCATION_CHOICES, blank=True, null=True, default=None)
 
     field_history = FieldHistoryTracker(['is_employed', 'self_employed', 'is_verified'])
 
