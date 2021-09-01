@@ -95,7 +95,7 @@ def index(request):
             )]
         for copmetence in competences[0]:
             bundles_online_dict[bundle['name']]['competences'].append(copmetence['programs__competence__title'])
-    
+    message = ""
     if len(choosen_online_bundles_dict) == 0 and len(choosen_bundles_dict) == 0:
         message = "На данные момент Вы не записались не на одно из доступных профориентационных мероприятий. Вы можете просмотреть и выбрать интересующие вас их ниже."
 
@@ -159,6 +159,7 @@ def signin(request):
 def signup(request):
     if request.method == "POST":
         email = request.POST["email"]
+        phone = request.POST["phone"]
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         first_name = request.POST['name']
@@ -171,13 +172,14 @@ def signup(request):
         school = School.objects.get(name=school_name)
         if password != confirmation:
             return render(request, "vocational_guidance/registration.html", {
-                "message": "Passwords must match."
+                "message": "Введённые пароли не совпадают"
             })
         try:
             user = User.objects.create_user(email, password)
             user.save()
             user.first_name = first_name
             user.last_name = last_name
+            user.phone_number = phone
             user.save()
             school_class = SchoolClass.objects.filter(
                 school=school,
@@ -190,7 +192,7 @@ def signup(request):
                 school_class = SchoolClass(
                     school=school,
                     grade_number=int(grade_number),
-                    grade_letter=grade_letter
+                    grade_letter=grade_letter.upper()
                 )
                 school_class.save()
             citizen = Citizen(
@@ -205,8 +207,10 @@ def signup(request):
             )
             citizen.save()
         except IntegrityError:
+            schools = School.objects.all()
             return render(request, "vocational_guidance/registration.html", {
-                "message": "Email"
+                "message": "Email уже использован",
+                'schools': schools
             })
         login(request, user)
         return HttpResponseRedirect(reverse("index"))

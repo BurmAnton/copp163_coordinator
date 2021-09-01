@@ -27,7 +27,7 @@ def express_import(form):
         'Адрес выбранного место обучения', 'Вид, подвид программы', 
         'Дата создания заявки на обучение', 'Статус заявки на обучение', 
         'Дата последней смены статуса', 'Группа', 'Тип договора', 'Дата начала обучения', 
-        'Дата окончания обучения', 'Трудоустроен', 'Резерв', 
+        'Дата окончания обучения', 'Занятость по итогам обучения', 'Резерв', 
         'Дистанционное обучение', 'Допуск до обучения', 'ФО'
     }
 
@@ -465,7 +465,7 @@ def import_in_db_gd(form):
     fields_names_set = {
         'ID','Статус заявки', 'Цель','Зарегистрирован на ЦП ЦОПП', 
         'Безработный', 'Фамилия', 'Имя', 'Email', 'Статус заявки на обучение', 
-        'Допуск до участия', 'Уровень образования','Трудоустроен до начала обучения', 
+        'Допуск до участия', 'Уровень образования','Занятость по итогам обучения до начала обучения', 
         'Специалист по работе с клиентами', 'Курсы ИП'
     }
 
@@ -485,26 +485,26 @@ def import_in_db_gd(form):
 
 def load_row_gd(citizen, sheet_dict, row):
     if sheet_dict['Статус заявки'][row] != 'дубликат':
-#       if sheet_dict['Зарегистрирован на ЦП ЦОПП'][row] is not None:
-#            citizen.copp_registration = sheet_dict['Зарегистрирован на ЦП ЦОПП'][row]
-#        citizen.education_type = get_education(sheet_dict['Уровень образования'][row])
+        if sheet_dict['Зарегистрирован на ЦП ЦОПП'][row] is not None:
+            citizen.copp_registration = sheet_dict['Зарегистрирован на ЦП ЦОПП'][row]
+        citizen.education_type = get_education(sheet_dict['Уровень образования'][row])
         application = Application.objects.filter(applicant=citizen)
         if len(application) != 0:
             application = application[0]
 
-            #if sheet_dict['ID'][row] is not None:
-            #    application.legacy_id = int(sheet_dict['ID'][row])
+            if sheet_dict['ID'][row] is not None:
+                application.legacy_id = int(sheet_dict['ID'][row])
 
-            #if sheet_dict['Цель'][row] is not None:
-            #    purpose = get_goal(sheet_dict, row)
-            #    questionnaire = Questionnaire(
-            #        applicant=application,
-            #        purpose = purpose
-            #    )
-            #    questionnaire.save()
-            #set_application_status_gd(sheet_dict['Статус заявки'][row], application)
-#
-#            application.is_working = sheet_dict['Трудоустроен до начала обучения'][row]
+            if sheet_dict['Цель'][row] is not None:
+                purpose = get_goal(sheet_dict, row)
+                questionnaire = Questionnaire(
+                    applicant=application,
+                    purpose = purpose
+                )
+                questionnaire.save()
+            set_application_status_gd(sheet_dict['Статус заявки'][row], application)
+
+            application.is_working = sheet_dict['Занятость по итогам обучения до начала обучения'][row]
             if sheet_dict['Специалист по работе с клиентами'][row] is not None:
                 name = sheet_dict['Специалист по работе с клиентами'][row].split()
                 try:
@@ -518,8 +518,8 @@ def load_row_gd(citizen, sheet_dict, row):
                 except:
                     pass
 
-#            if sheet_dict['Курсы ИП'][row] is not None:
-#                application.ib_course = sheet_dict['Курсы ИП'][row]
+            if sheet_dict['Курсы ИП'][row] is not None:
+                application.ib_course = sheet_dict['Курсы ИП'][row]
 
             application.save()
         citizen.save()

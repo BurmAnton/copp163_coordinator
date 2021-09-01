@@ -19,13 +19,21 @@
                 <form action="{% url 'signin' %}" method="post">
                     <div class="mb-3">
                         <label for="Email" class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" id="Email">
+                        <input type="email" class="form-control" name="email" id="Email" required>
                     </div>
                     <div class="mb-3">
                         <label for="InputPassword" class="form-label">Пароль</label>
-                        <input type="password" class="form-control" name="password" id="InputPassword">
+                        <input type="password" class="form-control" name="password" id="InputPassword" required>
                         <div id="SignUpHelp" class="form-text"><a href="{% url 'signup' %}">Регистрация</a></div>
                     </div>
+                    {% if message %}
+                        <div class="alert alert-danger d-flex align-items-center" role="alert">
+                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                            <div>
+                                {{message}}
+                            </div>
+                        </div>
+                    {% endif %}
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary">Войти</button>
                     </div>

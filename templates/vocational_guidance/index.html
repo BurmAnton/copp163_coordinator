@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block script %}
+    <script src="{% static 'vocational_guidance/js/index.js' %}"></script>
 {% endblock %}
 
 {% block body %}
@@ -18,12 +19,13 @@
                         <div class="col-5">
                             <div class="card card-profile border-dark">
                                 <h2 class="card-header border-dark">
-                                    Профиль ученика
+                                    Мой профиль
                                 </h2>
                                 <div class="card-body border-dark">
                                     <h5>{{user.last_name}} {{user.first_name}} {{user.middle_name}}</h5>
                                     <ul class="list-group list-group-flush">
                                         <li class="list-group-item"><b>Email:</b> {{user.email}}</li>
+                                        <li class="list-group-item"><b>Номер телефона:</b> {{user.phone_number}}</li>
                                         <li class="list-group-item"><b>Дата рождения:</b> {{user.birthday}}</li>
                                         <li class="list-group-item"><b>Школа:</b> {{user.school.name}}</li>
                                         <li class="list-group-item"><b>Класс:</b> {{user.school_class.grade_number}}{{user.school_class.grade_letter}}</li>
@@ -31,7 +33,9 @@
                                 </div>
                                 <div class="card-footer text-end border-dark">
                                     <div class="d-grid gap-2 d-md-block">
-                                        <button type="submit" class="btn btn-primary">Изменить личные данные</button>
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" id="Change_profile_data_caller" data-bs-target="#Change_profile_data">
+                                            Изменить личные данные
+                                        </button>
                                         <button type="submit" class="btn border-secondary">Сменить пароль</button>
                                     </div>
                                 </div>
@@ -73,11 +77,11 @@
                                             <div class="card-body">
                                                 <h5 class="card-title">{{bundle_key}}</h5>
                                                 <p class="card-text">{{bundle_value|get_item:'description'}}</p>
-                                                <ul class="list-group list-group-flush">
+                                                <!--<ul class="list-group list-group-flush">
                                                     {%for value in bundle_value|get_item:'competences'%}
                                                         <li class="list-group-item">{{value}}</li>
                                                     {% endfor %}
-                                                </ul>
+                                                </ul>-->
                                                 <p></p>
                                                 <div class="d-grid gap-2">
                                                     <form action="{%url 'reject_bundle' %}" method="post">
@@ -116,11 +120,11 @@
                             <div class="card-body">
                                 <h5 class="card-title">{{bundle_key}}</h5>
                                 <p class="card-text">{{bundle_value|get_item:'description'}}</p>
-                                <ul class="list-group list-group-flush">
+                                <!--<ul class="list-group list-group-flush">
                                     {%for value in bundle_value|get_item:'competences'%}
                                         <li class="list-group-item">{{value}}</li>
                                     {% endfor %}
-                                </ul>
+                                </ul>-->
                                 <p></p>
                                 <div class="d-grid gap-2">
                                     <form action="{%url 'choose_bundle' %}" method="post">
@@ -152,11 +156,11 @@
                             <div class="card-body">
                                 <h5 class="card-title">{{bundle_key}}</h5>
                                 <p class="card-text">{{bundle_value|get_item:'description'}}</p>
-                                <ul class="list-group list-group-flush">
+                                <!--<ul class="list-group list-group-flush">
                                     {%for value in bundle_value|get_item:'competences'%}
                                         <li class="list-group-item">{{value}}</li>
                                     {% endfor %}
-                                </ul>
+                                </ul>-->
                                 <p></p>
                                 <div class="d-grid gap-2">
                                     <form action="{%url 'choose_bundle' %}" method="post">
