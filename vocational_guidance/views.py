@@ -1,9 +1,10 @@
+from django.db.models.query_utils import refs_expression
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.db import IntegrityError
 
@@ -98,7 +99,8 @@ def index(request):
     message = ""
     if len(choosen_online_bundles_dict) == 0 and len(choosen_bundles_dict) == 0:
         message = "На данные момент Вы не записались не на одно из доступных профориентационных мероприятий. Вы можете просмотреть и выбрать интересующие вас их ниже."
-
+    
+    schools = School.objects.exclude(name=citizen.school.name)
     return render(request, "vocational_guidance/index.html",{
         'page_name': 'Личный кабинет',
         'user': citizen,
@@ -106,7 +108,9 @@ def index(request):
         'bundles': bundles_dict,
         'choosen_online_bundles': choosen_online_bundles_dict,
         'bundles_online': bundles_online_dict,
-        'message': message
+        'message': message,
+        "birthday": citizen.birthday.isoformat(),
+        'schools': schools
     })
 
 @csrf_exempt
@@ -219,6 +223,46 @@ def signup(request):
         return render(request, "vocational_guidance/registration.html", {
             'schools': schools
         })
+
+@login_required(login_url='bilet/login')
+@csrf_exempt
+def change_profile(request):
+    if request.method == "POST":
+        citizen_id = request.POST["id"]
+        citizen = Citizen.objects.get(id=citizen_id)
+        citizen.email = request.POST["email"]
+        request.user.email = request.POST["email"]
+        citizen.phone_number = request.POST["phone"]
+        citizen.first_name = request.POST['name']
+        request.user.first_name = request.POST["name"]
+        citizen.last_name = request.POST['last_name']
+        request.user.last_name = request.POST["last_name"]
+        citizen.middle_name = request.POST['middle_name']
+        citizen.birthday = request.POST['birthday']
+        school_name = request.POST['school']
+        school = School.objects.get(name=school_name)
+        citizen.school = school
+        grade_number = request.POST['school_class']
+        grade_letter = request.POST['school_class_latter']
+        school_class = SchoolClass.objects.filter(
+                school=school,
+                grade_number=grade_number,
+                grade_letter=grade_letter
+        )
+        if len(school_class) != 0:
+            school_class = school_class[0]
+        else:
+            school_class = SchoolClass(
+                school=school,
+                grade_number=int(grade_number),
+                grade_letter=grade_letter.upper()
+            )
+            school_class.save()
+        citizen.school_class = school_class
+        request.user.save()
+        citizen.save()
+        return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse("index"))
 
 @login_required(login_url='bilet/login')
 def signout(request):

@@ -11,6 +11,79 @@
 {% endblock %}
 
 {% block body %}
+    <div class="modal fade" id="ChangeProfileModal" tabindex="-1" aria-labelledby="ChangeProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Изменить данные профиля</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'change_profile' %}" method="post">
+                    <div class="modal-body">
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="name" id="Name" placeholder="Имя" value="{{user.first_name}}" required>
+                            <label for="Name">Имя</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="middle_name" id="MiddleName" placeholder="Отчество" value="{{user.middle_name}}">
+                            <label for="MiddleName">Отчество</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="last_name" id="LastName" placeholder="Фамилия" value="{{user.last_name}}" required>
+                            <label for="LastName">Фамилия</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" name="birthday" id="Birthday" placeholder="Дата рождения" value="{{birthday}}" required>
+                            <label for="Birthday">Дата рождения</label>
+                        </div>
+                        <div class="form mb-3">
+                            <select class="form-select" name="school" id="School" required>
+                                <option value="{{user.school.name}}">{{user.school.name}}</option>
+                                {% for school in schools %}
+                                    <option value="{{school.name}}">{{school.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Example invalid select feedback</div>
+                        </div>
+                        <div class="form mb-3">
+                            <div class="row g-3">
+                                <div class="col">
+                                    <select class="form-select" name="school_class" id="school_class" required>
+                                            <option value="{{user.school_class.grade_number}}">{{user.school_class.grade_number}}</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                            <option value="8">8</option>
+                                            <option value="9">9</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <input type="input" class="form-control" name="school_class_latter" id="school_class_latter" placeholder="Буква класса" value="{{user.school_class.grade_letter}}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" name="email" id="Email" placeholder="Email" value="{{user.email}}" required>
+                            <label for="Email">Email</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номер телефона" value="{{user.phone_number}}" required>
+                            <label for="Phone">Номер телефона</label>
+                        </div>
+                        <div style="display: none;">
+                            <input type="input" class="form-control" name="id" value="{{user.id}}">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <div class="section profile-section">
         <div class="container">
             <div class="row row-cols-3 g-3">
@@ -33,10 +106,11 @@
                                 </div>
                                 <div class="card-footer text-end border-dark">
                                     <div class="d-grid gap-2 d-md-block">
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" id="Change_profile_data_caller" data-bs-target="#Change_profile_data">
+                                        <button type="button" class="btn btn-primary" id="Change_profile" data-bs-toggle="modal" data-bs-target="#ChangeProfileModal">
                                             Изменить личные данные
                                         </button>
-                                        <button type="submit" class="btn border-secondary">Сменить пароль</button>
+                                        <!--<button type="submit" class="btn border-secondary">Сменить пароль</button>
+                                        -->
                                     </div>
                                 </div>
                             </div>
@@ -146,41 +220,43 @@
             </div>
         </div>
     </div>
-    <div class="section online-section">
-        <div class="container">
-            <div class="row row-cols-4 g-3">
-                <div class="col-12 justify-content-center text-center">
-                    <h2>Профессиональны пробы в онлайн формате </h2>
-                    <p>Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus.</p> 
-                </div>
-                {% for bundle_key, bundle_value in bundles_online.items %}
-                    <div class="col h-100">
-                        <div class="card">
-                            <img src="{{bundle_value|get_item:'img_link'}}" class="card-img-top" alt="...">
-                            <div class="card-body">
-                                <h5 class="card-title">{{bundle_key}}</h5>
-                                <p class="card-text">{{bundle_value|get_item:'description'}}</p>
-                                <!--<ul class="list-group list-group-flush">
-                                    {%for value in bundle_value|get_item:'competences'%}
-                                        <li class="list-group-item">{{value}}</li>
-                                    {% endfor %}
-                                </ul>-->
-                            </div>
-                            <div class="card-footer">
-                                <div class="d-grid gap-2">
-                                    <form action="{%url 'choose_bundle' %}" method="post">
-                                        <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
-                                        <input type="input" class="form-control" name="bundle_name" value="{{bundle_key}}" style="display: none;">
-                                        <div class="d-grid gap-2">
-                                            <button type="submit" class="btn btn-primary">Выбрать</button>
-                                        </div>
-                                    </form>
+    {% if bundles_online|length > 0 %}
+        <div class="section online-section">
+            <div class="container">
+                <div class="row row-cols-4 g-3">
+                    <div class="col-12 justify-content-center text-center">
+                        <h2>Профессиональны пробы в онлайн формате </h2>
+                        <p>Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus.</p> 
+                    </div>
+                    {% for bundle_key, bundle_value in bundles_online.items %}
+                        <div class="col h-100">
+                            <div class="card">
+                                <img src="{{bundle_value|get_item:'img_link'}}" class="card-img-top" alt="...">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{bundle_key}}</h5>
+                                    <p class="card-text">{{bundle_value|get_item:'description'}}</p>
+                                    <!--<ul class="list-group list-group-flush">
+                                        {%for value in bundle_value|get_item:'competences'%}
+                                            <li class="list-group-item">{{value}}</li>
+                                        {% endfor %}
+                                    </ul>-->
+                                </div>
+                                <div class="card-footer">
+                                    <div class="d-grid gap-2">
+                                        <form action="{%url 'choose_bundle' %}" method="post">
+                                            <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
+                                            <input type="input" class="form-control" name="bundle_name" value="{{bundle_key}}" style="display: none;">
+                                            <div class="d-grid gap-2">
+                                                <button type="submit" class="btn btn-primary">Выбрать</button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock %}
