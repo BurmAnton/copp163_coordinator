@@ -166,6 +166,22 @@ def signin(request):
     else:
         return render(request, "vocational_guidance/login.html") 
 
+@login_required(login_url='bilet/login')
+@csrf_exempt
+def change_password(request):
+    if request.method == "POST":
+        email = request.user.email
+        current_password = request.POST["current_password"]
+        password = request.POST["password"]
+        confirmation = request.POST["confirmation"]
+        user = authenticate(email=email, password=current_password)
+        if user is not None:
+            if password == confirmation:
+                user.set_password(password)
+                user.save()
+                login(request, user)
+    return HttpResponseRedirect(reverse("index"))
+
 @csrf_exempt
 def signup(request):
     if request.method == "POST":
@@ -299,6 +315,8 @@ def change_profile(request):
         citizen.save()
         return HttpResponseRedirect(reverse("index"))
     return HttpResponseRedirect(reverse("index"))
+
+
 
 @login_required(login_url='bilet/login')
 def signout(request):

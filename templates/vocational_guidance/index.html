@@ -11,6 +11,37 @@
 {% endblock %}
 
 {% block body %}
+    <div class="modal fade" id="ChangePasswordModal" tabindex="-1" aria-labelledby="ChangePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Изменить данные профиля</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'change_password' %}" method="post">
+                    <div class="modal-body">
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" name="current_password" id="Сonfirmation" placeholder="Пароль" required>
+                            <label for="InputPassword">Введите текущий пароль</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" name="password" id="InputPassword" placeholder="Пароль" required>
+                            <label for="InputPassword">Придумайте новый пароль</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" name="confirmation" id="Сonfirmation" placeholder="Пароль" required>
+                            <label for="InputPassword">Повторите новый пароль</label>                        
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Сменить пароль</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="ChangeProfileModal" tabindex="-1" aria-labelledby="ChangeProfileModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -139,11 +170,10 @@
                                 </div>
                                 <div class="card-footer text-end border-dark">
                                     <div class="d-grid gap-2 d-md-block">
+                                        <button type="button" class="btn border-secondary" id="Change_password" data-bs-toggle="modal" data-bs-target="#ChangePasswordModal">Сменить пароль</button>
                                         <button type="button" class="btn btn-primary" id="Change_profile" data-bs-toggle="modal" data-bs-target="#ChangeProfileModal">
                                             Изменить личные данные
                                         </button>
-                                        <!--<button type="submit" class="btn border-secondary">Сменить пароль</button>
-                                        -->
                                     </div>
                                 </div>
                             </div>

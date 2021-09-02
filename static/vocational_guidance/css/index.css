@@ -25,17 +25,19 @@ h2 {
   max-width: 100%;
   max-height: 150px;
 }
-.card .bootstrap-select {
+
+.bootstrap-select {
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
 }
-.card .bootstrap-select .dropdown-toggle {
+.bootstrap-select .dropdown-toggle {
   background-color: #fff;
 }
-.card .bootstrap-select .filter-option {
+.bootstrap-select .filter-option {
   color: #000;
 }
-.card .form-check {
+
+.form-check {
   padding-left: 25px;
   margin-bottom: 16px;
 }
