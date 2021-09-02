@@ -79,14 +79,26 @@
                         <div class="form mb-3">
                             <div class="row g-3">
                                 <div class="col">
-                                    <select class="form-control"  name="school_class" id="school_class" required>
-                                            <option value="{{user.school_class.grade_number}}"></option>
+                                    <select class="form-control" name="school_class" id="school_class" required>
+                                            <option value="{{user.school_class.grade_number}}">{{user.school_class.grade_number}}</option>
+                                        {% if user.school_class.grade_number != 6 %}
                                             <option value="6">6</option>
+                                        {% endif %}
+                                        {% if user.school_class.grade_number != 7 %}
                                             <option value="7">7</option>
+                                        {% endif %}
+                                        {% if user.school_class.grade_number != 8 %}
                                             <option value="8">8</option>
+                                        {% endif %}
+                                        {% if user.school_class.grade_number != 9 %}
                                             <option value="9">9</option>
+                                        {% endif %}
+                                        {% if user.school_class.grade_number != 10 %}
                                             <option value="10">10</option>
+                                        {% endif %}
+                                        {% if user.school_class.grade_number != 11 %}
                                             <option value="11">11</option>
+                                        {% endif %}
                                     </select>
                                 </div>
                                 <div class="col">
