@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from citizens.models import Citizen
 from education_centers.models import EducationProgram, EducationCenter, Workshop, Competence
-from .models import Application, Group, Questionnaire
+from .models import Application, Group, InteractionHistory, Questionnaire
 
 def get_sheet(form):
     workbook = load_workbook(form.cleaned_data['import_file'])
@@ -454,6 +454,56 @@ def update_Group(sheet_dict, row, workshop, education_program, name):
     group.save()
     return group
 
+def load_worksheet_dict_st(sheet, fields_names_set):
+    row_count = sheet.max_row
+    sheet_dict = {}
+    for col in fields_names_set:
+        sheet_dict[fields_names_set[col]] = []
+        for row in range(2, row_count+1): 
+            email = sheet[f"A{row}"].value
+            if email != None:
+                sheet_dict[fields_names_set[col]].append(sheet.cell(row=row,column=col).value)
+    return sheet_dict
+
+def import_statuses(form):
+    try:
+        sheet = get_sheet(form)
+    except IndexError:
+        return [False, 'IndexError']
+
+    fields_names_set = {
+        'email',
+        'Результат разговора'
+    }
+
+    cheak = cheak_col_match(sheet, fields_names_set)
+    if cheak[0] == False:
+        return [False, cheak[1]]
+
+    sheet_dict = load_worksheet_dict_st(sheet, cheak[1])
+    not_added = sheet_dict
+    for row in range(len(sheet_dict['email'])):
+        citizen = Citizen.objects.filter(email=sheet_dict["email"][row])
+        if len(citizen) != 0:
+            load_row_ch_st(citizen[0], sheet_dict, row)
+    return [True, not_added]
+
+def load_row_ch_st(citizen, sheet_dict, row):
+    application = Application.objects.filter(applicant=citizen)
+    if len(application) != 0:
+        application = application[0]
+        application.appl_status='VER'
+        application.admit_status='CONT'
+        application.save()
+        comment = InteractionHistory(
+            application=application,
+            comunication_type='PHN',
+            short_description=sheet_dict['Результат разговора'][row],
+            interaction_date='2021-09-01'
+        )
+        comment.save()
+        return application
+    return citizen
 
 #import from google sheet "База данных граждан"
 def import_in_db_gd(form):

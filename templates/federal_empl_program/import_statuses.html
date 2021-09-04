@@ -1,0 +1,33 @@
+{% extends "federal_empl_program/layout.html" %}
+{% load static %}
+
+{% block title %}Import data{% endblock %}
+{% block style %}
+    <link href="{% static 'federal_empl_program/css/citizens.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'federal_empl_program/js/citizens.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <div id='import_form'>
+        <div class="h1">
+            <h1>Импортировать&nbspданные&nbspпо статусам</h1>
+        </div>
+        
+        <form enctype="multipart/form-data" action="{% url 'import_st' %}" method="post">
+            <div class="input-group mb-3">
+                {{ form }}
+            </div>
+            {% if message %}
+                <div class="alert alert-success" role="alert">
+                <strong>{{ message }}</strong>
+                </div>      
+            {% endif %}
+            <div class="submit">
+                <input type="submit" value="Submit" class="btn btn-primary">   
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
