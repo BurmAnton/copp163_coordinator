@@ -65,4 +65,3 @@ def import_st(request):
         return render(request, "federal_empl_program/import_statuses.html",{
             'form': form
         })
-

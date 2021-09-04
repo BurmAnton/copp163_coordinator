@@ -41,13 +41,11 @@ class VocGuidSessionAdmin(admin.ModelAdmin):
 class VocGuidBundleAdmin(admin.ModelAdmin):
     list_display = (
         "name",
+        "guid_type",
+        "attendance_limit",
         "workshop"
     )
     search_fields = ["name","education_center", "programs"]
-    list_filter = (
-        ('education_center', RelatedOnlyDropdownFilter),
-        ('programs', RelatedOnlyDropdownFilter),
-    )
 
 @admin.register(VocGuidGroup)
 class VocGuidGroupAdmin(admin.ModelAdmin):

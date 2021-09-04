@@ -9,99 +9,60 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.db import IntegrityError
 
-from users.models import User
+from users.models import User, Group
 from citizens.models import Citizen, School, SchoolClass
 from vocational_guidance.models import VocGuidBundle
 
 # Create your views here.
-def test(request):
-    return render(request, "vocational_guidance/test.html")
-
-@login_required(login_url='bilet/login')
+@login_required(login_url='bilet/login/')
 def index(request):
-    citizen = Citizen.objects.get(
-        first_name=request.user.first_name,
-        last_name=request.user.last_name,
-        email=request.user.email,
-    )
+    school_group = School.objects.get(name='Школьник')
+    if school_group in request.user.groups:
+        citizen = Citizen.objects.get(
+            first_name=request.user.first_name,
+            last_name=request.user.last_name,
+            email=request.user.email,
+        )
+        profile(citizen.id)
+    return HttpResponseRedirect(reverse("index"))    
+    #school_dash(school.id)
+    #ed_center_dash(ed_center.id)
+    #region_dash()
 
-    choosen_bundles = VocGuidBundle.objects.filter(guid_type="SPO", participants=citizen).values(
-        "name",
-        "description",
-        "img_link"
+def profile(request, citizen_id):
+    citizen = Citizen.objects.get(id=citizen_id)
+    choosen_bundles = VocGuidBundle.objects.filter(participants=citizen).values(
+        "name", "description", "img_link", "guid_type"
     )
-    choosen_bundles_dict = {}
-    for bundle in choosen_bundles:
-        choosen_bundles_dict[bundle['name']] = {
-            'name': bundle['name'],
-            'description': bundle['description'],
-            'img_link': bundle['img_link'],
-            'competences': []
-        }
-        competences = [VocGuidBundle.objects.filter(guid_type="SPO", name=bundle['name']).values(
-                "programs__competence__title"
-            )]
-        for copmetence in competences[0]:
-            choosen_bundles_dict[bundle['name']]['competences'].append(copmetence['programs__competence__title'])
-    bundles = VocGuidBundle.objects.filter(guid_type="SPO", ).exclude(participants=citizen).values(
-        "name",
-        "description",
-        "img_link"
+    bundles = VocGuidBundle.objects.exclude(participants=citizen).values(
+        "name", "description", "img_link", "guid_type"
     )
-
-    bundles_dict = {}
-    for bundle in bundles:
-        bundles_dict[bundle['name']] = {
-            'name': bundle['name'],
-            'description': bundle['description'],
-            'img_link': bundle['img_link'],
-            'competences': []
-        }
-        competences = [VocGuidBundle.objects.filter(guid_type="SPO", name=bundle['name']).values(
-                "programs__competence__title"
-            )]
-        for copmetence in competences[0]:
-            bundles_dict[bundle['name']]['competences'].append(copmetence['programs__competence__title'])
     
-    choosen_online_bundles = VocGuidBundle.objects.filter(guid_type="VO", participants=citizen).values(
-        "name",
-        "description",
-        "img_link"
-    )
-    choosen_online_bundles_dict = {}
-    for bundle in choosen_online_bundles:
-        choosen_online_bundles_dict[bundle['name']] = {
+    choosen_type_presence = set()
+    choosen_bundles_dict = {}
+    for guid_type in VocGuidBundle.TYPE_CHOICES:
+        choosen_bundles_dict[guid_type[0]] = {}
+    for bundle in choosen_bundles:
+        choosen_bundles_dict[bundle["guid_type"]][bundle['name']] = {
             'name': bundle['name'],
             'description': bundle['description'],
-            'img_link': bundle['img_link'],
-            'competences': []
         }
-        competences = [VocGuidBundle.objects.filter(guid_type="VO", name=bundle['name']).values(
-                "programs__competence__title"
-            )]
-        for copmetence in competences[0]:
-            choosen_online_bundles_dict[bundle['name']]['competences'].append(copmetence['programs__competence__title'])
-    bundles_online = VocGuidBundle.objects.filter(guid_type="VO", ).exclude(participants=citizen).values(
-        "name",
-        "description",
-        "img_link"
-    )
+        choosen_type_presence.add(bundle["guid_type"])
 
-    bundles_online_dict = {}
-    for bundle in bundles_online:
-        bundles_online_dict[bundle['name']] = {
+    type_presence = set()
+    bundles_dict = {}
+    for guid_type in VocGuidBundle.TYPE_CHOICES:
+        bundles_dict[guid_type[0]] = {}
+    for bundle in bundles:
+        bundles_dict[bundle["guid_type"]][bundle['name']] = {
             'name': bundle['name'],
             'description': bundle['description'],
-            'img_link': bundle['img_link'],
-            'competences': []
+            'img_link': bundle['img_link']
         }
-        competences = [VocGuidBundle.objects.filter(guid_type="VO", name=bundle['name']).values(
-                "programs__competence__title"
-            )]
-        for copmetence in competences[0]:
-            bundles_online_dict[bundle['name']]['competences'].append(copmetence['programs__competence__title'])
+        type_presence.add(bundle["guid_type"])
+
     message = ""
-    if len(choosen_online_bundles_dict) == 0 and len(choosen_bundles_dict) == 0:
+    if len(choosen_type_presence) == 0:
         message = "На данные момент Вы не записались не на одно из доступных профориентационных мероприятий. Вы можете просмотреть и выбрать интересующие вас их ниже."
     
     schools = School.objects.exclude(name=citizen.school.name)
@@ -111,14 +72,23 @@ def index(request):
         'page_name': 'Личный кабинет',
         'user': citizen,
         'choosen_bundles': choosen_bundles_dict,
+        'choosen_type_presence': choosen_type_presence,
         'bundles': bundles_dict,
-        'choosen_online_bundles': choosen_online_bundles_dict,
-        'bundles_online': bundles_online_dict,
+        'type_presence': type_presence,
         'message': message,
         "birthday": citizen.birthday.isoformat(),
         'schools': schools,
         "disability_types": disability_types
     })
+
+def school_dash(request, school_id):
+    pass
+
+def ed_center_dash(request, ed_center_id):
+    pass
+
+def region_dash(request):
+    pass
 
 @csrf_exempt
 def choose_bundle(request):
