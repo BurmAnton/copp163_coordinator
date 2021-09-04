@@ -8,27 +8,29 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.db import IntegrityError
+from urllib.parse import urlencode
 
 from users.models import User, Group
 from citizens.models import Citizen, School, SchoolClass
 from vocational_guidance.models import VocGuidBundle
 
 # Create your views here.
-@login_required(login_url='bilet/login/')
+@login_required(login_url='login/')
 def index(request):
-    school_group = School.objects.get(name='Школьник')
-    if school_group in request.user.groups:
+    school_group = Group.objects.get(name='Школьник')
+    if len(User.objects.filter(groups=school_group, email=request.user.email)) != 0:
         citizen = Citizen.objects.get(
             first_name=request.user.first_name,
             last_name=request.user.last_name,
             email=request.user.email,
         )
-        profile(citizen.id)
-    return HttpResponseRedirect(reverse("index"))    
+        return HttpResponseRedirect(reverse('profile', args=(citizen.id,))) 
+    return HttpResponseRedirect(reverse("index"))
     #school_dash(school.id)
     #ed_center_dash(ed_center.id)
     #region_dash()
 
+@login_required(login_url='bilet/login/')
 def profile(request, citizen_id):
     citizen = Citizen.objects.get(id=citizen_id)
     choosen_bundles = VocGuidBundle.objects.filter(participants=citizen).values(
