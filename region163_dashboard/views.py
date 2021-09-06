@@ -39,9 +39,11 @@ def dashboard(request):
         else:
             filter_status.append(None)
         group_list = [group_list]
+        filtration = '1'
     else:
         group_list = [EducationCenterGroup.objects.exclude(is_visible=False)]
         filter_status = [None,None,None,None]
+        filtration = '0'
     filter_lists = [EducationCenterGroup.objects.exclude(is_visible=False)]
     ed_centers_set = set()
     competencies_set = set()
@@ -57,7 +59,8 @@ def dashboard(request):
         'ed_centers': ed_centers_set,
         'competencies': competencies_set,
         'cities': cities_set,
-        'filter_status': filter_status
+        'filter_status': filter_status,
+        'filtration': filtration
     })
 
 def ed_centers_empl(request, **kwargs):
