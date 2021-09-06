@@ -125,6 +125,9 @@ class EducationCenterGroupAdmin(admin.ModelAdmin):
         (None, {
             'fields': ('education_center', 'competence', 'program', 'is_visible')
         }),
+        ('Формат и место проведения', {
+            'fields': ('is_online', 'city')
+        }),
         ('Размер группы', {
             'fields': ('min_group_size', 'max_group_size')
         }),

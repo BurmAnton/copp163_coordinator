@@ -125,6 +125,13 @@ class EducationCenterGroup(models.Model):
     program = models.ForeignKey(EducationProgram, verbose_name='Программа подготовки', on_delete=CASCADE, related_name='ed_center_groups')
     is_visible = models.BooleanField("Показывать в списке планируемого обучения", default=False)
 
+    FORMATS = [   
+        ("on","Онлайн"),
+        ("off","Очный")
+    ]
+    is_online = models.BooleanField("Формат проведения", max_length=4, choices=FORMATS, default='off')
+    city = models.CharField("Город проведения", max_length=100, default="")
+
     min_group_size = models.IntegerField('Минимальный размер')
     max_group_size = models.IntegerField('Максимальный размер')
 

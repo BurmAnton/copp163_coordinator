@@ -183,10 +183,10 @@ def signup(request):
             })
         try:
             user = User.objects.create_user(email, password)
-            user.save()
             user.first_name = first_name
             user.last_name = last_name
-            user.save()
+            school_group = Group.objects.get(name='Школьник')
+            user.groups.add(school_group)
             school_class = SchoolClass.objects.filter(
                 school=school,
                 grade_number=grade_number,
@@ -214,6 +214,7 @@ def signup(request):
                 disability_type = disability_type
             )
             citizen.save()
+            user.save()
         except IntegrityError:
             schools = School.objects.all()
             cities = set()
