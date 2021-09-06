@@ -1,4 +1,6 @@
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls.base import reverse
 
 from education_centers.models import Competence, EducationCenter, EducationProgram, EducationCenterGroup
 from federal_empl_program.models import Group, Application
@@ -6,12 +8,34 @@ from django.template.defaulttags import register
 
 def dashboard(request):
     group_list = [EducationCenterGroup.objects.exclude(is_visible=False)]
+    #group_id_list = EducationCenterGroup.objects.exclude(is_visible=False).values('id')
+    
+    #ed_centers = EducationCenter.objects.filter(ed_center_groups__in=group_id_list)
+    ed_centers_set = set()
+    for group in group_list[0]:
+        ed_centers_set.add(group.education_center.name)
+
+    competencies_set = set()
+    for group in group_list[0]:
+        competencies_set.add(group.program.competence.title)
+
+    cities_set = set()
+    for group in group_list[0]:
+        cities_set.add(group.city)
 
     return render(request, 'region163_dashboard/dashboard.html', {
         'group_list': group_list,
+        'ed_centers': ed_centers_set,
+        'competencies': competencies_set,
+        'cities': cities_set
     })
 
-def ed_centers_empl(request):
+def group_filter(request):
+    if request.method == 'POST':
+        pass
+    return HttpResponseRedirect(reverse("dashboard"))
+
+def ed_centers_empl(request, **kwargs):
     stat = {}
     stat_programs = {}
     stages_dict = {}

@@ -129,7 +129,7 @@ class EducationCenterGroup(models.Model):
         ("on","Онлайн"),
         ("off","Очный")
     ]
-    is_online = models.BooleanField("Формат проведения", max_length=4, choices=FORMATS, default='off')
+    is_online = models.CharField("Формат проведения", max_length=4, choices=FORMATS, default='off')
     city = models.CharField("Город проведения", max_length=100, default="")
 
     min_group_size = models.IntegerField('Минимальный размер')

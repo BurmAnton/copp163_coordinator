@@ -1,13 +1,41 @@
-.card{
-    --bs-gutter-x: 0rem;
-    height: 100%;
+.filter {
+  margin-bottom: 25px;
 }
-.start-date, .ed_program{
-    margin-bottom: 0;
+.filter .filter-select {
+  margin: 5px;
 }
-.btn{
-    vertical-align: bottom;
+.filter .bootstrap-select {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
 }
-h2{
-    margin-bottom: 20px;
+.filter .dropdown-toggle {
+  background-color: #fff;
 }
+.filter .filter-option {
+  color: #000;
+}
+.filter .filter-submit {
+  padding: 5px;
+  padding-right: 2%;
+}
+.filter .filter-submit a {
+  width: 200px;
+}
+
+.card {
+  --bs-gutter-x: 0rem;
+}
+
+.start-date, .ed_program {
+  margin-bottom: 0;
+}
+
+.btn {
+  vertical-align: bottom;
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+/*# sourceMappingURL=dashboard.css.map */
