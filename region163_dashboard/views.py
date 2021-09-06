@@ -1,39 +1,64 @@
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls.base import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from education_centers.models import Competence, EducationCenter, EducationProgram, EducationCenterGroup
-from federal_empl_program.models import Group, Application
+from federal_empl_program.models import  Application
 from django.template.defaulttags import register
 
+@csrf_exempt
 def dashboard(request):
-    group_list = [EducationCenterGroup.objects.exclude(is_visible=False)]
-    #group_id_list = EducationCenterGroup.objects.exclude(is_visible=False).values('id')
-    
-    #ed_centers = EducationCenter.objects.filter(ed_center_groups__in=group_id_list)
+    if request.method == 'POST':
+        filter_status = []
+        group_type = request.POST["group_type"]
+        city = request.POST["city"]
+        ed_center = request.POST["ed_center"]
+        competence = request.POST["competence"]
+        group_list = EducationCenterGroup.objects.exclude(is_visible=False)
+        if group_type != 'None':
+            group_list = group_list.filter(is_online=group_type)
+            filter_status.append(group_type)
+        else:
+            filter_status.append(None)
+        if city != 'None':
+            group_list = group_list.filter(city=city)
+            filter_status.append(city)
+        else:
+            filter_status.append(None)
+        if ed_center != 'None':
+            ed_center = EducationCenter.objects.get(name=ed_center)
+            group_list = group_list.filter(education_center=ed_center)
+            filter_status.append(ed_center)
+        else:
+            filter_status.append(None)
+        if competence != 'None':
+            competence = Competence.objects.get(title=competence)
+            group_list = group_list.filter(competence=competence)
+            filter_status.append(competence)
+        else:
+            filter_status.append(None)
+        group_list = [group_list]
+    else:
+        group_list = [EducationCenterGroup.objects.exclude(is_visible=False)]
+        filter_status = [None,None,None,None]
+    filter_lists = [EducationCenterGroup.objects.exclude(is_visible=False)]
     ed_centers_set = set()
-    for group in group_list[0]:
-        ed_centers_set.add(group.education_center.name)
-
     competencies_set = set()
-    for group in group_list[0]:
-        competencies_set.add(group.program.competence.title)
-
     cities_set = set()
-    for group in group_list[0]:
-        cities_set.add(group.city)
+    for group in filter_lists[0]:
+        ed_centers_set.add(group.education_center)
+        competencies_set.add(group.program.competence)
+        if group.city != "" and group.city is not None:
+            cities_set.add(group.city)
 
     return render(request, 'region163_dashboard/dashboard.html', {
         'group_list': group_list,
         'ed_centers': ed_centers_set,
         'competencies': competencies_set,
-        'cities': cities_set
+        'cities': cities_set,
+        'filter_status': filter_status
     })
-
-def group_filter(request):
-    if request.method == 'POST':
-        pass
-    return HttpResponseRedirect(reverse("dashboard"))
 
 def ed_centers_empl(request, **kwargs):
     stat = {}

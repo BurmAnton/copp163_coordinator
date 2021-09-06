@@ -13,42 +13,80 @@
             <div class="col text-center">
                 <h2>Список ближайщих групп по федеральному проекту "Содействие занятости"</h2>
             </div>
+        
         </div>
-        <form>
+        <form action="{% url 'dashboard' %}" method='post'>
         <div class="card filter bg-light">
             <h5 class="card-header">Фильтр</h5>
             <div class="row g-2">
                 <div class="col-md">
-                    <select class="selectpicker filter-select" data-width="95%" data-live-search="true" name="disability_type" id="disability_type">
-                        <option>Тип группы</option>
-                        <option value="on" class="disability_type">Онлайн</option>
-                        <option value="off" class="disability_type">Оффлайн</option>
+                    <select class="selectpicker filter-select" data-width="95%" data-live-search="true" name="group_type" id="group_type">
+                        {% if filter_status.0 == None %}
+                            <option value='None'>Тип группы</option>
+                            <option value="on" class="disability_type">Онлайн</option>
+                            <option value="off" class="disability_type">Оффлайн</option>
+                        {% elif filter_status.0 == "on" %}
+                            <option value="on" class="disability_type">Онлайн</option>
+                            <option value="off" class="disability_type">Оффлайн</option>
+                            <option value='None'>Любой</option>
+                        {% elif filter_status.0 == "off" %}
+                            <option value="off" class="disability_type">Оффлайн</option>
+                            <option value="on" class="disability_type">Онлайн</option>
+                            <option value='None'>Любой</option>
+                        {% endif %}
                     </select>
-                    <select class="selectpicker filter-select" data-width="95%" data-live-search="true" name="disability_type" id="disability_type">
-                        <option>Город</option>
-                        {% for city in cities %}
-                            <option value="{{city}}" class="disability_type">{{city}}</option>
-                        {% endfor %}
+                    <select class="selectpicker filter-select" data-width="95%" data-live-search="true" name="city" id="city">
+                        {% if filter_status.1 == None %}
+                            <option value='None'>Город</option>
+                            {% for city in cities %}
+                                <option value="{{city}}" class="disability_type">{{city}}</option>
+                            {% endfor %}
+                        {% else %}
+                            <option value='{{filter_status.1}}'>{{filter_status.1}}</option>
+                            {% for city in cities %}
+                                {% if city != filter_status.1 %}
+                                    <option value="{{city}}" class="disability_type">{{city}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
                     </select>
                 </div>
                 <div class="col-md">
-                    <select class="selectpicker filter-select" data-width="95%" data-live-search="true" name="disability_type" id="disability_type">
-                        <option>Центр обучения</option>
-                        {% for ed_center in ed_centers %}
-                            <option value="{{ed_center}}" class="disability_type"">{{ed_center}}</option>
-                        {% endfor %}
+                    <select class="selectpicker filter-select" data-width="95%" data-live-search="true" name="ed_center" id="ed_center">
+                        {% if filter_status.2 == None %}
+                                <option value='None'>Центр обучения</option>
+                                {% for ed_center in ed_centers %}
+                                    <option value="{{ed_center}}" class="disability_type">{{ed_center}}</option>
+                                {% endfor %}
+                        {% else %}
+                                <option value='{{filter_status.2}}'>{{filter_status.2}}</option>
+                                {% for ed_center in ed_centers %}
+                                    {% if filter_status.2 != ed_center %}
+                                        <option value="{{ed_center}}" class="disability_type">{{ed_center}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                        {% endif %}
                     </select>
-                    <select class="selectpicker filter-select" data-width="95%" data-live-search="true" name="disability_type" id="disability_type">
-                        <option>Компетенция</option>
-                        {% for competence in competencies %}
-                            <option value="{{competence}}" class="disability_type"">{{competence}}</option>
-                        {% endfor %}
+                    <select class="selectpicker filter-select" data-width="95%" data-live-search="true" name="competence" id="competence">
+                        {% if filter_status.3 == None %}
+                                <option value='None'>Компетенция</option>
+                                {% for competence in competencies %}
+                                    <option value="{{competence}}" class="disability_type">{{competence}}</option>
+                                {% endfor %}
+                        {% else %}
+                                <option value='{{filter_status.3}}'>{{filter_status.3}}</option>
+                                {% for competence in competencies %}
+                                    {% if filter_status.3 != competence %}
+                                        <option value="{{competence}}" class="disability_type">{{competence}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                        {% endif %}
                     </select>
                 </div>
             </div>
             <div class="row g-2 filter-submit text-end">
                 <div class="col-md">
-                    <a href="#" class="btn btn-primary">Применить</a>
+                    <input type="submit" class="btn btn-primary" value="Применить">
                 </div>
             </div>
         </div>
