@@ -21,6 +21,7 @@ urlpatterns = [
     path('dashboard/', include('region163_dashboard.urls')),
     path('education_centers/', include('education_centers.urls')),
     path('bilet/', include('vocational_guidance.urls')),
+    path('bilet', include('vocational_guidance.urls')),
     path('', admin.site.urls),
 ]
 

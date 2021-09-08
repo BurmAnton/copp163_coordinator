@@ -13,7 +13,7 @@ class School(models.Model):
 
     city = models.CharField("Город", max_length=100, blank=True, null=True)
     adress = models.CharField("Адрес", max_length=250, blank=True, null=True)
-    school_coordinators = models.ManyToManyField(User, verbose_name="Координаторы", related_name="coordinated_schools")
+    school_coordinators = models.ManyToManyField(User, verbose_name="Координаторы", related_name="coordinated_schools", blank=True)
 
     class Meta:
         verbose_name = "Школа"
