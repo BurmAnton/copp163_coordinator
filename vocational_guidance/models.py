@@ -3,29 +3,10 @@ import datetime
 from django.db import models
 from django.db.models.deletion import CASCADE, DO_NOTHING
 from django.core.exceptions import ValidationError
+from django.db.models.fields.related import ForeignKey
 
 from citizens.models import Citizen, School
 from education_centers.models import EducationCenter, EducationProgram, Workshop
-
-
-class VocGuidGroup(models.Model):
-    participants = models.ManyToManyField(Citizen, verbose_name="Участники", related_name='voc_guid_groups')
-    AGE_GROUP_CHOICES = [
-        ('6-7', "6-7 класс"),
-        ('8-9',"8-9 класс"),
-        ('10-11', "10-11 класс"),
-    ]
-    age_group = models.CharField("Возрастная группа", max_length=5, choices=AGE_GROUP_CHOICES, blank=True, null=True)
-    attendance_limit = models.IntegerField("Максимальное кол-во участников", default=50)
-    school = models.ForeignKey(School, verbose_name="Школа", related_name="guid_groups", on_delete=CASCADE, blank=True, null=True)
-
-    class Meta:
-        verbose_name = "Группа по проф. ориентации"
-        verbose_name_plural = "Группы по проф. ориентации"
-
-    def __str__(self):
-        return  f"Группа №{self.id}"
-
 
 class VocGuidSession(models.Model):
     education_center = models.ForeignKey(EducationCenter, verbose_name="Центр обучения", related_name="voc_guid_sessions", on_delete=CASCADE)
@@ -76,6 +57,25 @@ class VocGuidBundle(models.Model):
     def __str__(self):
         return  f"Набор №{self.id}"
 
+
+class VocGuidGroup(models.Model):
+    participants = models.ManyToManyField(Citizen, verbose_name="Участники", related_name='voc_guid_groups')
+    AGE_GROUP_CHOICES = [
+        ('6-7', "6-7 класс"),
+        ('8-9',"8-9 класс"),
+        ('10-11', "10-11 класс"),
+    ]
+    age_group = models.CharField("Возрастная группа", max_length=5, choices=AGE_GROUP_CHOICES, blank=True, null=True)
+    attendance_limit = models.IntegerField("Максимальное кол-во участников", default=50)
+    school = models.ForeignKey(School, verbose_name="Школа", related_name="guid_groups", on_delete=CASCADE, blank=True, null=True)
+    bundle = models.ForeignKey(VocGuidBundle, verbose_name="Бандл", related_name="groups", on_delete=CASCADE, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Группа по проф. ориентации"
+        verbose_name_plural = "Группы по проф. ориентации"
+
+    def __str__(self):
+        return  f"{self.id}"
 
 class TimeSlot(models.Model):
     date = models.DateField("Дата")

@@ -4,6 +4,7 @@ from field_history.tracker import FieldHistoryTracker
 from django.db.models.deletion import DO_NOTHING, CASCADE
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+from users.models import User
 from organizations.models import Company
 
 class School(models.Model):
@@ -12,6 +13,7 @@ class School(models.Model):
 
     city = models.CharField("Город", max_length=100, blank=True, null=True)
     adress = models.CharField("Адрес", max_length=250, blank=True, null=True)
+    school_coordinators = models.ManyToManyField(User, verbose_name="Координаторы", related_name="coordinated_schools")
 
     class Meta:
         verbose_name = "Школа"

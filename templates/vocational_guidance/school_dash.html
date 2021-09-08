@@ -1,0 +1,93 @@
+{% extends "vocational_guidance/layout.html" %}
+{% load static %}
+{% block title %}Школьный дашбоард | Билет в будущее{% endblock %}
+
+{% block style %}
+        <link href="{% static 'vocational_guidance/css/school_dash.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block script %}
+{% endblock %}
+
+{% block body %}
+    <div class="section profile-section">
+        <div class="container">
+            <div class="col-12">
+                <div class="card card-profile border-dark">
+                    <h4 class="card-header border-dark text-center">
+                        {{school.name}}
+                    </h4>
+                    <div class="row g-0">
+                        <div class="card-body col-md-6 border-dark school-info">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><b>Населённый пункт:</b> {{school.city}}</li>
+                                <li class="list-group-item"><b>Адрес:</b> {{school.adress}}</li>
+                                <li class="list-group-item"><b>Уклон:</b> {{school.specialty}}</li>
+                            </ul>
+                        </div>
+                        <div class="card-body col-md-6 border-dark contact-info">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><b>Контактное лицо:</b> {{user.last_name}} {{user.first_name}} {{user.middle_name}}</li>
+                                <li class="list-group-item"><b>Email:</b> {{user.email}}</li>
+                                <li class="list-group-item"><b>Номер телефона:</b> {{user.phone_number}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-footer text-end border-dark">
+                        <div class="d-grid gap-2 d-md-block">
+                            <button type="button" class="btn border-secondary" id="Change_password" data-bs-toggle="modal" data-bs-target="#ChangePasswordModal">
+                                Сменить пароль
+                            </button>
+                            <button type="button" class="btn btn-primary" id="Change_profile" data-bs-toggle="modal" data-bs-target="#ChangeProfileModal">
+                                Изменить данные
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="section group-section">
+    <div class="container">
+        <div class="row row-cols-3 gx-0 gy-4">
+            <div class="col-12 justify-content-center text-center">
+                <h2>Группы</h2>
+            </div>
+            {% for bundle_key, bundle_value in bundles.items %}
+                <div class="card col-12 card-bundle">
+                    <div class="card-header">
+                        <h5>{{bundle_key}}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row row-cols-3 gx-0 gy-4">
+                            {% for group in bundle_value %}
+                                {% if group.participants.count < group.attendance_limit %}
+                                    <div class="card col-3 border-warning">
+                                {%else%} 
+                                    <div class="card col-3 border-success">
+                                {% endif %}
+                                    <div class="card-header text-center"><b>Группа №{{group.id}}</b></div>
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flushs">
+                                            <li class="list-group-item"><b>Участников:</b> {{group.participants.count}}/{{group.attendance_limit}}</li>
+                                            <li class="list-group-item"><b>Дата проб:</b> –</li>
+                                            <li class="list-group-item last"><b>Время начала проб:</b> –</li>
+                                        </ul>
+                                        <div class="d-grid gap-2">  
+                                            {% if group.participants.count < group.attendance_limit %}
+                                                <button type="submit" class="btn btn-outline-warning">Изменить</button>
+                                            {%else%} 
+                                                <button type="submit" class="btn btn-outline-success">Изменить</button>
+                                            {% endif %}
+                                        </div>                                    
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

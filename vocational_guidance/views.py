@@ -1,6 +1,4 @@
-from django.db.models.query import QuerySet
-from django.db.models.query_utils import refs_expression
-from django.http import JsonResponse
+from django.db.models import Count
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -8,23 +6,27 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.db import IntegrityError
-from urllib.parse import urlencode
 
 from users.models import User, Group
 from citizens.models import Citizen, School, SchoolClass
-from vocational_guidance.models import VocGuidBundle
+from vocational_guidance.models import VocGuidBundle, VocGuidGroup
 
 # Create your views here.
 @login_required(login_url='login/')
 def index(request):
     school_group = Group.objects.get(name='Школьник')
+    coordinator_group = Group.objects.get(name='Координатор')
     if len(User.objects.filter(groups=school_group, email=request.user.email)) != 0:
         citizen = Citizen.objects.get(
             first_name=request.user.first_name,
             last_name=request.user.last_name,
             email=request.user.email,
         )
-        return HttpResponseRedirect(reverse('profile', args=(citizen.id,))) 
+        return HttpResponseRedirect(reverse('profile', args=(citizen.id,)))
+    elif len(User.objects.filter(groups=coordinator_group, email=request.user.email)) != 0:
+        user = User.objects.filter(email=request.user.email)
+        school = School.objects.filter(school_coordinators=user[0].id)
+        return HttpResponseRedirect(reverse("school_dash", args=(school[0].id,)))
     return HttpResponseRedirect(reverse("index"))
     #school_dash(school.id)
     #ed_center_dash(ed_center.id)
@@ -84,7 +86,20 @@ def profile(request, citizen_id):
     })
 
 def school_dash(request, school_id):
-    pass
+    school = School.objects.get(id=school_id)
+    bundles = VocGuidBundle.objects.all()
+    bundles_dict = {}
+    for bundle in bundles:
+        groups = VocGuidGroup.objects.filter(bundle=bundle, school=school).annotate(participants_count=Count('participants'))
+        if len(groups) != 0:
+            bundles_dict[bundle.name] = []
+            for group in groups:
+                if group.participants_count != 0:
+                    bundles_dict[bundle.name].append(group)
+    return render(request, 'vocational_guidance/school_dash.html', {
+        'school': school,
+        'bundles': bundles_dict
+    })
 
 def ed_center_dash(request, ed_center_id):
     pass
@@ -107,7 +122,28 @@ def choose_bundle(request):
             citizen.voc_guid_bundles.remove(previous_bundles[0])
         bundle.participants.add(citizen_id)
         bundle.save()
+        groups = VocGuidGroup.objects.filter(bundle=bundle).annotate(participants_count=Count('participants'))
+        if len(groups) == 0:
+            create_group(citizen, bundle)
+        else:
+            add = False
+            for group in groups:
+                if group.participants_count < group.attendance_limit:
+                    group.participants.add(citizen)
+                    add = True
+                    break
+            if not add:
+                create_group(citizen, bundle)
     return HttpResponseRedirect(reverse("index"))
+
+def create_group(citizen, bundle):
+    group = VocGuidGroup(
+        school=citizen.school,
+        bundle=bundle,
+        attendance_limit=50
+    )
+    group.save()
+    group.participants.add(citizen)
 
 @csrf_exempt
 def reject_bundle(request):
@@ -116,8 +152,10 @@ def reject_bundle(request):
         citizen_id = request.POST["citizen"]
         bundle = VocGuidBundle.objects.get(name=bundle_name)
         citizen = Citizen.objects.get(id=citizen_id)
+        group = VocGuidGroup.objects.get(bundle=bundle,participants=citizen)
         citizen.voc_guid_bundles.remove(bundle)
-        bundle.save()
+        citizen.voc_guid_groups.remove(group)
+        citizen.save()
     return HttpResponseRedirect(reverse("index"))
 
 @csrf_exempt

@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models.deletion import CASCADE
 
 class Company(models.Model):
-    company_name = models.CharField("Место работы", max_length=50)
+    company_name = models.CharField("Название компании", max_length=50)
     region = models.CharField("Регион", max_length=50)
     city = models.CharField("Город", max_length=50)
     prof_area = models.CharField("Проф. область", max_length=50)
