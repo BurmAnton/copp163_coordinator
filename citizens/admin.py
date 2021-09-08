@@ -5,7 +5,7 @@ from django.urls import reverse
 from field_history.models import FieldHistory
 from datetime import datetime, timedelta
 
-from .models import Citizen, Job
+from .models import Citizen, Job, School, SchoolClass
 from federal_empl_program.models import Application
 from education_centers.models import EducationCenter
 from users.models import User
@@ -76,3 +76,57 @@ class CitizensAdmin(admin.ModelAdmin):
                 queryset = Citizen.objects.filter(POE_applications__in=applications)
                 return queryset
         return queryset
+
+class SchoolClassInline(admin.TabularInline):
+    model = SchoolClass
+
+@admin.register(School)
+class SchoolsAdmin(admin.ModelAdmin):
+    search_fields = ['name', 'city', 'adress', 'specialty']
+    list_filter = ('city', 'specialty')
+    list_display = ('name', 'city', 'adress', 'specialty')
+    filter_horizontal = ("school_coordinators",)
+    inlines = [
+        SchoolClassInline
+    ]
+    fieldsets = (
+        (None, {
+            'fields': (
+                "name",
+                "specialty"
+            ),
+        }),
+        ("Местоположение",{
+            'fields': (
+                "city",
+                "adress"
+            ),
+        }),
+        ("Координаторы", {
+            'classes': ('collapse',),
+            'fields': (
+                "school_coordinators",
+            )
+        }),
+    )
+
+class CitizenInline(admin.TabularInline):
+    model = Citizen
+    fieldsets = (
+        (None, {
+            "fields": (
+                "first_name",
+                "last_name",
+                "middle_name",
+                "email"
+            ),
+        }),
+    )
+    short_description='Студенты'
+    
+
+@admin.register(SchoolClass)
+class SchoolClassesAdmin(admin.ModelAdmin):
+    inlines = [
+        CitizenInline
+    ]

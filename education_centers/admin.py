@@ -174,33 +174,3 @@ class EducationCenterGroupAdmin(admin.ModelAdmin):
                 education_centers = EducationCenter.objects.filter(contact_person=request.user)
                 return queryset.filter(education_center__in=education_centers)
         return queryset
-
-class SchoolClassInline(admin.TabularInline):
-    model = SchoolClass
-
-@admin.register(School)
-class SchoolsAdmin(admin.ModelAdmin):
-    inlines = [
-        SchoolClassInline
-    ]
-
-class CitizenInline(admin.TabularInline):
-    model = Citizen
-    fieldsets = (
-        (None, {
-            "fields": (
-                "first_name",
-                "last_name",
-                "middle_name",
-                "email"
-            ),
-        }),
-    )
-    short_description='Студенты'
-    
-
-@admin.register(SchoolClass)
-class SchoolClassesAdmin(admin.ModelAdmin):
-    inlines = [
-        CitizenInline
-    ]
