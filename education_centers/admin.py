@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django import forms
 
-from django_admin_listfilter_dropdown.filters import  RelatedOnlyDropdownFilter
+from django_admin_listfilter_dropdown.filters import  RelatedOnlyDropdownFilter, DropdownFilter
 
 from .models import Workshop, EducationCenter, EducationProgram, Competence, Group, EducationCenterGroup
 from federal_empl_program.models import Application
@@ -115,12 +115,13 @@ class EducationCenterGroupAdmin(admin.ModelAdmin):
         ('education_center', RelatedOnlyDropdownFilter),
         ('competence', RelatedOnlyDropdownFilter),
         ('program', RelatedOnlyDropdownFilter),
+        ('city', DropdownFilter),
         ('start_date'),
         ('end_date')
     )
 
     search_fields = ['education_center', 'get_id', 'competence', 'program', 'start_date', 'end_date']
-    list_display = ('get_id', 'competence', 'program', 'education_center', 'education_period')
+    list_display = ('get_id', 'competence', 'program', 'education_center', 'city', 'education_period')
     fieldsets = (
         (None, {
             'fields': ('education_center', 'competence', 'program', 'is_visible')

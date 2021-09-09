@@ -66,7 +66,7 @@ class EducationProgram(models.Model):
             if prog_type[0] == self.program_type:
                 program_type = prog_type[1]
                 break
-        return f"{program_type} {self.program_name} ({self.duration} ч.)"
+        return f"{self.program_name} ({program_type}, {self.duration} ч.)"
 
 class EducationCenter(models.Model):
     name = models.CharField("Название организации", max_length=150)
