@@ -57,6 +57,7 @@ class Application(models.Model):
         ('OLD', "Трехсторонний договор со старым работодателем"),
         ('NEW', "Трехсторонний договор с новым работодателем"),
         ('SELF', "Двухсторонный договор"),
+        ('NOT', 'Без договора')
     ]
     contract_type = models.CharField("Тип контракта", max_length=4, choices=CONTR_TYPE_CHOICES, blank=True, null=True)
     citizen_consultant = models.ForeignKey(User, verbose_name='Специалист по работе с клиентами', related_name='consulted_applicants', on_delete=models.SET_NULL, blank=True, null=True)
@@ -165,6 +166,7 @@ class Questionnaire(models.Model):
         ('OLD', "Трехсторонний договор со старым работодателем"),
         ('NEW', "Трехсторонний договор с новым работодателем"),
         ('SELF', "Двухсторонный договор"),
+        ('NOT', 'Без договора')
     ]
     pref_contract_type = models.CharField("Предпочитаемый тип контракта", max_length=4, choices=CONTR_TYPE_CHOICES, blank=True, null=True)
     

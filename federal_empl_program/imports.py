@@ -170,8 +170,7 @@ def load_application(sheet_dict, row, applicant):
 def add_application(sheet_dict, row, applicant):
     creation_date = datetime.strptime(sheet_dict["Дата создания заявки на обучение"][row], "%Y-%m-%d %H:%M:%S")
     creation_date = timezone.make_aware(creation_date)
-    contract_type = sheet_dict["Тип договора"][row]
-    contract_type = set_contract_type(contract_type)
+    contract_type = set_contract_type(sheet_dict["Тип договора"][row])
     express_status = sheet_dict["Статус заявки на обучение"][row]
     appl_status, admit_status = set_application_status(express_status)
     categories = Application.CATEGORY_CHOICES
@@ -211,8 +210,7 @@ def update_application(sheet_dict, row, applicant, application_date):
     creation_date = timezone.make_aware(creation_date)
     if application.creation_date != creation_date:
         application.creation_date = creation_date
-    contract_type = sheet_dict["Тип договора"][row]
-    contract_type = set_contract_type(contract_type)
+    contract_type = set_contract_type(sheet_dict["Тип договора"][row])
     if application.contract_type != contract_type:
         application.contract_type = contract_type
     express_status = sheet_dict["Статус заявки на обучение"][row]
@@ -297,6 +295,8 @@ def set_contract_type(contract_type):
         contract_type = 'NEW' 
     elif contract_type == "Двухстронний договор":
         contract_type = 'SELF'
+    elif contract_type == 'Без договора':
+        contract_type = 'NOT'
     else:
         contract_type = None
     return contract_type

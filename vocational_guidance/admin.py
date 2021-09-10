@@ -4,11 +4,11 @@ from django_admin_listfilter_dropdown.filters import DropdownFilter, RelatedOnly
 
 from .models import TimeSlot, VocGuidBundle, VocGuidGroup, VocGuidSession
 
-@admin.register(TimeSlot)
+#@admin.register(TimeSlot)
 class TimeSlotAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(VocGuidSession)
+#@admin.register(VocGuidSession)
 class VocGuidSessionAdmin(admin.ModelAdmin):
     list_display = (
         "get_program_name",
@@ -37,7 +37,7 @@ class VocGuidSessionAdmin(admin.ModelAdmin):
         return adress
     get_adress.short_description='Адрес'
 
-@admin.register(VocGuidBundle)
+#@admin.register(VocGuidBundle)
 class VocGuidBundleAdmin(admin.ModelAdmin):
     list_display = (
         "name",
@@ -47,7 +47,7 @@ class VocGuidBundleAdmin(admin.ModelAdmin):
     )
     search_fields = ["name","education_center", "programs"]
 
-@admin.register(VocGuidGroup)
+#@admin.register(VocGuidGroup)
 class VocGuidGroupAdmin(admin.ModelAdmin):
     list_display = (
         "get_id",
