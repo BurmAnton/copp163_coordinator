@@ -12,6 +12,8 @@ urlpatterns = [
 #Auth
     path('login/', views.signin, name='signin'),
     path('registration/', views.signup, name='signup'),
+    path('registration/parent', views.signup_parent, name='signup_parent'),
+    path('registration/child', views.signup_child, name='signup_child'),
     path('logout/', views.signout, name='signout'),
 
 #Служебные

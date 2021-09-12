@@ -192,8 +192,11 @@ def change_password(request):
                 login(request, user)
     return HttpResponseRedirect(reverse("index"))
 
-@csrf_exempt
 def signup(request):
+    return render(request, "vocational_guidance/registration_select.html")
+
+@csrf_exempt
+def signup_child(request):
     if request.method == "POST":
         email = request.POST["email"]
         phone = request.POST["phone"]
@@ -273,6 +276,92 @@ def signup(request):
             cities.add(school.city) 
     
         return render(request, "vocational_guidance/registration.html", {
+            'schools': schools,
+            'cities': cities,
+            "disability_types": Citizen.disability_types
+        })
+
+@csrf_exempt
+def signup_parent(request):
+    if request.method == "POST":
+        email = request.POST["email"]
+        phone = request.POST["phone"]
+        password = request.POST["password"]
+        confirmation = request.POST["confirmation"]
+        first_name = request.POST['name']
+        last_name = request.POST['last_name']
+        middle_name = request.POST['middle_name']
+        birthday = request.POST['birthday']
+        grade_number = request.POST['school_class']
+        grade_letter = request.POST['school_class_latter']
+        school_name = request.POST['school']
+        school = School.objects.get(name=school_name)
+        try:
+            disability_check = request.POST['disability-check']
+        except:
+            disability_check = False
+        if disability_check != False:
+            disability_type = request.POST['disability_type']
+        else:
+            disability_type = None
+        if password != confirmation:
+            return render(request, "vocational_guidance/registration.html", {
+                "message": "Введённые пароли не совпадают"
+            })
+        try:
+            user = User.objects.create_user(email, password)
+            user.first_name = first_name
+            user.last_name = last_name
+            school_group = Group.objects.get(name='Школьник')
+            user.groups.add(school_group)
+            school_class = SchoolClass.objects.filter(
+                school=school,
+                grade_number=grade_number,
+                grade_letter=grade_letter
+            )
+            if len(school_class) != 0:
+                school_class = school_class[0]
+            else:
+                school_class = SchoolClass(
+                    school=school,
+                    grade_number=int(grade_number),
+                    grade_letter=grade_letter.upper()
+                )
+                school_class.save()
+            citizen = Citizen(
+                first_name=first_name,
+                last_name=last_name,
+                middle_name=middle_name,
+                birthday=birthday,
+                email=email,
+                social_status='SCHS',
+                school=school,
+                school_class=school_class,
+                phone_number = phone,
+                disability_type = disability_type
+            )
+            citizen.save()
+            user.save()
+        except IntegrityError:
+            schools = School.objects.all()
+            cities = set()
+            for school in schools:
+                cities.add(school.city) 
+            return render(request, "vocational_guidance/registration_parent.html", {
+                "message": "Email уже использован",
+                'schools': schools,
+                'cities': cities,
+                "disability_types": Citizen.disability_types
+            })
+        login(request, user)
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        schools = School.objects.all()
+        cities = set()
+        for school in schools:
+            cities.add(school.city) 
+    
+        return render(request, "vocational_guidance/registration_parent.html", {
             'schools': schools,
             'cities': cities,
             "disability_types": Citizen.disability_types

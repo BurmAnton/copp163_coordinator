@@ -298,7 +298,7 @@ def set_contract_type(contract_type):
     elif contract_type == 'Без договора':
         contract_type = 'NOT'
     else:
-        contract_type = None
+        contract_type = '–'
     return contract_type
 
 def load_Competence(sheet_dict, row, application):

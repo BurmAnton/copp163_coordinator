@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'vocational_guidance/js/registration.js' %}"></script>
+    <script src="{% static 'vocational_guidance/js/registration_parent.js' %}"></script>
 {% endblock %}
 {% block body %}
     <div class="container">
@@ -16,25 +16,37 @@
             <div class="h2"><h2>Регистрация</h2></div>
             
             <div class="card" style="width: 25rem;">
-            <form action="{% url 'signup_child' %}" method="post">
-                <div class="step-title"><h5>Шаг 1/2: Личные данные</h5></div>
+            <form action="{% url 'signup_parent' %}" method="post">
+                <div class="step-title"><h5>Шаг 1/3: Данные родетеля</h5></div>
                 <div class="form-floating mb-3">
+                    <input type="input" class="form-control parent-step" name="parent_name" id="parentName" placeholder="Имя" required>
+                    <label for="Name">Ваше имя</label>
+                </div>
+                <div class="form-floating mb-3 parent-step-optional">
+                    <input type="input" class="form-control" name="parent_middle_name" id="parentMiddleName" placeholder="Отчество">
+                    <label for="MiddleName">Ваше отчество</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="input" class="form-control parent-step" name="parent_last_name" id="parentLastName" placeholder="Фамилия" required>
+                    <label for="LastName">Ваша фамилия</label>
+                </div>
+                <div class="form-floating mb-3" style="display:none;">
                     <input type="input" class="form-control first-step" name="name" id="Name" placeholder="Имя" required>
-                    <label for="Name">Имя</label>
+                    <label for="Name">Имя ребенка</label>
                 </div>
-                <div class="form-floating mb-3 first-step-optional">
-                    <input type="input" class="form-control" name="middle_name" id="MiddleName" placeholder="Отчество">
-                    <label for="MiddleName">Отчество</label>
+                <div class="form-floating mb-3" style="display:none;">
+                    <input type="input" class="form-control first-step-optional" name="middle_name" id="MiddleName" placeholder="Отчество">
+                    <label for="MiddleName">Отчество ребенка</label>
                 </div>
-                <div class="form-floating mb-3">
+                <div class="form-floating mb-3" style="display:none;">
                     <input type="input" class="form-control first-step" name="last_name" id="LastName" placeholder="Фамилия" required>
-                    <label for="LastName">Фамилия</label>
+                    <label for="LastName">Фамилия ребенка</label>
                 </div>
-                <div class="form-floating mb-3">
+                <div class="form-floating mb-3" style="display:none;">
                     <input type="date" class="form-control first-step" name="birthday" id="Birthday" placeholder="Дата рождения" required>
-                    <label for="Birthday">Дата рождения</label>
+                    <label for="Birthday">Дата рождения ребенка</label>
                 </div>
-                <div class="form form-city mb-3">
+                <div class="form form-city mb-3" style="display:none;">
                     <select class="selectpicker first-step-select" data-width="100%" data-live-search="true" name="city" id="City" required>
                     <option value="">Выберите населённый пункт</option>
                         {% for city in cities %}
@@ -42,7 +54,7 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="form form-city mb-3">
+                <div class="form form-city mb-3" style="display:none;">
                     <select class="selectpicker first-step-select" data-width="100%" data-live-search="true" name="school" id="School" required>
                         <option value="">Выберите школу</option>
                         {% for school in schools %}
@@ -53,29 +65,29 @@
                 </div>
                 <div class="form mb-3">
                     <div class="row g-3">
-                        <div class="col">
-                            <select class="form-select first-step-select" name="school_class" id="school_class" required>
-                                    <option value="">Класс</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                    <option value="9">9</option>
-                                    <option value="10">10</option>
-                                    <option value="11">11</option>
+                        <div class="col" style="display:none;">
+                            <select class="form-select first-step-select"  name="school_class" id="school_class" required>
+                                <option value="">Класс</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
                             </select>
                         </div>
-                        <div class="col">
+                        <div class="col" style="display:none;">
                             <input type="input" class="form-control first-step" name="school_class_latter" id="school_class_latter" placeholder="Буква класса" required>
                         </div>
                     </div>
                 </div>
-                <div class="form-check first-step-optional">
-                    <input class="form-check-input" type="checkbox" id="disability-check" name="disability-check">
+                <div class="form-check" style="display:none;">
+                    <input class="form-check-input first-step-optional" type="checkbox" id="disability-check" name="disability-check">
                     <label class="form-check-label" for="flexCheckDefault">
-                        Я отношусь к лицам с ОВЗ
+                        У ребенка ОВЗ
                     </label>
                 </div>
-                <div class="form mb-3 first-step-optional" id="form-disability" style="display:none;">
+                <div class="form mb-3 first-step-hidden" id="form-disability" style="display:none;">
                     <select class="selectpicker" data-width="100%" data-live-search="true" name="disability_type" id="disability_type">
                         <option>Выберите вид нарушения</option>
                         {% for type in disability_types %}
@@ -86,11 +98,11 @@
                 </div>
                 <div class="form-floating mb-3 finale-step" style="display:none;">
                     <input type="email" class="form-control" name="email" id="Email" placeholder="Email" required>
-                    <label for="Email">Email</label>
+                    <label for="Email">Ваш Email</label>
                 </div>
                 <div class="form-floating mb-3 finale-step" style="display:none;">
                     <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номер телефона" required>
-                    <label for="Phone">Номер телефона</label>
+                    <label for="Phone">Ваш номер телефона</label>
                 </div>
                 <div class="form-floating mb-3 finale-step" style="display:none;">
                     <input type="password" class="form-control" name="password" id="InputPassword" placeholder="Пароль" required>
@@ -119,9 +131,9 @@
                 </div>
             </form>
             <div class="mb-3 d-grid gap-2">
-                <button class="btn btn-secondary first-step-end disabled">Продолжить</button>
-            </div>
-            <div class="mb-3 d-grid gap-2">
+                <button class="btn btn-secondary parent-step-end disabled">Продолжить</button>
+                <button class="btn btn-secondary first-step-end disabled" style="display:none;">Продолжить</button>
+                <button class="btn btn-dark parent-step-back"  style="display:none;">Назад</button>
                 <button class="btn btn-dark first-step-back"  style="display:none;">Назад</button>
                 <div id="SignUpHelp" class="form-text finale-step" style="display:none;">Уже есть аккаунт? <a href="{% url 'signin' %}">Войти</a></div>
             </div>
