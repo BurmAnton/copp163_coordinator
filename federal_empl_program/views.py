@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
 from .forms import ImportDataForm
-from .imports import express_import, import_in_db_gd, import_statuses
+from .imports import express_import, import_in_db_gd, import_statuses, import_schools
 
 # Create your views here.
 @login_required   
@@ -63,5 +63,22 @@ def import_st(request):
     else:
         form = ImportDataForm()
         return render(request, "federal_empl_program/import_statuses.html",{
+            'form': form
+        })
+
+@login_required
+@csrf_exempt
+def import_sch(request):
+    if request.method == "POST":
+        form = ImportDataForm(request.POST, request.FILES)
+        if form.is_valid():
+            message = import_schools(form)
+        else:
+            data = form.errors
+        form = ImportDataForm()
+        return HttpResponseRedirect(reverse('admin:citizens_school_changelist'))
+    else:
+        form = ImportDataForm()
+        return render(request, "federal_empl_program/import_schools.html",{
             'form': form
         })

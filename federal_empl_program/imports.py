@@ -4,7 +4,7 @@ from openpyxl import load_workbook
 from datetime import datetime, tzinfo
 from django.utils import timezone
 
-from citizens.models import Citizen
+from citizens.models import Citizen, School
 from education_centers.models import EducationProgram, EducationCenter, Workshop, Competence
 from .models import Application, Group, InteractionHistory, Questionnaire
 
@@ -636,3 +636,44 @@ def get_education(education):
         if variant[1] == education:
             return variant[0]
     return ""
+
+def load_worksheet_school_dict(sheet, fields_names_set):
+    row_count = sheet.max_row
+    sheet_dict = {}
+    for col in fields_names_set:
+        sheet_dict[fields_names_set[col]] = []
+        for row in range(2, row_count+1): 
+            school = sheet[f"A{row}"].value
+            if school != None:
+                sheet_dict[fields_names_set[col]].append(sheet.cell(row=row,column=col).value)
+    return sheet_dict
+
+def import_schools(form):
+    try:
+        sheet = get_sheet(form)
+    except IndexError:
+        return [False, 'IndexError']
+
+    fields_names_set = {
+        'Школа', 
+        'Населенный пункт', 
+        'Муниципалитет', 
+        'ИНН'
+    }
+
+    cheak = cheak_col_match(sheet, fields_names_set)
+    if cheak[0] == False:
+        return cheak
+    
+    sheet_dict = load_worksheet_school_dict(sheet, cheak[1])
+    for row in range(len(sheet_dict['Школа'])):
+        if sheet_dict["Школа"][row] is not None:
+            school = School(
+                name=sheet_dict["Школа"][row],
+                city=sheet_dict["Населенный пункт"][row]
+            )
+            if sheet_dict['Муниципалитет'][row] is not None:
+                school.municipality = sheet_dict['Муниципалитет'][row]
+                school.inn = sheet_dict['ИНН'][row]
+                school.is_bilet = True
+            school.save()

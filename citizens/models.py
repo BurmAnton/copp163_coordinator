@@ -11,9 +11,12 @@ class School(models.Model):
     name = models.CharField("Название школы", max_length=100)
     specialty = models.CharField("Уклон школы", max_length=50, blank=True, null=True)
 
+    municipality = models.CharField("Муниципалитет", max_length=200, blank=True, null=True)
     city = models.CharField("Населённый пункт", max_length=100, blank=True, null=True)
     adress = models.CharField("Адрес", max_length=250, blank=True, null=True)
-    school_coordinators = models.ManyToManyField(User, verbose_name="Координаторы", related_name="coordinated_schools", blank=True)
+    school_coordinators = models.ManyToManyField(User, verbose_name="Педагоги-навигаторы", related_name="coordinated_schools", blank=True)
+    is_bilet = models.BooleanField('Есть педагог-навигатор', default=False)
+    inn = models.CharField("ИНН", max_length=20, blank=True, null=True)
 
     class Meta:
         verbose_name = "Школа"

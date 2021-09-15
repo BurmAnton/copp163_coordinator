@@ -114,6 +114,12 @@ def choose_bundle(request):
         citizen_id = request.POST["citizen"]
         bundle = VocGuidBundle.objects.get(name=bundle_name)
         citizen = Citizen.objects.get(id=citizen_id)
+        if citizen.school_class.grade_number >= 10:
+            age_group = '10-11'
+        elif citizen.school_class.grade_number <= 7:
+            age_group = '6-7'
+        else:
+            age_group = '8-9'
         previous_bundles = VocGuidBundle.objects.filter(
             participants=citizen_id,
             guid_type=bundle.guid_type
@@ -122,13 +128,17 @@ def choose_bundle(request):
             citizen.voc_guid_bundles.remove(previous_bundles[0])
         bundle.participants.add(citizen_id)
         bundle.save()
-        groups = VocGuidGroup.objects.filter(bundle=bundle).annotate(participants_count=Count('participants'))
+        school = citizen.school
+        if school.is_bilet:
+            groups = VocGuidGroup.objects.filter(bundle=bundle, school=school).annotate(participants_count=Count('participants'))
+        else:
+            groups = VocGuidGroup.objects.filter(bundle=bundle, city=citizen.school.city).annotate(participants_count=Count('participants'))
         if len(groups) == 0:
             create_group(citizen, bundle)
         else:
             add = False
             for group in groups:
-                if group.participants_count < group.attendance_limit:
+                if group.participants_count < group.attendance_limit and group.age_group == age_group:
                     group.participants.add(citizen)
                     add = True
                     break
@@ -137,11 +147,26 @@ def choose_bundle(request):
     return HttpResponseRedirect(reverse("index"))
 
 def create_group(citizen, bundle):
-    group = VocGuidGroup(
-        school=citizen.school,
-        bundle=bundle,
-        attendance_limit=50
-    )
+    if citizen.school_class.grade_number >= 10:
+        age_group = '10-11'
+    elif citizen.school_class.grade_number <= 7:
+        age_group = '6-7'
+    else:
+        age_group = '8-9'
+    if citizen.school.is_bilet:
+        group = VocGuidGroup(
+            school=citizen.school,
+            bundle=bundle,
+            attendance_limit=50,
+            age_group=age_group 
+        )
+    else:
+        group = VocGuidGroup(
+            city=citizen.school.city,
+            bundle=bundle,
+            attendance_limit=50,
+            age_group=age_group 
+        )
     group.save()
     group.participants.add(citizen)
 
@@ -152,7 +177,14 @@ def reject_bundle(request):
         citizen_id = request.POST["citizen"]
         bundle = VocGuidBundle.objects.get(name=bundle_name)
         citizen = Citizen.objects.get(id=citizen_id)
-        group = VocGuidGroup.objects.get(bundle=bundle,participants=citizen)
+        if citizen.school_class.grade_number >= 10:
+            age_group = '10-11'
+        elif citizen.school_class.grade_number <= 7:
+            age_group = '6-7'
+        else:
+            age_group = '8-9'
+        group = VocGuidGroup.objects.get(bundle=bundle,participants=citizen, age_group=age_group)
+
         citizen.voc_guid_bundles.remove(bundle)
         citizen.voc_guid_groups.remove(group)
         citizen.save()

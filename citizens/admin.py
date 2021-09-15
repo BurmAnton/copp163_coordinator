@@ -98,13 +98,15 @@ class SchoolsAdmin(admin.ModelAdmin):
         }),
         ("Местоположение",{
             'fields': (
+                "municipality",
                 "city",
                 "adress"
             ),
         }),
-        ("Координаторы", {
+        ("Билет в будущее", {
             'classes': ('collapse',),
             'fields': (
+                "is_bilet",
                 "school_coordinators",
             )
         }),

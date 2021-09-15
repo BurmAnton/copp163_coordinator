@@ -69,6 +69,7 @@ class VocGuidGroup(models.Model):
     attendance_limit = models.IntegerField("Максимальное кол-во участников", default=50)
     school = models.ForeignKey(School, verbose_name="Школа", related_name="guid_groups", on_delete=CASCADE, blank=True, null=True)
     bundle = models.ForeignKey(VocGuidBundle, verbose_name="Бандл", related_name="groups", on_delete=CASCADE, blank=True, null=True)
+    city = models.CharField("Населённый пункт", max_length=100, blank=True, null=True)
 
     class Meta:
         verbose_name = "Группа по проф. ориентации"
