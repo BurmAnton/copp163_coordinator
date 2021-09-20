@@ -10,119 +10,128 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="row justify-content-between">
-            <div class="card text-center mb-3" style="max-width: 12rem;">
-                <div class="card-body">
-                    <h5 class="card-title">Компетенций:</h5>
-                    <h4 class="card-title">{{competencies_count}}</h4>
+    <div class="stat">
+        <div class="container">
+            <div class="text-center">
+                <h1>Федеральный проект «Содействие занятости»‎</h1>
+            </div>
+            <div class="row justify-content-center main-stats">
+                <div class="card text-center mb-3" style="max-width: 12rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Компетенций:</h5>
+                        <h4 class="card-title">{{competencies_count}}</h4>
+                    </div>
+                </div>
+                <div class="card text-center mb-3" style="max-width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Программ подготовки:</h5>
+                        <h4 class="card-title">{{education_programs_count}}</h4>
+                    </div>
+                </div>
+                <div class="card text-center mb-3" style="max-width: 15rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Центров обучения:</h5>
+                        <h4 class="card-title">{{education_centers_count}}</h4>
+                    </div>
+                </div>
+                <div class="card text-center mb-3" style="max-width: 15rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Заявок:</h5>
+                        <h4 class="card-title">{{appl_count}}</h4>
+                    </div>
                 </div>
             </div>
-            <div class="card text-center mb-3" style="max-width: 18rem;">
-                <div class="card-body">
-                    <h5 class="card-title">Программ подготовки:</h5>
-                    <h4 class="card-title">{{education_programs_count}}</h4>
+            <div class="row justify-content-between">
+                <div class="card text-center mb-3" style="max-width: 15rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Новых заявок: {{stages_count.0}}</h5>
+                    </div>
                 </div>
-            </div>
-            <div class="card text-center mb-3" style="max-width: 15rem;">
-                <div class="card-body">
-                    <h5 class="card-title">Центров обучения:</h5>
-                    <h4 class="card-title">{{education_centers_count}}</h4>
+                <div class="card text-center mb-3" style="max-width: 16rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">На верификации: {{stages_count.1}}</h5>
+                    </div>
                 </div>
-            </div>
-            <div class="card text-center mb-3" style="max-width: 15rem;">
-                <div class="card-body">
-                    <h5 class="card-title">Заявок:</h5>
-                    <h4 class="card-title">{{appl_count}}</h4>
+                <div class="card text-center mb-3" style="max-width: 15rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Допущено: {{stages_count.2}}</h5>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="row justify-content-between">
-            <div class="card text-center mb-3" style="max-width: 15rem;">
-                <div class="card-body">
-                    <h5 class="card-title">Новых заявок: {{stages_count.0}}</h5>
+                <div class="card text-center mb-3" style="max-width: 16rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Учатся: {{stages_count.3}}</h5>
+                    </div>
                 </div>
-            </div>
-            <div class="card text-center mb-3" style="max-width: 16rem;">
-                <div class="card-body">
-                    <h5 class="card-title">На верификации: {{stages_count.1}}</h5>
-                </div>
-            </div>
-            <div class="card text-center mb-3" style="max-width: 15rem;">
-                <div class="card-body">
-                    <h5 class="card-title">Допущено: {{stages_count.2}}</h5>
-                </div>
-            </div>
-            <div class="card text-center mb-3" style="max-width: 16rem;">
-                <div class="card-body">
-                    <h5 class="card-title">Учатся: {{stages_count.3}}</h5>
-                </div>
-            </div>
-            <div class="card text-center mb-3" style="max-width: 17rem;">
-                <div class="card-body">
-                    <h5 class="card-title">Завершили обучение: {{stages_count.4}}</h5>
+                <div class="card text-center mb-3" style="max-width: 17rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Завершили обучение: {{stages_count.4}}</h5>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="stat-table">
+        <div class="text-center">
+            <h2>Заявки по этапам и компетенциям/программа подготовки‎</h2>
+        </div>
+        <div class="filter">
+            <button type="button" class="btn btn-dark" id="program_switch">Программы подготовки</button>
+            <button type="button" class="btn btn-dark" id="competence_switch">Компетенции</button>
+        </div>
 
-    <div class="filter">
-        <button type="button" class="btn btn-dark" id="program_switch">Программы подготовки</button>
-        <button type="button" class="btn btn-secondary" id="competence_switch">Компетенции</button>
+        <table class="table table-striped">
+            <tr class="sticky-top"> 
+                <th scope="col" class='comp' id="view_name">Компетенция</th>
+                <th scope="col" class="stage">Новых заявок</th>
+                <th scope="col" class="stage">На верификации</th>
+                <th scope="col" class="stage">Допущено</th>
+                <th scope="col" class="stage">Учатся</th>
+                <th scope="col" class="stage">Завершили обучение</th>
+                <th scope="col" class="stage">Отчислено</th>
+                <th scope="col" class="stage">Резерв</th>
+            </tr>
+            {% for comp_key, comp_value in stat.items %}
+                {% if comp_value|get_item:'Empty' == False %}
+                    <tr class="competence-row"><td colspan="8" scope="row">{{comp_key}}</td></tr>
+                    {% for ed_key, ed_value in comp_value.items %}
+                        {% if ed_value|get_item:'Empty' == False %}
+                            <tr>
+                                {% if ed_key != 'Empty'%}
+                                    <td scope="row" class="ed-center competence-cell">{{ed_key}}</td>
+                                    {% for stage_key, stage_value in ed_value.items %}
+                                        {% if stage_key != 'Empty' %}
+                                            <td class="stages competence-cell" data-stage={{stage_key}}>
+                                                {{stage_value}}
+                                            </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+            {% for comp_key, comp_value in stat_programs.items %}
+                {% if comp_value|get_item:'Empty' == False %}
+                    <tr class="program-row"><td colspan="8" scope="row">{{comp_value|get_item:'program_type'}} {{comp_key}} ({{comp_value|get_item:'duration'}}ч.)</td></tr>
+                    {% for ed_key, ed_value in comp_value.items %}
+                        {% if ed_value|get_item:'Empty' == False %}
+                            <tr>
+                                {% if ed_key != 'Empty' %}
+                                    <td scope="row" class="ed-center program-cell">{{ed_key}}</td>
+                                    {% for stage_key, stage_value in ed_value.items %}
+                                        {% if stage_key != 'Empty'  and stage_key != 'duration' and stage_key != 'program_type' %}
+                                            <td class="stages program-cell" data-stage={{stage_key}}>
+                                                {{stage_value}}
+                                            </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </table>
     </div>
-
-    <table class="table table-striped">
-        <tr class="sticky-top table-dark"> 
-            <th scope="col" class='comp' id="view_name">Компетенция</th>
-            <th scope="col" class="stage">Новых заявок</th>
-            <th scope="col" class="stage">На верификации</th>
-            <th scope="col" class="stage">Допущено</th>
-            <th scope="col" class="stage">Учатся</th>
-            <th scope="col" class="stage">Завершили обучение</th>
-            <th scope="col" class="stage">Отчислено</th>
-            <th scope="col" class="stage">Резерв</th>
-        </tr>
-        {% for comp_key, comp_value in stat.items %}
-            {% if comp_value|get_item:'Empty' == False %}
-                <tr class="table-dark competence-row"><td colspan="8" scope="row">{{comp_key}}</td></tr>
-                {% for ed_key, ed_value in comp_value.items %}
-                    {% if ed_value|get_item:'Empty' == False %}
-                        <tr>
-                            {% if ed_key != 'Empty'%}
-                                <td scope="row" class="ed-center competence-cell">{{ed_key}}</td>
-                                {% for stage_key, stage_value in ed_value.items %}
-                                    {% if stage_key != 'Empty' %}
-                                        <td class="stages competence-cell" data-stage={{stage_key}}>
-                                            {{stage_value}}
-                                        </td>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                        </tr>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        {% endfor %}
-        {% for comp_key, comp_value in stat_programs.items %}
-            {% if comp_value|get_item:'Empty' == False %}
-                <tr class="table-dark program-row"><td colspan="8" scope="row">{{comp_value|get_item:'program_type'}} {{comp_key}} ({{comp_value|get_item:'duration'}}ч.)</td></tr>
-                {% for ed_key, ed_value in comp_value.items %}
-                    {% if ed_value|get_item:'Empty' == False %}
-                        <tr>
-                            {% if ed_key != 'Empty' %}
-                                <td scope="row" class="ed-center program-cell">{{ed_key}}</td>
-                                {% for stage_key, stage_value in ed_value.items %}
-                                    {% if stage_key != 'Empty'  and stage_key != 'duration' and stage_key != 'program_type' %}
-                                        <td class="stages program-cell" data-stage={{stage_key}}>
-                                            {{stage_value}}
-                                        </td>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                        </tr>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        {% endfor %}
-    </table>
 {% endblock %}
