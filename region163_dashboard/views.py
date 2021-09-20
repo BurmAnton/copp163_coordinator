@@ -50,7 +50,7 @@ def dashboard(request):
     cities_set = set()
     for group in filter_lists[0]:
         ed_centers_set.add(group.education_center)
-        competencies_set.add(group.program.competence)
+        competencies_set.add(group.competence)
         if group.city != "" and group.city is not None:
             cities_set.add(group.city)
 

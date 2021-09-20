@@ -5,109 +5,54 @@
 {% block style %}
         <link href="{% static 'region163_dashboard/css/dashboard.css' %}" rel="stylesheet">
 {% endblock %}
-{% block script %}{% endblock %}
+{% block script %}
+{% endblock %}
 
 {% block body %}
-    <div class="container px-4">
-        <div class="row justify-content-center">
-            <div class="col text-center">
-                <h2>Список ближайщих групп по федеральному проекту "Содействие занятости"</h2>
+    <div class="filter">
+        <div class="container">
+            <div class="text-center">
+                <h1>Федеральный проект «Содействие занятости»‎</h1>
+            </div>
+            <h5>Фильтр</h5>
+            <div class="row g-2">
+                <div class="col-md">
+                    <select class="selectpicker filter-select filter-type" id='filter-type' multiple data-actions-box="true" data-width="95%" data-live-search="true" name="group_type" id="group_type">
+                        <option value="off" class="option-type">Оффлайн</option>
+                        <option value="on" class="option-type">Онлайн</option>
+                    </select>
+                    <select class="selectpicker filter-select filter-city" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="city" id="city">
+                        {% for city in cities %}
+                            <option value="{{city}}" class="option-city">{{city}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md">
+                    <select class="selectpicker filter-select filter-ed" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="ed_center" id="ed_center">
+                        {% for ed_center in ed_centers %}
+                            <option value="{{ed_center}}" class="option-ed">{{ed_center}}</option>
+                        {% endfor %}
+                    </select>
+                    <select class="selectpicker filter-select filter-competence" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="competence" id="competence">
+                        {% for competence in competencies %}
+                            <option value="{{competence}}" class="option-competence">{{competence}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
         </div>
-        <div class="card filter bg-light">
-            <div class="card-header">
-                <div class="row g-2">
-                    <div class="col">
-                        <h5>Фильтр</h5>
-                    </div>
-                    <div class="col text-end">
-                        {% if filtration == '1' %}
-                            <form action="{% url 'dashboard' %}" method='get'>
-                                <input type="submit" class="btn btn-outline-primary" value="Сбросить фильтрацию">
-                            </form>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <form action="{% url 'dashboard' %}" method='post'>
-                <div class="row g-2">
-                    <div class="col-md">
-                        <select class="selectpicker filter-select" data-width="95%" data-live-search="true" name="group_type" id="group_type">
-                            {% if filter_status.0 == None %}
-                                <option value='None'>Тип группы</option>
-                                <option value="on" class="disability_type">Онлайн</option>
-                                <option value="off" class="disability_type">Оффлайн</option>
-                            {% elif filter_status.0 == "on" %}
-                                <option value="on" class="disability_type">Онлайн</option>
-                                <option value="off" class="disability_type">Оффлайн</option>
-                                <option value='None'>Любой</option>
-                            {% elif filter_status.0 == "off" %}
-                                <option value="off" class="disability_type">Оффлайн</option>
-                                <option value="on" class="disability_type">Онлайн</option>
-                                <option value='None'>Любой</option>
-                            {% endif %}
-                        </select>
-                        <select class="selectpicker filter-select" data-width="95%" data-live-search="true" name="city" id="city">
-                            {% if filter_status.1 == None %}
-                                <option value='None'>Город</option>
-                                {% for city in cities %}
-                                    <option value="{{city}}" class="disability_type">{{city}}</option>
-                                {% endfor %}
-                            {% else %}
-                                <option value='{{filter_status.1}}'>{{filter_status.1}}</option>
-                                {% for city in cities %}
-                                    {% if city != filter_status.1 %}
-                                        <option value="{{city}}" class="disability_type">{{city}}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                        </select>
-                    </div>
-                    <div class="col-md">
-                        <select class="selectpicker filter-select" data-width="95%" data-live-search="true" name="ed_center" id="ed_center">
-                            {% if filter_status.2 == None %}
-                                    <option value='None'>Центр обучения</option>
-                                    {% for ed_center in ed_centers %}
-                                        <option value="{{ed_center}}" class="disability_type">{{ed_center}}</option>
-                                    {% endfor %}
-                            {% else %}
-                                    <option value='{{filter_status.2}}'>{{filter_status.2}}</option>
-                                    {% for ed_center in ed_centers %}
-                                        {% if filter_status.2 != ed_center %}
-                                            <option value="{{ed_center}}" class="disability_type">{{ed_center}}</option>
-                                        {% endif %}
-                                    {% endfor %}
-                            {% endif %}
-                        </select>
-                        <select class="selectpicker filter-select" data-width="95%" data-live-search="true" name="competence" id="competence">
-                            {% if filter_status.3 == None %}
-                                    <option value='None'>Компетенция</option>
-                                    {% for competence in competencies %}
-                                        <option value="{{competence}}" class="disability_type">{{competence}}</option>
-                                    {% endfor %}
-                            {% else %}
-                                    <option value='{{filter_status.3}}'>{{filter_status.3}}</option>
-                                    {% for competence in competencies %}
-                                        {% if filter_status.3 != competence %}
-                                            <option value="{{competence}}" class="disability_type">{{competence}}</option>
-                                        {% endif %}
-                                    {% endfor %}
-                            {% endif %}
-                        </select>
-                    </div>
-                </div>
-                <div class="row g-2 filter-submit text-end">
-                    <div class="col-md">
-                            <input type="submit" class="btn btn-primary" value="Применить">
-                    </div>
-                </div>
-            </form>
+    </div>
+    <div class="container group_list">
+        <div class="text-center">
+            <h2>Список ближайщих групп‎</h2>
         </div>
         <div class="row row-cols-2 g-3">
             {% for group in group_list.0 %}
-            <div class="col">
-                <div class="card border-dark h-100">
-                    <h5 class="card-header border-dark">Группа №{{group.id}}   {{group.competence}}</h5>
+            <div class="col" data-type="{{group.is_online}}" data-education_center="{{group.education_center}}" data-education_center="{{group.education_center}}" data-city="{{group.city}}" data-competence="{{group.competence}}">
+                <div class="card h-100">
+                    <h5 class="card-header">
+                        Группа №{{group.id}}   {{group.competence}}
+                    </h5>
                     <div class="card-body">
                       <ul class="list-group list-group-flush">
                             <li class="list-group-item">
@@ -161,4 +106,5 @@
             {% endfor %}
         </div>
     </div>
+    <script src="{% static 'region163_dashboard/js/dashboard.js' %}"></script>
 {% endblock %}

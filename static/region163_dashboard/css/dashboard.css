@@ -1,5 +1,10 @@
+.filter, .group_list {
+  padding-bottom: 50px;
+  padding-top: 50px;
+}
+
 .filter {
-  margin-bottom: 25px;
+  background-color: #e9ecf7;
 }
 .filter .filter-select {
   margin: 5px;
@@ -14,16 +19,33 @@
 .filter .filter-option {
   color: #000;
 }
-.filter .filter-submit {
-  padding: 5px;
-  padding-right: 2%;
-}
-.filter .filter-submit a {
-  width: 200px;
+
+.group_list h2 {
+  margin-bottom: 20px;
 }
 
 .card {
   --bs-gutter-x: 0rem;
+  border-color: #394959;
+}
+.card .card-header {
+  border-color: #394959;
+  color: white;
+  background-color: #394959 !important;
+}
+.card .card-body li {
+  border-color: #e9ecf7;
+}
+.card .card-body a {
+  color: #778899;
+}
+.card .card-footer {
+  border-color: white !important;
+  background-color: white !important;
+}
+.card .card-footer .btn-primary {
+  background-color: #426cf8 !important;
+  border-color: #426cf8 !important;
 }
 
 .start-date, .ed_program {
@@ -32,10 +54,6 @@
 
 .btn {
   vertical-align: bottom;
-}
-
-h2 {
-  margin-bottom: 20px;
 }
 
 /*# sourceMappingURL=dashboard.css.map */

@@ -100,7 +100,8 @@ class SchoolsAdmin(admin.ModelAdmin):
             'fields': (
                 "municipality",
                 "city",
-                "adress"
+                "adress",
+                "inn"
             ),
         }),
         ("Билет в будущее", {
