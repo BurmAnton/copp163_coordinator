@@ -22,7 +22,10 @@ def import_express(request):
         else:
             data = form.errors
         form = ImportDataForm()
-        return HttpResponseRedirect(reverse('admin:federal_empl_program_application_changelist'))
+        return render(request, "federal_empl_program/import_express.html",{
+            'form': form,
+            'message': message
+        })
     else:
         form = ImportDataForm()
         return render(request, "federal_empl_program/import_express.html",{

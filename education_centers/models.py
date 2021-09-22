@@ -69,7 +69,7 @@ class EducationProgram(models.Model):
         return f"{self.program_name} ({program_type}, {self.duration} ч.)"
 
 class EducationCenter(models.Model):
-    name = models.CharField("Название организации", max_length=150)
+    name = models.CharField("Название организации", max_length=250)
     contact_person = models.ForeignKey(User, verbose_name="Контактное лицо", related_name="education_centers", on_delete=DO_NOTHING, blank=True, null=True)
     competences = models.ManyToManyField(Competence, related_name="educationCenters", verbose_name="Компетенции", blank=True)
     

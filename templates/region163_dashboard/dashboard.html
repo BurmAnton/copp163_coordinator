@@ -17,23 +17,23 @@
             <h5>Фильтр</h5>
             <div class="row g-2">
                 <div class="col-md">
-                    <select class="selectpicker filter-select filter-type" id='filter-type' multiple data-actions-box="true" data-width="95%" data-live-search="true" name="group_type" id="group_type">
+                    <select title="Формат проведения" class="selectpicker filter-select filter-type" id='filter-type' multiple data-actions-box="true" data-width="95%" data-live-search="true" name="group_type" id="group_type">
                         <option value="off" class="option-type">Оффлайн</option>
                         <option value="on" class="option-type">Онлайн</option>
                     </select>
-                    <select class="selectpicker filter-select filter-city" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="city" id="city">
+                    <select title="Населённые пункты" class="selectpicker filter-select filter-city" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="city" id="city">
                         {% for city in cities %}
                             <option value="{{city}}" class="option-city">{{city}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md">
-                    <select class="selectpicker filter-select filter-ed" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="ed_center" id="ed_center">
+                    <select title="Центры обучения" class="selectpicker filter-select filter-ed" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="ed_center" id="ed_center">
                         {% for ed_center in ed_centers %}
                             <option value="{{ed_center}}" class="option-ed">{{ed_center}}</option>
                         {% endfor %}
                     </select>
-                    <select class="selectpicker filter-select filter-competence" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="competence" id="competence">
+                    <select title="Компетенции" class="selectpicker filter-select filter-competence" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="competence" id="competence">
                         {% for competence in competencies %}
                             <option value="{{competence}}" class="option-competence">{{competence}}</option>
                         {% endfor %}

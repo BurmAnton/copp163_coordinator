@@ -23,12 +23,10 @@ def express_import(form):
         'Фамилия', 'Имя', 'Отчество', 'Пол', 'Дата рождения', 'СНИЛС', 
         'Email', 'Телефон', 'Регион для обучения', 'Город проживания', 
         'Регион проживания', 'Категория слушателя', 'Подкатегория слушателя', 
-        'Дата регистрации', 'Компетенция','Выбранное место обучения', 
+        'Компетенция','Выбранное место обучения', 
         'Адрес выбранного место обучения', 'Вид, подвид программы', 
         'Дата создания заявки на обучение', 'Статус заявки на обучение', 
-        'Дата последней смены статуса', 'Группа', 'Тип договора', 'Дата начала обучения', 
-        'Дата окончания обучения', 'Занятость по итогам обучения', 'Резерв', 
-        'Дистанционное обучение', 'Допуск до обучения', 'ФО'
+        'Группа', 'Тип договора', 'Дата начала обучения', 'Дата окончания обучения', 
     }
 
     cheak = cheak_col_match(sheet, fields_names_set)
@@ -36,10 +34,17 @@ def express_import(form):
         return cheak
     
     sheet_dict = load_worksheet_dict(sheet, cheak[1])
+    citizens = 0
+    applications = 0
     for row in range(len(sheet_dict['СНИЛС'])):
         citizen = load_citizen(sheet_dict, row)
+        if citizen[1] == "Added":
+            citizens += 1
         if sheet_dict["Статус заявки на обучение"][row] is not None:
-            application = load_application(sheet_dict, row, citizen)
+            application = load_application(sheet_dict, row, citizen[0])
+            if application[1] == "Added":
+                applications += 1
+            application = application[0]
             if sheet_dict["Компетенция"][row] is not None:
                 competence = load_Competence(sheet_dict, row, application)
                 if sheet_dict["Вид, подвид программы"][row] is not None:
@@ -49,11 +54,11 @@ def express_import(form):
                     if sheet_dict["Адрес выбранного место обучения"][row] is not None:
                         workshop = load_Workshop(sheet_dict, row, competence, education_center)
                         if sheet_dict["Группа"][row] is not None:
-                            group = load_Group(sheet_dict, row, workshop, education_program, application)
-            
-    return [True, 'OK']
+                            load_Group(sheet_dict, row, workshop, education_program, application)
+    
+    return [True, citizens, applications]
 
-def cheak_col_match(sheet, fields_names_set):    
+def cheak_col_match(sheet, fields_names_set):
     i = 0
     col_count = sheet.max_column
     sheet_fields = []
@@ -65,9 +70,12 @@ def cheak_col_match(sheet, fields_names_set):
             if sheet.cell(row=1,column=col_header).value is not None:
                 sheet_fields.append(sheet.cell(row=1,column=col_header).value)
                 sheet_col[col_header] = sheet.cell(row=1,column=col_header).value
+        missing_fields = []
         for field in fields_names_set:
             if field not in sheet_fields:
-                return [False, field]
+                missing_fields.append(field)
+        if len(missing_fields) != 0:
+            return [False, 'FieldError', missing_fields]
     except IndexError:
             return [False, 'IndexError']
     return [True, sheet_col]
@@ -88,9 +96,10 @@ def load_citizen(sheet_dict, row):
     citizen = Citizen.objects.filter(snils_number=snils)
     if len(citizen) == 0:
         citizen = add_citizen(sheet_dict, row)
+        return [citizen, 'Added']
     else:
         citizen = update_citizen(sheet_dict, row, citizen[0])
-    return citizen
+        return [citizen, "Updated"]
 
 def add_citizen(sheet_dict, row):
     sex = sheet_dict["Пол"][row]
@@ -153,19 +162,21 @@ def load_application(sheet_dict, row, applicant):
         applications = applications.filter(creation_date=application_date)
         if len(applications) > 0:
             applications[0].appl_status = 'NCOM'
-            return applications[0]
+            return [applications[0], "Updated"]
     else:
         applications = Application.objects.filter(applicant=applicant)
         if len(applications) == 0:
             application = add_application(sheet_dict, row, applicant)
-        elif applications.filter(creation_date=application_date) == 0:
+            return [application, 'Added']
+        elif len(applications.filter(creation_date=application_date)) == 0:
             for application in applications.exclude(creation_date=application_date):
                 application.appl_status = 'DUPL'
                 application.save()
             application = add_application(sheet_dict, row, applicant)
-        elif applications.filter(creation_date=application_date) != 0:
+            return [application, 'Added']
+        else:
             application = update_application(sheet_dict, row, applicant, application_date)
-        return application
+            return [application, "Updated"]
 
 def add_application(sheet_dict, row, applicant):
     creation_date = datetime.strptime(sheet_dict["Дата создания заявки на обучение"][row], "%Y-%m-%d %H:%M:%S")
@@ -422,7 +433,6 @@ def load_Group(sheet_dict, row, workshop, education_program, application):
     return group
 
 def add_Group(sheet_dict, row, name, workshop, education_program):
-    distance_education = True if sheet_dict["Допуск до обучения"] == 'Да' else False
     start_date = sheet_dict["Дата начала обучения"][row]
     end_date = sheet_dict["Дата окончания обучения"][row]
     group = Group(
@@ -431,7 +441,6 @@ def add_Group(sheet_dict, row, name, workshop, education_program):
         education_program=education_program,
         start_date=start_date,
         end_date=end_date,
-        distance_education=distance_education
     )
     group.save()
     return group

@@ -4,21 +4,47 @@
   margin-top: 10%;
 }
 
-form {
-  margin: auto;
-  width: 50%;
-  min-width: 300px;
+.card {
+  background-color: #e9ecf7;
+  box-shadow: 1px 0px 5px 2px rgba(0, 0, 0, 0.2);
 }
 
-.h1 {
+form {
   margin: auto;
+  margin-top: 10px;
+}
+
+.alert {
+  padding-top: 10px;
+  padding-bottom: 0px;
+  margin: 0 !important;
+}
+.alert p {
+  margin-bottom: 10px;
+}
+
+h2 {
+  color: #394959;
+  margin: auto;
+  margin-top: 20px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
+#id_import_file {
+  color: #394959;
+  border: 1px solid #394959;
+}
+
 .submit {
-  width: 25%;
-  min-width: 70px;
+  width: 50%;
   margin: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.submit .btn-primary {
+  background-color: #426cf8 !important;
+  border-color: #426cf8 !important;
 }
 
 #navbar {
