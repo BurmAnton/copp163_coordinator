@@ -4,6 +4,7 @@ from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django import forms
 
+from easy_select2 import select2_modelform
 from django_admin_listfilter_dropdown.filters import  RelatedOnlyDropdownFilter, DropdownFilter
 
 from .models import Workshop, EducationCenter, EducationProgram, Competence, Group, EducationCenterGroup
@@ -12,12 +13,18 @@ from citizens.models import Citizen, School, SchoolClass
 from users.models import User
 import users
 
-# Register your models here.
+WorkshopForm = select2_modelform(Workshop, attrs={'width': '400px'})
+
 class WorkshopInline(admin.TabularInline):
     model = Workshop
+    form = WorkshopForm
+
+EducationCentersForm = select2_modelform(EducationCenter, attrs={'width': '400px'})
 
 @admin.register(EducationCenter)
 class EducationCentersAdmin(admin.ModelAdmin):
+    form = EducationCentersForm
+    
     filter_horizontal = ('competences',)
     inlines = [
         WorkshopInline,
@@ -33,11 +40,17 @@ class EducationCentersAdmin(admin.ModelAdmin):
                 return queryset
         return queryset
 
+EducationProgramForm = select2_modelform(EducationProgram, attrs={'width': '400px'})
+
 class EducationProgramInline(admin.TabularInline):
     model = EducationProgram
-    
+    form = EducationProgramForm
+
+CompetenceForm = select2_modelform(Competence, attrs={'width': '400px'})
+
 @admin.register(Competence)
 class CompetencesAdmin(admin.ModelAdmin):
+    form = CompetenceForm
     list_filter = ('block', 'competence_stage', 'competence_type')
     search_fields = ['title']
     list_display = ['title', 'block', 'competence_stage', 'competence_type']
@@ -45,8 +58,11 @@ class CompetencesAdmin(admin.ModelAdmin):
         EducationProgramInline,
     ]
 
+EducationProgramForm = select2_modelform(EducationProgram, attrs={'width': '400px'})
+
 @admin.register(EducationProgram)
 class EducationProgramAdmin(admin.ModelAdmin):
+    form = EducationProgramForm
     list_display = ['program_name', 'program_type', 'duration', 'competence']
 
     list_filter = (
@@ -56,13 +72,18 @@ class EducationProgramAdmin(admin.ModelAdmin):
     )
     search_fields = ['program_name',]
 
+ApplicationForm = select2_modelform(Application, attrs={'width': '400px'})
 
 class StudentsInline(admin.StackedInline):
     model = Application
+    form = ApplicationForm
     fields = ('applicant',)
+
+GroupForm = select2_modelform(Group, attrs={'width': '400px'})
 
 @admin.register(Group)
 class GroupAdmin(admin.ModelAdmin):
+    form = GroupForm
     inlines = [
         StudentsInline, 
     ]
@@ -108,9 +129,11 @@ class GroupAdmin(admin.ModelAdmin):
                     return queryset
         return queryset
 
+EducationCenterForm = select2_modelform(EducationCenterGroup, attrs={'width': '400px'})
 
 @admin.register(EducationCenterGroup)
 class EducationCenterGroupAdmin(admin.ModelAdmin):
+    form = EducationCenterForm
     list_filter = (
         ('education_center', RelatedOnlyDropdownFilter),
         ('competence', RelatedOnlyDropdownFilter),

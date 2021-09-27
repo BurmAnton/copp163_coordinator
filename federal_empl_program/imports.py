@@ -42,9 +42,10 @@ def express_import(form):
             citizens += 1
         if sheet_dict["Статус заявки на обучение"][row] is not None:
             application = load_application(sheet_dict, row, citizen[0])
-            if application[1] == "Added":
-                applications += 1
-            application = application[0]
+            if application is not None:
+                if application[1] == "Added":
+                    applications += 1
+                application = application[0]
             if sheet_dict["Компетенция"][row] is not None:
                 competence = load_Competence(sheet_dict, row, application)
                 if sheet_dict["Вид, подвид программы"][row] is not None:
@@ -144,7 +145,7 @@ def update_citizen(sheet_dict, row, citizen):
     email = sheet_dict["Email"][row]
     if citizen.email != email:
         citizen.email = email
-    res_region = sheet_dict["Регион проживания"][row].capitalize(),
+    res_region = sheet_dict["Регион проживания"][row].capitalize()
     if citizen.res_region != res_region:
         citizen.res_region = res_region
     res_city = sheet_dict["Город проживания"][row].capitalize()

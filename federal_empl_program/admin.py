@@ -3,22 +3,32 @@ from users.models import User
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from django.forms import TextInput
+from django.db import models
+
+from easy_select2 import select2_modelform
+from django_admin_listfilter_dropdown.filters import  RelatedDropdownFilter, ChoiceDropdownFilter, RelatedOnlyDropdownFilter
+from field_history.models import FieldHistory
 
 from .models import Application, Questionnaire, InteractionHistory
 from education_centers.models import EducationCenter, EducationProgram
 from users.models import Group
 
 
-from django_admin_listfilter_dropdown.filters import  RelatedDropdownFilter, ChoiceDropdownFilter, RelatedOnlyDropdownFilter
-from field_history.models import FieldHistory
+
 from datetime import datetime, timedelta
 
+QuestionnaireForm = select2_modelform(Questionnaire, attrs={'width': '400px'})
 
 class QuestionnaireInline(admin.StackedInline):
+    form = QuestionnaireForm
     model = Questionnaire
+
+InteractionHistoryForm = select2_modelform(InteractionHistory, attrs={'width': '400px'})
 
 class InteractionHistoryInLine(admin.TabularInline):
     model = InteractionHistory
+    form = InteractionHistoryForm
     classes = ['collapse']
     ordering = ("-id",)
     fields = ['interaction_date', 'comunication_type', 'short_description']
@@ -28,10 +38,11 @@ class InteractionHistoryInLine(admin.TabularInline):
             return extra
         return extra
 
-
+ApplicationForm = select2_modelform(Application, attrs={'width': '400px'})
 
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):
+    form = ApplicationForm
     inlines = [InteractionHistoryInLine, QuestionnaireInline]
 
     readonly_fields = ['get_applicant', 'get_history', 'legacy_id', 'get_phone', 'get_email']
@@ -106,6 +117,12 @@ class ApplicationAdmin(admin.ModelAdmin):
         'get_comment',
         'get_comment_date'
     )
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(ApplicationAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['category'].widget.attrs['style'] = 'width: 55em;'
+        form.base_fields['education_program'].widget.attrs['style'] = 'width: 75em;'
+        form.base_fields['education_center'].widget.attrs['style'] = 'width: 75em;'
+        return form
 
     list_filter = (
         ('citizen_consultant', RelatedOnlyDropdownFilter),

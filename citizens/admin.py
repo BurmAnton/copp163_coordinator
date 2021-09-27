@@ -2,7 +2,8 @@ from django.contrib import admin
 import django.contrib.auth.models
 from django.utils.safestring import mark_safe
 from django.urls import reverse
-from field_history.models import FieldHistory
+
+from easy_select2 import select2_modelform
 from datetime import datetime, timedelta
 
 from .models import Citizen, Job, School, SchoolClass
@@ -10,16 +11,22 @@ from federal_empl_program.models import Application
 from education_centers.models import EducationCenter
 from users.models import User
 
+JobForm = select2_modelform(Job, attrs={'width': '400px'})
+
 class JobInline(admin.TabularInline):
     model = Job
+    form = JobForm
     def get_extra(self, request, obj=None, **kwargs):
         extra = 0
         if obj:
             return extra + obj.jobs.count()
         return extra
 
+ApplicationForm = select2_modelform(Application, attrs={'width': '400px'})
+
 class ApplicationInline(admin.StackedInline):
     model = Application
+    form = ApplicationForm
     readonly_fields = ['get_workshop',]
     fields = ('competence', 'education_program', 'education_center',
     'group', 'appl_status', 'creation_date', 'find_work')
@@ -33,8 +40,11 @@ class ApplicationInline(admin.StackedInline):
             return extra + obj.POE_applications.count()
         return extra
 
+CitizenForm = select2_modelform(Citizen, attrs={'width': '400px'})
+
 @admin.register(Citizen)
 class CitizensAdmin(admin.ModelAdmin):
+    form = CitizenForm
     search_fields = ['phone_number','email','snils_number','first_name','middle_name','last_name']
     list_filter = ('social_status', 'is_verified')
     list_display = ('__str__', 'snils_number', 'email')
@@ -77,11 +87,17 @@ class CitizensAdmin(admin.ModelAdmin):
                 return queryset
         return queryset
 
+SchoolClassForm = select2_modelform(SchoolClass, attrs={'width': '400px'})
+
 class SchoolClassInline(admin.TabularInline):
     model = SchoolClass
+    form = SchoolClassForm
+
+SchoolForm = select2_modelform(School, attrs={'width': '400px'})
 
 @admin.register(School)
 class SchoolsAdmin(admin.ModelAdmin):
+    form = SchoolForm
     search_fields = ['name', 'city', 'adress', 'specialty']
     list_filter = ('city', 'specialty')
     list_display = ('name', 'city', 'adress', 'specialty')
@@ -113,8 +129,11 @@ class SchoolsAdmin(admin.ModelAdmin):
         }),
     )
 
+CitizenForm = select2_modelform(Citizen, attrs={'width': '400px'})
+
 class CitizenInline(admin.TabularInline):
     model = Citizen
+    form = CitizenForm
     fieldsets = (
         (None, {
             "fields": (
@@ -127,9 +146,11 @@ class CitizenInline(admin.TabularInline):
     )
     short_description='Студенты'
     
+SchoolClassesForm = select2_modelform(SchoolClass, attrs={'width': '400px'})
 
 @admin.register(SchoolClass)
 class SchoolClassesAdmin(admin.ModelAdmin):
+    form = SchoolClassesForm
     inlines = [
         CitizenInline
     ]

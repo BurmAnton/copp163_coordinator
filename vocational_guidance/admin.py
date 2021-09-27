@@ -1,15 +1,21 @@
 from django.contrib import admin
 
+from easy_select2 import select2_modelform
 from django_admin_listfilter_dropdown.filters import DropdownFilter, RelatedOnlyDropdownFilter, ChoiceDropdownFilter
 
 from .models import TimeSlot, VocGuidBundle, VocGuidGroup, VocGuidSession
 
+TimeSlotForm = select2_modelform(TimeSlot, attrs={'width': '400px'})
+
 @admin.register(TimeSlot)
 class TimeSlotAdmin(admin.ModelAdmin):
-    pass
+    form = TimeSlotForm
+
+VocGuidSessionForm = select2_modelform(VocGuidSession, attrs={'width': '400px'})
 
 @admin.register(VocGuidSession)
 class VocGuidSessionAdmin(admin.ModelAdmin):
+    form = VocGuidSessionForm
     list_display = (
         "get_program_name",
         "education_center",
@@ -37,8 +43,11 @@ class VocGuidSessionAdmin(admin.ModelAdmin):
         return adress
     get_adress.short_description='Адрес'
 
+VocGuidBundleForm = select2_modelform(VocGuidBundle, attrs={'width': '400px'})
+
 @admin.register(VocGuidBundle)
 class VocGuidBundleAdmin(admin.ModelAdmin):
+    form = VocGuidBundleForm
     list_display = (
         "name",
         "guid_type",
@@ -47,8 +56,11 @@ class VocGuidBundleAdmin(admin.ModelAdmin):
     )
     search_fields = ["name","education_center", "programs"]
 
+VocGuidGroupForm = select2_modelform(VocGuidGroup, attrs={'width': '400px'})
+
 @admin.register(VocGuidGroup)
 class VocGuidGroupAdmin(admin.ModelAdmin):
+    form = VocGuidGroupForm
     list_display = (
         "get_id",
         "school",

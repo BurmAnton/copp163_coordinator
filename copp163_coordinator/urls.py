@@ -22,4 +22,5 @@ urlpatterns = [
     path('education_centers/', include('education_centers.urls')),
     path('bilet/', include('vocational_guidance.urls')),
     path('', admin.site.urls),
+    path('select2/', include('django_select2.urls')),
 ]
