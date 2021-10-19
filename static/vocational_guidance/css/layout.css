@@ -1,15 +1,27 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
-h1 {
+h1, h3, h5 {
   font-family: "Roboto", sans-serif;
-  font-size: 36px;
-  margin-bottom: 25px;
   font-weight: 300;
 }
 
-h2 {
+h2, h4, h6, p {
   font-family: "Roboto", sans-serif;
+  font-weight: 400;
+}
+
+h1 {
+  font-size: 32px;
+}
+
+h2 {
   font-size: 28px;
-  margin-bottom: 25px;
+}
+
+.navbar {
+  background-color: #394959;
+}
+
+.admin-button {
+  margin-right: 10px;
 }
 
 #page-container {
@@ -18,42 +30,30 @@ h2 {
 }
 
 #content-wrap {
-  padding-bottom: 200px;
+  padding-bottom: 107px;
 }
 
-footer {
+.footer {
+  width: 100%;
   position: absolute !important;
   bottom: 0;
-  width: 100%;
-  height: 200px;
 }
-footer .nav-item {
-  color: white;
-  padding-bottom: 4px;
+.footer .container {
+  margin: auto;
 }
-footer .nav-item a {
-  color: white;
+.footer footer {
+  margin: auto;
+  margin-bottom: 0 !important;
 }
 
-nav {
-  padding-left: 10%;
-  padding-right: 10%;
-  box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
+.navbar-brand {
+  margin: 0px;
+  margin-right: 20px;
+  padding: 0px;
 }
-
-h2 {
-  margin: 0;
-  padding: 0;
-}
-
-.logo-copp {
-  width: 187px;
-  height: 100px;
-}
-
-#footer-nav {
-  margin-top: 25px;
-  margin-bottom: 25px;
+.navbar-brand img {
+  height: 40px;
+  width: 40px;
 }
 
 /*# sourceMappingURL=layout.css.map */

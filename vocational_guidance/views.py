@@ -9,7 +9,7 @@ from django.db import IntegrityError
 
 from users.models import User, Group
 from citizens.models import Citizen, School, SchoolClass
-from vocational_guidance.models import VocGuidBundle, VocGuidGroup
+from vocational_guidance.models import VocGuidTest, VocGuidGroup
 
 # Create your views here.
 @login_required(login_url='login/')
@@ -35,16 +35,16 @@ def index(request):
 @login_required(login_url='bilet/login/')
 def profile(request, citizen_id):
     citizen = Citizen.objects.get(id=citizen_id)
-    choosen_bundles = VocGuidBundle.objects.filter(participants=citizen).values(
+    choosen_bundles = VocGuidTest.objects.filter(participants=citizen).values(
         "name", "description", "img_link", "guid_type"
     )
-    bundles = VocGuidBundle.objects.exclude(participants=citizen).values(
+    bundles = VocGuidTest.objects.exclude(participants=citizen).values(
         "name", "description", "img_link", "guid_type"
     )
     
     choosen_type_presence = set()
     choosen_bundles_dict = {}
-    for guid_type in VocGuidBundle.TYPE_CHOICES:
+    for guid_type in VocGuidTest.TYPE_CHOICES:
         choosen_bundles_dict[guid_type[0]] = {}
     for bundle in choosen_bundles:
         choosen_bundles_dict[bundle["guid_type"]][bundle['name']] = {
@@ -55,7 +55,7 @@ def profile(request, citizen_id):
 
     type_presence = set()
     bundles_dict = {}
-    for guid_type in VocGuidBundle.TYPE_CHOICES:
+    for guid_type in VocGuidTest.TYPE_CHOICES:
         bundles_dict[guid_type[0]] = {}
     for bundle in bundles:
         bundles_dict[bundle["guid_type"]][bundle['name']] = {
@@ -87,7 +87,7 @@ def profile(request, citizen_id):
 
 def school_dash(request, school_id):
     school = School.objects.get(id=school_id)
-    bundles = VocGuidBundle.objects.all()
+    bundles = VocGuidTest.objects.all()
     bundles_dict = {}
     for bundle in bundles:
         groups = VocGuidGroup.objects.filter(bundle=bundle, school=school).annotate(participants_count=Count('participants'))
@@ -112,7 +112,7 @@ def choose_bundle(request):
     if request.method == "POST":
         bundle_name = request.POST["bundle_name"]
         citizen_id = request.POST["citizen"]
-        bundle = VocGuidBundle.objects.get(name=bundle_name)
+        bundle = VocGuidTest.objects.get(name=bundle_name)
         citizen = Citizen.objects.get(id=citizen_id)
         if citizen.school_class.grade_number >= 10:
             age_group = '10-11'
@@ -120,7 +120,7 @@ def choose_bundle(request):
             age_group = '6-7'
         else:
             age_group = '8-9'
-        previous_bundles = VocGuidBundle.objects.filter(
+        previous_bundles = VocGuidTest.objects.filter(
             participants=citizen_id,
             guid_type=bundle.guid_type
         )
@@ -175,7 +175,7 @@ def reject_bundle(request):
     if request.method == "POST":
         bundle_name = request.POST["bundle_name"]
         citizen_id = request.POST["citizen"]
-        bundle = VocGuidBundle.objects.get(name=bundle_name)
+        bundle = VocGuidTest.objects.get(name=bundle_name)
         citizen = Citizen.objects.get(id=citizen_id)
         if citizen.school_class.grade_number >= 10:
             age_group = '10-11'

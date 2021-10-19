@@ -1,42 +1,43 @@
-@use 'styles'
+h1, h3, h5
+    font-family: 'Roboto', sans-serif
+    font-weight: 300
 
-$footer-height: 200px
+h2, h4, h6, p
+    font-family: 'Roboto', sans-serif
+    font-weight: 400
+
+h1
+    font-size: 32px
+h2
+    font-size: 28px
+
+.navbar
+    background-color: #394959
+
+.admin-button
+    margin-right: 10px
 
 #page-container
   position: relative!important
   min-height: 100vh
 
 #content-wrap 
-  padding-bottom: $footer-height
+  padding-bottom: 107px
 
+.footer
+    width: 100%
+    position: absolute!important
+    bottom: 0
+    .container
+        margin: auto
+    footer
+        margin: auto
+        margin-bottom: 0 !important
 
-footer
-  position: absolute!important
-  bottom: 0
-  width: 100%
-  height: $footer-height
-  .nav-item
-    color: white
-    padding-bottom: 4px
-    a
-      color: white
-  
-nav
-  padding-left: 10%
-  padding-right: 10%
-  box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, .2)
-
-h2
-  margin: 0
-  padding: 0
-
-.logo-copp
-    width: 187px
-    height: 100px
-
-#footer-nav
-    margin-top: 25px
-    margin-bottom: 25px
-
-
-
+.navbar-brand
+    margin: 0px
+    margin-right: 20px
+    padding: 0px
+    img
+        height: 40px
+        width: 40px
