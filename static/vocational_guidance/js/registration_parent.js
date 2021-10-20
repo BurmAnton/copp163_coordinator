@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     })
     
-    let first = true;
+    /*let first = true;
     document.querySelector('form').addEventListener('click', () =>{
         if (first){
             document.querySelectorAll(".dropdown-toggle").forEach(element => {
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });    
         })
-    })
+    })*/
 })
 function cheak_parent_step(){
     let fields_is_filled = true

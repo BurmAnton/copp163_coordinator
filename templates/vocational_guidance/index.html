@@ -70,9 +70,9 @@
                         </div>
                         <div class="form mb-3">
                             <select class="selectpicker" data-width="100%" data-live-search="true" name="school" id="School" required>
-                                <option value="{{user.school.name}}">{{user.school.name}}</option>
+                                <option value="{{user.school.id}}">{{user.school.name}}</option>
                                 {% for school in schools %}
-                                    <option value="{{school.name}}">{{school.name}}</option>
+                                    <option value="{{school.id}}">{{school.name}}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -277,18 +277,27 @@
             <div class="container">
                 <div class="row row-cols-3 g-3">
                     <div class="col-12 justify-content-center text-center">
-                        <h2>Профессиональны пробы в онлайн формате </h2>
-                        <p>Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus.</p> 
+                        <h2>Профессиональны пробы в рамках федерального проекта «Билет в будущее» </h2>
+                        <p>Ученики школ Самарской области с 6 по 11 класс могут принять участии в мероприятиях профессионального выбора в рамках проекта «Билет в будущее». Все мероприятия будут проходить онлайн в связи с эпидемиологической ситуацией, длительность одного мероприятия – 90 минут.</p> 
                     </div>
                     {% for key, value in bundles.items %}
                         {% if key == "VO" %}
                             {% for bundle_key, bundle_value in value.items %}
-                                <div class="col h-100">
-                                    <div class="card">
-                                        <img src="{{bundle_value|get_item:'img_link'}}" class="card-img-top" alt="...">
+                                <div class="col">
+                                    <div class="card h-100">
+                                        <!--<img src="{{bundle_value|get_item:'img_link'}}" class="card-img-top" alt="...">
+                                        -->
                                         <div class="card-body">
                                             <h5 class="card-title">{{bundle_key}}</h5>
                                             <p class="card-text">{{bundle_value|get_item:'description'}}</p>
+                                            <a href="{{bundle_value|get_item:'education_program_link'}}" target="_blank">
+                                                Программа подготовки
+                                            </a>
+                                
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item"></li>
+                                                <li class="list-group-item ed_center"><b>Центр обучения:</b> {{bundle_value|get_item:'education_center'}}</li>
+                                            </ul>
                                         </div>
                                         <div class="card-footer">
                                             <div class="d-grid gap-2">

@@ -39,7 +39,7 @@ def profile(request, citizen_id):
         "name", "description", "img_link", "guid_type"
     )
     bundles = VocGuidTest.objects.exclude(participants=citizen).values(
-        "name", "description", "img_link", "guid_type"
+        "name", "description", "img_link", "guid_type", "age_group", 'education_program_link', 'education_center__name'
     )
     
     choosen_type_presence = set()
@@ -57,13 +57,22 @@ def profile(request, citizen_id):
     bundles_dict = {}
     for guid_type in VocGuidTest.TYPE_CHOICES:
         bundles_dict[guid_type[0]] = {}
+    if citizen.school_class.grade_number >= 10:
+        age_group = '10-11'
+    elif citizen.school_class.grade_number <= 7:
+        age_group = '6-7'
+    else:
+        age_group = '8-9'
     for bundle in bundles:
-        bundles_dict[bundle["guid_type"]][bundle['name']] = {
-            'name': bundle['name'],
-            'description': bundle['description'],
-            'img_link': bundle['img_link']
-        }
-        type_presence.add(bundle["guid_type"])
+        if bundle["age_group"] == "ALL" or bundle["age_group"] == age_group:
+            bundles_dict[bundle["guid_type"]][bundle['name']] = {
+                'name': bundle['name'],
+                'description': bundle['description'],
+                'img_link': bundle['img_link'],
+                'education_program_link': bundle['education_program_link'],
+                'education_center': bundle['education_center__name']
+            }
+            type_presence.add(bundle["guid_type"])
 
     message = ""
     if len(choosen_type_presence) == 0:
@@ -125,7 +134,7 @@ def choose_bundle(request):
             guid_type=bundle.guid_type
         )
         if len(previous_bundles) != 0:
-            citizen.voc_guid_bundles.remove(previous_bundles[0])
+            citizen.voc_guid_tests.remove(previous_bundles[0])
         bundle.participants.add(citizen_id)
         bundle.save()
         school = citizen.school
@@ -157,14 +166,14 @@ def create_group(citizen, bundle):
         group = VocGuidGroup(
             school=citizen.school,
             bundle=bundle,
-            attendance_limit=50,
+            attendance_limit=8,
             age_group=age_group 
         )
     else:
         group = VocGuidGroup(
             city=citizen.school.city,
             bundle=bundle,
-            attendance_limit=50,
+            attendance_limit=8,
             age_group=age_group 
         )
     group.save()
@@ -185,9 +194,11 @@ def reject_bundle(request):
             age_group = '8-9'
         group = VocGuidGroup.objects.get(bundle=bundle,participants=citizen, age_group=age_group)
 
-        citizen.voc_guid_bundles.remove(bundle)
+        citizen.voc_guid_tests.remove(bundle)
         citizen.voc_guid_groups.remove(group)
         citizen.save()
+        if group.participants.count() == 0:
+            group.delete()
     return HttpResponseRedirect(reverse("index"))
 
 @csrf_exempt
@@ -240,8 +251,8 @@ def signup_child(request):
         birthday = request.POST['birthday']
         grade_number = request.POST['school_class']
         grade_letter = request.POST['school_class_latter']
-        school_name = request.POST['school']
-        school = School.objects.get(name=school_name)
+        school_id = request.POST['school']
+        school = School.objects.get(id=school_id)
         try:
             disability_check = request.POST['disability-check']
         except:
@@ -326,8 +337,8 @@ def signup_parent(request):
         birthday = request.POST['birthday']
         grade_number = request.POST['school_class']
         grade_letter = request.POST['school_class_latter']
-        school_name = request.POST['school']
-        school = School.objects.get(name=school_name)
+        school_id = request.POST['school']
+        school = School.objects.get(id=school_id)
         try:
             disability_check = request.POST['disability-check']
         except:
@@ -414,8 +425,8 @@ def change_profile(request):
         request.user.last_name = request.POST["last_name"]
         citizen.middle_name = request.POST['middle_name']
         citizen.birthday = request.POST['birthday']
-        school_name = request.POST['school']
-        school = School.objects.get(name=school_name)
+        school_id = request.POST['school']
+        school = School.objects.get(id=school_id)
         citizen.school = school
         grade_number = request.POST['school_class']
         grade_letter = request.POST['school_class_latter']
