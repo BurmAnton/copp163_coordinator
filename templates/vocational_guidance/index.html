@@ -200,14 +200,14 @@
                                         <div class="col-12">
                                             <div class="card h-100">
                                                 <div class="card-body">
-                                                    <h5 class="card-title">{{bundle_key}}</h5>
+                                                    <h5 class="card-title">{{bundle_value|get_item:'name'}}</h5>
                                                     <p class="card-text">{{bundle_value|get_item:'description'}}</p>
                                                 </div>
                                                 <div class="card-footer">
                                                     <div class="d-grid gap-2">
                                                         <form action="{%url 'reject_bundle' %}" method="post">
                                                             <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
-                                                            <input type="input" class="form-control" name="bundle_name" value="{{bundle_key}}" style="display: none;">
+                                                            <input type="input" class="form-control" name="bundle_id" value="{{bundle_value|get_item:'id'}}" style="display: none;">
                                                             <div class="d-grid gap-2">
                                                                 <button type="submit" class="btn btn-outline-dark">Отказаться</button>
                                                             </div>
@@ -244,7 +244,7 @@
                                     <div class="card h-100">
                                         <img src="{{bundle_value|get_item:'img_link'}}" class="card-img-top" alt="...">
                                         <div class="card-body">
-                                            <h5 class="card-title">{{bundle_key}}</h5>
+                                            <h5 class="card-title">{{bundle_value|get_item:'name'}}</h5>
                                             <p class="card-text">{{bundle_value|get_item:'description'}}</p>
                                             <p></p>
                                         </div>
@@ -252,7 +252,7 @@
                                             <div class="d-grid gap-2">
                                                 <form action="{%url 'choose_bundle' %}" method="post">
                                                     <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
-                                                    <input type="input" class="form-control" name="bundle_name" value="{{bundle_key}}" style="display: none;">
+                                                    <input type="input" class="form-control" name="bundle_id" value="{{bundle_value|get_item:'id'}}" style="display: none;">
                                                     <div class="d-grid gap-2">
                                                         {% if 'SPO' in choosen_type_presence %}
                                                             <button type="submit" class="btn btn-outline-primary">Сменить пробу</button>
@@ -288,7 +288,7 @@
                                         <!--<img src="{{bundle_value|get_item:'img_link'}}" class="card-img-top" alt="...">
                                         -->
                                         <div class="card-body">
-                                            <h5 class="card-title">{{bundle_key}}</h5>
+                                            <h5 class="card-title">{{bundle_value|get_item:'name'}}</h5>
                                             <p class="card-text">{{bundle_value|get_item:'description'}}</p>
                                             <a href="{{bundle_value|get_item:'education_program_link'}}" target="_blank">
                                                 Программа подготовки
@@ -303,7 +303,7 @@
                                             <div class="d-grid gap-2">
                                                 <form action="{%url 'choose_bundle' %}" method="post">
                                                     <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
-                                                    <input type="input" class="form-control" name="bundle_name" value="{{bundle_key}}" style="display: none;">
+                                                    <input type="input" class="form-control" name="bundle_id" value="{{bundle_value|get_item:'id'}}" style="display: none;">
                                                     <div class="d-grid gap-2">
                                                         {% if 'VO' in choosen_type_presence %}
                                                             <button type="submit" class="btn btn-outline-primary">Сменить пробу</button>

@@ -114,3 +114,4 @@ function cheak_first_step(){
         button.classList.remove('btn-primary')
     }
 }
+})

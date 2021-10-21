@@ -36,10 +36,10 @@ def index(request):
 def profile(request, citizen_id):
     citizen = Citizen.objects.get(id=citizen_id)
     choosen_bundles = VocGuidTest.objects.filter(participants=citizen).values(
-        "name", "description", "img_link", "guid_type"
+        "id", "name", "description", "img_link", "guid_type"
     )
     bundles = VocGuidTest.objects.exclude(participants=citizen).values(
-        "name", "description", "img_link", "guid_type", "age_group", 'education_program_link', 'education_center__name'
+        "id", "name", "description", "img_link", "guid_type", "age_group", 'education_program_link', 'education_center__name'
     )
     
     choosen_type_presence = set()
@@ -47,7 +47,8 @@ def profile(request, citizen_id):
     for guid_type in VocGuidTest.TYPE_CHOICES:
         choosen_bundles_dict[guid_type[0]] = {}
     for bundle in choosen_bundles:
-        choosen_bundles_dict[bundle["guid_type"]][bundle['name']] = {
+        choosen_bundles_dict[bundle["guid_type"]][bundle['id']] = {
+            'id': bundle['id'],
             'name': bundle['name'],
             'description': bundle['description'],
         }
@@ -65,7 +66,8 @@ def profile(request, citizen_id):
         age_group = '8-9'
     for bundle in bundles:
         if bundle["age_group"] == "ALL" or bundle["age_group"] == age_group:
-            bundles_dict[bundle["guid_type"]][bundle['name']] = {
+            bundles_dict[bundle["guid_type"]][bundle['id']] = {
+                'id': bundle['id'],
                 'name': bundle['name'],
                 'description': bundle['description'],
                 'img_link': bundle['img_link'],
@@ -119,9 +121,9 @@ def region_dash(request):
 @csrf_exempt
 def choose_bundle(request):
     if request.method == "POST":
-        bundle_name = request.POST["bundle_name"]
+        bundle_id = request.POST["bundle_id"]
         citizen_id = request.POST["citizen"]
-        bundle = VocGuidTest.objects.get(name=bundle_name)
+        bundle = VocGuidTest.objects.get(id=bundle_id)
         citizen = Citizen.objects.get(id=citizen_id)
         if citizen.school_class.grade_number >= 10:
             age_group = '10-11'
@@ -182,9 +184,9 @@ def create_group(citizen, bundle):
 @csrf_exempt
 def reject_bundle(request):
     if request.method == "POST":
-        bundle_name = request.POST["bundle_name"]
+        bundle_id = request.POST["bundle_id"]
         citizen_id = request.POST["citizen"]
-        bundle = VocGuidTest.objects.get(name=bundle_name)
+        bundle = VocGuidTest.objects.get(id=bundle_id)
         citizen = Citizen.objects.get(id=citizen_id)
         if citizen.school_class.grade_number >= 10:
             age_group = '10-11'
