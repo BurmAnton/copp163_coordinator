@@ -39,7 +39,7 @@ class VocGuidTestAdmin(admin.ModelAdmin):
         "attendance_limit",
         "workshop"
     )
-    search_fields = ["name","education_center", "programs"]
+    search_fields = ["name","education_center__name"]
 
 VocGuidGroupForm = select2_modelform(VocGuidGroup, attrs={'width': '400px'})
 

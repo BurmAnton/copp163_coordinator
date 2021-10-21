@@ -46,7 +46,7 @@
                     <select class="selectpicker first-step-select" data-width="100%" data-live-search="true" name="school" id="School" required>
                         <option value="">Выберите школу</option>
                         {% for school in schools %}
-                            <option value="{{school.id}}" class="school" data-school="{{school.city}}">{{school.name}}</option>
+                            <option value="{{school.id}}" class="school" data-school="{{school.city}}">{{school.name}} ({{school.city}})</option>
                         {% endfor %}
                     </select>
                     <div class="invalid-feedback">Example invalid select feedback</div>

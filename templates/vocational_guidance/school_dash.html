@@ -10,37 +10,200 @@
 {% endblock %}
 
 {% block body %}
-    <div class="section profile-section">
-        <div class="container">
-            <div class="col-12">
-                <div class="card card-profile border-dark">
-                    <h4 class="card-header border-dark text-center">
-                        {{school.name}}
-                    </h4>
-                    <div class="row g-0">
-                        <div class="card-body col-md-6 border-dark school-info">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><b>Населённый пункт:</b> {{school.city}}</li>
-                                <li class="list-group-item"><b>Адрес:</b> {{school.adress}}</li>
-                                <li class="list-group-item"><b>Уклон:</b> {{school.specialty}}</li>
-                            </ul>
+    <div class="modal fade" id="ChangePasswordModal" tabindex="-1" aria-labelledby="ChangePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Изменить данные профиля</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'change_password' %}" method="post">
+                    <div class="modal-body">
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" name="current_password" id="Сonfirmation" placeholder="Пароль" required>
+                            <label for="InputPassword">Введите текущий пароль</label>
                         </div>
-                        <div class="card-body col-md-6 border-dark contact-info">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><b>Контактное лицо:</b> {{user.last_name}} {{user.first_name}} {{user.middle_name}}</li>
-                                <li class="list-group-item"><b>Email:</b> {{user.email}}</li>
-                                <li class="list-group-item"><b>Номер телефона:</b> {{user.phone_number}}</li>
-                            </ul>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" name="password" id="InputPassword" placeholder="Пароль" required>
+                            <label for="InputPassword">Придумайте новый пароль</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" name="confirmation" id="Сonfirmation" placeholder="Пароль" required>
+                            <label for="InputPassword">Повторите новый пароль</label>                        
                         </div>
                     </div>
-                    <div class="card-footer text-end border-dark">
-                        <div class="d-grid gap-2 d-md-block">
-                            <button type="button" class="btn border-secondary" id="Change_password" data-bs-toggle="modal" data-bs-target="#ChangePasswordModal">
-                                Сменить пароль
-                            </button>
-                            <button type="button" class="btn btn-primary" id="Change_profile" data-bs-toggle="modal" data-bs-target="#ChangeProfileModal">
-                                Изменить данные
-                            </button>
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Сменить пароль</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="ChangeProfileModal" tabindex="-1" aria-labelledby="ChangeProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Изменить данные профиля</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'change_profile' %}" method="post">
+                    <div class="modal-body">
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="name" id="Name" placeholder="Имя" value="{{user.first_name}}" required>
+                            <label for="Name">Имя</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="middle_name" id="MiddleName" placeholder="Отчество" value="{{user.middle_name}}">
+                            <label for="MiddleName">Отчество</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="last_name" id="LastName" placeholder="Фамилия" value="{{user.last_name}}" required>
+                            <label for="LastName">Фамилия</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" name="email" id="Email" placeholder="Email" value="{{user.email}}" required>
+                            <label for="Email">Email</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номер телефона" value="{{user.phone_number}}" required>
+                            <label for="Phone">Номер телефона</label>
+                        </div>
+                        <div style="display: none;">
+                            <input type="input" class="form-control" name="id" value="{{user.id}}">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="section profile-section">
+        <div class="container-xxl">
+            <div class="row row-cols-3 g-3">
+                <div class="col-12 justify-content-center text-left">
+                    <div class="row row-cols-6 g-5">
+                        <div class="col-5">
+                            <div class="card card-profile border-dark">
+                                <h2 class="card-header border-dark">
+                                    {{school.name}}
+                                </h2>
+                                <div class="card-body border-dark">
+                                    <h5>
+                                        {% if user.last_name != None %}
+                                                {{user.last_name}}
+                                        {% endif %}
+                                        {% if user.first_name != None %}
+                                                {{user.first_name}}
+                                        {% endif %}
+                                        {% if user.middle_name != None %}
+                                                {{user.middle_name}}
+                                        {% endif %}
+                                    </h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item"><b>Email:</b> {{user.email}}</li>
+                                        <li class="list-group-item"><b>Контактный телефона:</b>
+                                            {% if user.phone_number == None %}
+                                                –
+                                            {% else %}
+                                                {{user.phone_number}}
+                                            {% endif %}
+                                         </li>
+                                        <li class="list-group-item"><b>Населённый пункт:</b> {{school.city}}</li>
+                                        <li class="list-group-item"><b>Адрес школы:</b>
+                                            {% if school.adress == None %}
+                                                –
+                                            {% else %}
+                                                {{school.adress}}
+                                            {% endif %}
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="card-footer text-end border-dark">
+                                    <div class="d-grid gap-2 d-md-block">
+                                        <button type="button" class="btn border-secondary" id="Change_password" data-bs-toggle="modal" data-bs-target="#ChangePasswordModal">Сменить пароль</button>
+                                        <button type="button" class="btn btn-primary" id="Change_profile" data-bs-toggle="modal" data-bs-target="#ChangeProfileModal">
+                                            Изменить личные данные
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-7 statistic">
+                            <h2>
+                                Статистика школы
+                            </h2>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="col card text-center main-stat">
+                                        <div class="card-body">
+                                            <p class="card-title">Учеников зарегистрировано: {{students_count}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card text-center main-stat">
+                                        <div class="card-body">
+                                            <p class="card-title">Учеников записалось на пробы: {{enroll_count}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="col card text-centerы">
+                                        <div class="card-body">
+                                            <p class="card-title">Учеников 6-7 классов: {{six_grade}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <p class="card-title">Учеников 6-7 классов: {{six_grade_enroll}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="col card text-centerы">
+                                        <div class="card-body">
+                                            <p class="card-title">Учеников 8-9 классов: {{eight_grade}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <p class="card-title">Учеников 8-9 классов: {{eight_grade_enroll}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="col card text-centerы">
+                                        <div class="card-body">
+                                            <p class="card-title">Учеников 10-11 классов: {{ten_grade}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <p class="card-title">Учеников 10-11 классов: {{ten_grade_enroll}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="col card text-center main-stat">
+                                        <div class="card-body">
+                                            <p class="card-title">Групп записанно на проф. пробы: 0 из {{groups_count}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

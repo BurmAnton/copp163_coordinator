@@ -1,0 +1,50 @@
+{% extends "federal_empl_program/layout.html" %}
+{% load static %}
+
+{% block title %}Импорт данных | ФП «Содействие занятости»‎{% endblock %}
+{% block style %}
+    <link href="{% static 'federal_empl_program/css/citizens.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'federal_empl_program/js/citizens.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="card" style="width: 25rem;" id='import_form'>
+        <h2>Импортировать&nbspданные</h2>
+        <form enctype="multipart/form-data" action="{% url 'import_teachers' %}" method="post">
+            <div class="input-group mb-3">
+                {{ form }}
+            </div>
+            {% if message.0 == True %}
+                <div class="alert alert-success" role="alert">
+                    <p>Учителей добавлено – <strong>{{ message.1 }}</strong></p>
+                    <p>Учителей обновленно – <strong>{{ message.2 }}</strong></p>
+                </div>   
+            {% elif message.0 == False %}
+                <div class="alert alert-danger" role="alert">
+                    {% if message.1 == "FieldError" %}
+                        <p>В таблице нет следующих требуемых столбцов:</p>
+                        <ol>
+                            {% for missing_field in message.2 %}
+                                <li>
+                                    <strong>
+                                        {{ missing_field }}
+                                    </strong>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    {% elif message.1 == "EmptySheet" %}
+                        <p><strong>Таблица пуста</strong></p>
+                    {% elif message.1 == "IndexError" %}
+                        <p><strong>IndexError</strong></p>
+                    {% endif %}
+                </div> 
+            {% endif %}
+            <div class="submit">
+                <input type="submit" value="Загрузить данные" class="btn btn-primary">   
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

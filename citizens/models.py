@@ -10,7 +10,7 @@ from organizations.models import Company
 class School(models.Model):
     name = models.CharField("Название школы", max_length=100)
     specialty = models.CharField("Уклон школы", max_length=50, blank=True, null=True)
-
+    territorial_administration = models.CharField("Тер. управление", max_length=150, blank=True, null=True)
     municipality = models.CharField("Муниципалитет", max_length=200, blank=True, null=True)
     city = models.CharField("Населённый пункт", max_length=100, blank=True, null=True)
     adress = models.CharField("Адрес", max_length=250, blank=True, null=True)
@@ -39,8 +39,8 @@ class SchoolClass(models.Model):
         return  f"{self.grade_number}{self.grade_letter} – {self.school}"
 
 class Citizen(models.Model):
-    first_name = models.CharField("Имя", max_length=30)
-    last_name = models.CharField("Фамилия", max_length=50)
+    first_name = models.CharField("Имя", max_length=30, null=True)
+    last_name = models.CharField("Фамилия", max_length=50, null=True)
     middle_name = models.CharField("Отчество", max_length=30, blank=True, null=True)
 
     SEX_CHOICES = [
@@ -61,6 +61,7 @@ class Citizen(models.Model):
     res_disctrict = models.CharField("Населённый пункт", max_length=50, blank=True, null=True)
 
     STATUS_CHOICES = [
+        ('SCHT', "Учитель в школе"),
         ('SCHS', "Обучающиеся общеообразовательных организаций"),
         ('SSPO',"студент СПО"),
         ('SVO', "студент ВО"),

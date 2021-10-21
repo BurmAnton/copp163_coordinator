@@ -8,6 +8,7 @@ urlpatterns = [
     path('school/dashboard/<int:school_id>', views.school_dash, name='school_dash'),
     path('ed_center/dashboard/<int:ed_center_id>', views.ed_center_dash, name='ed_center_dash'),
     path('dashboard', views.region_dash, name='region_dash'),
+    path('import_teachers', views.import_teachers, name="import_teachers"),
 
 #Auth
     path('login/', views.signin, name='signin'),

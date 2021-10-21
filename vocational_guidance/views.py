@@ -7,6 +7,9 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.db import IntegrityError
 
+from .forms import ImportDataForm
+from .imports import bvb_teachers
+
 from users.models import User, Group
 from citizens.models import Citizen, School, SchoolClass
 from vocational_guidance.models import VocGuidTest, VocGuidGroup
@@ -98,6 +101,7 @@ def profile(request, citizen_id):
 
 def school_dash(request, school_id):
     school = School.objects.get(id=school_id)
+    groups_count = len(VocGuidGroup.objects.filter(school=school))
     bundles = VocGuidTest.objects.all()
     bundles_dict = {}
     for bundle in bundles:
@@ -107,9 +111,30 @@ def school_dash(request, school_id):
             for group in groups:
                 if group.participants_count != 0:
                     bundles_dict[bundle.name].append(group)
+    
+    students = Citizen.objects.filter(school=school)
+    students_count = len(students)
+    six_grade = len(students.filter(school_class__grade_number__in = [6,7]))
+    eight_grade = len(students.filter(school_class__grade_number__in = [8,9]))
+    ten_grade = len(students.filter(school_class__grade_number__in = [10,11]))
+
+    enroll_count = len(students.filter(voc_guid_tests__isnull=False))
+    six_grade_enroll = len(students.filter(school_class__grade_number__in = [6,7], voc_guid_tests__isnull=False))
+    eight_grade_enroll = len(students.filter(school_class__grade_number__in = [8,9], voc_guid_tests__isnull=False))
+    ten_grade_enroll = len(students.filter(school_class__grade_number__in = [10,11], voc_guid_tests__isnull=False))
+
     return render(request, 'vocational_guidance/school_dash.html', {
         'school': school,
-        'bundles': bundles_dict
+        'bundles': bundles_dict,
+        'groups_count': groups_count,
+        'students_count': students_count,
+        'six_grade': six_grade,
+        'eight_grade': eight_grade,
+        'ten_grade': ten_grade,
+        'enroll_count': enroll_count,
+        'six_grade_enroll': six_grade_enroll,
+        'eight_grade_enroll': eight_grade_enroll,
+        'ten_grade_enroll': ten_grade_enroll
     })
 
 def ed_center_dash(request, ed_center_id):
@@ -468,3 +493,24 @@ def signout(request):
     if request.user.is_authenticated:
         logout(request)
     return HttpResponseRedirect(reverse("signin"))
+
+
+@login_required
+@csrf_exempt
+def import_teachers(request):
+    if request.method == "POST":
+        form = ImportDataForm(request.POST, request.FILES)
+        if form.is_valid():
+            message = bvb_teachers(form)
+        else:
+            data = form.errors
+        form = ImportDataForm()
+        return render(request, "vocational_guidance/import_teachers.html",{
+            'form': form,
+            'message': message
+        })
+    else:
+        form = ImportDataForm()
+        return render(request, "vocational_guidance/import_teachers.html",{
+            'form': form
+        })

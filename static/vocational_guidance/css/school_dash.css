@@ -17,26 +17,95 @@ h2 {
   border: 0px;
   box-shadow: 5px 5px 5px 2px rgba(0, 0, 0, 0.2);
 }
+.card .btn-primary {
+  background-color: #426cf8;
+  border: 0px;
+}
+.card .btn-outline-primary {
+  border-color: #394959;
+  color: #394959;
+  background-color: white;
+}
+.card img {
+  object-fit: cover;
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 150px;
+}
+.card .card-title {
+  font-weight: bold;
+}
+.card .ed_center {
+  font-size: 12px;
+}
+.card p {
+  margin-bottom: 3px;
+}
+.card a {
+  color: #778899;
+}
 
-.profile-section .card {
-  border: 1px solid black;
+.bootstrap-select {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+.bootstrap-select .dropdown-toggle {
+  background-color: #fff;
+}
+.bootstrap-select .filter-option {
+  color: #000;
+}
+
+.form-check {
+  padding-left: 25px;
+  margin-bottom: 16px;
+}
+
+.profile-section {
+  color: #394959;
+  background-color: #e9ecf7;
+}
+.profile-section .card .btn-primary {
+  background-color: #394959;
 }
 .profile-section .card-body {
   border: 1px;
 }
-.profile-section .contact-info {
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-left: 0px;
-  border-left: 1px solid black;
+.profile-section .list-group-item {
+  color: #394959;
 }
-.profile-section .school-info {
-  padding-bottom: 5px;
-  padding-top: 5px;
-  padding-right: 0px;
+.profile-section .statistic {
+  text-align: center;
 }
-.profile-section .card-footer, .profile-section .card-header {
-  padding: 5px;
+.profile-section .statistic .card {
+  box-shadow: 5px 5px 5px 2px #e9ecf7;
+  background-color: white;
+  color: #394959;
+  border: 0px;
+}
+.profile-section .statistic .card .card-title {
+  font-weight: 400;
+}
+.profile-section .statistic .card .card-body {
+  padding: 10px;
+  text-align: left;
+  font-size: 16px;
+}
+.profile-section .statistic .main-stat {
+  background-color: #394959;
+  color: white;
+}
+.profile-section .statistic .main-stat .card-title {
+  font-weight: 500;
+}
+.profile-section .statistic .main-stat .card-body {
+  text-align: center;
+  font-size: 18px;
+}
+.profile-section .statistic .main-stat h5 {
+  margin: 0;
 }
 
 .justify-content-center {
@@ -48,46 +117,6 @@ h2 {
   padding-top: 50px;
   padding-bottom: 50px;
   width: 100%;
-}
-
-.group-section {
-  background-color: rgba(13, 109, 253, 0.1);
-}
-.group-section .card-bundle {
-  margin-top: 0px;
-  margin-bottom: 15px;
-  padding: 0px;
-}
-.group-section .card-bundle .card {
-  border: 2px solid;
-  padding: 0px;
-  margin-left: 10px;
-  margin-right: 10px;
-}
-.group-section .card-bundle .card .card-body {
-  padding: 0px;
-}
-.group-section .card-bundle .card button {
-  margin: 0px;
-  border: 0;
-  border-radius: 0;
-}
-.group-section .card-bundle .border-success .list-group-item {
-  border-radius: 0;
-  border-color: #28a745;
-  border-bottom-color: #1b7730;
-  color: white;
-  background-color: #28a745;
-}
-.group-section .card-bundle .border-warning .list-group-item {
-  border-radius: 0;
-  border-color: #ffc107;
-  border-bottom-color: #c29204;
-  color: white;
-  background-color: #ffc107;
-}
-.group-section .card-bundle .list-group-item.last {
-  border-bottom: 0;
 }
 
 /*# sourceMappingURL=school_dash.css.map */
