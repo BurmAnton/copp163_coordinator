@@ -21,5 +21,6 @@ urlpatterns = [
     path('choose_bundle',  views.choose_bundle, name='choose_bundle'),
     path('reject_bundle',  views.reject_bundle, name='reject_bundle'),
     path('change_profile', views.change_profile, name='change_profile'),
+    path('change_profile_teacher', views.change_profile_teacher, name='change_profile_teacher'),
     path('change_password', views.change_password, name='change_password')
 ]

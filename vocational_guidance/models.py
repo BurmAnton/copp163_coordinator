@@ -9,12 +9,6 @@ from users.models import User
 from citizens.models import Citizen, School
 from education_centers.models import EducationCenter, EducationProgram, Workshop
 
-class EducatorNavigator(User):
-    school = models.ForeignKey(School, verbose_name="Школа", related_name="ed_navs", on_delete=CASCADE)
-        
-    class Meta:
-        verbose_name = "Педагог-навигатор"
-        verbose_name_plural = "Педагоги-навигаторы"
 
 class VocGuidTest(models.Model):
     name = models.CharField("Название пробы", max_length=100, default="")

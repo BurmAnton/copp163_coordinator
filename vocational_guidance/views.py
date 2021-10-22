@@ -486,6 +486,22 @@ def change_profile(request):
         return HttpResponseRedirect(reverse("index"))
     return HttpResponseRedirect(reverse("index"))
 
+@login_required(login_url='bilet/login')
+@csrf_exempt
+def change_profile_teacher(request):
+    if request.method == "POST":
+        request.user.email = request.POST["email"]
+        request.user.phone_number = request.POST["phone"]
+        request.user.first_name = request.POST["name"]
+        request.user.last_name = request.POST["last_name"]
+        request.user.middle_name = request.POST['middle_name']
+        request.user.save()
+        school = School.objects.get(id=request.POST["school_id"])
+        school.adress = request.POST['adress']
+        school.save()
+        return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse("index"))
+
 
 
 @login_required(login_url='bilet/login')

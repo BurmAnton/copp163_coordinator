@@ -49,18 +49,30 @@
                     <h5 class="modal-title" id="exampleModalLabel">Изменить данные профиля</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{% url 'change_profile' %}" method="post">
+                <form action="{% url 'change_profile_teacher' %}" method="post">
                     <div class="modal-body">
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" name="name" id="Name" placeholder="Имя" value="{{user.first_name}}" required>
+                            {% if user.first_name == None %}
+                                <input type="input" class="form-control" name="name" id="Name" placeholder="Имя" required>
+                            {% else %}
+                                <input type="input" class="form-control" name="name" id="Name" placeholder="Имя" value="{{user.first_name}}" required>
+                            {% endif %} 
                             <label for="Name">Имя</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" name="middle_name" id="MiddleName" placeholder="Отчество" value="{{user.middle_name}}">
+                            {% if user.middle_name == None %}
+                                <input type="input" class="form-control" name="middle_name" id="MiddleName" placeholder="Отчество" >
+                            {% else %}
+                                <input type="input" class="form-control" name="middle_name" id="MiddleName" placeholder="Отчество" value="{{user.middle_name}}">
+                            {% endif %} 
                             <label for="MiddleName">Отчество</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" name="last_name" id="LastName" placeholder="Фамилия" value="{{user.last_name}}" required>
+                            {% if user.last_name == None %}
+                                <input type="input" class="form-control" name="last_name" id="LastName" placeholder="Фамилия" required>
+                            {% else %}
+                                <input type="input" class="form-control" name="last_name" id="LastName" placeholder="Фамилия" value="{{user.last_name}}" required>
+                            {% endif %} 
                             <label for="LastName">Фамилия</label>
                         </div>
                         <div class="form-floating mb-3">
@@ -68,11 +80,23 @@
                             <label for="Email">Email</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номер телефона" value="{{user.phone_number}}" required>
+                            {% if user.phone == None %}
+                                <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номер телефона" value="{{user.phone_number}}" required>
+                            {% else %}
+                                <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номер телефона" required>
+                            {% endif %}
                             <label for="Phone">Номер телефона</label>
                         </div>
+                        <div class="form-floating mb-3">
+                            {% if school.adress == None %}
+                                <input type="input" class="form-control" name="adress" id="adress" placeholder="Адрес" required>
+                            {% else %}
+                                <input type="input" class="form-control" name="adress" id="adress" placeholder="Адрес" value="{{school.adress}}" required>
+                            {% endif %}
+                            <label for="Name">Адрес</label>
+                        </div>
                         <div style="display: none;">
-                            <input type="input" class="form-control" name="id" value="{{user.id}}">
+                            <input type="input" class="form-control" name="school_id" value="{{school.id}}">
                         </div>
                     </div>
                     <div class="modal-footer">

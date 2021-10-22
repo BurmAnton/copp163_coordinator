@@ -3,23 +3,7 @@ from django.contrib import admin
 from easy_select2 import select2_modelform
 from django_admin_listfilter_dropdown.filters import DropdownFilter, RelatedOnlyDropdownFilter, ChoiceDropdownFilter
 
-from .models import TimeSlot, VocGuidTest, VocGuidGroup, EducatorNavigator
-
-EducatorNavigatorForm = select2_modelform(EducatorNavigator, attrs={'width': '400px'})
-
-@admin.register(EducatorNavigator)
-class EducatorNavigatorAdmin(admin.ModelAdmin):
-    form = EducatorNavigatorForm
-    fieldsets = (
-        (None,
-            {'fields': ('email', 'password', 'school')}),
-        ("Личные данные",
-            {'fields': ('last_name', 'first_name', 'middle_name', 'phone_number')}),
-        ('Важные даты', 
-            {'fields': ('date_joined', 'last_login')}),
-    )
-    readonly_fields = ('date_joined', 'last_login')
-
+from .models import TimeSlot, VocGuidTest, VocGuidGroup
 
 TimeSlotForm = select2_modelform(TimeSlot, attrs={'width': '400px'})
 

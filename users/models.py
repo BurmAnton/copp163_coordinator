@@ -16,6 +16,8 @@ class User(AbstractUser):
     objects = CustomUserManager()
 
     def __str__(self):
+        if self.first_name == "":
+            return f'{self.email}'
         return f'{self.first_name} {self.last_name}'
     
     class Meta:

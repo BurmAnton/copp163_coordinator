@@ -4,7 +4,6 @@ from datetime import datetime, tzinfo
 from django.utils import timezone
 
 from citizens.models import Citizen, School
-from education_centers.models import EducationProgram, EducationCenter, Workshop, Competence
 from users.models import User, Group
 
 def get_sheet(form):
@@ -32,11 +31,14 @@ def bvb_teachers(form):
     
     sheet_dict = load_worksheet_dict(sheet, cheak[1])
     teachers = 0
+    updated = 0
     for row in range(len(sheet_dict['Логин'])):
         teacher = load_teacher(sheet_dict, row)
         if teacher[1] == "Added":
             teachers += 1
-    return [True, teachers]
+        elif teacher[1] == "Updated":
+            updated += 1
+    return [True, teachers, updated]
 
 def cheak_col_match(sheet, fields_names_set):
     i = 0
@@ -73,13 +75,16 @@ def load_worksheet_dict(sheet, fields_names_set):
 
 def load_teacher(sheet_dict, row):
     email = sheet_dict["Логин"][row]
-    teacher = Citizen.objects.filter(email=email, social_status='SCHT')
+    teacher = User.objects.filter(email=email)
     if len(teacher) == 0:
         teacher = add_teacher(sheet_dict, row)
         return [teacher, 'Added']
     else:
         teacher = update_teacher(sheet_dict, row, teacher[0])
-        return [teacher, "Updated"]
+        if teacher[1]:
+            return [teacher[0], "Updated"]
+        else:
+            return [teacher[0], "Unchange"]
 
 def add_teacher(sheet_dict, row):
     school = sheet_dict["Школа"][row]
@@ -96,26 +101,22 @@ def add_teacher(sheet_dict, row):
         )
         school.save()
 
-    teacher = Citizen(
-        phone_number = "–",
-        email = email,
-        social_status='SCHT'
-    )
-
-    user = User(email=email, password=password)
+    user = User.objects.create_user(email=email, password=password)
     user.save()
     group = Group.objects.get(name="Координатор")
     user.groups.add(group)
     school.school_coordinators.add(user)
 
-    teacher.save()
     user.save()
     school.save()
-    return teacher
+    return user
 
 def update_teacher(sheet_dict, row, teacher):
+    is_changed = False
     school = sheet_dict["Школа"][row]
     email = sheet_dict["Логин"][row]
+    password = sheet_dict["Пароль"][row]
+
     user = User.objects.get(email=teacher.email)
     school = School.objects.filter(name=school)
     if len(school) > 0:
@@ -126,17 +127,22 @@ def update_teacher(sheet_dict, row, teacher):
             city=sheet_dict["Населенный пункт"][row],
         )
         school.save()
+    if not school.school_coordinators.filter(id=user.id).exists():
         user.coordinated_schools.clear()
         school.school_coordinators.add(user)
+        school.save()
+        is_changed = True
 
     if teacher.email != email:
         teacher.email = email
         teacher.save()
+        is_changed = True
 
     if user.email != email:
         user.email = email
+        is_changed = True
 
     user.save()
     school.save()
-    return teacher
+    return [teacher, is_changed]
 
