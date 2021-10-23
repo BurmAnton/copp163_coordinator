@@ -9,8 +9,34 @@ TimeSlotForm = select2_modelform(TimeSlot, attrs={'width': '400px'})
 
 @admin.register(TimeSlot)
 class TimeSlotAdmin(admin.ModelAdmin):
-    form = TimeSlotForm
+    list_display = (
+        "test",
+        "date",
+        "get_time",
+        "get_ed_center"
+    )
+    search_fields = ["test__name","date"]
 
+    def get_ed_center(self, slot):
+        education_center = slot.test.education_center
+        return education_center
+    get_ed_center.short_description='Центр обучения'
+
+    def get_time(self, slot):
+        SLOT_CHOICES = [
+            ("MRN", "10:00–11:30"),
+            ("MID", "с 15:00 до 16:30"),
+            ("EVN", "с 16:30 до 18:00"),
+        ]
+        time = slot.slot
+        if time == 'MRN':
+            time = "10:00–11:30"
+        elif time == "MID":
+            time = "15:00-16:30"
+        else:
+            time = "16:30-18:00"
+        return time
+    get_time.short_description='Время'
 
 VocGuidTestForm = select2_modelform(VocGuidTest, attrs={'width': '400px'})
 

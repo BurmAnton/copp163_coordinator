@@ -5,7 +5,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from users.models import User
 
 class Competence(models.Model):
-    title = models.CharField("Название компетенции", max_length=100)
+    title = models.CharField("Название компетенции", max_length=200)
     
     СOMPETENCE_BLOCKS = (
         ('IT', 'Информационные и коммуникационные технологии'),
@@ -38,7 +38,7 @@ class Competence(models.Model):
 
 
 class EducationProgram(models.Model):
-    program_name = models.CharField("Название программы", max_length=150)
+    program_name = models.CharField("Название программы", max_length=300)
     competence = models.ForeignKey(Competence, verbose_name="Компетенция", on_delete=CASCADE, related_name='programs')
     PROGRAM_TYPES = (
         ('DPOPK', 'ДПО ПК'),
@@ -69,7 +69,7 @@ class EducationProgram(models.Model):
         return f"{self.program_name} ({program_type}, {self.duration} ч.)"
 
 class EducationCenter(models.Model):
-    name = models.CharField("Название организации", max_length=250)
+    name = models.CharField("Название организации", max_length=500)
     contact_person = models.ForeignKey(User, verbose_name="Контактное лицо", related_name="education_centers", on_delete=DO_NOTHING, blank=True, null=True)
     competences = models.ManyToManyField(Competence, related_name="educationCenters", verbose_name="Компетенции", blank=True)
     

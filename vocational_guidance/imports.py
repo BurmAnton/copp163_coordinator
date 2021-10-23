@@ -3,8 +3,10 @@ from openpyxl import load_workbook
 from datetime import datetime, tzinfo
 from django.utils import timezone
 
-from citizens.models import Citizen, School
+from citizens.models import Citizen, DisabilityType, School
 from users.models import User, Group
+from .models import VocGuidTest, TimeSlot
+from education_centers.models import EducationCenter
 
 def get_sheet(form):
     workbook = load_workbook(form.cleaned_data['import_file'])
@@ -146,3 +148,128 @@ def update_teacher(sheet_dict, row, teacher):
     school.save()
     return [teacher, is_changed]
 
+
+def slots_import(form):
+    try:
+        sheet = get_sheet(form)
+    except IndexError:
+        return [False, 'IndexError']
+
+    fields_names_set = {
+        'ЦО', 'Программа', 
+        'Тип', 'Возрастная категория', 
+        'Описание', 'Дата',
+        'Время', 'ОВЗ'
+    }
+
+    cheak = cheak_col_match(sheet, fields_names_set)
+    if cheak[0] == False:
+        return cheak
+    
+    sheet_dict = load_worksheet_dict_slots(sheet, cheak[1])
+    slots = 0
+    nf_ed_centers = set()
+    for row in range(len(sheet_dict['Программа'])):
+        test = load_slot(sheet_dict, row)
+        if test[0] == "OK":
+            slots += test[2]
+        else:
+            nf_ed_centers.add(test[1])
+    return [slots, nf_ed_centers]
+    
+def load_worksheet_dict_slots(sheet, fields_names_set):
+    row_count = sheet.max_row
+    sheet_dict = {}
+    for col in fields_names_set:
+        sheet_dict[fields_names_set[col]] = []
+        for row in range(2, row_count+1): 
+            login = sheet[f"B{row}"].value
+            if login != None:
+                sheet_dict[fields_names_set[col]].append(sheet.cell(row=row,column=col).value)
+    return sheet_dict
+
+def load_slot(sheet_dict, row):
+    ed_center = sheet_dict["ЦО"][row]
+    program = sheet_dict["Программа"][row]
+    time_slots = sheet_dict["Время"][row]
+    date = sheet_dict["Дата"][row]
+    test_type = ""
+
+    test = load_test(sheet_dict, row)
+    if test[0] == "OK":
+        test = test[1]
+    else:
+        return ["NOT_FOUND_ED_CNTR", test[1]]
+
+    time_slots = time_slots.split(",")
+    slots_count = 0
+    for slot in time_slots:
+        if "с 15:00 до 16:30" in slot:
+            slot = 'MID'
+        elif "с 16:30 до 18:00" in slot:
+            slot = 'EVN'
+        elif 'с 10:00 до 11:30' in slot:
+            slot = 'MRN'
+        else: 
+            return ["OK", test, slots_count]
+        time_slot = TimeSlot.objects.filter(test=test, date=date, slot=slot)
+        if len(time_slot) == 0:
+            slot = TimeSlot(
+                test=test, 
+                date=date, 
+                slot=slot
+            )
+            slot.save()
+        slots_count += 1
+    return ["OK", test, slots_count]
+
+def load_test(sheet_dict, row):
+    name = sheet_dict["Программа"][row]
+    description = sheet_dict["Описание"][row]
+    disabilities = sheet_dict["ОВЗ"][row]
+    education_center = sheet_dict["ЦО"][row]
+    age_group = sheet_dict["Возрастная категория"][row]
+    education_center = EducationCenter.objects.filter(name=education_center)
+
+    if len(education_center) > 0:
+        education_center = education_center[0]
+        if age_group == "6-7 класс":
+            age_group = '6-7'
+        elif age_group == "8-9 класс":
+            age_group = '8-9'
+        elif age_group == "10-11 класс":
+            age_group = '10-11'
+        else:
+            age_group = 'ALL'
+
+        test = VocGuidTest.objects.filter(
+            name=name, 
+            education_center=education_center, 
+            age_group=age_group
+        )
+
+        if len(test) == 0:
+            test = VocGuidTest(
+                name = name,
+                education_center = education_center,
+                description = description,
+                age_group = age_group,
+                guid_type = 'VO'
+            )
+            test.save()
+        else:
+            test = test[0]
+            if description != "":
+                test.description = description
+
+        if disabilities is not None:
+            disabilities = disabilities.split(",")
+            for disability in disabilities:
+                disability = DisabilityType.objects.filter(name=disability)
+                if len(disability) > 0:
+                    test.disability_types.add(disability[0])
+
+        test.save()
+        return ["OK", test]
+
+    return ["NOT_FOUND_ED_CNTR", sheet_dict["ЦО"][row]]

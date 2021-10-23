@@ -38,10 +38,23 @@ class SchoolClass(models.Model):
     def __str__(self):
         return  f"{self.grade_number}{self.grade_letter} – {self.school}"
 
+
+class DisabilityType(models.Model):
+    name = models.CharField("ОВЗ", max_length=100)
+    description = models.CharField("Описание", max_length=300, blank=True, null=True)
+    
+    class Meta:
+        verbose_name = "Инвалидность"
+        verbose_name_plural = "Инвалидности"
+
+    def __str__(self):
+        return  f"{self.name}"
+
+
 class Citizen(models.Model):
     first_name = models.CharField("Имя", max_length=30, null=True)
     last_name = models.CharField("Фамилия", max_length=50, null=True)
-    middle_name = models.CharField("Отчество", max_length=30, blank=True, null=True)
+    middle_name = models.CharField("Отчество", max_length=60, blank=True, null=True)
 
     SEX_CHOICES = [
         ('M', "Мужской"),
@@ -56,8 +69,8 @@ class Citizen(models.Model):
     snils_number = models.CharField("Номер СНИЛС", max_length=11, blank=True, null=True)
     inn_number = models.CharField("ИНН", max_length=30, blank=True, null=True)
 
-    res_region = models.CharField("Регион проживания", max_length=50, blank=True, null=True)
-    res_city = models.CharField("Населённый пункт", max_length=50, blank=True, null=True)
+    res_region = models.CharField("Регион проживания", max_length=150, blank=True, null=True)
+    res_city = models.CharField("Населённый пункт", max_length=150, blank=True, null=True)
     res_disctrict = models.CharField("Населённый пункт", max_length=50, blank=True, null=True)
 
     STATUS_CHOICES = [
@@ -89,17 +102,7 @@ class Citizen(models.Model):
     is_employed = models.BooleanField("Трудоустроен", default=False)
     is_verified = models.BooleanField("Верифицирован", default=False)
     copp_registration = models.BooleanField("Зарегистрирован на copp63.ru", default=False)
-    disability_types = [
-        ('1', "Нарушениями слуха"),
-        ('2', "Нарушениями зрения"),
-        ('3', "Нарушениями речи"),
-        ('4', "Нарушениями интеллекта"),
-        ('5', "Задержкой психического развития"),
-        ('6', "Нарушениями опорно-двигательного аппарата"),
-        ('7', "Нарушениями эмоционально-волевой сферы"),
-        ('8', "Множественными нарушениями"),
-    ]
-    disability_type = models.CharField("Инвалидность", max_length=4, choices=EDUCATION_CHOICES, blank=True, null=True, default=None)
+    disability_type = models.ForeignKey(DisabilityType, verbose_name="ОВЗ", on_delete=DO_NOTHING, blank=True, null=True)
 
     field_history = FieldHistoryTracker(['is_employed', 'self_employed', 'is_verified'])
 

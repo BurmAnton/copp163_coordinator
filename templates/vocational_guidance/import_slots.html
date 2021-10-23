@@ -1,0 +1,42 @@
+{% extends "federal_empl_program/layout.html" %}
+{% load static %}
+
+{% block title %}Импорт данных | ФП «Содействие занятости»‎{% endblock %}
+{% block style %}
+    <link href="{% static 'federal_empl_program/css/citizens.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'federal_empl_program/js/citizens.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="card" style="width: 25rem;" id='import_form'>
+        <h2>Импортировать&nbspданные</h2>
+        <form enctype="multipart/form-data" action="{% url 'import_slots' %}" method="post">
+            <div class="input-group mb-3">
+                {{ form }}
+            </div>
+            <div class="submit">
+                <input type="submit" value="Загрузить данные" class="btn btn-primary">   
+            </div>
+        </form>
+
+         {% if message%}
+            <div class="alert alert-success" role="alert">
+                <p>Слотов добавлено – <strong>{{ message.0 }}</strong></p>
+            </div>   
+        {% endif %}
+        
+        {% if message.1 is not Empty %}
+            <div class="alert alert-danger" role="alert">
+                <p>Ненайденные центры обучения:</strong></p>
+                <ol>
+                {% for ed_center in message.1 %}
+                    <li>{{ed_center}}</li>
+                {% endfor %}
+                </ol>
+            </div> 
+        {% endif %}
+    </div>
+
+{% endblock %}

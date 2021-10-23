@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.db import IntegrityError
 
 from .forms import ImportDataForm
-from .imports import bvb_teachers
+from .imports import bvb_teachers, slots_import
 
 from users.models import User, Group
 from citizens.models import Citizen, School, SchoolClass
@@ -528,5 +528,25 @@ def import_teachers(request):
     else:
         form = ImportDataForm()
         return render(request, "vocational_guidance/import_teachers.html",{
+            'form': form
+        })
+
+@login_required
+@csrf_exempt
+def import_slots(request):
+    if request.method == "POST":
+        form = ImportDataForm(request.POST, request.FILES)
+        if form.is_valid():
+            message = slots_import(form)
+        else:
+            data = form.errors
+        form = ImportDataForm()
+        return render(request, "vocational_guidance/import_slots.html",{
+            'form': form,
+            'message': message
+        })
+    else:
+        form = ImportDataForm()
+        return render(request, "vocational_guidance/import_slots.html",{
             'form': form
         })

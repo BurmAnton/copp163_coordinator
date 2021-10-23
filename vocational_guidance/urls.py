@@ -9,6 +9,7 @@ urlpatterns = [
     path('ed_center/dashboard/<int:ed_center_id>', views.ed_center_dash, name='ed_center_dash'),
     path('dashboard', views.region_dash, name='region_dash'),
     path('import_teachers', views.import_teachers, name="import_teachers"),
+    path('import_slots', views.import_slots, name="import_slots"),
 
 #Auth
     path('login/', views.signin, name='signin'),

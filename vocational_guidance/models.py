@@ -6,14 +6,14 @@ from django.core.exceptions import ValidationError
 from django.db.models.fields.related import ForeignKey
 
 from users.models import User
-from citizens.models import Citizen, School
+from citizens.models import Citizen, School, DisabilityType
 from education_centers.models import EducationCenter, EducationProgram, Workshop
 
 
 class VocGuidTest(models.Model):
-    name = models.CharField("Название пробы", max_length=100, default="")
+    name = models.CharField("Название пробы", max_length=300, default="")
     education_center = models.ForeignKey(EducationCenter, verbose_name="Центр обучения", related_name="voc_guid_sessions", on_delete=CASCADE)
-    education_program_link = models.URLField("Программа обучения (ссылка)", max_length=200)
+    education_program_link = models.URLField("Программа обучения (ссылка)", max_length=200, blank=True, null=True)
     AGE_GROUP_CHOICES = [
         ('6-7', "6-7 класс"),
         ('8-9',"8-9 класс"),
@@ -32,7 +32,8 @@ class VocGuidTest(models.Model):
         ('EC', "На базе ЦО")
     ]
     guid_type = models.CharField("Тип проб", max_length=4, choices=TYPE_CHOICES, default="VO")
-
+    disability_types = models.ManyToManyField(DisabilityType, verbose_name="ОВЗ")
+    
     class Meta:
         verbose_name = "Проф. проба"
         verbose_name_plural = "Проф. пробы"
@@ -70,11 +71,12 @@ class TimeSlot(models.Model):
     ]
     slot = models.CharField("Временной промежуток", max_length=5, choices=SLOT_CHOICES)
     group = models.ForeignKey(VocGuidGroup, verbose_name="Группы", on_delete=CASCADE, blank=True, null=True)
-    test = models.ForeignKey(VocGuidTest, verbose_name="Пробы", blank=True, null=True, on_delete=DO_NOTHING)
+    test = models.ForeignKey(VocGuidTest, verbose_name="Пробы", blank=True, null=True, on_delete=CASCADE)
+    zoom_link = models.URLField("Ссылка на конференцию (zoom)", max_length=400, blank=True, null=True)
 
     class Meta:
         verbose_name = "Слот"
         verbose_name_plural = "Слоты"
 
     def __str__(self):
-        return  f"{self.date} {self.slot} ({self.education_center})"
+        return  f"{self.date} {self.slot}"
