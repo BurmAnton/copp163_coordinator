@@ -119,4 +119,38 @@ h2 {
   width: 100%;
 }
 
+.group-card .card-body {
+  padding: 0;
+}
+.group-card .card-body .card-header {
+  padding: 10px;
+  background-color: #394959;
+  color: white;
+  text-align: center;
+}
+.group-card .card-body .card-header .card-title {
+  margin: 0;
+  font-weight: 500 !important;
+}
+.group-card .card-body .card-text {
+  margin: 15px;
+  margin-bottom: 0px;
+}
+.group-card .card-body .list-group-item {
+  margin-left: 15px;
+  margin-right: 15px;
+}
+.group-card .card-body .card-footer {
+  margin-top: 10px;
+}
+.group-card .slot-submit {
+  margin-top: 10px;
+}
+.group-card .cancel_slot {
+  width: 100%;
+}
+.group-card .cancel_slot .btn {
+  width: 100%;
+}
+
 /*# sourceMappingURL=school_dash.css.map */

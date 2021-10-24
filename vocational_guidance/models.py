@@ -1,4 +1,5 @@
 import datetime
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from django.db import models
 from django.db.models.deletion import CASCADE, DO_NOTHING
@@ -60,7 +61,7 @@ class VocGuidGroup(models.Model):
         verbose_name_plural = "Группы по проф. ориентации"
 
     def __str__(self):
-        return  f"{self.id}"
+        return  f"{self.bundle} {self.school} {self.age_group} класс (ID: {self.id})"
 
 class TimeSlot(models.Model):
     date = models.DateField("Дата")
@@ -70,7 +71,8 @@ class TimeSlot(models.Model):
         ("EVN", "с 16:30 до 18:00"),
     ]
     slot = models.CharField("Временной промежуток", max_length=5, choices=SLOT_CHOICES)
-    group = models.ForeignKey(VocGuidGroup, verbose_name="Группы", on_delete=CASCADE, blank=True, null=True)
+    group = models.ManyToManyField(VocGuidGroup, related_name="slots", verbose_name="Группы", blank=True)
+    participants_count = models.IntegerField("Колво участников", default=0, validators=[MaxValueValidator(8),MinValueValidator(0)])
     test = models.ForeignKey(VocGuidTest, verbose_name="Пробы", blank=True, null=True, on_delete=CASCADE)
     zoom_link = models.URLField("Ссылка на конференцию (zoom)", max_length=400, blank=True, null=True)
 
@@ -79,4 +81,28 @@ class TimeSlot(models.Model):
         verbose_name_plural = "Слоты"
 
     def __str__(self):
-        return  f"{self.date} {self.slot}"
+        return  f"{self.test} – {self.date} {self.slot}"
+
+
+class VocGuidAssessment(models.Model):
+    participant = models.ForeignKey(
+        Citizen, related_name="voc_guid_assessment", 
+        verbose_name="Участник", on_delete=CASCADE
+    )
+    test = models.ForeignKey(
+        VocGuidTest, related_name="assessments", 
+        verbose_name="Проба", on_delete=CASCADE
+    )
+    slot = models.ForeignKey(
+        TimeSlot, related_name="assessments", 
+        verbose_name="Слот", on_delete=CASCADE
+    )
+    attendance = models.BooleanField("Посещаемость", default=False)
+
+    class Meta:
+        verbose_name = "Ассесмент"
+        verbose_name_plural = "Ассесмент"
+
+    def __str__(self):
+        return  f"{self.participant}: {self.test} ({self.slot})"
+

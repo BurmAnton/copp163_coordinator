@@ -131,17 +131,17 @@
                         {% endif %}
                             <select class="selectpicker" data-width="100%" data-live-search="true" name="disability_type" id="disability_type">
                                 {% if user.disability_type != none %}
-                                {% for type in disability_types %}
-                                    {% if user.disability_type == type.0 %}
-                                        <option value="{{type.0}}" class="disability_type" data-school="{{type}}" selected>{{type.1}}</option>
-                                    {% else %}
-                                        <option value="{{type.0}}" class="disability_type" data-school="{{type}}">{{type.1}}</option>
-                                    {% endif %}
-                                {% endfor %}
+                                    {% for type in disability_types %}
+                                        {% if user.disability_type == type %}
+                                            <option value="{{type.id}}" class="disability_type" data-school="{{type}}" selected>{{type.name}}</option>
+                                        {% else %}
+                                            <option value="{{type.id}}" class="disability_type" data-school="{{type}}">{{type.name}}</option>
+                                        {% endif %}
+                                    {% endfor %}
                                 {% else %}
                                     <option>Выберите вид нарушения</option>
                                     {% for type in disability_types %}
-                                            <option value="{{type.0}}" class="disability_type" data-school="{{type}}">{{type.1}}</option>
+                                            <option value="{{type.id}}" class="disability_type" data-school="{{type}}">{{type.name}}</option>
                                     {% endfor %}
                                 {% endif %}
                             </select>
@@ -202,18 +202,35 @@
                                                 <div class="card-body">
                                                     <h5 class="card-title">{{bundle_value|get_item:'name'}}</h5>
                                                     <p class="card-text">{{bundle_value|get_item:'description'}}</p>
+                                                    {% if slot is not None %}
+                                                        <p class="card-text"><b>Дата:</b> {{slot.date}}</p>
+                                                        <p class="card-text"><b>Время:</b>
+                                                            {% if slot.slot == 'MID' %}
+                                                                15:00-16:30
+                                                            {% elif slot.slot == 'MRN' %}
+                                                                10:00-11:30
+                                                            {% else %}
+                                                                16:30-18:00
+                                                            {% endif %}
+                                                        </p>
+                                                        {% if slot.zoom_link is not None %}
+                                                            <p><a href="{{slot.zoom_link}}">Ссылка на конференцию</a></p>
+                                                        {% endif %}
+                                                    {% endif %}
                                                 </div>
-                                                <div class="card-footer">
-                                                    <div class="d-grid gap-2">
-                                                        <form action="{%url 'reject_bundle' %}" method="post">
-                                                            <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
-                                                            <input type="input" class="form-control" name="bundle_id" value="{{bundle_value|get_item:'id'}}" style="display: none;">
-                                                            <div class="d-grid gap-2">
-                                                                <button type="submit" class="btn btn-outline-dark">Отказаться</button>
-                                                            </div>
-                                                        </form>
+                                                {% if slot is None %}
+                                                    <div class="card-footer">
+                                                        <div class="d-grid gap-2">
+                                                            <form action="{%url 'reject_bundle' %}" method="post">
+                                                                <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
+                                                                <input type="input" class="form-control" name="bundle_id" value="{{bundle_value|get_item:'id'}}" style="display: none;">
+                                                                    <div class="d-grid gap-2">
+                                                                        <button type="submit" class="btn btn-outline-dark">Отказаться</button>
+                                                                    </div>
+                                                            </form>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     {% endfor %}
@@ -298,21 +315,23 @@
                                                 <li class="list-group-item ed_center"><b>Центр обучения:</b> {{bundle_value|get_item:'education_center'}}</li>
                                             </ul>
                                         </div>
-                                        <div class="card-footer">
-                                            <div class="d-grid gap-2">
-                                                <form action="{%url 'choose_bundle' %}" method="post">
-                                                    <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
-                                                    <input type="input" class="form-control" name="bundle_id" value="{{bundle_value|get_item:'id'}}" style="display: none;">
-                                                    <div class="d-grid gap-2">
-                                                        {% if 'VO' in choosen_type_presence %}
-                                                            <button type="submit" class="btn btn-outline-primary">Сменить пробу</button>
-                                                        {% else %}
-                                                            <button type="submit" class="btn btn-primary">Выбрать</button>
-                                                        {% endif %}
-                                                    </div>
-                                                </form>
+                                        {% if slot is None %}
+                                            <div class="card-footer">
+                                                <div class="d-grid gap-2">
+                                                    <form action="{%url 'choose_bundle' %}" method="post">
+                                                        <input type="input" class="form-control" name="citizen" value="{{user.id}}" style="display: none;">
+                                                        <input type="input" class="form-control" name="bundle_id" value="{{bundle_value|get_item:'id'}}" style="display: none;">
+                                                        <div class="d-grid gap-2">
+                                                            {% if 'VO' in choosen_type_presence %}
+                                                                <button type="submit" class="btn btn-outline-primary">Сменить пробу</button>
+                                                            {% else %}
+                                                                <button type="submit" class="btn btn-primary">Выбрать</button>
+                                                            {% endif %}
+                                                        </div>
+                                                    </form>
+                                                </div>
                                             </div>
-                                        </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             {% endfor %}

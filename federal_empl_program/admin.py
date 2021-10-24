@@ -121,8 +121,8 @@ class ApplicationAdmin(admin.ModelAdmin):
         form = super(ApplicationAdmin, self).get_form(request, obj, **kwargs)
         cl_group = Group.objects.filter(name='Представитель ЦО')
 
-        if len(cl_group) != 0:
-            if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
+        if len(cl_group) == 0:
+            if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) == 0:
                 form.base_fields['category'].widget.attrs['style'] = 'width: 55em;'
                 form.base_fields['education_program'].widget.attrs['style'] = 'width: 75em;'
                 form.base_fields['education_center'].widget.attrs['style'] = 'width: 75em;'

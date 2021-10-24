@@ -6,7 +6,7 @@ from django.urls import reverse
 from easy_select2 import select2_modelform
 from datetime import datetime, timedelta
 
-from .models import Citizen, Job, School, SchoolClass
+from .models import Citizen, Job, School, SchoolClass, DisabilityType
 from federal_empl_program.models import Application
 from education_centers.models import EducationCenter
 from users.models import User
@@ -39,6 +39,10 @@ class ApplicationInline(admin.StackedInline):
         if obj:
             return extra + obj.POE_applications.count()
         return extra
+
+@admin.register(DisabilityType)
+class DisabilityTypeAdmin(admin.ModelAdmin):
+    pass
 
 CitizenForm = select2_modelform(Citizen, attrs={'width': '400px'})
 
