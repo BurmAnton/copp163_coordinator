@@ -56,6 +56,8 @@ def profile(request, citizen_id):
             slot = slot[0]
         else:
             slot = None
+    else:
+        slot = None
     
     choosen_type_presence = set()
     choosen_tests_dict = {}
@@ -487,9 +489,10 @@ def change_profile(request):
             disability_check = False
         if disability_check != False:
             disability_type = request.POST['disability_type']
+            citizen.disability_type = DisabilityType.objects.get(id=disability_type)
         else:
-            disability_type = None
-        citizen.disability_type = DisabilityType.objects.get(id=disability_type)
+            citizen.disability_type = None
+        
         school_class = SchoolClass.objects.filter(
                 school=school,
                 grade_number=grade_number,

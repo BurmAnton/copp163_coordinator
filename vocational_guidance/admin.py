@@ -157,6 +157,7 @@ class VocGuidTestAdmin(admin.ModelAdmin):
                     'participants', 'age_group',
                     'education_center', 'name', 'disability_types'
                 ]
+        return self.readonly_fields
 
 
 VocGuidGroupForm = select2_modelform(VocGuidGroup, attrs={'width': '400px'})
