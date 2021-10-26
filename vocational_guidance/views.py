@@ -16,7 +16,7 @@ from citizens.models import Citizen, DisabilityType, School, SchoolClass
 from vocational_guidance.models import TimeSlot, VocGuidTest, VocGuidGroup, VocGuidAssessment
 
 # Create your views here.
-@login_required(login_url='login/')
+@login_required(login_url='bilet/login')
 def index(request):
     school_group = Group.objects.get(name='Школьник')
     coordinator_group = Group.objects.get(name='Координатор')
@@ -129,36 +129,35 @@ def school_dash(request, school_id):
         if len(groups) != 0:
             tests_dict[test.name] = []
             for group in groups:
-                if group.participants_count != 0:
-                    group_dict = []
-                    group_dict.append(group)
-                    slots = TimeSlot.objects.filter(test=test)
-                    slots_list = []
-                    if len(slots) != 0:
-                        for slot in slots:
-                            slot_groups = VocGuidGroup.objects.filter(slots=slot)
-                            if len(groups) != 0:
-                                participants = 0
-                                for slot_group in slot_groups:
-                                    participants += slot_group.participants.count()
-                                    slot.participants_count = participants
-                                    slot.save()
-                            if participants + group.participants_count <= 8:
-                                if date.today() < slot.date and slot.date < (date.today() + timedelta(days=7)):
-                                    slots_list.append(slot)
-                    else:
-                        slots_list = None
-                    if slots_list == []:
-                        slots_list = None
-                    group_dict.append(slots_list)
-                    participant = Citizen.objects.filter(voc_guid_groups=group)
-                    group_dict.append(participant)
-                    timeslot = TimeSlot.objects.filter(group=group, test=test)
-                    if len(timeslot) != 0:
-                         group_dict.append(timeslot[0])
-                    else:
-                        group_dict.append(None)
-                    tests_dict[test.name].append(group_dict)
+                group_dict = []
+                group_dict.append(group)
+                slots = TimeSlot.objects.filter(test=test)
+                slots_list = []
+                if len(slots) != 0:
+                    for slot in slots:
+                        slot_groups = VocGuidGroup.objects.filter(slots=slot)
+                        if len(groups) != 0:
+                            participants = 0
+                            for slot_group in slot_groups:
+                                participants += slot_group.participants.count()
+                                slot.participants_count = participants
+                                slot.save()
+                        if participants + group.participants_count <= 8:
+                            if date.today() < slot.date and slot.date < (date.today() + timedelta(days=7)):
+                                slots_list.append(slot)
+                else:
+                    slots_list = None
+                if slots_list == []:
+                    slots_list = None
+                group_dict.append(slots_list)
+                participant = Citizen.objects.filter(voc_guid_groups=group)
+                group_dict.append(participant)
+                timeslot = TimeSlot.objects.filter(group=group, test=test)
+                if len(timeslot) != 0:
+                        group_dict.append(timeslot[0])
+                else:
+                    group_dict.append(None)
+                tests_dict[test.name].append(group_dict)
 
     students = Citizen.objects.filter(school=school)
     students_count = len(students)
@@ -174,6 +173,7 @@ def school_dash(request, school_id):
     return render(request, 'vocational_guidance/school_dash.html', {
         'school': school,
         'tests': tests_dict,
+        'groups': VocGuidGroup.objects.filter(school=school),
 
         'groups_count': groups_count,
         'groups_enroll': groups_enroll,
@@ -217,15 +217,18 @@ def choose_bundle(request):
         school = citizen.school
         
         groups = VocGuidGroup.objects.filter(bundle=test, school=school, age_group=age_group).annotate(participants_count=Count('participants'))
+        
         if len(groups) == 0:
             create_group(citizen, test)
         else:
             add = False
             for group in groups:
                 if group.participants_count < group.attendance_limit:
-                    group.participants.add(citizen)
-                    add = True
-                    break
+                    cheak_slot = TimeSlot.objects.filter(group=group)
+                    if len(cheak_slot) == 0:
+                        group.participants.add(citizen)
+                        add = True
+                        break
             if not add:
                 create_group(citizen, test)
     return HttpResponseRedirect(reverse("index"))
@@ -613,9 +616,8 @@ def choose_slot(request):
         group.slots.add(slot)
         participants = Citizen.objects.filter(voc_guid_groups=group)
         for participant in participants:
-            for participant in participants:
-                assessment = VocGuidAssessment.objects.filter(participant=participant)
-                assessment.delete()
+            assessments = VocGuidAssessment.objects.filter(participant=participant, slot=slot)
+            assessments.delete()
             assessment = VocGuidAssessment(
                 participant=participant,
                 test=slot.test,
@@ -634,4 +636,21 @@ def cancel_slot(request):
         for participant in participants:
             assessment = VocGuidAssessment.objects.filter(participant=participant)
             assessment.delete()
+    return HttpResponseRedirect(reverse("index"))
+
+def add_assessment_all(request):
+    slots = TimeSlot.objects.all()
+    for slot in slots:
+        groups = VocGuidGroup.objects.filter(slots=slot)
+        if len(groups) != 0:
+            for group in groups:
+                for participant in group.participants.all():
+                    assessment = VocGuidAssessment.objects.filter(participant=participant, slot=slot)
+                    if len(assessment) == 0:
+                        assessment = VocGuidAssessment(
+                            participant=participant,
+                            test=slot.test,
+                            slot=slot
+                        )
+                        assessment.save()
     return HttpResponseRedirect(reverse("index"))

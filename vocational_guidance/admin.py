@@ -35,7 +35,7 @@ class VocGuidAssessmentInline(admin.TabularInline):
             return extra
         return extra
 
-TimeSlotForm = select2_modelform(TimeSlot, attrs={'width': '400px'})
+TimeSlotForm = select2_modelform(TimeSlot, attrs={'width': '600px'})
 
 @admin.register(TimeSlot)
 class TimeSlotAdmin(admin.ModelAdmin):

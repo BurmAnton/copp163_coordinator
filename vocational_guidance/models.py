@@ -40,7 +40,7 @@ class VocGuidTest(models.Model):
         verbose_name_plural = "Проф. пробы"
 
     def __str__(self):
-        return  f"{self.name}"
+        return  f"{self.name} ({self.id})"
 
 
 
@@ -82,7 +82,7 @@ class TimeSlot(models.Model):
         verbose_name_plural = "Слоты"
 
     def __str__(self):
-        return  f"{self.test} – {self.date} {self.slot}"
+        return  f"{self.id} {self.test} – {self.date} {self.slot}"
 
 
 class VocGuidAssessment(models.Model):

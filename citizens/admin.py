@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from django_admin_listfilter_dropdown.filters import DropdownFilter, RelatedOnlyDropdownFilter
 
 from .models import Citizen, Job, School, SchoolClass, DisabilityType
+from vocational_guidance.models import VocGuidGroup
 from federal_empl_program.models import Application
 from education_centers.models import EducationCenter
 from users.models import User
@@ -98,6 +99,7 @@ class SchoolClassInline(admin.TabularInline):
     model = SchoolClass
     form = SchoolClassForm
 
+
 SchoolForm = select2_modelform(School, attrs={'width': '400px'})
 
 @admin.register(School)
@@ -110,9 +112,7 @@ class SchoolsAdmin(admin.ModelAdmin):
     )
     list_display = ('name', 'city', 'adress', 'specialty')
     filter_horizontal = ("school_coordinators",)
-    inlines = [
-        SchoolClassInline
-    ]
+    inlines = [SchoolClassInline, VocGuidGroupInline]
     fieldsets = (
         (None, {
             'fields': (

@@ -24,6 +24,7 @@ urlpatterns = [
     path('change_profile', views.change_profile, name='change_profile'),
     path('choose_slot', views.choose_slot, name='choose_slot'),
     path('cancel_slot', views.cancel_slot, name='cancel_slot'),
+    path('add_assessment_all', views.add_assessment_all, name='add_assessment_all'),
     path('change_profile_teacher', views.change_profile_teacher, name='change_profile_teacher'),
     path('change_password', views.change_password, name='change_password')
 ]
