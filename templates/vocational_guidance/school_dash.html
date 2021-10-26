@@ -223,7 +223,7 @@
                                 <div class="col-12">
                                     <div class="col card text-center main-stat">
                                         <div class="card-body">
-                                            <p class="card-title">Групп записанно на проф. пробы: 0 из {{groups_count}}</p>
+                                            <p class="card-title">Групп записанно на проф. пробы: {{groups_enroll}} из {{groups_count}}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -285,6 +285,7 @@
                                                                     {% else %}
                                                                         (16:30-18:00)
                                                                     {% endif %}
+                                                                      ({{group.3.participants_count}}/8 участников)
                                                                 </option>
                                                             {% endif %}
                                                             {% for slot in group.1 %}
@@ -298,6 +299,7 @@
                                                                         {% else %}
                                                                             (16:30-18:00)
                                                                         {% endif %}
+                                                                          ({{slot.participants_count}}/8 участников)
                                                                     </option>
                                                                 {% endif %}
                                                             {% endfor %}

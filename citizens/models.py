@@ -64,7 +64,7 @@ class Citizen(models.Model):
     birthday = models.DateField("Дата рождения", blank=True, null=True)
 
     email = models.EmailField("Email", max_length=320, blank=True, null=True)
-    phone_number = models.CharField("Номер телефона", max_length=16, blank=True, null=True)
+    phone_number = models.CharField("Номер телефона", max_length=35, blank=True, null=True)
 
     snils_number = models.CharField("Номер СНИЛС", max_length=11, blank=True, null=True)
     inn_number = models.CharField("ИНН", max_length=30, blank=True, null=True)

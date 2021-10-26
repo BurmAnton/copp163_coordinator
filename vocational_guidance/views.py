@@ -117,7 +117,10 @@ def profile(request, citizen_id):
 
 def school_dash(request, school_id):
     school = School.objects.get(id=school_id)
+    groups = VocGuidGroup.objects.filter(school=school)
     groups_count = len(VocGuidGroup.objects.filter(school=school))
+    slots_enroll = TimeSlot.objects.filter(group__in=groups)
+    groups_enroll = len(VocGuidGroup.objects.filter(school=school, slots__in=slots_enroll))
     tests = VocGuidTest.objects.all()
     tests_dict = {}
     for test in tests:
@@ -132,7 +135,14 @@ def school_dash(request, school_id):
                     slots_list = []
                     if len(slots) != 0:
                         for slot in slots:
-                            if group.participants_count + slot.participants_count <= 8:
+                            slot_groups = VocGuidGroup.objects.filter(slots=slot)
+                            if len(groups) != 0:
+                                participants = 0
+                                for slot_group in slot_groups:
+                                    participants += slot_group.participants.count()
+                                    slot.participants_count = participants
+                                    slot.save()
+                            if participants + group.participants_count <= 8:
                              slots_list.append(slot)
                     else:
                         slots = None
@@ -160,7 +170,9 @@ def school_dash(request, school_id):
     return render(request, 'vocational_guidance/school_dash.html', {
         'school': school,
         'tests': tests_dict,
+
         'groups_count': groups_count,
+        'groups_enroll': groups_enroll,
         'students_count': students_count,
         'six_grade': six_grade,
         'eight_grade': eight_grade,
@@ -182,7 +194,7 @@ def choose_bundle(request):
     if request.method == "POST":
         bundle_id = request.POST["bundle_id"]
         citizen_id = request.POST["citizen"]
-        bundle = VocGuidTest.objects.get(id=bundle_id)
+        test = VocGuidTest.objects.get(id=bundle_id)
         citizen = Citizen.objects.get(id=citizen_id)
         if citizen.school_class.grade_number >= 10:
             age_group = '10-11'
@@ -192,28 +204,26 @@ def choose_bundle(request):
             age_group = '8-9'
         previous_bundles = VocGuidTest.objects.filter(
             participants=citizen_id,
-            guid_type=bundle.guid_type
+            guid_type=test.guid_type
         )
         if len(previous_bundles) != 0:
             citizen.voc_guid_tests.remove(previous_bundles[0])
-        bundle.participants.add(citizen_id)
-        bundle.save()
+        test.participants.add(citizen_id)
+        test.save()
         school = citizen.school
-        if school.is_bilet:
-            groups = VocGuidGroup.objects.filter(bundle=bundle, school=school).annotate(participants_count=Count('participants'))
-        else:
-            groups = VocGuidGroup.objects.filter(bundle=bundle, city=citizen.school.city).annotate(participants_count=Count('participants'))
+        
+        groups = VocGuidGroup.objects.filter(bundle=test, school=school, age_group=age_group).annotate(participants_count=Count('participants'))
         if len(groups) == 0:
-            create_group(citizen, bundle)
+            create_group(citizen, test)
         else:
             add = False
             for group in groups:
-                if group.participants_count < group.attendance_limit and group.age_group == age_group:
+                if group.participants_count < group.attendance_limit:
                     group.participants.add(citizen)
                     add = True
                     break
             if not add:
-                create_group(citizen, bundle)
+                create_group(citizen, test)
     return HttpResponseRedirect(reverse("index"))
 
 def create_group(citizen, bundle):
@@ -296,6 +306,8 @@ def signup_child(request):
     if request.method == "POST":
         email = request.POST["email"]
         phone = request.POST["phone"]
+        if len(phone) > 30:
+            phone = phone[0:30]
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         first_name = request.POST['name']
@@ -312,6 +324,9 @@ def signup_child(request):
             disability_check = False
         if disability_check != False:
             disability_type = request.POST['disability_type']
+            disability_type = DisabilityType.objects.filter(id=disability_type)
+            if len(disability_type) != 0:
+                disability_type = disability_type[0]
         else:
             disability_type = None
         if password != confirmation:
@@ -361,7 +376,7 @@ def signup_child(request):
                 "message": "Email уже использован",
                 'schools': schools,
                 'cities': cities,
-                "disability_types": Citizen.disability_types
+                "disability_types": DisabilityType.objects.all()
             })
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
@@ -374,7 +389,7 @@ def signup_child(request):
         return render(request, "vocational_guidance/registration.html", {
             'schools': schools,
             'cities': cities,
-            "disability_types": Citizen.disability_types
+            "disability_types": DisabilityType.objects.all()
         })
 
 @csrf_exempt
@@ -382,6 +397,8 @@ def signup_parent(request):
     if request.method == "POST":
         email = request.POST["email"]
         phone = request.POST["phone"]
+        if len(phone) > 30:
+            phone = phone[0:30]
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         first_name = request.POST['name']
@@ -398,6 +415,9 @@ def signup_parent(request):
             disability_check = False
         if disability_check != False:
             disability_type = request.POST['disability_type']
+            disability_type = DisabilityType.objects.filter(id=disability_type)
+            if len(disability_type) != 0:
+                disability_type = disability_type[0]
         else:
             disability_type = None
         if password != confirmation:
@@ -447,7 +467,7 @@ def signup_parent(request):
                 "message": "Email уже использован",
                 'schools': schools,
                 'cities': cities,
-                "disability_types": Citizen.disability_types
+                "disability_types": DisabilityType.objects.all()
             })
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
@@ -460,7 +480,7 @@ def signup_parent(request):
         return render(request, "vocational_guidance/registration_parent.html", {
             'schools': schools,
             'cities': cities,
-            "disability_types": Citizen.disability_types
+            "disability_types": DisabilityType.objects.all()
         })
 
 @login_required(login_url='bilet/login')

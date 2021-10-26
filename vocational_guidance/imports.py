@@ -220,7 +220,7 @@ def load_slot(sheet_dict, row):
                 slot=slot
             )
             slot.save()
-        slots_count += 1
+            slots_count += 1
     return ["OK", test, slots_count]
 
 def load_test(sheet_dict, row):
@@ -259,8 +259,6 @@ def load_test(sheet_dict, row):
             test.save()
         else:
             test = test[0]
-            if description != "":
-                test.description = description
 
         if disabilities is not None:
             disabilities = disabilities.split(",")

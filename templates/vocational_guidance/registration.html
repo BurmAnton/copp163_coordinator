@@ -79,7 +79,7 @@
                     <select class="selectpicker" data-width="100%" data-live-search="true" name="disability_type" id="disability_type">
                         <option>Выберите вид нарушения</option>
                         {% for type in disability_types %}
-                            <option value="{{type.0}}" class="disability_type" data-school="{{type}}">{{type.1}}</option>
+                            <option value="{{type.id}}" class="disability_type" data-school="{{type}}">{{type.name}}</option>
                         {% endfor %}
                     </select>
                     <div class="invalid-feedback">Example invalid select feedback</div>

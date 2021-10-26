@@ -43,6 +43,7 @@ class VocGuidTest(models.Model):
         return  f"{self.name}"
 
 
+
 class VocGuidGroup(models.Model):
     participants = models.ManyToManyField(Citizen, verbose_name="Участники", related_name='voc_guid_groups')
     AGE_GROUP_CHOICES = [

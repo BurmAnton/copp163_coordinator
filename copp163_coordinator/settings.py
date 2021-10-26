@@ -92,14 +92,14 @@ WSGI_APPLICATION = 'copp163_coordinator.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'u1429070_test',
+        'NAME': 'u1429070_prod',
         'USER': 'u1429070_default',
         'PASSWORD': 'gac23MaZ3SE2WnBA',
         'HOST': '31.31.196.102',
         'PORT': '3306',
         'OPTIONS': {
             'sql_mode': 'traditional',
-            'charset': 'utf8mb4'  # This is the important line
+            #'charset': 'utf8mb4'  # This is the important line
         }
     }
 }

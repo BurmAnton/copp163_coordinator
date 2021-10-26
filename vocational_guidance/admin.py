@@ -13,7 +13,16 @@ VocGuidAssessmentForm = select2_modelform(VocGuidAssessment, attrs={'width': '40
 
 @admin.register(VocGuidAssessment)
 class VocGuidAssessmentAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ["id", 'test__name', 'slot__date', 'slot__slot']
+    list_filter = (
+        ('test', RelatedOnlyDropdownFilter),
+    )
+
+    list_display = (
+        "id",
+        "test",
+        "slot",
+    )
 
 class VocGuidAssessmentInline(admin.TabularInline):
     form = VocGuidAssessmentForm
@@ -38,7 +47,12 @@ class TimeSlotAdmin(admin.ModelAdmin):
         "get_ed_center",
     )
     search_fields = ["test__name","date"]
-    
+    list_filter = (
+        ('date', DropdownFilter),
+        ('slot', DropdownFilter),
+        ('test', RelatedOnlyDropdownFilter)
+    )
+
     readonly_fields = ['get_ed_center', 'get_participants']
     fieldsets = (
         (None, {
@@ -132,6 +146,12 @@ class VocGuidTestAdmin(admin.ModelAdmin):
                 'attendance_limit', 'age_group', 'disability_types'
             )
         }),
+        ('Участники', {
+            'fields':
+            (
+                'participants',
+            )
+        })
     )
 
     def get_queryset(self, request):
@@ -159,19 +179,27 @@ class VocGuidTestAdmin(admin.ModelAdmin):
                 ]
         return self.readonly_fields
 
-
 VocGuidGroupForm = select2_modelform(VocGuidGroup, attrs={'width': '400px'})
 
 @admin.register(VocGuidGroup)
 class VocGuidGroupAdmin(admin.ModelAdmin):
     form = VocGuidGroupForm
-    list_display = (
-        "get_id",
-        "school",
-        "age_group",
-        "attendance_limit"
+
+    search_fields = ["id", 'school__name', 'bundle__name', 'city', 'participants__email']
+    list_filter = (
+        ('age_group', DropdownFilter),
+        ('school', RelatedOnlyDropdownFilter)
     )
-    def get_id(self, session):
-        id_group = f'Группа №{session.__str__()}'
-        return id_group
-    get_id.short_description='Номер группы'
+    list_display = (
+        "id",
+        "school",
+        "bundle",
+        "age_group",
+        "get_participants"
+    )
+
+    def get_participants(self, group):
+        return group.participants.count()
+            
+    get_participants.admin_order_field = 'participants'
+    get_participants.short_description='Кол-во участников'

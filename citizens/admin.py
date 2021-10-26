@@ -5,6 +5,7 @@ from django.urls import reverse
 
 from easy_select2 import select2_modelform
 from datetime import datetime, timedelta
+from django_admin_listfilter_dropdown.filters import DropdownFilter, RelatedOnlyDropdownFilter
 
 from .models import Citizen, Job, School, SchoolClass, DisabilityType
 from federal_empl_program.models import Application
@@ -102,8 +103,11 @@ SchoolForm = select2_modelform(School, attrs={'width': '400px'})
 @admin.register(School)
 class SchoolsAdmin(admin.ModelAdmin):
     form = SchoolForm
-    search_fields = ['name', 'city', 'adress', 'specialty']
-    list_filter = ('city', 'specialty')
+    search_fields = ['name', 'city', 'adress', 'specialty', 'school_coordinators']
+    list_filter = (
+        ('city', DropdownFilter),
+        ('school_coordinators', RelatedOnlyDropdownFilter)
+    )
     list_display = ('name', 'city', 'adress', 'specialty')
     filter_horizontal = ("school_coordinators",)
     inlines = [
@@ -158,3 +162,11 @@ class SchoolClassesAdmin(admin.ModelAdmin):
     inlines = [
         CitizenInline
     ]
+
+    search_fields = ['school', 'grade_number', 'grade_letter', 'students']
+    list_filter = (
+        ('school', RelatedOnlyDropdownFilter),
+        ('grade_number', DropdownFilter), 
+        ('grade_letter', DropdownFilter),
+    )
+
