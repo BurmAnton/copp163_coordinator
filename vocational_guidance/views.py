@@ -1,3 +1,4 @@
+from datetime import timedelta, date
 from django.db.models import Count
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -143,9 +144,12 @@ def school_dash(request, school_id):
                                     slot.participants_count = participants
                                     slot.save()
                             if participants + group.participants_count <= 8:
-                             slots_list.append(slot)
+                                if date.today() < slot.date and slot.date < (date.today() + timedelta(days=7)):
+                                    slots_list.append(slot)
                     else:
-                        slots = None
+                        slots_list = None
+                    if slots_list == []:
+                        slots_list = None
                     group_dict.append(slots_list)
                     participant = Citizen.objects.filter(voc_guid_groups=group)
                     group_dict.append(participant)

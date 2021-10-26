@@ -103,7 +103,7 @@ SchoolForm = select2_modelform(School, attrs={'width': '400px'})
 @admin.register(School)
 class SchoolsAdmin(admin.ModelAdmin):
     form = SchoolForm
-    search_fields = ['name', 'city', 'adress', 'specialty', 'school_coordinators']
+    search_fields = ['name', 'city', 'adress', 'specialty', 'school_coordinators__email']
     list_filter = (
         ('city', DropdownFilter),
         ('school_coordinators', RelatedOnlyDropdownFilter)
