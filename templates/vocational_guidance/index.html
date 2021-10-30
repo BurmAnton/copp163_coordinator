@@ -202,23 +202,23 @@
                                                 <div class="card-body">
                                                     <h5 class="card-title">{{bundle_value|get_item:'name'}}</h5>
                                                     <p class="card-text">{{bundle_value|get_item:'description'}}</p>
-                                                    {% if slot is not None %}
-                                                        <p class="card-text"><b>Дата:</b> {{slot.date}}</p>
+                                                    {% if bundle_value|get_item:'slot' == True %}
+                                                        <p class="card-text"><b>Дата:</b> {{bundle_value|get_item:'date'}}</p>
                                                         <p class="card-text"><b>Время:</b>
-                                                            {% if slot.slot == 'MID' %}
+                                                            {% if bundle_value|get_item:'time' == 'MID' %}
                                                                 15:00-16:30
-                                                            {% elif slot.slot == 'MRN' %}
+                                                            {% elif bundle_value|get_item:'time' == 'MRN' %}
                                                                 10:00-11:30
                                                             {% else %}
                                                                 16:30-18:00
                                                             {% endif %}
                                                         </p>
-                                                        {% if slot.zoom_link is not None %}
+                                                        {% if bundle_value|get_item:'zoom_link' is not None %}
                                                             <p><a href="{{slot.zoom_link}}">Ссылка на конференцию</a></p>
                                                         {% endif %}
                                                     {% endif %}
                                                 </div>
-                                                {% if slot is None %}
+                                                {% if bundle_value|get_item:'slot' == False %}
                                                     <div class="card-footer">
                                                         <div class="d-grid gap-2">
                                                             <form action="{%url 'reject_bundle' %}" method="post">
@@ -294,7 +294,7 @@
             <div class="container">
                 <div class="row row-cols-3 g-3">
                     <div class="col-12 justify-content-center text-center">
-                        <h2>Профессиональны пробы в рамках федерального проекта «Билет в будущее» </h2>
+                        <h2>Профессиональны пробы в рамках федерального проекта «Билет в будущее» {{count_bundles}}</h2>
                         <p>Ученики школ Самарской области с 6 по 11 класс могут принять участии в мероприятиях профессионального выбора в рамках проекта «Билет в будущее». Все мероприятия будут проходить онлайн в связи с эпидемиологической ситуацией, длительность одного мероприятия – 90 минут.</p> 
                     </div>
                     {% for key, value in bundles.items %}
@@ -315,7 +315,7 @@
                                                 <li class="list-group-item ed_center"><b>Центр обучения:</b> {{bundle_value|get_item:'education_center'}}</li>
                                             </ul>
                                         </div>
-                                        {% if slot is None %}
+                                        {% if choosed == 0 %}
                                             <div class="card-footer">
                                                 <div class="d-grid gap-2">
                                                     <form action="{%url 'choose_bundle' %}" method="post">

@@ -3,7 +3,9 @@ from django.contrib import admin
 from easy_select2 import select2_modelform
 from django_admin_listfilter_dropdown.filters import DropdownFilter, RelatedOnlyDropdownFilter, ChoiceDropdownFilter
 
-from .models import TimeSlot, VocGuidTest, VocGuidGroup, VocGuidAssessment
+from citizens.models import Citizen
+
+from .models import TimeSlot, VocGuidTest, VocGuidGroup, VocGuidAssessment, TestContact
 from users.models import Group, User
 from education_centers.models import EducationCenter
 
@@ -44,9 +46,9 @@ class TimeSlotAdmin(admin.ModelAdmin):
     list_display = (
         "test", "date",
         "get_time", "get_participants",
-        "get_ed_center",
+        "get_ed_center", "participants_count"
     )
-    search_fields = ["test__name","date"]
+    search_fields = ["test__name","date", "group__id"]
     list_filter = (
         ('date', DropdownFilter),
         ('slot', DropdownFilter),
@@ -59,7 +61,7 @@ class TimeSlotAdmin(admin.ModelAdmin):
             'fields': (
                 'get_ed_center', 'test', 
                 'date', 'slot', 'group',
-                'zoom_link'
+                'zoom_link', 'report_link'
             )
         }),
     )
@@ -72,12 +74,11 @@ class TimeSlotAdmin(admin.ModelAdmin):
 
     def get_participants(self, slot):
         groups = VocGuidGroup.objects.filter(slots=slot)
+        participants = 0
         if len(groups) != 0:
-            participants = 0
             for group in groups:
-                participants += group.participants.count()
-            return participants
-        return 0
+                participants += len(group.participants.all())
+        return participants
     get_participants.admin_order_field = 'group__participants'
     get_participants.short_description='Кол-во участников'
 
@@ -123,12 +124,18 @@ class TimeSlotAdmin(admin.ModelAdmin):
                 ]
         return self.readonly_fields
 
+TestContactForm = select2_modelform(TestContact, attrs={'width': '400px'})
+
+class QuestionnaireInline(admin.StackedInline):
+    form = TestContactForm
+    model = TestContact
 
 VocGuidTestForm = select2_modelform(VocGuidTest, attrs={'width': '400px'})
 
 @admin.register(VocGuidTest)
 class VocGuidTestAdmin(admin.ModelAdmin):
     form = VocGuidTestForm
+    inlines = [QuestionnaireInline,]
     list_display = (
         "name",
         "guid_type",
@@ -141,7 +148,7 @@ class VocGuidTestAdmin(admin.ModelAdmin):
         (None, {
             'fields': 
             (
-                'name', 'education_center',
+                'name', 'education_center', 'thematic_env',
                 'education_program_link', 'img_link', 'description',
                 'attendance_limit', 'age_group', 'disability_types'
             )

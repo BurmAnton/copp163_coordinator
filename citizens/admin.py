@@ -2,6 +2,7 @@ from django.contrib import admin
 import django.contrib.auth.models
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from django.db.models import Q
 
 from easy_select2 import select2_modelform
 from datetime import datetime, timedelta
@@ -89,7 +90,8 @@ class CitizensAdmin(admin.ModelAdmin):
             if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
                 education_centers = EducationCenter.objects.filter(contact_person=request.user)
                 applications = Application.objects.filter(education_center__in=education_centers)     
-                queryset = Citizen.objects.filter(POE_applications__in=applications)
+                queryset = Citizen.objects.filter(Q(POE_applications__in=applications) | Q(social_status='SCHS'))
+                
                 return queryset
         return queryset
 
@@ -112,7 +114,7 @@ class SchoolsAdmin(admin.ModelAdmin):
     )
     list_display = ('name', 'city', 'adress', 'specialty')
     filter_horizontal = ("school_coordinators",)
-    inlines = [SchoolClassInline, VocGuidGroupInline]
+    inlines = [SchoolClassInline]
     fieldsets = (
         (None, {
             'fields': (

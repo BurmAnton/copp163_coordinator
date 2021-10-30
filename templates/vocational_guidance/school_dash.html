@@ -234,6 +234,7 @@
             </div>
         </div>
     </div>
+    
     <div class="section online-section">
         <div class="container">
             <div class="row row-cols-3 g-3">
@@ -244,8 +245,13 @@
                 {% for key_test, value_test in tests.items %}
                    <div class="col-12 test">
                         <h3>{{key_test}}</h3>
+                        {% if value_test|get_item:'contact_name' != None %}
+                            <p><b>Преподователь:</b> {{value_test|get_item:'contact_name'}}</p>
+                            <p><b>Email:</b> {{value_test|get_item:'email'}}</p>
+                            <p><b>Телефон:</b> {{value_test|get_item:'phone'}}</p>
+                        {% endif %}
                    </div>
-                        {% for group in value_test %}
+                        {% for group in value_test|get_item:'groups' %}
                             <div class="col">
                                 <div class="card h-100 group-card">
                                     <div class="card-body">
@@ -261,80 +267,83 @@
                                             {% endif %}
                                             <p><b>Участники:</b></p>
                                         </div>
-                                        {% for student in group.2 %}
-                                            <ul class="list-group list-group-flush">
+                                        <ul class="list-group list-group-flush">
+                                            {% for student in group.2 %}
                                                 <li class="list-group-item">{{student}}</li>
-                                            </ul>
-                                        {% endfor %}
-                                        <div class="card-footer">
-                                            {% if group.1 != None and group.3 is None %}
-                                                <form class="" action="{% url 'choose_slot' %}" method="post">
-                                                    <div style="display: none;">
-                                                        <input type="input" class="form-control" name="group_id" value="{{group.0.id}}">
-                                                    </div>
-                                                    <div class="form mb-3">
-                                                        <select class="selectpicker" data-width="100%" data-live-search="true" name="slot_id" id="Slot" required>
-                                                            {% if group.3 is None %}
-                                                                <option value="">Выберите дату и время</option>
-                                                            {% else %}
-                                                                <option value="{{group.3.id}}">
-                                                                    {{group.3.date}} 
-                                                                    {% if group.3.slot == 'MID' %}
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <div class="card-footer">
+                                        {% if group.1 != None and group.3 is None %}
+                                            <form class="" action="{% url 'choose_slot' %}" method="post">
+                                                <div style="display: none;">
+                                                    <input type="input" class="form-control" name="group_id" value="{{group.0.id}}">
+                                                </div>
+                                                <div class="form mb-3">
+                                                    <select class="selectpicker" data-width="100%" data-live-search="true" name="slot_id" id="Slot" required>
+                                                        {% if group.3 is None %}
+                                                            <option value="">Выберите дату и время</option>
+                                                        {% else %}
+                                                            <option value="{{group.3.id}}">
+                                                                {{group.3.date}} 
+                                                                {% if group.3.slot == 'MID' %}
+                                                                    (15:00-16:30)
+                                                                {% elif group.3.slot == 'MRN' %}
+                                                                    (10:00-11:30)
+                                                                {% else %}
+                                                                    (16:30-18:00)
+                                                                {% endif %}
+                                                                    ({{group.3.participants_count}}/8 участников)
+                                                            </option>
+                                                        {% endif %}
+                                                        {% for slot in group.1 %}
+                                                            {% if group.3.id != slot.id %}
+                                                                <option value="{{slot.id}}">
+                                                                    {{slot.date}} 
+                                                                    {% if slot.slot == 'MID' %}
                                                                         (15:00-16:30)
-                                                                    {% elif group.3.slot == 'MRN' %}
+                                                                    {% elif slot.slot == 'MRN' %}
                                                                         (10:00-11:30)
                                                                     {% else %}
                                                                         (16:30-18:00)
                                                                     {% endif %}
-                                                                      ({{group.3.participants_count}}/8 участников)
+                                                                        ({{slot.participants_count}}/8 участников)
                                                                 </option>
                                                             {% endif %}
-                                                            {% for slot in group.1 %}
-                                                                {% if group.3.id != slot.id %}
-                                                                    <option value="{{slot.id}}">
-                                                                        {{slot.date}} 
-                                                                        {% if slot.slot == 'MID' %}
-                                                                            (15:00-16:30)
-                                                                        {% elif slot.slot == 'MRN' %}
-                                                                            (10:00-11:30)
-                                                                        {% else %}
-                                                                            (16:30-18:00)
-                                                                        {% endif %}
-                                                                          ({{slot.participants_count}}/8 участников)
-                                                                    </option>
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        </select>
-                                                    </div>
-                                                    <div class="d-grid gap-2 slot-submit">
-                                                        <button type="submit" class="btn btn-primary">Записать группу на пробу</button>
-                                                    </div>
-                                                </form>
-                                            {% else %}
-                                                {% if group.3 is not None %}
-                                                    <h5>Группа записана на {{group.3.date}}
-                                                    {% if group.3.slot == 'MID' %}
-                                                        (15:00-16:30).
-                                                    {% elif group.3.slot == 'MRN' %}
-                                                        (10:00-11:30).
-                                                    {% else %}
-                                                        (16:30-18:00).
-                                                    {% endif %}
-                                                {% else %}
-                                                    <h5>В данный момент по данной проф. пробе нет запланированных занятий. Возможно они появяться позже.</h5>
-                                                {% endif %}
-                                            {% endif %}
-                                            {% if group.3 is not None %}
-                                                <div class="d-grid gap-2 slot-submit fuck">
-                                                    <form class="cancel_slot" action="{% url 'cancel_slot' %}" method="post">
-                                                        <div style="display: none;">
-                                                            <input type="input" class="form-control" name="group_id" value="{{group.0.id}}">
-                                                        </div>
-                                                        <button type="submit" class="btn btn-dark">Отменить запись</button>
-                                                    </form>
+                                                        {% endfor %}
+                                                    </select>
                                                 </div>
+                                                <div class="d-grid gap-2 slot-submit">
+                                                    <button type="submit" class="btn btn-primary">Записать группу на пробу</button>
+                                                </div>
+                                            </form>
+                                        {% else %}
+                                            {% if group.3 is not None %}
+                                                <h5>Группа записана на {{group.3.date}}
+                                                {% if group.3.slot == 'MID' %}
+                                                    (15:00-16:30).</h5>
+                                                {% elif group.3.slot == 'MRN' %}
+                                                    (10:00-11:30).</h5>
+                                                {% else %}
+                                                    (16:30-18:00).</h5>
+                                                {% endif %}
+                                                {% if group.3.slot == 'MID' %}
+                                                    
+                                                {% endif %}
+                                            {% else %}
+                                                <h5>В данный момент по данной проф. пробе нет запланированных занятий. Возможно они появяться позже.</h5>
                                             {% endif %}
-                                        </div>
+                                        {% endif %}
+                                        {% if group.3 is not None %}
+                                            <div class="d-grid gap-2 slot-submit fuck">
+                                                <form class="cancel_slot" action="{% url 'cancel_slot' %}" method="post">
+                                                    <div style="display: none;">
+                                                        <input type="input" class="form-control" name="group_id" value="{{group.0.id}}">
+                                                    </div>
+                                                    <button type="submit" class="btn btn-dark">Отменить запись</button>
+                                                </form>
+                                            </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>

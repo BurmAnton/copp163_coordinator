@@ -13,7 +13,7 @@ from .imports import bvb_teachers, slots_import
 
 from users.models import User, Group
 from citizens.models import Citizen, DisabilityType, School, SchoolClass
-from vocational_guidance.models import TimeSlot, VocGuidTest, VocGuidGroup, VocGuidAssessment
+from vocational_guidance.models import TimeSlot, VocGuidTest, VocGuidGroup, VocGuidAssessment, TestContact
 
 # Create your views here.
 @login_required(login_url='bilet/login')
@@ -42,34 +42,51 @@ def profile(request, citizen_id):
     choosen_bundles = VocGuidTest.objects.filter(participants=citizen).values(
         "id", "name", "description", "img_link", "guid_type"
     )
-    bundles = VocGuidTest.objects.exclude(participants=citizen).values(
+    slots = TimeSlot.objects.all()
+    slots_now = []
+    for slot in slots:
+        if date.today() < slot.date and slot.date < (date.today() + timedelta(days=7)):
+            slots_now.append(slot)
+    bundles = VocGuidTest.objects.filter(slots__in=slots_now).exclude(participants=citizen).values(
         "id", "name", "description", 
         "img_link", "guid_type", 
         "age_group", 'education_program_link', 
-        'education_center__name', 'disability_types'
+        'education_center__name', 'disability_types',
+        "contact__full_name", "contact__email", "contact__phone"
     )
 
     group = VocGuidGroup.objects.filter(participants=citizen)
-    if len(group) != 0:
-        group = group[0]
-        slot = TimeSlot.objects.filter(group=group)
-        if len(slot) != 0:
-            slot = slot[0]
-        else:
-            slot = None
-    else:
-        slot = None
-    
     choosen_type_presence = set()
     choosen_tests_dict = {}
     for guid_type in VocGuidTest.TYPE_CHOICES:
         choosen_tests_dict[guid_type[0]] = {}
+
     for bundle in choosen_bundles:
-        choosen_tests_dict[bundle["guid_type"]][bundle['id']] = {
-            'id': bundle['id'],
-            'name': bundle['name'],
-            'description': bundle['description'],
-        }
+        if len(group) != 0:
+            slot = TimeSlot.objects.filter(group__in=group)
+            if len(slot) != 0:
+                slot = slot[0]
+            else:
+                slot = None
+        else:
+            slot = None
+        if slot == None:
+            choosen_tests_dict[bundle["guid_type"]][bundle['id']] = {
+                'id': bundle['id'],
+                'name': bundle['name'],
+                'description': bundle['description'],
+                'slot': False
+            }
+        else:
+            choosen_tests_dict[bundle["guid_type"]][bundle['id']] = {
+                'id': bundle['id'],
+                'name': bundle['name'],
+                'description': bundle['description'],
+                'slot': True,
+                'date': slot.date,
+                'time': slot.slot,
+                'zoom_link': slot.zoom_link
+            }
         choosen_type_presence.add(bundle["guid_type"])
 
     type_presence = set()
@@ -95,6 +112,7 @@ def profile(request, citizen_id):
                     'education_center': bundle['education_center__name']
                 }
                 type_presence.add(bundle["guid_type"])
+                
 
     message = ""
     if len(choosen_type_presence) == 0:
@@ -113,7 +131,8 @@ def profile(request, citizen_id):
         'message': message,
         "birthday": citizen.birthday.isoformat(),
         'schools': schools,
-        "disability_types": DisabilityType.objects.all()
+        "disability_types": DisabilityType.objects.all(),
+        "choosed": len(choosen_bundles)
     })
 
 def school_dash(request, school_id):
@@ -124,11 +143,22 @@ def school_dash(request, school_id):
     groups_enroll = len(VocGuidGroup.objects.filter(school=school, slots__in=slots_enroll))
     tests = VocGuidTest.objects.all()
     tests_dict = {}
+    groups_counta = 0
     for test in tests:
         groups = VocGuidGroup.objects.filter(bundle=test, school=school).annotate(participants_count=Count('participants'))
         if len(groups) != 0:
-            tests_dict[test.name] = []
+            tests_dict[f'{test.name} (Код пробы – {test.id})'] = {}
+            contact = TestContact.objects.filter(test=test)
+            if len(contact) != 0:
+                contact = contact[0]
+                tests_dict[f'{test.name} (Код пробы – {test.id})']['contact_name'] = contact.full_name
+                tests_dict[f'{test.name} (Код пробы – {test.id})']['email'] = contact.email
+                tests_dict[f'{test.name} (Код пробы – {test.id})']['phone'] = contact.phone
+            else:
+                tests_dict[f'{test.name} (Код пробы – {test.id})']['contact_name'] = None
+            tests_dict[f'{test.name} (Код пробы – {test.id})']['groups'] = []
             for group in groups:
+                groups_counta += 1
                 group_dict = []
                 group_dict.append(group)
                 slots = TimeSlot.objects.filter(test=test)
@@ -157,7 +187,7 @@ def school_dash(request, school_id):
                         group_dict.append(timeslot[0])
                 else:
                     group_dict.append(None)
-                tests_dict[test.name].append(group_dict)
+                tests_dict[f'{test.name} (Код пробы – {test.id})']['groups'].append(group_dict)
 
     students = Citizen.objects.filter(school=school)
     students_count = len(students)
@@ -173,7 +203,8 @@ def school_dash(request, school_id):
     return render(request, 'vocational_guidance/school_dash.html', {
         'school': school,
         'tests': tests_dict,
-        'groups': VocGuidGroup.objects.filter(school=school),
+        'groups': groups_counta,
+
 
         'groups_count': groups_count,
         'groups_enroll': groups_enroll,
@@ -653,4 +684,53 @@ def add_assessment_all(request):
                             slot=slot
                         )
                         assessment.save()
+    return HttpResponseRedirect(reverse("index"))
+
+def combine_groups(request):
+    groups = VocGuidGroup.objects.filter(slots=None)
+    for group in groups:
+        duplicate_groups = VocGuidGroup.objects.filter(
+            age_group=group.age_group, 
+            bundle=group.bundle, 
+            school=group.school
+        )
+        if len(duplicate_groups) != 0:
+            participants = []
+            for duplicate in duplicate_groups:
+                for participant in duplicate.participants.all():
+                    participants.append(participant)
+                duplicate.delete()
+            new_group = VocGuidGroup(
+                age_group=group.age_group, 
+                bundle=group.bundle, 
+                school=group.school,
+            )
+            new_group.save()
+            new_group.participants.set(participants)
+            new_group.save()
+            
+    return HttpResponseRedirect(reverse("index"))
+
+def regulate_groups(request):
+    groups = VocGuidGroup.objects.filter(slots=None)
+    for group in groups:
+        group_count = len(group.participants.all())
+        while group_count > 8:
+            extra_participants_count = group_count - 8
+            if extra_participants_count > 8:
+                extra_participants_count = 8
+            new_group = VocGuidGroup(
+                age_group=group.age_group, 
+                bundle=group.bundle, 
+                school=group.school,
+            )
+            new_group.save()
+            participant_count = 0
+            for participant in group.participants.all():
+                if participant_count < extra_participants_count:
+                    participant.voc_guid_groups.clear()
+                    participant.voc_guid_groups.add(new_group)
+                    participant_count += 1
+            group_count -= participant_count
+
     return HttpResponseRedirect(reverse("index"))

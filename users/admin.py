@@ -24,7 +24,7 @@ class UserAdmin(UserAdmin):
             'fields': ('email', 'password1', 'password2', 'is_staff', 'is_active')}
         ),
     )
-    search_fields = ('email',)
+    search_fields = ('email','last_name', 'first_name')
     ordering = ('email',)
 
 @admin.register(Group)
