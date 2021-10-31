@@ -96,4 +96,30 @@ h2 {
   color: #394959;
 }
 
+.date-time {
+  display: flex;
+  justify-content: space-around;
+}
+.date-time .date, .date-time .time, .date-time .zoom {
+  display: flex;
+  align-items: center;
+}
+.date-time .date .calendar-icon {
+  height: 40px;
+  width: 40px;
+}
+.date-time .time {
+  padding-right: 5px;
+  padding-top: 5px;
+}
+.date-time .time .time-icon {
+  height: 40px;
+  width: 40px;
+  margin-bottom: 5px;
+}
+.date-time .zoom .zoom-icon {
+  height: 40px;
+  width: 40px;
+}
+
 /*# sourceMappingURL=index.css.map */

@@ -340,7 +340,9 @@
                                                     <div style="display: none;">
                                                         <input type="input" class="form-control" name="group_id" value="{{group.0.id}}">
                                                     </div>
-                                                    <button type="submit" class="btn btn-dark">Отменить запись</button>
+                                                    {% if group.4 %}
+                                                        <button type="submit" class="btn btn-dark">Отменить запись</button>
+                                                    {% endif %}
                                                 </form>
                                             </div>
                                         {% endif %}

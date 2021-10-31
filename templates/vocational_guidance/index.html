@@ -203,20 +203,45 @@
                                                     <h5 class="card-title">{{bundle_value|get_item:'name'}}</h5>
                                                     <p class="card-text">{{bundle_value|get_item:'description'}}</p>
                                                     {% if bundle_value|get_item:'slot' == True %}
-                                                        <p class="card-text"><b>Дата:</b> {{bundle_value|get_item:'date'}}</p>
-                                                        <p class="card-text"><b>Время:</b>
-                                                            {% if bundle_value|get_item:'time' == 'MID' %}
-                                                                15:00-16:30
-                                                            {% elif bundle_value|get_item:'time' == 'MRN' %}
-                                                                10:00-11:30
-                                                            {% else %}
-                                                                16:30-18:00
-                                                            {% endif %}
-                                                        </p>
-                                                        {% if bundle_value|get_item:'zoom_link' is not None %}
-                                                            <p><a href="{{slot.zoom_link}}">Ссылка на конференцию</a></p>
-                                                        {% endif %}
                                                     {% endif %}
+                                                </div>
+                                                <div class="date-time card-footer border-dark">
+                                                    {% if bundle_value|get_item:'zoom_link' is not None %}
+                                                        <div class="zoom">
+                                                            <div class="zoom-icon"> 
+                                                                <img src="{% static 'vocational_guidance/img/zoom-icon.png' %}" alt="Zoom_icon">
+                                                            </div>
+                                                            <div>
+                                                                <p><a href="{{slot.zoom_link}}">Ссылка на конференцию</a></p>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                    <div class="date"> 
+                                                        <div class="calendar-icon"> 
+                                                            <img src="{% static 'vocational_guidance/img/calendar_icon.png' %}" alt="Calendar">
+                                                        </div>
+                                                        <div>
+                                                            <p class="card-text"><b>{{bundle_value|get_item:'date'}}</b></p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="time"> 
+                                                        <div class="time-icon"> 
+                                                            <img src="{% static 'vocational_guidance/img/time_icon.png' %}" alt="Time_icon">
+                                                        </div>
+                                                        <div>
+                                                            <p class="card-text">
+                                                                <b>
+                                                                    {% if bundle_value|get_item:'time' == 'MID' %}
+                                                                        15:00-16:30
+                                                                    {% elif bundle_value|get_item:'time' == 'MRN' %}
+                                                                        10:00-11:30
+                                                                    {% else %}
+                                                                        16:30-18:00
+                                                                    {% endif %}
+                                                                </b>
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 {% if bundle_value|get_item:'slot' == False %}
                                                     <div class="card-footer">

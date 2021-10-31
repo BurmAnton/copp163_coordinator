@@ -185,6 +185,10 @@ def school_dash(request, school_id):
                 timeslot = TimeSlot.objects.filter(group=group, test=test)
                 if len(timeslot) != 0:
                         group_dict.append(timeslot[0])
+                        if timeslot[0].date <= date.today():
+                            group_dict.append(False)
+                        else:
+                            group_dict.append(True)
                 else:
                     group_dict.append(None)
                 tests_dict[f'{test.name} (Код пробы – {test.id})']['groups'].append(group_dict)
@@ -203,8 +207,6 @@ def school_dash(request, school_id):
     return render(request, 'vocational_guidance/school_dash.html', {
         'school': school,
         'tests': tests_dict,
-        'groups': groups_counta,
-
 
         'groups_count': groups_count,
         'groups_enroll': groups_enroll,
