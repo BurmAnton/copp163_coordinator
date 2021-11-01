@@ -15,13 +15,14 @@ VocGuidAssessmentForm = select2_modelform(VocGuidAssessment, attrs={'width': '40
 
 @admin.register(VocGuidAssessment)
 class VocGuidAssessmentAdmin(admin.ModelAdmin):
-    search_fields = ["id", 'test__name', 'slot__date', 'slot__slot']
+    search_fields = ["slot__id", 'test__name', 'slot__date', 'slot__slot', 'participant__first_name', 'participant__last_name']
     list_filter = (
         ('test', RelatedOnlyDropdownFilter),
     )
 
     list_display = (
         "id",
+        "participant",
         "test",
         "slot",
     )
@@ -138,11 +139,12 @@ class VocGuidTestAdmin(admin.ModelAdmin):
     inlines = [QuestionnaireInline,]
     list_display = (
         "name",
+        "id",
         "guid_type",
         "attendance_limit",
         "workshop"
     )
-    search_fields = ["name","education_center__name"]
+    search_fields = ["name","education_center__name", "id"]
 
     fieldsets = (
         (None, {
@@ -208,5 +210,5 @@ class VocGuidGroupAdmin(admin.ModelAdmin):
     def get_participants(self, group):
         return group.participants.count()
             
-    get_participants.admin_order_field = 'participants'
+    get_participants.admin_order_field='participants'
     get_participants.short_description='Кол-во участников'

@@ -314,14 +314,15 @@
             </div>
         </div>
     {% endif %}
-    {% if 'VO' in type_presence %}
-        <div class="section online-section">
-            <div class="container">
-                <div class="row row-cols-3 g-3">
-                    <div class="col-12 justify-content-center text-center">
-                        <h2>Профессиональны пробы в рамках федерального проекта «Билет в будущее» {{count_bundles}}</h2>
-                        <p>Ученики школ Самарской области с 6 по 11 класс могут принять участии в мероприятиях профессионального выбора в рамках проекта «Билет в будущее». Все мероприятия будут проходить онлайн в связи с эпидемиологической ситуацией, длительность одного мероприятия – 90 минут.</p> 
-                    </div>
+    
+    <div class="section online-section">
+        <div class="container">
+            <div class="row row-cols-3 g-3">
+                <div class="col-12 justify-content-center text-center">
+                    <h2>Профессиональны пробы в рамках федерального проекта «Билет в будущее»</h2>
+                    <p>Ученики школ Самарской области с 6 по 11 класс могут принять участии в мероприятиях профессионального выбора в рамках проекта «Билет в будущее». Все мероприятия будут проходить онлайн в связи с эпидемиологической ситуацией, длительность одного мероприятия – 90 минут.</p> 
+                </div>
+                {% if 'VO' in type_presence %}
                     {% for key, value in bundles.items %}
                         {% if key == "VO" %}
                             {% for bundle_key, bundle_value in value.items %}
@@ -362,8 +363,18 @@
                             {% endfor %}
                         {% endif %}
                     {% endfor %}
-                </div>
             </div>
+                {% else %}
+                    <div class="zero-alert col-12">
+                        <div class="alert alert-warning " role="alert">
+                            <h4 class="alert-heading">Нет доступных проб!</h4>
+                            <p>К сожалению, в данные момент на платформе нет подходящих для вас профессиональных проб со свободными местами.</p>
+                            <hr>
+                            <p class="mb-0">Попробуйте проверить портал через некоторое время, <br>новые пробы появляются каждый день!</p>
+                        </div>
+                    </div>
+                {% endif %}
         </div>
-    {% endif %}
+    </div>
+    
 {% endblock %}

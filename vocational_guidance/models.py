@@ -6,7 +6,7 @@ from django.db.models.deletion import CASCADE, DO_NOTHING
 from django.core.exceptions import ValidationError
 from django.db.models.fields.related import ForeignKey
 
-from users.models import User
+from users.models import User, Group
 from citizens.models import Citizen, School, DisabilityType
 from education_centers.models import EducationCenter, EducationProgram, Workshop
 
@@ -131,5 +131,12 @@ class VocGuidAssessment(models.Model):
         verbose_name_plural = "Ассесмент"
 
     def __str__(self):
-        return  f"{self.participant}: {self.test} ({self.slot})"
-
+        cl_group = Group.objects.filter(name='Координатор')
+        if len(cl_group) != 0:
+            cl_group = cl_group[0]
+            school = self.participant.school
+            teacher = User.objects.filter(coordinated_schools=school, groups=cl_group)
+            if len(teacher) !=0:
+                teacher = teacher[0]
+                return f"{self.participant.school} {teacher} ({teacher.phone_number}; {teacher.email})"
+        return  f"{self.participant.school}"
