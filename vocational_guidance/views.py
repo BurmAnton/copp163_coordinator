@@ -21,11 +21,13 @@ def index(request):
     school_group = Group.objects.get(name='Школьник')
     coordinator_group = Group.objects.get(name='Координатор')
     if len(User.objects.filter(groups=school_group, email=request.user.email)) != 0:
-        citizen = Citizen.objects.get(
-            first_name=request.user.first_name,
-            last_name=request.user.last_name,
+        citizen = Citizen.objects.filter(
             email=request.user.email,
         )
+        if len(citizen) != 0:
+            citizen = citizen[0]
+        else:
+            return HttpResponseRedirect(reverse('signout'))
         return HttpResponseRedirect(reverse('profile', args=(citizen.id,)))
     elif len(User.objects.filter(groups=coordinator_group, email=request.user.email)) != 0:
         user = User.objects.filter(email=request.user.email)
@@ -311,8 +313,15 @@ def signin(request):
     elif request.method == "POST":
         email = request.POST["email"]
         password = request.POST["password"]
+        citizen = Citizen.objects.filter(
+            email=email,
+        )
         user = authenticate(email=email, password=password)
         if user is not None:
+            if len(citizen) == 0:
+                return render(request, "vocational_guidance/login.html", {
+                    "message": "Ошибка авторизации, аккаунт не активирован. Обратитесь в поддержку – support@copp63.ru"
+                })
             login(request, user)
             return HttpResponseRedirect(reverse("index"))
         else:

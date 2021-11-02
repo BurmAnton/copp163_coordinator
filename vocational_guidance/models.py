@@ -138,5 +138,7 @@ class VocGuidAssessment(models.Model):
             teacher = User.objects.filter(coordinated_schools=school, groups=cl_group)
             if len(teacher) !=0:
                 teacher = teacher[0]
+                if teacher.phone_number is None:
+                    return f"{self.participant.school} {teacher} (–; {teacher.email})"
                 return f"{self.participant.school} {teacher} ({teacher.phone_number}; {teacher.email})"
         return  f"{self.participant.school}"

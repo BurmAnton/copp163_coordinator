@@ -12,7 +12,6 @@ from education_centers.models import EducationCenter
 
 VocGuidAssessmentForm = select2_modelform(VocGuidAssessment, attrs={'width': '400px'})
 
-
 @admin.register(VocGuidAssessment)
 class VocGuidAssessmentAdmin(admin.ModelAdmin):
     search_fields = ["slot__id", 'test__name', 'slot__date', 'slot__slot', 'participant__first_name', 'participant__last_name']
@@ -26,6 +25,7 @@ class VocGuidAssessmentAdmin(admin.ModelAdmin):
         "test",
         "slot",
     )
+
 
 class VocGuidAssessmentInline(admin.TabularInline):
     form = VocGuidAssessmentForm
