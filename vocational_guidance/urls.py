@@ -10,6 +10,7 @@ urlpatterns = [
     path('dashboard', views.region_dash, name='region_dash'),
     path('import_teachers', views.import_teachers, name="import_teachers"),
     path('import_slots', views.import_slots, name="import_slots"),
+    path('dashboard/bilet', views.bilet_dashboard, name="bilet_dashboard"),
 
 #Auth
     path('login/', views.signin, name='signin'),

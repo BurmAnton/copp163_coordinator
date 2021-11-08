@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from citizens.models import Citizen, DisabilityType, School
 from users.models import User, Group
-from .models import VocGuidTest, TimeSlot
+from .models import VocGuidTest, TimeSlot, BiletDistribution
 from education_centers.models import EducationCenter
 
 def get_sheet(form):
@@ -20,11 +20,8 @@ def bvb_teachers(form):
         return [False, 'IndexError']
 
     fields_names_set = {
-        'ТУ', 
-        'Школа', 
-        'Населенный пункт', 
-        'Логин', 
-        'Пароль'
+        'ТУ', 'Школа', 'Населенный пункт', 
+        'Логин', 'Пароль', 'Квота', 'Фед. квота'
     }
 
     cheak = cheak_col_match(sheet, fields_names_set)
@@ -35,10 +32,10 @@ def bvb_teachers(form):
     teachers = 0
     updated = 0
     for row in range(len(sheet_dict['Логин'])):
-        teacher = load_teacher(sheet_dict, row)
-        if teacher[1] == "Added":
+        school = load_school(sheet_dict, row)
+        if school[1] == "Added":
             teachers += 1
-        elif teacher[1] == "Updated":
+        elif school[1] == "Updated":
             updated += 1
     return [True, teachers, updated]
 
@@ -75,78 +72,135 @@ def load_worksheet_dict(sheet, fields_names_set):
                 sheet_dict[fields_names_set[col]].append(sheet.cell(row=row,column=col).value)
     return sheet_dict
 
-def load_teacher(sheet_dict, row):
-    email = sheet_dict["Логин"][row]
-    teacher = User.objects.filter(email=email)
+def load_school(sheet_dict, row):
+    school_name = sheet_dict["Школа"][row]
+    territorial_administration = sheet_dict["ТУ"][row]
+    if territorial_administration != "":
+        for ter_admin in School.TER_CHOICES:
+            if ter_admin[1] == territorial_administration:
+                territorial_administration = ter_admin[0]
+                break
+    city = sheet_dict["Населенный пункт"][row]
+
+    school = School.objects.filter(name=school_name, territorial_administration=territorial_administration, city=city)
+    if len(school) != 0:
+        school = update_school(sheet_dict, row, school[0])
+        return [school, "Updated"]
+
+    school = School.objects.filter(name=school_name, city=city, territorial_administration=None)
+    if len(school) != 0:
+        school = update_school(sheet_dict, row, school[0])
+        return [school, "Updated"]
+
+    school = School.objects.filter(name=school_name, city=None, territorial_administration=None)
+    if len(school) != 0:
+        school = update_school(sheet_dict, row, school[0])
+        return [school, "Updated"]
+
+    school = add_school(sheet_dict, row)
+    return [school, 'Added']
+        
+
+def add_school(sheet_dict, row):
+    school = sheet_dict["Школа"][row]
+    territorial_administration = sheet_dict["ТУ"][row]
+    if territorial_administration != "":
+        for ter_admin in School.TER_CHOICES:
+            if ter_admin[1] == territorial_administration:
+                territorial_administration = ter_admin[0]
+                break
+    city = sheet_dict["Населенный пункт"][row]
+    quota = sheet_dict["Квота"][row]
+    fed_quota = sheet_dict["Фед. квота"][row]
+    #Создаю школу
+    school = School(
+        name=school,
+        territorial_administration=territorial_administration,
+        city=city
+    )
+    school.save()
+    #Задаю квоту
+    bilet = BiletDistribution(
+        school=school,
+        test_type=fed_quota,
+        quota=quota
+    )
+    bilet.save()
+
+    #Проверяю существует ли учитель с таким email в системе, 
+    #если нет создаю нового
+    teach_email = sheet_dict["Логин"][row]
+    teacher = User.objects.filter(email=teach_email)
     if len(teacher) == 0:
         teacher = add_teacher(sheet_dict, row)
-        return [teacher, 'Added']
     else:
-        teacher = update_teacher(sheet_dict, row, teacher[0])
-        if teacher[1]:
-            return [teacher[0], "Updated"]
+        teacher = teacher[0]
+    #Добавляю учителя к школе
+    school.school_coordinators.add(teacher)
+
+    return school
+
+def update_school(sheet_dict, row, school):
+    #Обновляю данные школы
+    territorial_administration = sheet_dict["ТУ"][row]
+    if territorial_administration != "":
+        for ter_admin in School.TER_CHOICES:
+            if ter_admin[1] == territorial_administration:
+                territorial_administration = ter_admin[0]
+                break
+    city = sheet_dict["Населенный пункт"][row]
+    
+    school.city = city
+    if territorial_administration != "" and len(territorial_administration) <= 10:
+        school.territorial_administration = territorial_administration
+    school.city = city
+    school.save()
+
+    #Обновляю квоту
+    quota = sheet_dict["Квота"][row]
+    fed_quota = sheet_dict["Фед. квота"][row]
+
+    bilet = BiletDistribution.objects.filter(school=school)
+    if len(bilet) != 0:
+        bilet = bilet[0]
+        bilet.test_type=fed_quota
+        bilet.quota=quota
+        bilet.save()
+    else:
+        bilet = BiletDistribution(
+            school=school,
+            test_type=fed_quota,
+            quota=quota
+        )
+        bilet.save()
+
+    #Проверяю наличие координатора в школе
+    if len(school.school_coordinators.all()) == 0:
+    #Проверяю существует ли учитель с таким email в системе, 
+    #если нет создаю нового
+        teach_email = sheet_dict["Логин"][row]
+        teacher = User.objects.filter(email=teach_email)
+        if len(teacher) == 0:
+            teacher = add_teacher(sheet_dict, row)
         else:
-            return [teacher[0], "Unchange"]
+            teacher = teacher[0]
+        #Добавляю учителя к школе
+        school.school_coordinators.add(teacher)
+
+    return school
 
 def add_teacher(sheet_dict, row):
-    school = sheet_dict["Школа"][row]
     email=sheet_dict["Логин"][row]
     password=sheet_dict["Пароль"][row]
 
-    school = School.objects.filter(name=school)
-    if len(school) > 0:
-        school = school[0]
-    else:
-        school = School(
-            name=sheet_dict["Школа"][row],
-            city=sheet_dict["Населенный пункт"][row],
-        )
-        school.save()
-
     user = User.objects.create_user(email=email, password=password)
     user.save()
-    group = Group.objects.get(name="Координатор")
-    user.groups.add(group)
-    school.school_coordinators.add(user)
-
+    group = Group.objects.filter(name="Координатор")
+    if len(group) != 0:
+        user.groups.add(group[0])
     user.save()
-    school.save()
+
     return user
-
-def update_teacher(sheet_dict, row, teacher):
-    is_changed = False
-    school = sheet_dict["Школа"][row]
-    email = sheet_dict["Логин"][row]
-    password = sheet_dict["Пароль"][row]
-
-    user = User.objects.get(email=teacher.email)
-    school = School.objects.filter(name=school)
-    if len(school) > 0:
-        school = school[0]
-    else:
-        school = School(
-            name=sheet_dict["Школа"][row],
-            city=sheet_dict["Населенный пункт"][row],
-        )
-        school.save()
-    if not school.school_coordinators.filter(id=user.id).exists():
-        user.coordinated_schools.clear()
-        school.school_coordinators.add(user)
-        school.save()
-        is_changed = True
-
-    if teacher.email != email:
-        teacher.email = email
-        teacher.save()
-        is_changed = True
-
-    if user.email != email:
-        user.email = email
-        is_changed = True
-
-    user.save()
-    school.save()
-    return [teacher, is_changed]
 
 
 def slots_import(form):
@@ -158,8 +212,8 @@ def slots_import(form):
     fields_names_set = {
         'ЦО', 'Программа', 
         'Тип', 'Возрастная категория', 
-        'Описание', 'Дата',
-        'Время', 'ОВЗ'
+        'Описание', 'Дата', 'Тип',
+        'Время', 'ОВЗ', 'Проф. среда'
     }
 
     cheak = cheak_col_match(sheet, fields_names_set)
@@ -193,7 +247,6 @@ def load_slot(sheet_dict, row):
     program = sheet_dict["Программа"][row]
     time_slots = sheet_dict["Время"][row]
     date = sheet_dict["Дата"][row]
-    test_type = ""
 
     test = load_test(sheet_dict, row)
     if test[0] == "OK":
@@ -229,6 +282,29 @@ def load_test(sheet_dict, row):
     disabilities = sheet_dict["ОВЗ"][row]
     education_center = sheet_dict["ЦО"][row]
     age_group = sheet_dict["Возрастная категория"][row]
+    category = sheet_dict["Проф. среда"][row]
+    guid_type = sheet_dict['Тип'][row]
+    if guid_type == "парк":
+        guid_type = "SPO"
+    else:
+        guid_type = "VO"
+    test_type = ""
+    thems = [
+        ['HLTH', "Здоровая среда"],
+        ['CMFRT',"Комфортная среда"],
+        ['SAFE', "Безопасная среда"],
+        ['SMRT', "Умная среда"],
+        ['CRTV', "Креативная среда"],
+        ['SCL', "Социальная среда"],
+        ['BSNSS', "Деловая среда"],
+        ['INDST', "Индустриальная среда"]
+    ]
+    thematic_env = ""
+    for them in thems:
+        if category == them[1]:
+            thematic_env = them[0]
+    if len(thematic_env) > 5:
+        thematic_env = "INDST"
     education_center = EducationCenter.objects.filter(name=education_center)
 
     if len(education_center) > 0:
@@ -245,7 +321,8 @@ def load_test(sheet_dict, row):
         test = VocGuidTest.objects.filter(
             name=name, 
             education_center=education_center, 
-            age_group=age_group
+            age_group=age_group,
+            guid_type=guid_type
         )
 
         if len(test) == 0:
@@ -254,7 +331,8 @@ def load_test(sheet_dict, row):
                 education_center = education_center,
                 description = description,
                 age_group = age_group,
-                guid_type = 'VO'
+                guid_type = guid_type,
+                thematic_env = thematic_env
             )
             test.save()
         else:
@@ -266,7 +344,7 @@ def load_test(sheet_dict, row):
                 disability = DisabilityType.objects.filter(name=disability)
                 if len(disability) > 0:
                     test.disability_types.add(disability[0])
-
+        test.thematic_env = thematic_env
         test.save()
         return ["OK", test]
 

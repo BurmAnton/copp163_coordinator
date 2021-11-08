@@ -90,7 +90,7 @@ h2 {
   width: 100%;
 }
 
-.online-section {
+.online-section, .park-section {
   background-color: rgba(13, 109, 253, 0.1);
   padding-bottom: 100px;
   color: #394959;

@@ -10,8 +10,26 @@ from organizations.models import Company
 class School(models.Model):
     name = models.CharField("Название школы", max_length=100)
     specialty = models.CharField("Уклон школы", max_length=50, blank=True, null=True)
-    territorial_administration = models.CharField("Тер. управление", max_length=150, blank=True, null=True)
-    municipality = models.CharField("Муниципалитет", max_length=200, blank=True, null=True)
+    
+    TER_CHOICES = [
+        ('TADM', "Тольяттинское управление министерства образования и науки Самарской области"),
+        ('NWADM', "Северо-Западное управление"),
+        ('WADM', "Западное управление"),
+        ('SWADM', "Юго-Западное управление"),
+        ('POVADM', "Поволжское управление"),
+        ('SADM', "Южное управление"),
+        ('DEPSAM', "Департамент образования Администрации городского округа Самара"),
+        ('SEADM', "Юго-Восточное управление"),
+        ('OTRADM', "Отрадненское управление"),
+        ('CENTADM', "Центральное управление"),
+        ('NEADM', "Северо-Восточное управление"),
+        ('DEPTOL', "Департамент образования Тольятти"),
+        ('NADM', "Северное управление"),
+        ('KINADM', "Кинельское управление"),
+        ('SAMADM', "Самарское управление"),
+    ]
+    territorial_administration = models.CharField("Тер. управление", choices=TER_CHOICES, max_length=20, blank=True, null=True)
+    
     city = models.CharField("Населённый пункт", max_length=100, blank=True, null=True)
     adress = models.CharField("Адрес", max_length=250, blank=True, null=True)
     school_coordinators = models.ManyToManyField(User, verbose_name="Педагоги-навигаторы", related_name="coordinated_schools", blank=True)

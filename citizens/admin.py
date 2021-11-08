@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from django_admin_listfilter_dropdown.filters import DropdownFilter, RelatedOnlyDropdownFilter
 
 from .models import Citizen, Job, School, SchoolClass, DisabilityType
-from vocational_guidance.models import VocGuidGroup
+from vocational_guidance.models import VocGuidGroup, BiletDistribution
 from federal_empl_program.models import Application
 from education_centers.models import EducationCenter
 from users.models import User
@@ -101,11 +101,16 @@ class SchoolClassInline(admin.TabularInline):
     model = SchoolClass
     form = SchoolClassForm
 
+BiletDistributionForm = select2_modelform(BiletDistribution, attrs={'width': '400px'})
+
+class BiletDistributionInline(admin.StackedInline):
+    form = BiletDistributionForm
+    model = BiletDistribution
 
 SchoolForm = select2_modelform(School, attrs={'width': '400px'})
 
 @admin.register(School)
-class SchoolsAdmin(admin.ModelAdmin):
+class SchoolAdmin(admin.ModelAdmin):
     form = SchoolForm
     search_fields = ['name', 'city', 'adress', 'specialty', 'school_coordinators__email']
     list_filter = (
@@ -114,7 +119,7 @@ class SchoolsAdmin(admin.ModelAdmin):
     )
     list_display = ('name', 'city', 'adress', 'specialty')
     filter_horizontal = ("school_coordinators",)
-    inlines = [SchoolClassInline]
+    inlines = [BiletDistributionInline, SchoolClassInline]
     fieldsets = (
         (None, {
             'fields': (
@@ -124,16 +129,14 @@ class SchoolsAdmin(admin.ModelAdmin):
         }),
         ("Местоположение",{
             'fields': (
-                "municipality",
+                "territorial_administration",
                 "city",
                 "adress",
                 "inn"
             ),
         }),
         ("Билет в будущее", {
-            'classes': ('collapse',),
             'fields': (
-                "is_bilet",
                 "school_coordinators",
             )
         }),

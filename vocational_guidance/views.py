@@ -8,12 +8,14 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.db import IntegrityError
 
+from education_centers.models import EducationCenter
+
 from .forms import ImportDataForm
 from .imports import bvb_teachers, slots_import
 
 from users.models import User, Group
 from citizens.models import Citizen, DisabilityType, School, SchoolClass
-from vocational_guidance.models import TimeSlot, VocGuidTest, VocGuidGroup, VocGuidAssessment, TestContact
+from .models import TimeSlot, VocGuidTest, VocGuidGroup, VocGuidAssessment, TestContact, BiletDistribution
 
 # Create your views here.
 @login_required(login_url='bilet/login')
@@ -38,9 +40,50 @@ def index(request):
     #ed_center_dash(ed_center.id)
     #region_dash()
 
+def bilet_dashboard(request):
+    assessments = VocGuidAssessment.objects.filter(attendance=True)
+    count_assessments = len(assessments)
+    unique_assessments = assessments.values('participant').distinct()
+
+    tests = VocGuidTest.objects.all()
+    ed_centers = EducationCenter.objects.filter(voc_guid_sessions__in=tests)
+    #Подсчёт квоты по каждому центру и пробе
+    tests_dict = {}
+    for center in ed_centers:
+        tests_dict[center.name] = {}
+        tests_dict[center.name]['count'] = 0
+    for test in tests:
+        tests_dict[test.education_center.name][f"{test.name} ({test.id})"] = [0, 0, 0, 0]
+    for assessment in assessments:
+        tests_dict[assessment.test.education_center.name][f"{assessment.test.name} ({assessment.test.id})"][0] += 1
+        if assessment.slot.slot == 'MRN':
+            tests_dict[assessment.test.education_center.name][f"{assessment.test.name} ({assessment.test.id})"][1] += 1
+        elif assessment.slot.slot == 'MID':
+            tests_dict[assessment.test.education_center.name][f"{assessment.test.name} ({assessment.test.id})"][2] += 1
+        else:
+            tests_dict[assessment.test.education_center.name][f"{assessment.test.name} ({assessment.test.id})"][3] += 1 
+        tests_dict[assessment.test.education_center.name]['count'] += 1
+    
+    return render(request, "vocational_guidance/dashboard.html", {
+        'count_assessments': count_assessments,
+        'count_unique_assessments': len(unique_assessments),
+        'count_quota': int(count_assessments/2),
+        'tests_dict': tests_dict
+    })
+
 @login_required(login_url='bilet/login/')
 def profile(request, citizen_id):
     citizen = Citizen.objects.get(id=citizen_id)
+    school = citizen.school
+    bilet_distr = BiletDistribution.objects.filter(school=school)
+    if len(bilet_distr) != 0:
+        bilet_distr = bilet_distr[0]
+        if bilet_distr.test_type == True:
+            school_guid_type = "SPO"
+        else:
+            school_guid_type = "VO"
+    else:
+        school_guid_type = "VO"
     choosen_bundles = VocGuidTest.objects.filter(participants=citizen).values(
         "id", "name", "description", "img_link", "guid_type"
     )
@@ -49,7 +92,8 @@ def profile(request, citizen_id):
     for slot in slots:
         if date.today() < slot.date and slot.date < (date.today() + timedelta(days=7)):
             slots_now.append(slot)
-    bundles = VocGuidTest.objects.filter(slots__in=slots_now).exclude(participants=citizen).values(
+    
+    bundles = VocGuidTest.objects.filter(slots__in=slots_now, guid_type=school_guid_type).exclude(participants=citizen).values(
         "id", "name", "description", 
         "img_link", "guid_type", 
         "age_group", 'education_program_link', 
@@ -102,6 +146,7 @@ def profile(request, citizen_id):
     else:
         age_group = '8-9'
 
+    citizen = Citizen.objects.get(email=request.user.email)
     for bundle in bundles:
         if bundle["age_group"] == "ALL" or bundle["age_group"] == age_group:
             if citizen.disability_type is None or citizen.disability_type.id == bundle['disability_types']:
@@ -134,7 +179,8 @@ def profile(request, citizen_id):
         "birthday": citizen.birthday.isoformat(),
         'schools': schools,
         "disability_types": DisabilityType.objects.all(),
-        "choosed": len(choosen_bundles)
+        "choosed": len(choosen_bundles),
+        "guid_type": school_guid_type
     })
 
 def school_dash(request, school_id):
@@ -145,6 +191,16 @@ def school_dash(request, school_id):
     groups_enroll = len(VocGuidGroup.objects.filter(school=school, slots__in=slots_enroll))
     tests = VocGuidTest.objects.all()
     tests_dict = {}
+    limit = BiletDistribution.objects.filter(school=school).values("quota")
+    if len(limit) != 0:
+        limit = limit[0]['quota']
+        participants = Citizen.objects.filter(school=school)
+        assessments_count = len(VocGuidAssessment.objects.filter(participant__in=participants))
+        limit = limit - assessments_count
+        if limit >= 8:
+            limit = 8
+    else:
+        limit = 8
     groups_counta = 0
     for test in tests:
         groups = VocGuidGroup.objects.filter(bundle=test, school=school).annotate(participants_count=Count('participants'))
@@ -174,7 +230,7 @@ def school_dash(request, school_id):
                                 participants += slot_group.participants.count()
                                 slot.participants_count = participants
                                 slot.save()
-                        if participants + group.participants_count <= 8:
+                        if participants + group.participants_count <= limit:
                             if date.today() < slot.date and slot.date < (date.today() + timedelta(days=7)):
                                 slots_list.append(slot)
                 else:
@@ -317,17 +373,22 @@ def signin(request):
             email=email,
         )
         user = authenticate(email=email, password=password)
-        if user is not None:
-            if len(citizen) == 0:
+        sch_group = Group.objects.filter(name='Школьник')
+        if len(sch_group) != 0:
+            sch_group = sch_group[0]
+            if User.objects.filter(email=email, groups=sch_group):
+                if user is not None:
+                    if len(citizen) == 0:
+                        return render(request, "vocational_guidance/login.html", {
+                            "message": "Ошибка авторизации, аккаунт не активирован. Обратитесь в поддержку – support@copp63.ru"
+                        })
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect(reverse("index"))
+            else:
                 return render(request, "vocational_guidance/login.html", {
-                    "message": "Ошибка авторизации, аккаунт не активирован. Обратитесь в поддержку – support@copp63.ru"
+                    "message": "Неверный логин и/или пароль."
                 })
-            login(request, user)
-            return HttpResponseRedirect(reverse("index"))
-        else:
-            return render(request, "vocational_guidance/login.html", {
-                "message": "Неверный логин и/или пароль."
-            })
     else:
         return render(request, "vocational_guidance/login.html") 
 
@@ -745,3 +806,4 @@ def regulate_groups(request):
             group_count -= participant_count
 
     return HttpResponseRedirect(reverse("index"))
+

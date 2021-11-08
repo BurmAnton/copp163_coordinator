@@ -24,7 +24,7 @@ class VocGuidTest(models.Model):
     participants = models.ManyToManyField(Citizen, verbose_name="Участники", related_name="voc_guid_tests", blank=True)
     THEMES_CHOICES = [
         ('HLTH', "Здоровая среда"),
-        ('CMFRT',"Комфортная сред"),
+        ('CMFRT',"Комфортная среда"),
         ('SAFE', "Безопасная среда"),
         ('SMRT', "Умная среда"),
         ('CRTV', "Креативная среда"),
@@ -32,7 +32,7 @@ class VocGuidTest(models.Model):
         ('BSNSS', "Деловая среда"),
         ('INDST', "Индустриальная среда")
     ]
-    thematic_env = models.CharField("Проф. среда", max_length=5, choices=THEMES_CHOICES, blank=True, null=True)
+    thematic_env = models.CharField("Проф. среда", max_length=100, choices=THEMES_CHOICES, blank=True, null=True)
     description = models.TextField("Описание", blank=True, null=True, default="")
     img_link = models.CharField("Ссылка на изображение", max_length=250, blank=True, null=True, default="")
     attendance_limit = models.IntegerField("Максимальное кол-во участников", default=8)
@@ -142,3 +142,19 @@ class VocGuidAssessment(models.Model):
                     return f"{self.participant.school} {teacher} (–; {teacher.email})"
                 return f"{self.participant.school} {teacher} ({teacher.phone_number}; {teacher.email})"
         return  f"{self.participant.school}"
+
+
+class BiletDistribution(models.Model):
+    school = models.OneToOneField(
+        School, 
+        verbose_name="Распределение по билету", 
+        related_name="bilet_distr", 
+        on_delete=CASCADE
+    )
+    test_type = models.BooleanField("Федеральные пробы", default=False)
+    quota = models.IntegerField("Квота", validators=[MinValueValidator(0),])
+
+    class Meta:
+        verbose_name = "Распределение билет в будущее"
+        verbose_name_plural = "Распределение билет в будущее"
+    

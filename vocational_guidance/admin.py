@@ -152,7 +152,7 @@ class VocGuidTestAdmin(admin.ModelAdmin):
             (
                 'name', 'education_center', 'thematic_env',
                 'education_program_link', 'img_link', 'description',
-                'attendance_limit', 'age_group', 'disability_types'
+                'attendance_limit', 'age_group', 'disability_types', 'guid_type'
             )
         }),
         ('Участники', {
