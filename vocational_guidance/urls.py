@@ -7,10 +7,11 @@ urlpatterns = [
     path('profile/<int:citizen_id>', views.profile, name='profile'),
     path('school/dashboard/<int:school_id>', views.school_dash, name='school_dash'),
     path('ed_center/dashboard/<int:ed_center_id>', views.ed_center_dash, name='ed_center_dash'),
-    path('dashboard', views.region_dash, name='region_dash'),
+    path('dashboard/region', views.region_dash, name='region_dash'),
+    path('dashboard/bilet', views.bilet_dashboard, name="bilet_dashboard"),
+    path('dashboard/bilet/students', views.students_dashboard, name="students_dashboard"),
     path('import_teachers', views.import_teachers, name="import_teachers"),
     path('import_slots', views.import_slots, name="import_slots"),
-    path('dashboard/bilet', views.bilet_dashboard, name="bilet_dashboard"),
 
 #Auth
     path('login/', views.signin, name='signin'),

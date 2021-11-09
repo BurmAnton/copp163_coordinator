@@ -40,8 +40,52 @@ def index(request):
     #ed_center_dash(ed_center.id)
     #region_dash()
 
+@login_required
+def students_dashboard(request):
+    
+    slots = TimeSlot.objects.exclude(report_link=None).order_by('test', 'slot')
+    assessments = VocGuidAssessment.objects.filter(attendance=True, slot__in=slots)
+    slots_lists = []
+    for slot in slots:
+        slots_list = []
+        slots_list.append(slot.test.education_center.name)
+        slots_list.append(slot.test.name)
+        slots_list.append(slot.date)
+        if slot.slot == "MRN":
+            slots_list.append("10:00")
+            slots_list.append("11:30")
+        elif slot.slot == "MID":
+            slots_list.append("15:00")
+            slots_list.append("16:30")
+        else:
+            slots_list.append("16:30")
+            slots_list.append("18:00")
+        slots_list.append("Онлайн")
+        contract = TestContact.objects.filter(test=slot.test)
+        if len(contract) != 0:
+            slots_list.append(slot.test.contact.full_name)
+        else:
+            slots_list.append("–")
+        slots_list.append(8)
+        slots_list.append(slot.test.description)
+        if len(contract) != 0:
+            slots_list.append(slot.test.contact.full_name)
+        else:
+            slots_list.append("–")
+        slots_list.append("–")
+        slots_list.append(slot.test.get_thematic_env_display)
+        slots_list.append(90)
+        slots_lists.append(slots_list)
+    
+    return render(request, "vocational_guidance/dashboard_students.html", {
+        'assessments': assessments,
+        'slots': slots_lists
+    })
+
 def bilet_dashboard(request):
     assessments = VocGuidAssessment.objects.filter(attendance=True)
+    slots_count = TimeSlot.objects.filter(assessments__in=assessments)
+    slots_count_link = TimeSlot.objects.filter(assessments__in=assessments).exclude(report_link=None)
     count_assessments = len(assessments)
     unique_assessments = assessments.values('participant').distinct()
 
@@ -68,7 +112,9 @@ def bilet_dashboard(request):
         'count_assessments': count_assessments,
         'count_unique_assessments': len(unique_assessments),
         'count_quota': int(count_assessments/2),
-        'tests_dict': tests_dict
+        'tests_dict': tests_dict,
+        'slots_count': len(slots_count),
+        "slots_count_link": len(slots_count_link)
     })
 
 @login_required(login_url='bilet/login/')
@@ -148,17 +194,18 @@ def profile(request, citizen_id):
 
     citizen = Citizen.objects.get(email=request.user.email)
     for bundle in bundles:
-        if bundle["age_group"] == "ALL" or bundle["age_group"] == age_group:
-            if citizen.disability_type is None or citizen.disability_type.id == bundle['disability_types']:
-                tests_dict[bundle["guid_type"]][bundle['id']] = {
-                    'id': bundle['id'],
-                    'name': bundle['name'],
-                    'description': bundle['description'],
-                    'img_link': bundle['img_link'],
-                    'education_program_link': bundle['education_program_link'],
-                    'education_center': bundle['education_center__name']
-                }
-                type_presence.add(bundle["guid_type"])
+        if school.city != "Самара":
+            if bundle["age_group"] == "ALL" or bundle["age_group"] == age_group:
+                if citizen.disability_type is None or citizen.disability_type.id == bundle['disability_types']:
+                    tests_dict[bundle["guid_type"]][bundle['id']] = {
+                        'id': bundle['id'],
+                        'name': bundle['name'],
+                        'description': bundle['description'],
+                        'img_link': bundle['img_link'],
+                        'education_program_link': bundle['education_program_link'],
+                        'education_center': bundle['education_center__name']
+                    }
+                    type_presence.add(bundle["guid_type"])
                 
 
     message = ""
@@ -222,17 +269,19 @@ def school_dash(request, school_id):
                 slots = TimeSlot.objects.filter(test=test)
                 slots_list = []
                 if len(slots) != 0:
-                    for slot in slots:
-                        slot_groups = VocGuidGroup.objects.filter(slots=slot)
-                        if len(groups) != 0:
-                            participants = 0
-                            for slot_group in slot_groups:
-                                participants += slot_group.participants.count()
-                                slot.participants_count = participants
-                                slot.save()
-                        if participants + group.participants_count <= limit:
-                            if date.today() < slot.date and slot.date < (date.today() + timedelta(days=7)):
-                                slots_list.append(slot)
+                    if school.city != "Самара":
+                        for slot in slots:
+                            slot_groups = VocGuidGroup.objects.filter(slots=slot)
+                            if len(groups) != 0:
+                                participants = 0
+                                for slot_group in slot_groups:
+                                    participants += slot_group.participants.count()
+                                    slot.participants_count = participants
+                                    slot.save()
+                            if participants + group.participants_count <= limit:
+                                if date.today() < slot.date and slot.date < (date.today() + timedelta(days=7)):
+                                    pass
+                                    #slots_list.append(slot)
                 else:
                     slots_list = None
                 if slots_list == []:
@@ -416,8 +465,8 @@ def signup_child(request):
     if request.method == "POST":
         email = request.POST["email"]
         phone = request.POST["phone"]
-        if len(phone) > 30:
-            phone = phone[0:30]
+        if len(phone) > 19:
+            phone = phone[0:19]
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         first_name = request.POST['name']

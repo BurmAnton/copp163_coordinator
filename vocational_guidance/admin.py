@@ -150,7 +150,7 @@ class VocGuidTestAdmin(admin.ModelAdmin):
         (None, {
             'fields': 
             (
-                'name', 'education_center', 'thematic_env',
+                'name', 'education_center', 'thematic_env', 'profession',
                 'education_program_link', 'img_link', 'description',
                 'attendance_limit', 'age_group', 'disability_types', 'guid_type'
             )

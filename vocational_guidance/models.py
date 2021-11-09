@@ -11,7 +11,7 @@ from citizens.models import Citizen, School, DisabilityType
 from education_centers.models import EducationCenter, EducationProgram, Workshop
 
 class VocGuidTest(models.Model):
-    name = models.CharField("Название пробы", max_length=300, default="")
+    name = models.CharField("Название пробы", max_length=500, default="")
     education_center = models.ForeignKey(EducationCenter, verbose_name="Центр обучения", related_name="voc_guid_sessions", on_delete=CASCADE)
     education_program_link = models.URLField("Программа обучения (ссылка)", max_length=200, blank=True, null=True)
     AGE_GROUP_CHOICES = [
@@ -33,6 +33,7 @@ class VocGuidTest(models.Model):
         ('INDST', "Индустриальная среда")
     ]
     thematic_env = models.CharField("Проф. среда", max_length=100, choices=THEMES_CHOICES, blank=True, null=True)
+    profession = models.CharField("Профессии", max_length=200, blank=True, null=True)
     description = models.TextField("Описание", blank=True, null=True, default="")
     img_link = models.CharField("Ссылка на изображение", max_length=250, blank=True, null=True, default="")
     attendance_limit = models.IntegerField("Максимальное кол-во участников", default=8)

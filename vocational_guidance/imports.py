@@ -109,6 +109,8 @@ def add_school(sheet_dict, row):
             if ter_admin[1] == territorial_administration:
                 territorial_administration = ter_admin[0]
                 break
+    if len(territorial_administration) > 10:
+        territorial_administration = ""
     city = sheet_dict["Населенный пункт"][row]
     quota = sheet_dict["Квота"][row]
     fed_quota = sheet_dict["Фед. квота"][row]
@@ -212,8 +214,8 @@ def slots_import(form):
     fields_names_set = {
         'ЦО', 'Программа', 
         'Тип', 'Возрастная категория', 
-        'Описание', 'Дата', 'Тип',
-        'Время', 'ОВЗ', 'Проф. среда'
+        'Описание', 'Дата', 'Время', 
+        'ОВЗ', 'Проф. среда'
     }
 
     cheak = cheak_col_match(sheet, fields_names_set)
@@ -304,7 +306,7 @@ def load_test(sheet_dict, row):
         if category == them[1]:
             thematic_env = them[0]
     if len(thematic_env) > 5:
-        thematic_env = "INDST"
+        thematic_env = ""
     education_center = EducationCenter.objects.filter(name=education_center)
 
     if len(education_center) > 0:

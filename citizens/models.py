@@ -13,6 +13,7 @@ class School(models.Model):
     
     TER_CHOICES = [
         ('TADM', "Тольяттинское управление министерства образования и науки Самарской области"),
+        
         ('NWADM', "Северо-Западное управление"),
         ('WADM', "Западное управление"),
         ('SWADM', "Юго-Западное управление"),
@@ -23,7 +24,7 @@ class School(models.Model):
         ('OTRADM', "Отрадненское управление"),
         ('CENTADM', "Центральное управление"),
         ('NEADM', "Северо-Восточное управление"),
-        ('DEPTOL', "Департамент образования Тольятти"),
+        ('DEPTOL', "Департамент образования Администрации городского округа Тольятти"),
         ('NADM', "Северное управление"),
         ('KINADM', "Кинельское управление"),
         ('SAMADM', "Самарское управление"),
@@ -82,7 +83,7 @@ class Citizen(models.Model):
     birthday = models.DateField("Дата рождения", blank=True, null=True)
 
     email = models.EmailField("Email", max_length=320, blank=True, null=True)
-    phone_number = models.CharField("Номер телефона", max_length=35, blank=True, null=True)
+    phone_number = models.CharField("Номер телефона", max_length=40, blank=True, null=True)
 
     snils_number = models.CharField("Номер СНИЛС", max_length=11, blank=True, null=True)
     inn_number = models.CharField("ИНН", max_length=30, blank=True, null=True)
