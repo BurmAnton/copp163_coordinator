@@ -35,6 +35,8 @@ def index(request):
         user = User.objects.filter(email=request.user.email)
         school = School.objects.filter(school_coordinators=user[0].id)
         return HttpResponseRedirect(reverse("school_dash", args=(school[0].id,)))
+    elif request.user.is_stuff:
+        return HttpResponseRedirect(reverse("bilet_dashboard"))
     return HttpResponseRedirect(reverse("index"))
     #school_dash(school.id)
     #ed_center_dash(ed_center.id)
@@ -269,19 +271,17 @@ def school_dash(request, school_id):
                 slots = TimeSlot.objects.filter(test=test)
                 slots_list = []
                 if len(slots) != 0:
-                    if school.city != "Самара":
-                        for slot in slots:
-                            slot_groups = VocGuidGroup.objects.filter(slots=slot)
-                            if len(groups) != 0:
-                                participants = 0
-                                for slot_group in slot_groups:
-                                    participants += slot_group.participants.count()
-                                    slot.participants_count = participants
-                                    slot.save()
-                            if participants + group.participants_count <= limit:
-                                if date.today() < slot.date and slot.date < (date.today() + timedelta(days=7)):
-                                    pass
-                                    #slots_list.append(slot)
+                    for slot in slots:
+                        slot_groups = VocGuidGroup.objects.filter(slots=slot)
+                        if len(groups) != 0:
+                            participants = 0
+                            for slot_group in slot_groups:
+                                participants += slot_group.participants.count()
+                                slot.participants_count = participants
+                                slot.save()
+                        if participants + group.participants_count <= limit:
+                            if date.today() < slot.date and slot.date < (date.today() + timedelta(days=7)):
+                                slots_list.append(slot)
                 else:
                     slots_list = None
                 if slots_list == []:
@@ -311,9 +311,27 @@ def school_dash(request, school_id):
     eight_grade_enroll = len(students.filter(school_class__grade_number__in = [8,9], voc_guid_tests__isnull=False))
     ten_grade_enroll = len(students.filter(school_class__grade_number__in = [10,11], voc_guid_tests__isnull=False))
 
+    #Проф. пробы
+    slots = TimeSlot.objects.all()
+    slots_now = []
+    for slot in slots:
+        if date.today() < slot.date and slot.date < (date.today() + timedelta(days=7)):
+            slots_now.append(slot)
+
+    school_guid_type = "VO"
+    bilet_distr = BiletDistribution.objects.filter(school=school)
+    if len(bilet_distr) != 0:
+        bilet_distr = bilet_distr[0]
+        if bilet_distr.test_type == True:
+            school_guid_type = "SPO"
+
+    bundles = VocGuidTest.objects.filter(slots__in=slots_now, guid_type=school_guid_type)
+
     return render(request, 'vocational_guidance/school_dash.html', {
         'school': school,
         'tests': tests_dict,
+        'bundles': bundles,
+        'bundle_len': len(bundles),
 
         'groups_count': groups_count,
         'groups_enroll': groups_enroll,
@@ -856,3 +874,19 @@ def regulate_groups(request):
 
     return HttpResponseRedirect(reverse("index"))
 
+#Добавляем 0 квоту всем школам
+def add_quotas_all(request):
+    schools = School.objects.all()
+    for school in schools:
+        distribution = BiletDistribution.objects.filter(school=school)
+        if len(distribution) == 0:
+            distribution = BiletDistribution(
+                school=school,
+                test_type=False,
+                quota=0
+            )
+        else:
+            distribution = distribution[0]
+            distribution.quota = 0
+        distribution.save()
+    return HttpResponseRedirect(reverse("index"))
