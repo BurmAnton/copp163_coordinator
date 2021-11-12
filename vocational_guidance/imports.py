@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from citizens.models import Citizen, DisabilityType, School
 from users.models import User, Group
-from .models import VocGuidTest, TimeSlot, BiletDistribution
+from .models import VocGuidTest, TimeSlot, BiletDistribution, TestContact
 from education_centers.models import EducationCenter
 
 def get_sheet(form):
@@ -215,7 +215,8 @@ def slots_import(form):
         'ЦО', 'Программа', 
         'Тип', 'Возрастная категория', 
         'Описание', 'Дата', 'Время', 
-        'ОВЗ', 'Проф. среда'
+        'ОВЗ', 'Проф. среда', 'Профессии',
+        'ФИО', 'Email', 'Телефон'
     }
 
     cheak = cheak_col_match(sheet, fields_names_set)
@@ -286,27 +287,23 @@ def load_test(sheet_dict, row):
     age_group = sheet_dict["Возрастная категория"][row]
     category = sheet_dict["Проф. среда"][row]
     guid_type = sheet_dict['Тип'][row]
+    full_name = sheet_dict['ФИО'][row]
+    email = sheet_dict['Email'][row]
+    phone = sheet_dict['Телефон'][row]
+    profession = sheet_dict['Профессии'][row]
+
     if guid_type == "парк":
         guid_type = "SPO"
     else:
         guid_type = "VO"
-    test_type = ""
-    thems = [
-        ['HLTH', "Здоровая среда"],
-        ['CMFRT',"Комфортная среда"],
-        ['SAFE', "Безопасная среда"],
-        ['SMRT', "Умная среда"],
-        ['CRTV', "Креативная среда"],
-        ['SCL', "Социальная среда"],
-        ['BSNSS', "Деловая среда"],
-        ['INDST', "Индустриальная среда"]
-    ]
-    thematic_env = ""
-    for them in thems:
+    
+    for them in VocGuidTest.THEMES_CHOICES:
         if category == them[1]:
             thematic_env = them[0]
-    if len(thematic_env) > 5:
+            break
+    else:
         thematic_env = ""
+
     education_center = EducationCenter.objects.filter(name=education_center)
 
     if len(education_center) > 0:
@@ -337,6 +334,13 @@ def load_test(sheet_dict, row):
                 thematic_env = thematic_env
             )
             test.save()
+            contact = TestContact(
+                test=test,
+                full_name=full_name,
+                email=email,
+                phone=phone
+            )
+            contact.save()
         else:
             test = test[0]
 
@@ -346,7 +350,11 @@ def load_test(sheet_dict, row):
                 disability = DisabilityType.objects.filter(name=disability)
                 if len(disability) > 0:
                     test.disability_types.add(disability[0])
-        test.thematic_env = thematic_env
+        
+        if thematic_env != "":
+            test.thematic_env = thematic_env
+        test.profession = profession
+
         test.save()
         return ["OK", test]
 

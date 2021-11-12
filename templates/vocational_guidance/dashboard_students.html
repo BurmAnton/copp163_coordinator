@@ -16,6 +16,7 @@
         </div>
         <table class="table table-striped">
             <tr class="sticky-top"> 
+                <th scope="col">ТУ</th>
                 <th scope="col">ЦО</th>
                 <th scope="col">Название</th>
                 <th scope="col">Дата (дд.мм.гггг)</th>
@@ -36,6 +37,7 @@
             </tr>
             {% for assessment in assessments %}
                 <tr>
+                    <td scope="row" class="ed-center program-cell">{{assessment.participant.school.get_territorial_administration_display}}</td>
                     <td scope="row" class="ed-center program-cell">{{assessment.test.education_center.name}}</td>
                     <td scope="row" class="ed-center program-cell">{{assessment.test.name}}</td>
                     <td scope="row" class="ed-center program-cell">{{assessment.slot.date}}</td>
@@ -52,13 +54,17 @@
                     <td scope="row" class="ed-center program-cell">{{assessment.participant.last_name}}</td>
                     <td scope="row" class="ed-center program-cell">{{assessment.participant.first_name}}</td>
                     <td scope="row" class="ed-center program-cell">{{assessment.participant.middle_name}}</td>
-                    <td scope="row" class="ed-center program-cell"><a href={{assessment.slot.report_link}}>ссылка</a></td>
+                    {% if assessment.slot.report_link == None %}
+                        <td scope="row" class="ed-center program-cell">–</a></td>
+                    {% else %}
+                        <td scope="row" class="ed-center program-cell"><a href={{assessment.slot.report_link}}>ссылка</a></td>
+                    {% endif %}
                     <td scope="row" class="ed-center program-cell">Онлайн</td>
                     <td scope="row" class="ed-center program-cell">{{assessment.test.contact.full_name}}</td>
                     <td scope="row" class="ed-center program-cell">8</td>
                     <td scope="row" class="ed-center program-cell">{{assessment.test.description}}</td>
                     <td scope="row" class="ed-center program-cell">{{assessment.test.contact.full_name}}</td>
-                    <td scope="row" class="ed-center program-cell">–</td>
+                    <td scope="row" class="ed-center program-cell">{{assessment.test.profession}}</td>
                     <td scope="row" class="ed-center program-cell">{{assessment.test.get_thematic_env_display}}</td>
                     <td scope="row" class="ed-center program-cell">90</td>
                 </tr>

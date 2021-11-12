@@ -7,9 +7,11 @@ urlpatterns = [
     path('profile/<int:citizen_id>', views.profile, name='profile'),
     path('school/dashboard/<int:school_id>', views.school_dash, name='school_dash'),
     path('ed_center/dashboard/<int:ed_center_id>', views.ed_center_dash, name='ed_center_dash'),
+    path('tests_list', views.tests_list, name='tests_list'),
     path('dashboard/region', views.region_dash, name='region_dash'),
     path('dashboard/bilet', views.bilet_dashboard, name="bilet_dashboard"),
-    path('dashboard/bilet/students', views.students_dashboard, name="students_dashboard"),
+    path('dashboard/students', views.students_dashboard, name="students_dashboard"),
+    path('dashboard/quotas', views.quotas_dashboard, name="quotas_dashboard"),
     path('import_teachers', views.import_teachers, name="import_teachers"),
     path('import_slots', views.import_slots, name="import_slots"),
 
@@ -21,8 +23,8 @@ urlpatterns = [
     path('logout/', views.signout, name='signout'),
 
 #Служебные
-    path('choose_bundle',  views.choose_bundle, name='choose_bundle'),
-    path('reject_bundle',  views.reject_bundle, name='reject_bundle'),
+    path('choose_bundle', views.choose_bundle, name='choose_bundle'),
+    path('reject_bundle', views.reject_bundle, name='reject_bundle'),
     path('change_profile', views.change_profile, name='change_profile'),
     path('choose_slot', views.choose_slot, name='choose_slot'),
     path('cancel_slot', views.cancel_slot, name='cancel_slot'),

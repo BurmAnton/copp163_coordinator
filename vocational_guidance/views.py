@@ -42,10 +42,32 @@ def index(request):
     #ed_center_dash(ed_center.id)
     #region_dash()
 
+def quotas_dashboard(request):
+    quotas = []
+    for ter_adm in School.TER_CHOICES:
+        ter_list = [ter_adm[1], []]
+        ter_quota = 0
+        ter_spent_quota = 0
+        schools = School.objects.filter(territorial_administration=ter_adm[0])
+        for school in schools:
+            quota = BiletDistribution.objects.filter(school=school).values("quota")
+            participants = Citizen.objects.filter(school=school)
+            spent_quota = len(VocGuidAssessment.objects.filter(participant__in=participants, attendance=True))
+            ter_spent_quota += spent_quota
+            ter_quota += quota[0]['quota']
+            if spent_quota != 0 and quota != 0:
+                ter_list[1].append([school.name, quota[0]['quota'], spent_quota])
+        ter_list.append([ter_spent_quota, ter_quota])
+        if ter_spent_quota != 0:
+            quotas.append(ter_list)
+
+    return render(request, "vocational_guidance/dashboard_quotas.html", {
+        'quotas': quotas
+    })
+
 @login_required
 def students_dashboard(request):
-    
-    slots = TimeSlot.objects.exclude(report_link=None).order_by('test', 'slot')
+    slots = TimeSlot.objects.order_by('test', 'slot')
     assessments = VocGuidAssessment.objects.filter(attendance=True, slot__in=slots)
     slots_lists = []
     for slot in slots:
@@ -287,8 +309,9 @@ def school_dash(request, school_id):
                 if slots_list == []:
                     slots_list = None
                 group_dict.append(slots_list)
-                participant = Citizen.objects.filter(voc_guid_groups=group)
-                group_dict.append(participant)
+                participants = Citizen.objects.filter(voc_guid_groups=group)
+                assessments = VocGuidAssessment.objects.filter(participant__in=participants)
+                group_dict.append(participants)
                 timeslot = TimeSlot.objects.filter(group=group, test=test)
                 if len(timeslot) != 0:
                         group_dict.append(timeslot[0])
@@ -312,11 +335,12 @@ def school_dash(request, school_id):
     ten_grade_enroll = len(students.filter(school_class__grade_number__in = [10,11], voc_guid_tests__isnull=False))
 
     #Проф. пробы
+    bundles = set()
     slots = TimeSlot.objects.all()
     slots_now = []
     for slot in slots:
         if date.today() < slot.date and slot.date < (date.today() + timedelta(days=7)):
-            slots_now.append(slot)
+            bundles.add(slot.test)
 
     school_guid_type = "VO"
     bilet_distr = BiletDistribution.objects.filter(school=school)
@@ -324,8 +348,6 @@ def school_dash(request, school_id):
         bilet_distr = bilet_distr[0]
         if bilet_distr.test_type == True:
             school_guid_type = "SPO"
-
-    bundles = VocGuidTest.objects.filter(slots__in=slots_now, guid_type=school_guid_type)
 
     return render(request, 'vocational_guidance/school_dash.html', {
         'school': school,
@@ -343,6 +365,15 @@ def school_dash(request, school_id):
         'six_grade_enroll': six_grade_enroll,
         'eight_grade_enroll': eight_grade_enroll,
         'ten_grade_enroll': ten_grade_enroll
+    })
+
+def tests_list(request):
+    tests = {}
+    for them in VocGuidTest.THEMES_CHOICES:
+        tests[them[1]] = VocGuidTest.objects.filter(thematic_env=them[0])
+    
+    return render(request, 'vocational_guidance/tests_list.html', {
+        "tests": tests
     })
 
 def ed_center_dash(request, ed_center_id):

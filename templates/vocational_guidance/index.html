@@ -72,7 +72,7 @@
                             <select class="selectpicker" data-width="100%" data-live-search="true" name="school" id="School" required>
                                 <option value="{{user.school.id}}">{{user.school.name}}</option>
                                 {% for school in schools %}
-                                    <option value="{{school.id}}">{{school.name}}</option>
+                                    <option value="{{school.id}}">{{school.name}} ({{school.city}})</option>
                                 {% endfor %}
                             </select>
                         </div>

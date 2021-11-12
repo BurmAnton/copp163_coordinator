@@ -144,7 +144,6 @@ class VocGuidAssessment(models.Model):
                 return f"{self.participant.school} {teacher} ({teacher.phone_number}; {teacher.email})"
         return  f"{self.participant.school}"
 
-
 class BiletDistribution(models.Model):
     school = models.OneToOneField(
         School, 

@@ -10,10 +10,9 @@ from organizations.models import Company
 class School(models.Model):
     name = models.CharField("Название школы", max_length=100)
     specialty = models.CharField("Уклон школы", max_length=50, blank=True, null=True)
-    
+
     TER_CHOICES = [
         ('TADM', "Тольяттинское управление министерства образования и науки Самарской области"),
-        
         ('NWADM', "Северо-Западное управление"),
         ('WADM', "Западное управление"),
         ('SWADM', "Юго-Западное управление"),
@@ -30,7 +29,7 @@ class School(models.Model):
         ('SAMADM', "Самарское управление"),
     ]
     territorial_administration = models.CharField("Тер. управление", choices=TER_CHOICES, max_length=20, blank=True, null=True)
-    
+
     city = models.CharField("Населённый пункт", max_length=100, blank=True, null=True)
     adress = models.CharField("Адрес", max_length=250, blank=True, null=True)
     school_coordinators = models.ManyToManyField(User, verbose_name="Педагоги-навигаторы", related_name="coordinated_schools", blank=True)
@@ -49,7 +48,7 @@ class SchoolClass(models.Model):
     grade_number = models.IntegerField("Номер класса", validators=[MaxValueValidator(11),MinValueValidator(1)])
     grade_letter = models.CharField("Буква класса", max_length=4)
     specialty = models.CharField("Уклон класса", max_length=50, blank=True, null=True)
-    
+
     class Meta:
         verbose_name = "Класс"
         verbose_name_plural = "Классы"
@@ -61,7 +60,7 @@ class SchoolClass(models.Model):
 class DisabilityType(models.Model):
     name = models.CharField("ОВЗ", max_length=100)
     description = models.CharField("Описание", max_length=300, blank=True, null=True)
-    
+
     class Meta:
         verbose_name = "Инвалидность"
         verbose_name_plural = "Инвалидности"

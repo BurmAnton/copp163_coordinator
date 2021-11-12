@@ -1,0 +1,41 @@
+{% extends "vocational_guidance/layout.html" %}
+{% load static %}
+{% block title %}Квота | Билет в будущее{% endblock %}
+
+{% block style %}
+    <link href="{% static 'region163_dashboard/css/ed_centers_empl.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block script %}
+{% endblock %}
+
+{% block body %}
+    <div class="stat-table">
+        <div class="text-center">
+            <h1>Квота ТУ/школ по проекту «Билет в будущее»</h1>
+        </div>
+        <table class="table table-striped">
+            <tr class="sticky-top">
+                <th scope="col">Тер. управление</th>
+                <th scope="col">Школа</th>
+                <th scope="col">Прошло пробу</th>
+                <th scope="col">Квота</th>
+            </tr>
+            {% for adm_ter in quotas %}
+                <tr class="competence-row">
+                    <td colspan="2">{{adm_ter.0}}</td>
+                    <td scope="row">{{adm_ter.2.0}}</td>
+                    <td scope="row">{{adm_ter.2.1}}</td>
+                </tr>
+                {% for school in adm_ter.1 %}
+                    <tr>
+                        <td scope="row" class="ed-center program-cell"></td>
+                        <td scope="row" class="ed-center program-cell">{{school.0}}</td>
+                        <td scope="row" class="ed-center program-cell">{{school.2}}</td>
+                        <td scope="row" class="ed-center program-cell">{{school.1}}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
