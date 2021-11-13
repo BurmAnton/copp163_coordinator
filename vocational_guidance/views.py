@@ -18,7 +18,7 @@ from citizens.models import Citizen, DisabilityType, School, SchoolClass
 from .models import TimeSlot, VocGuidTest, VocGuidGroup, VocGuidAssessment, TestContact, BiletDistribution
 
 # Create your views here.
-@login_required(login_url='bilet/login')
+@login_required(login_url='signin')
 def index(request):
     school_group = Group.objects.get(name='Школьник')
     coordinator_group = Group.objects.get(name='Координатор')
@@ -141,7 +141,7 @@ def bilet_dashboard(request):
         "slots_count_link": len(slots_count_link)
     })
 
-@login_required(login_url='bilet/login/')
+@login_required(login_url='signin')
 def profile(request, citizen_id):
     citizen = Citizen.objects.get(id=citizen_id)
     school = citizen.school
@@ -256,72 +256,67 @@ def profile(request, citizen_id):
 
 def school_dash(request, school_id):
     school = School.objects.get(id=school_id)
-    groups = VocGuidGroup.objects.filter(school=school)
-    groups_count = len(VocGuidGroup.objects.filter(school=school))
-    slots_enroll = TimeSlot.objects.filter(group__in=groups)
+    participants = Citizen.objects.filter(school=school)
+    school_groups = VocGuidGroup.objects.filter(school=school)
+    slots_enroll = TimeSlot.objects.filter(group__in=school_groups)
     groups_enroll = len(VocGuidGroup.objects.filter(school=school, slots__in=slots_enroll))
     tests = VocGuidTest.objects.all()
-    tests_dict = {}
-    limit = BiletDistribution.objects.filter(school=school).values("quota")
-    if len(limit) != 0:
-        limit = limit[0]['quota']
-        participants = Citizen.objects.filter(school=school)
-        assessments_count = len(VocGuidAssessment.objects.filter(participant__in=participants))
-        limit = limit - assessments_count
+    quota = BiletDistribution.objects.filter(school=school).values("quota")[0]['quota']
+    assessments = VocGuidAssessment.objects.filter(participant__in=participants)
+
+    #Вычисляем лимит размера группы с учётом квоты школы
+    school_limit = 0
+    if quota != 0:
+        students_enroll = len(assessments)
+        limit = quota - students_enroll
         if limit >= 8:
-            limit = 8
-    else:
-        limit = 8
-    groups_counta = 0
+            school_limit = 8
+        else:
+            school_limit = limit
+    
+    tests_dict = {}
     for test in tests:
-        groups = VocGuidGroup.objects.filter(bundle=test, school=school).annotate(participants_count=Count('participants'))
+        groups = school_groups.filter(bundle=test).annotate(participants_count=Count('participants'))
         if len(groups) != 0:
             tests_dict[f'{test.name} (Код пробы – {test.id})'] = {}
-            contact = TestContact.objects.filter(test=test)
-            if len(contact) != 0:
-                contact = contact[0]
-                tests_dict[f'{test.name} (Код пробы – {test.id})']['contact_name'] = contact.full_name
-                tests_dict[f'{test.name} (Код пробы – {test.id})']['email'] = contact.email
-                tests_dict[f'{test.name} (Код пробы – {test.id})']['phone'] = contact.phone
+            #Добавляем контакты преподователя, если они существуют
+            if TestContact.objects.filter(test=test).exists(): 
+                tests_dict[f'{test.name} (Код пробы – {test.id})']['contact_name'] = test.contact.full_name
+                tests_dict[f'{test.name} (Код пробы – {test.id})']['email'] = test.contact.email
+                tests_dict[f'{test.name} (Код пробы – {test.id})']['phone'] = test.contact.phone
             else:
                 tests_dict[f'{test.name} (Код пробы – {test.id})']['contact_name'] = None
+            #Добавляем группы к тесту
             tests_dict[f'{test.name} (Код пробы – {test.id})']['groups'] = []
             for group in groups:
-                groups_counta += 1
-                group_dict = []
-                group_dict.append(group)
-                slots = TimeSlot.objects.filter(test=test)
-                slots_list = []
-                if len(slots) != 0:
-                    for slot in slots:
-                        slot_groups = VocGuidGroup.objects.filter(slots=slot)
-                        if len(groups) != 0:
-                            participants = 0
-                            for slot_group in slot_groups:
-                                participants += slot_group.participants.count()
-                                slot.participants_count = participants
-                                slot.save()
-                        if participants + group.participants_count <= limit:
-                            if date.today() < slot.date and slot.date < (date.today() + timedelta(days=7)):
-                                slots_list.append(slot)
-                else:
-                    slots_list = None
-                if slots_list == []:
-                    slots_list = None
-                group_dict.append(slots_list)
-                participants = Citizen.objects.filter(voc_guid_groups=group)
-                assessments = VocGuidAssessment.objects.filter(participant__in=participants)
-                group_dict.append(participants)
+                group_list = []
+                group_list.append(group)
+                
+                slots = None
+                #Определяем достаточно ли квоты для записи группы
+                if school_limit >= group.participants_count:
+                    #Подбираем слоты по доступному количеству участников и датам
+                    slot_date_limit = date.today() + timedelta(days=7)
+                    slots = TimeSlot.objects.filter(
+                        test=test,
+                        participants_count__lte=group.participants_count,
+                        date__gt = date.today(),
+                        date__lte = slot_date_limit
+                    )
+                    if len(slots) == 0:
+                        slots = None
+                group_list.append(slots)
+                group_list.append(group.participants.all())
                 timeslot = TimeSlot.objects.filter(group=group, test=test)
                 if len(timeslot) != 0:
-                        group_dict.append(timeslot[0])
+                        group_list.append(timeslot[0])
                         if timeslot[0].date <= date.today():
-                            group_dict.append(False)
+                            group_list.append(False)
                         else:
-                            group_dict.append(True)
+                            group_list.append(True)
                 else:
-                    group_dict.append(None)
-                tests_dict[f'{test.name} (Код пробы – {test.id})']['groups'].append(group_dict)
+                    group_list.append(None)
+                tests_dict[f'{test.name} (Код пробы – {test.id})']['groups'].append(group_list)
 
     students = Citizen.objects.filter(school=school)
     students_count = len(students)
@@ -355,7 +350,7 @@ def school_dash(request, school_id):
         'bundles': bundles,
         'bundle_len': len(bundles),
 
-        'groups_count': groups_count,
+        'groups_count': len(school_groups),
         'groups_enroll': groups_enroll,
         'students_count': students_count,
         'six_grade': six_grade,
@@ -490,7 +485,7 @@ def signin(request):
     else:
         return render(request, "vocational_guidance/login.html") 
 
-@login_required(login_url='bilet/login')
+@login_required(login_url='signin')
 @csrf_exempt
 def change_password(request):
     if request.method == "POST":
@@ -691,7 +686,7 @@ def signup_parent(request):
             "disability_types": DisabilityType.objects.all()
         })
 
-@login_required(login_url='bilet/login')
+@login_required(login_url='signin')
 @csrf_exempt
 def change_profile(request):
     if request.method == "POST":
@@ -759,7 +754,7 @@ def change_profile_teacher(request):
 
 
 
-@login_required(login_url='bilet/login')
+@login_required(login_url='signin')
 def signout(request):
     if request.user.is_authenticated:
         logout(request)
