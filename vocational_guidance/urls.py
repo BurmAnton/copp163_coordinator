@@ -12,8 +12,6 @@ urlpatterns = [
     path('dashboard/bilet/', views.bilet_dashboard, name="bilet_dashboard"),
     path('dashboard/students/', views.students_dashboard, name="students_dashboard"),
     path('dashboard/quotas/', views.quotas_dashboard, name="quotas_dashboard"),
-    path('import_teachers/', views.import_teachers, name="import_teachers"),
-    path('import_slots/', views.import_slots, name="import_slots"),
 
 #Auth
     path('login/', views.signin, name='signin'),
@@ -28,8 +26,15 @@ urlpatterns = [
     path('change_profile/', views.change_profile, name='change_profile'),
     path('choose_slot/', views.choose_slot, name='choose_slot'),
     path('cancel_slot/', views.cancel_slot, name='cancel_slot'),
+    path('cancel_participant/', views.cancel_participant, name='cancel_participant'),
     path('change_profile_teacher/', views.change_profile_teacher, name='change_profile_teacher'),
     path('change_password/', views.change_password, name='change_password'),
+
+#Иморт
+    path('import_teachers/', views.import_teachers, name="import_teachers"),
+    path('import_slots/', views.import_slots, name="import_slots"),
+   #path('import_slots/external', views.import_external_slots, name="import_external_slots"),
+
 
 #Временные
     path('add_assessment_all/', views.add_assessment_all, name='add_assessment_all'),

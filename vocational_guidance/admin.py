@@ -22,6 +22,7 @@ class VocGuidAssessmentAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "participant",
+        "attendance",
         "test",
         "slot",
     )

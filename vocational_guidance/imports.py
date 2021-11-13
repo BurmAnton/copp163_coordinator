@@ -204,7 +204,6 @@ def add_teacher(sheet_dict, row):
 
     return user
 
-
 def slots_import(form):
     try:
         sheet = get_sheet(form)
@@ -359,3 +358,33 @@ def load_test(sheet_dict, row):
         return ["OK", test]
 
     return ["NOT_FOUND_ED_CNTR", sheet_dict["ЦО"][row]]
+
+def import_external_slots(form):
+    try:
+        sheet = get_sheet(form)
+    except IndexError:
+        return [False, 'IndexError']
+
+    fields_names_set = {
+        'ЦО', 'Программа', 
+        'Тип', 'Возрастная категория', 
+        'Описание', 'Дата', 'Время', 
+        'ОВЗ', 'Проф. среда', 'Профессии',
+        'ФИО', 'Email', 'Телефон'
+    }
+
+    cheak = cheak_col_match(sheet, fields_names_set)
+    if cheak[0] == False:
+        return cheak
+    
+    sheet_dict = load_worksheet_dict_slots(sheet, cheak[1])
+    slots = 0
+    nf_ed_centers = set()
+    for row in range(len(sheet_dict['Программа'])):
+        test = load_slot(sheet_dict, row)
+        if test[0] == "OK":
+            slots += test[2]
+        else:
+            nf_ed_centers.add(test[1])
+    return [slots, nf_ed_centers]
+    

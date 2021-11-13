@@ -165,21 +165,33 @@ h2 {
 .assessment-true:before {
   content: "";
   display: block;
-  background: url() no-repeat;
+  background: url("/static/vocational_guidance/img/ok.png") no-repeat;
+  background-size: contain;
   width: 20px;
   height: 20px;
   float: left;
-  margin: 0 6px 0 0;
+  margin: 5px 6px 0 0;
 }
 
 .assessment-false:before {
   content: "";
   display: block;
-  background: url() no-repeat;
+  background: url("/static/vocational_guidance/img/not.png") no-repeat;
+  background-size: contain;
   width: 20px;
   height: 20px;
   float: left;
-  margin: 0 6px 0 0;
+  margin: 5px 6px 0 0;
+}
+
+.unsub-form {
+  display: flex;
+  justify-content: space-between;
+}
+.unsub-form button {
+  padding-top: 0px;
+  padding-bottom: 5px;
+  font-weight: bold;
 }
 
 /*# sourceMappingURL=school_dash.css.map */

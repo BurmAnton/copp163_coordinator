@@ -293,29 +293,43 @@ def school_dash(request, school_id):
                 group_list.append(group)
                 
                 slots = None
-                #Определяем достаточно ли квоты для записи группы
-                if school_limit >= group.participants_count:
-                    #Подбираем слоты по доступному количеству участников и датам
-                    slot_date_limit = date.today() + timedelta(days=7)
-                    slots = TimeSlot.objects.filter(
-                        test=test,
-                        participants_count__lte=group.participants_count,
-                        date__gt = date.today(),
-                        date__lte = slot_date_limit
-                    )
-                    if len(slots) == 0:
-                        slots = None
-                group_list.append(slots)
-                group_list.append(group.participants.all())
+                subscribe = None
+                is_passed = False
                 timeslot = TimeSlot.objects.filter(group=group, test=test)
-                if len(timeslot) != 0:
-                        group_list.append(timeslot[0])
-                        if timeslot[0].date <= date.today():
-                            group_list.append(False)
-                        else:
-                            group_list.append(True)
-                else:
+                if len(timeslot) == 0:
+                    #Определяем достаточно ли квоты для записи группы
+                    if school_limit >= group.participants_count:
+                        #Подбираем слоты по доступному количеству участников и датам
+                        slot_date_limit = date.today() + timedelta(days=7)
+                        slots = TimeSlot.objects.filter(
+                            test=test,
+                            participants_count__lte=group.participants_count,
+                            date__gt = date.today(),
+                            date__lte = slot_date_limit
+                        )
+                        if len(slots) == 0:
+                            slots = None
+                # Проверяем записанна ли группа на слот
                     group_list.append(None)
+                else:
+                    # Проверяем можно ли отказать от пробы (только если больше дня до начала)
+                    group_list.append(timeslot[0])
+                    if timeslot[0].date <= date.today():
+                        subscribe = False
+                        if timeslot[0].date < date.today():
+                            is_passed = True
+                    else:
+                        subscribe = True
+                        
+                
+                group_list.append(slots)
+                if subscribe is not None:
+                    group_list.append(assessments.filter(slot=timeslot[0], participant__in=group.participants.all()))
+                else:
+                    group_list.append(group.participants.all())
+                group_list.append(subscribe)
+                group_list.append(is_passed)
+                #Добавляем лист с данными по группе
                 tests_dict[f'{test.name} (Код пробы – {test.id})']['groups'].append(group_list)
 
     students = Citizen.objects.filter(school=school)
@@ -915,4 +929,44 @@ def add_quotas_all(request):
             distribution = distribution[0]
             distribution.quota = 0
         distribution.save()
+    return HttpResponseRedirect(reverse("index"))
+
+@csrf_exempt
+def cancel_participant(request):
+    if request.method == "POST":
+        participant_id = request.POST["participant"]
+        test = request.POST["test"]
+        group = request.POST["group"]
+        group = VocGuidGroup.objects.get(id=group)
+        participant = Citizen.objects.get(id=participant_id)
+        if participant.school_class.grade_number >= 10:
+            age_group = '10-11'
+        elif participant.school_class.grade_number <= 7:
+            age_group = '6-7'
+        else:
+            age_group = '8-9'
+
+        participant.voc_guid_groups.remove(group)
+        if len(group.participants.all()) == 0:
+            group.delete()
+
+        school = participant.school
+        groups = VocGuidGroup.objects.filter(bundle=test, school=school, age_group=age_group).annotate(participants_count=Count('participants'))
+        
+        test = VocGuidTest.objects.get(id=test)
+        if len(groups) == 0:
+            create_group(participant, test)
+        else:
+            add = False
+            for group in groups:
+                if group.participants_count < group.attendance_limit:
+                    cheak_slot = TimeSlot.objects.filter(group=group)
+                    if len(cheak_slot) == 0:
+                        group.participants.add(participant)
+                        add = True
+                        break
+            if not add:
+                create_group(participant, test)
+
+            return HttpResponseRedirect(reverse("school_dash", args=(school.id,)))
     return HttpResponseRedirect(reverse("index"))

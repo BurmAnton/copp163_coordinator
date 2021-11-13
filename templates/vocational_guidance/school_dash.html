@@ -267,9 +267,31 @@
                                             <p><b>Участники:</b></p>
                                         </div>
                                         <ul class="list-group list-group-flush">
-                                            {% for participant in group.2 %}
-                                                <li class="list-group-item">{{participant}}</li>
-                                            {% endfor %}
+                                            {% if group.4 is not None %}
+                                                {% for assessment in group.3 %}
+                                                    {% if assessment.attendance == False and group.5 == True %}
+                                                        <li class="list-group-item assessment-false">
+                                                            <div class="unsub-form">
+                                                                {{assessment.participant}}
+                                                                <form action="{% url 'cancel_participant' %}" method="POST">
+                                                                    <input style="display:none;" type="input" name="participant" value={{assessment.participant.id}}>
+                                                                    <input style="display:none;" type="input" name="test" value={{group.0.bundle.id}}>
+                                                                    <input style="display:none;" type="input" name="group" value={{group.0.id}}>
+                                                                    <button type="submit" class="btn btn-danger">Искл.</button>
+                                                                </form>
+                                                            <div>
+                                                        </li>
+                                                    {% elif assessment.attendance == True and group.5 == True %}
+                                                        <li class="list-group-item assessment-true">{{assessment.participant}}</li>
+                                                    {% else %}
+                                                        <li class="list-group-item">{{assessment.participant}}</li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% else %}
+                                                {% for participant in group.3 %}
+                                                    <li class="list-group-item">{{participant}}</li>
+                                                {% endfor %}
+                                            {% endif %}
                                         </ul>
                                     </div>
                                     <div class="card-footer">
@@ -284,29 +306,13 @@
                                                             <option value="">Выберите дату и время</option>
                                                         {% else %}
                                                             <option value="{{group.3.id}}">
-                                                                {{group.3.date}} 
-                                                                {% if group.3.slot == 'MID' %}
-                                                                    (15:00-16:30)
-                                                                {% elif group.3.slot == 'MRN' %}
-                                                                    (10:00-11:30)
-                                                                {% else %}
-                                                                    (16:30-18:00)
-                                                                {% endif %}
-                                                                    ({{group.3.participants_count}}/8 участников)
+                                                                {{slot.date}} {{slot.get_slot_display}} ({{slot.participants_count}}/8 участников)
                                                             </option>
                                                         {% endif %}
                                                         {% for slot in group.1 %}
                                                             {% if group.3.id != slot.id %}
                                                                 <option value="{{slot.id}}">
-                                                                    {{slot.date}} 
-                                                                    {% if slot.slot == 'MID' %}
-                                                                        (15:00-16:30)
-                                                                    {% elif slot.slot == 'MRN' %}
-                                                                        (10:00-11:30)
-                                                                    {% else %}
-                                                                        (16:30-18:00)
-                                                                    {% endif %}
-                                                                        ({{slot.participants_count}}/8 участников)
+                                                                    {{slot.date}} {{slot.get_slot_display}} ({{slot.participants_count}}/8 участников)
                                                                 </option>
                                                             {% endif %}
                                                         {% endfor %}
@@ -317,23 +323,13 @@
                                                 </div>
                                             </form>
                                         {% else %}
-                                            {% if group.3 is not None %}
-                                                <h5>Группа записана на {{group.3.date}}
-                                                {% if group.3.slot == 'MID' %}
-                                                    (15:00-16:30).</h5>
-                                                {% elif group.3.slot == 'MRN' %}
-                                                    (10:00-11:30).</h5>
-                                                {% else %}
-                                                    (16:30-18:00).</h5>
-                                                {% endif %}
-                                                {% if group.3.slot == 'MID' %}
-                                                    
-                                                {% endif %}
+                                            {% if group.1 is not None %}
+                                                <h5>Группа записана на {{group.1.date}} {{group.1.get_slot_display}}</h5>
                                             {% else %}
                                                 <h5>В данный момент по данной проф. пробе нет запланированных занятий. Возможно они появяться позже.</h5>
                                             {% endif %}
                                         {% endif %}
-                                        {% if group.3 is not None %}
+                                        {% if group.1 is not None %}
                                             <div class="d-grid gap-2 slot-submit fuck">
                                                 <form class="cancel_slot" action="{% url 'cancel_slot' %}" method="post">
                                                     <div style="display: none;">
