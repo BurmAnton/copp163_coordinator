@@ -46,6 +46,7 @@ def quotas_dashboard(request):
     quotas = []
     all_quota = 0
     all_spent_quota = 0
+    ter_admins = []
     for ter_adm in School.TER_CHOICES:
         ter_list = [ter_adm[1], []]
         ter_quota = 0
@@ -64,6 +65,8 @@ def quotas_dashboard(request):
                 ter_list[1].append([school.name, quota[0]['quota'], spent_quota, difference])
         ter_list.append([ter_spent_quota, ter_quota, ter_quota-ter_spent_quota])
         if ter_spent_quota != 0 or ter_quota != 0:
+            ter_admins.append([ter_adm[0], ter_adm[1]])
+            ter_list.append(ter_adm[0])
             quotas.append(ter_list)
     ter_list = ["Без Квоты", []]
     ter_quota = 0
@@ -87,6 +90,7 @@ def quotas_dashboard(request):
     return render(request, "vocational_guidance/dashboard_quotas.html", {
         'quotas': quotas,
         "all": [all_quota, all_spent_quota, all_quota-all_spent_quota],
+        "ter_admins": ter_admins
     })
 
 @login_required

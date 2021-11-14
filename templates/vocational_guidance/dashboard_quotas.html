@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block script %}
+    <script src="{% static 'vocational_guidance/js/dashboard_quotas.js' %}"></script>
 {% endblock %}
 
 {% block body %}
@@ -14,27 +15,37 @@
         <div class="text-center">
             <h1>Квота ТУ/школ по проекту «Билет в будущее»</h1>
         </div>
+        <div class="filter">
+            <div class="col-6 form mb-3">
+                <select class="selectpicker dropup" data-style="btn-primary" data-dropup-auto="false" data-width="fit" data-live-search="true" name="school" id="School" required>
+                    <option value="">Выберите тер. управление</option>
+                    {% for ter_admin in ter_admins %}
+                        <option value="{{ter_admin.1}}" class="{{ter_admin.0}}">{{ter_admin.1}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
         <table class="table table-striped">
             <tr class="sticky-top">
                 <th scope="col">Тер. управление</th>
                 <th scope="col">Школа</th>
-                <th scope="col">Прошло пробу</th>
                 <th scope="col">Квота</th>
+                <th scope="col">Прошло пробу</th>
                 <th scope="col">Остаток квоты</th>
             </tr>
             {% for adm_ter in quotas %}
-                <tr class="competence-row">
+                <tr class="ALL ter_adm competence-row {{adm_ter.3}}">
                     <td colspan="2">{{adm_ter.0}}</td>
-                    <td scope="row">{{adm_ter.2.0}}</td>
                     <td scope="row">{{adm_ter.2.1}}</td>
+                    <td scope="row">{{adm_ter.2.0}}</td>
                     <td scope="row">{{adm_ter.2.2}}</td>
                 </tr>
                 {% for school in adm_ter.1 %}
-                    <tr>
+                    <tr class="ALL school {{adm_ter.3}}">
                         <td scope="row" class="ed-center program-cell"></td>
                         <td scope="row" class="ed-center program-cell">{{school.0}}</td>
-                        <td scope="row" class="ed-center program-cell">{{school.2}}</td>
                         <td scope="row" class="ed-center program-cell">{{school.1}}</td>
+                        <td scope="row" class="ed-center program-cell">{{school.2}}</td>
                         <td scope="row" class="ed-center program-cell">{{school.3}}</td>
                     </tr>
                 {% endfor %}
