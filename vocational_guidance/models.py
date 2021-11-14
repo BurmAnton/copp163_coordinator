@@ -153,7 +153,7 @@ class BiletDistribution(models.Model):
     )
     test_type = models.BooleanField("Федеральные пробы", default=False)
     quota = models.IntegerField("Квота", validators=[MinValueValidator(0),])
-
+    
     class Meta:
         verbose_name = "Распределение билет в будущее"
         verbose_name_plural = "Распределение билет в будущее"

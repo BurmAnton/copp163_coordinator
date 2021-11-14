@@ -31,10 +31,9 @@ urlpatterns = [
     path('change_password/', views.change_password, name='change_password'),
 
 #Иморт
-    path('import_teachers/', views.import_teachers, name="import_teachers"),
-    path('import_slots/', views.import_slots, name="import_slots"),
-   #path('import_slots/external', views.import_external_slots, name="import_external_slots"),
-
+    path('import/teachers/', views.import_teachers, name="import_teachers"),
+    path('import/slots/', views.import_slots, name="import_slots"),
+    path('import/slots/external/', views.import_external_slots, name="import_external_slots"),
 
 #Временные
     path('add_assessment_all/', views.add_assessment_all, name='add_assessment_all'),

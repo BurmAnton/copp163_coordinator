@@ -1,0 +1,96 @@
+{% extends "federal_empl_program/layout.html" %}
+{% load static %}
+
+{% block title %}Импорт слотов (внешних) | ФП «Содействие занятости»{% endblock %}
+{% block style %}
+    <link href="{% static 'vocational_guidance/css/slots_external.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+{% endblock %}
+
+{% block body %}
+    <div class="card" id='import_form'>
+        <h2>Импортировать&nbspданные</h2>
+        {% if participants_count %}
+        <div class="alert alert-success" role="alert">
+        Учеников добавленно – {{participants_count}}
+        </div>
+        {% endif %} 
+        <form enctype="multipart/form-data" action="{% url 'import_external_slots' %}" method="post">
+            <div class="mb-3">
+                <input type="input" class="form-control" name="ed_center" id="EdCenter" value="{{education_center}}" disabled>
+            </div>
+            <div class="row row-cols-3 g-3">
+                <div class="col-6 form mb-3">
+                    <select class="selectpicker" data-width="100%" data-live-search="true" name="test" id="Tests" required>
+                        <option value="">Выберите пробу</option>
+                        {% for test in tests %}
+                            <option value="{{test.id}}">{{test.name}} ({{test.get_age_group_display}})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 form mb-3">
+                    <select class="selectpicker" data-width="100%" data-live-search="true" name="school" id="School" required>
+                        <option value="">Выберите школу</option>
+                        {% for school in schools %}
+                            <option value="{{school.school.id}}">{{school.school.name}} ({{school.school.city}}, квота – {{school.quota}})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 mb-3">
+                    <input type="date" class="form-control" name="date" id="Date" placeholder="Дата" required>
+                </div>
+                <div class="col-6 form mb-3">
+                    <select class="selectpicker" data-width="100%" data-live-search="true" name="time" id="Time" required>
+                        <option value="">Выберите время</option>
+                            <option value="MRN" class="school">с 10:00 до 11:30</option>
+                            <option value="MID" class="school">с 15:00 до 16:30</option>
+                            <option value="EVN" class="school">с 16:30 до 18:00</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row row-cols-3 g-3">
+                {% for number in test_limit %}
+                        <div class="col-6">
+                            <p><b>Ученик №{{number}}</b></p>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control first-step" name="name{{number}}" placeholder="Имя">
+                                <label for="Name">Имя</label>
+                            </div>
+                            <div class="form-floating mb-3 first-step-optional">
+                                <input type="input" class="form-control" name="middle_name{{number}}" placeholder="Отчество">
+                                <label for="MiddleName">Отчество</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control first-step" name="last_name{{number}}" placeholder="Фамилия">
+                                <label for="LastName">Фамилия</label>
+                            </div>
+                            <div class="form mb-3">
+                                <div class="row g-3">
+                                    <div class="col">
+                                        <select class="form-select first-step-select" name="school_class{{number}}">
+                                                <option value="">Класс</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                                <option value="8">8</option>
+                                                <option value="9">9</option>
+                                                <option value="10">10</option>
+                                                <option value="11">11</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <input type="input" class="form-control first-step" name="school_class_latter{{number}}" placeholder="Буква класса">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                {% endfor %}
+            </div>
+            <div class="submit">
+                <input type="submit" value="Загрузить данные" class="btn btn-primary">   
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

@@ -970,3 +970,93 @@ def cancel_participant(request):
 
             return HttpResponseRedirect(reverse("school_dash", args=(school.id,)))
     return HttpResponseRedirect(reverse("index"))
+
+@csrf_exempt
+def import_external_slots(request):
+    if EducationCenter.objects.filter(contact_person=request.user) != 0:
+        education_center = EducationCenter.objects.filter(contact_person=request.user)[0]
+        tests = VocGuidTest.objects.filter(education_center=education_center)
+        schools = BiletDistribution.objects.all()
+        if request.method == "POST":
+            school_id = request.POST["school"]
+            school = School.objects.get(id=school_id)
+            test_id = request.POST["test"]
+            test = VocGuidTest.objects.get(id=test_id)
+            time = request.POST["time"]
+            date = request.POST["date"]
+            slot = TimeSlot(
+                test=test,
+                date=date,
+                slot=time,
+            )
+            slot.save()
+            group = VocGuidGroup(
+                bundle=test,
+                attendance_limit = 8,
+                school=school,
+                city=school.city
+            )
+            group.save()
+            slot.group.add(group)
+            slot.save()
+            participants_count = 0
+            for number in range(1,9):
+                first_name = request.POST[f"name{number}"]
+                middle_name = request.POST[f"middle_name{number}"]
+                last_name = request.POST[f"last_name{number}"]
+                grade_number = request.POST[f"school_class{number}"]
+                grade_letter = request.POST[f"school_class_latter{number}"]
+                if first_name != "" and last_name != "":
+                    if grade_number != "" and grade_letter != "":
+                        school_class = SchoolClass.objects.filter(
+                            school=school,
+                            grade_number=grade_number,
+                            grade_letter=grade_letter.upper()
+                        )
+                        if len(school_class) != 0:
+                            school_class = school_class[0]
+                        else:
+                            school_class = SchoolClass(
+                                school=school,
+                                grade_number=int(grade_number),
+                                grade_letter=grade_letter.upper()
+                            )
+                            school_class.save()
+                        citizen = Citizen(
+                            first_name=first_name,
+                            last_name=last_name,
+                            middle_name=middle_name,
+                            social_status='SCHS',
+                            school=school,
+                            school_class=school_class,
+                        )
+                        citizen.save()
+                        group.participants.add(citizen)
+                        group.save()
+                        assessment = VocGuidAssessment(
+                            participant=citizen,
+                            test=test,
+                            slot=slot,
+                            attendance=True
+                        )
+                        assessment.save()
+                        test.participants.add(citizen)
+                        participants_count += 1
+            return render(request, "vocational_guidance/import_external_slots.html", {
+                "education_center": education_center,
+                "tests": tests,
+                "schools": schools,
+                "test_limit": range(1,9),
+                "participants_count": participants_count
+            }) 
+        else:
+            return render(request, "vocational_guidance/import_external_slots.html", {
+                "education_center": education_center,
+                "tests": tests,
+                "schools": schools,
+                "test_limit": range(1,9)
+            })
+    else:
+        return HttpResponseRedirect('index')
+
+
