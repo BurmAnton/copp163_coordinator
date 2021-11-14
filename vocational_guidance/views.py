@@ -44,6 +44,8 @@ def index(request):
 
 def quotas_dashboard(request):
     quotas = []
+    all_quota = 0
+    all_spent_quota = 0
     for ter_adm in School.TER_CHOICES:
         ter_list = [ter_adm[1], []]
         ter_quota = 0
@@ -54,12 +56,14 @@ def quotas_dashboard(request):
             participants = Citizen.objects.filter(school=school)
             spent_quota = len(VocGuidAssessment.objects.filter(participant__in=participants, attendance=True))
             ter_spent_quota += spent_quota
+            all_spent_quota += spent_quota
             ter_quota += quota[0]['quota']
+            all_quota += quota[0]['quota']
             difference = quota[0]['quota'] - spent_quota
             if spent_quota != 0 or quota[0]['quota'] != 0:
                 ter_list[1].append([school.name, quota[0]['quota'], spent_quota, difference])
         ter_list.append([ter_spent_quota, ter_quota, ter_quota-ter_spent_quota])
-        if ter_spent_quota != 0:
+        if ter_spent_quota != 0 or ter_quota != 0:
             quotas.append(ter_list)
     ter_list = ["Без Квоты", []]
     ter_quota = 0
@@ -70,16 +74,19 @@ def quotas_dashboard(request):
         participants = Citizen.objects.filter(school=school)
         spent_quota = len(VocGuidAssessment.objects.filter(participant__in=participants, attendance=True))
         ter_spent_quota += spent_quota
+        all_spent_quota += spent_quota
         ter_quota += quota[0]['quota']
+        all_quota += quota[0]['quota']
         difference = quota[0]['quota'] - spent_quota
         if spent_quota != 0 or quota[0]['quota'] != 0:
             ter_list[1].append([school.name, quota[0]['quota'], spent_quota, difference])
     ter_list.append([ter_spent_quota, ter_quota, ter_quota-ter_spent_quota])
-    if ter_spent_quota != 0:
+    if ter_spent_quota != 0 or ter_quota != 0:
         quotas.append(ter_list)
 
     return render(request, "vocational_guidance/dashboard_quotas.html", {
-        'quotas': quotas
+        'quotas': quotas,
+        "all": [all_quota, all_spent_quota, all_quota-all_spent_quota],
     })
 
 @login_required
