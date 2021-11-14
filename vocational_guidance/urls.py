@@ -39,5 +39,5 @@ urlpatterns = [
     path('add_assessment_all/', views.add_assessment_all, name='add_assessment_all'),
     path('combine_groups/', views.combine_groups, name='combine_groups'),
     path('regulate_groups/', views.regulate_groups, name='regulate_groups'),
-    path('add_quotas_all/', views.add_quotas_all, name='add_quotas_all')
+    path('balance_quotas/', views.balance_quotas, name='balance_quotas')
 ]

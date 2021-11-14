@@ -55,11 +55,28 @@ def quotas_dashboard(request):
             spent_quota = len(VocGuidAssessment.objects.filter(participant__in=participants, attendance=True))
             ter_spent_quota += spent_quota
             ter_quota += quota[0]['quota']
-            if spent_quota != 0 and quota != 0:
-                ter_list[1].append([school.name, quota[0]['quota'], spent_quota])
-        ter_list.append([ter_spent_quota, ter_quota])
+            difference = quota[0]['quota'] - spent_quota
+            if spent_quota != 0 or quota[0]['quota'] != 0:
+                ter_list[1].append([school.name, quota[0]['quota'], spent_quota, difference])
+        ter_list.append([ter_spent_quota, ter_quota, ter_quota-ter_spent_quota])
         if ter_spent_quota != 0:
             quotas.append(ter_list)
+    ter_list = ["Без Квоты", []]
+    ter_quota = 0
+    ter_spent_quota = 0
+    schools = School.objects.filter(territorial_administration=None)
+    for school in schools:
+        quota = BiletDistribution.objects.filter(school=school).values("quota")
+        participants = Citizen.objects.filter(school=school)
+        spent_quota = len(VocGuidAssessment.objects.filter(participant__in=participants, attendance=True))
+        ter_spent_quota += spent_quota
+        ter_quota += quota[0]['quota']
+        difference = quota[0]['quota'] - spent_quota
+        if spent_quota != 0 or quota[0]['quota'] != 0:
+            ter_list[1].append([school.name, quota[0]['quota'], spent_quota, difference])
+    ter_list.append([ter_spent_quota, ter_quota, ter_quota-ter_spent_quota])
+    if ter_spent_quota != 0:
+        quotas.append(ter_list)
 
     return render(request, "vocational_guidance/dashboard_quotas.html", {
         'quotas': quotas
@@ -931,6 +948,19 @@ def add_quotas_all(request):
         distribution.save()
     return HttpResponseRedirect(reverse("index"))
 
+def balance_quotas(request):
+    schools = School.objects.all()
+    for school in schools:
+        distribution = BiletDistribution.objects.filter(school=school)
+        quota = BiletDistribution.objects.filter(school=school).values("quota")
+        participants = Citizen.objects.filter(school=school)
+        spent_quota = len(VocGuidAssessment.objects.filter(participant__in=participants, attendance=True))
+        if quota[0]['quota'] < spent_quota:
+            distribution = distribution[0]
+            distribution.quota = spent_quota
+            distribution.save()
+    return HttpResponseRedirect(reverse("index"))
+
 @csrf_exempt
 def cancel_participant(request):
     if request.method == "POST":
@@ -1045,6 +1075,7 @@ def import_external_slots(request):
                         assessment.save()
                         test.participants.add(citizen)
                         participants_count += 1
+
             return render(request, "vocational_guidance/import_external_slots.html", {
                 "education_center": education_center,
                 "tests": tests,

@@ -20,12 +20,14 @@
                 <th scope="col">Школа</th>
                 <th scope="col">Прошло пробу</th>
                 <th scope="col">Квота</th>
+                <th scope="col">Остаток квоты</th>
             </tr>
             {% for adm_ter in quotas %}
                 <tr class="competence-row">
                     <td colspan="2">{{adm_ter.0}}</td>
                     <td scope="row">{{adm_ter.2.0}}</td>
                     <td scope="row">{{adm_ter.2.1}}</td>
+                    <td scope="row">{{adm_ter.2.2}}</td>
                 </tr>
                 {% for school in adm_ter.1 %}
                     <tr>
@@ -33,6 +35,7 @@
                         <td scope="row" class="ed-center program-cell">{{school.0}}</td>
                         <td scope="row" class="ed-center program-cell">{{school.2}}</td>
                         <td scope="row" class="ed-center program-cell">{{school.1}}</td>
+                        <td scope="row" class="ed-center program-cell">{{school.3}}</td>
                     </tr>
                 {% endfor %}
             {% endfor %}
