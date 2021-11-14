@@ -971,6 +971,7 @@ def cancel_participant(request):
             return HttpResponseRedirect(reverse("school_dash", args=(school.id,)))
     return HttpResponseRedirect(reverse("index"))
 
+@login_required
 @csrf_exempt
 def import_external_slots(request):
     if EducationCenter.objects.filter(contact_person=request.user) != 0:
