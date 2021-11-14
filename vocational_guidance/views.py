@@ -985,10 +985,12 @@ def import_external_slots(request):
             test = VocGuidTest.objects.get(id=test_id)
             time = request.POST["time"]
             date = request.POST["date"]
+            report_link = request.POST["report_link"]
             slot = TimeSlot(
                 test=test,
                 date=date,
                 slot=time,
+                report_link=report_link
             )
             slot.save()
             group = VocGuidGroup(
@@ -1057,7 +1059,5 @@ def import_external_slots(request):
                 "schools": schools,
                 "test_limit": range(1,9)
             })
-    else:
-        return HttpResponseRedirect('index')
 
 
