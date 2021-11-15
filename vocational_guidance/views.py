@@ -54,15 +54,16 @@ def quotas_dashboard(request):
         schools = School.objects.filter(territorial_administration=ter_adm[0])
         for school in schools:
             quota = BiletDistribution.objects.filter(school=school).values("quota")
-            participants = Citizen.objects.filter(school=school)
-            spent_quota = len(VocGuidAssessment.objects.filter(participant__in=participants, attendance=True))
-            ter_spent_quota += spent_quota
-            all_spent_quota += spent_quota
-            ter_quota += quota[0]['quota']
-            all_quota += quota[0]['quota']
-            difference = quota[0]['quota'] - spent_quota
-            if spent_quota != 0 or quota[0]['quota'] != 0:
-                ter_list[1].append([school.name, quota[0]['quota'], spent_quota, difference])
+            if len(quota) != 0:
+                participants = Citizen.objects.filter(school=school)
+                spent_quota = len(VocGuidAssessment.objects.filter(participant__in=participants, attendance=True))
+                ter_spent_quota += spent_quota
+                all_spent_quota += spent_quota
+                ter_quota += quota[0]['quota']
+                all_quota += quota[0]['quota']
+                difference = quota[0]['quota'] - spent_quota
+                if spent_quota != 0 or quota[0]['quota'] != 0:
+                    ter_list[1].append([school.name, quota[0]['quota'], spent_quota, difference])
         ter_list.append([ter_spent_quota, ter_quota, ter_quota-ter_spent_quota])
         if ter_spent_quota != 0 or ter_quota != 0:
             ter_admins.append([ter_adm[0], ter_adm[1]])
@@ -391,7 +392,7 @@ def school_dash(request, school_id):
         'tests': tests_dict,
         'bundles': bundles,
         'bundle_len': len(bundles),
-
+        'school_limit': [quota-students_enroll, quota],
         'groups_count': len(school_groups),
         'groups_enroll': groups_enroll,
         'students_count': students_count,

@@ -227,6 +227,13 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-12">
+                                    <div class="col card text-center main-stat">
+                                        <div class="card-body">
+                                            <p class="card-title">Квота школы: {{school_limit.0}} из {{school_limit.1}}</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -295,22 +302,22 @@
                                         </ul>
                                     </div>
                                     <div class="card-footer">
-                                        {% if group.1 != None and group.3 is None %}
+                                        {% if group.2 != None and group.1 is None %}
                                             <form class="" action="{% url 'choose_slot' %}" method="post">
                                                 <div style="display: none;">
                                                     <input type="input" class="form-control" name="group_id" value="{{group.0.id}}">
                                                 </div>
                                                 <div class="form mb-3">
                                                     <select class="selectpicker" data-width="100%" data-live-search="true" name="slot_id" id="Slot" required>
-                                                        {% if group.3 is None %}
+                                                        {% if group.1 is None %}
                                                             <option value="">Выберите дату и время</option>
                                                         {% else %}
                                                             <option value="{{group.3.id}}">
                                                                 {{slot.date}} {{slot.get_slot_display}} ({{slot.participants_count}}/8 участников)
                                                             </option>
                                                         {% endif %}
-                                                        {% for slot in group.1 %}
-                                                            {% if group.3.id != slot.id %}
+                                                        {% for slot in group.2 %}
+                                                            {% if group.1.id != slot.id %}
                                                                 <option value="{{slot.id}}">
                                                                     {{slot.date}} {{slot.get_slot_display}} ({{slot.participants_count}}/8 участников)
                                                                 </option>
