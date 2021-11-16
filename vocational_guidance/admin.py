@@ -48,7 +48,7 @@ class TimeSlotAdmin(admin.ModelAdmin):
     list_display = (
         "test", "date",
         "get_time", "get_participants",
-        "get_ed_center", "participants_count"
+        "get_ed_center"
     )
     search_fields = ["test__name","date", "group__id"]
     list_filter = (
@@ -63,7 +63,8 @@ class TimeSlotAdmin(admin.ModelAdmin):
             'fields': (
                 'get_ed_center', 'test', 
                 'date', 'slot', 'group',
-                'zoom_link', 'report_link'
+                'zoom_link', 'report_link',
+                'attendance_limit'
             )
         }),
     )

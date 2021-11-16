@@ -103,6 +103,7 @@ class TimeSlot(models.Model):
     test = models.ForeignKey(VocGuidTest, verbose_name="Пробы", related_name="slots", blank=True, null=True, on_delete=CASCADE)
     zoom_link = models.URLField("Ссылка на конференцию (zoom)", max_length=400, blank=True, null=True)
     report_link = models.URLField("Отчетная ссылка", max_length=400, blank=True, null=True)
+    attendance_limit = models.IntegerField("Максимальное кол-во участников", default=8, blank=True, null=True)
 
     class Meta:
         verbose_name = "Слот"
