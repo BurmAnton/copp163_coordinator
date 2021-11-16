@@ -248,18 +248,17 @@ def profile(request, citizen_id):
 
     citizen = Citizen.objects.get(email=request.user.email)
     for bundle in bundles:
-        if school.city != "Самара":
-            if bundle["age_group"] == "ALL" or bundle["age_group"] == age_group:
-                if citizen.disability_type is None or citizen.disability_type.id == bundle['disability_types']:
-                    tests_dict[bundle["guid_type"]][bundle['id']] = {
-                        'id': bundle['id'],
-                        'name': bundle['name'],
-                        'description': bundle['description'],
-                        'img_link': bundle['img_link'],
-                        'education_program_link': bundle['education_program_link'],
-                        'education_center': bundle['education_center__name']
-                    }
-                    type_presence.add(bundle["guid_type"])
+        if bundle["age_group"] == "ALL" or bundle["age_group"] == age_group:
+            if citizen.disability_type is None or citizen.disability_type.id == bundle['disability_types']:
+                tests_dict[bundle["guid_type"]][bundle['id']] = {
+                    'id': bundle['id'],
+                    'name': bundle['name'],
+                    'description': bundle['description'],
+                    'img_link': bundle['img_link'],
+                    'education_program_link': bundle['education_program_link'],
+                    'education_center': bundle['education_center__name']
+                }
+                type_presence.add(bundle["guid_type"])
                 
 
     message = ""
