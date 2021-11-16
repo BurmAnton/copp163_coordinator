@@ -69,7 +69,7 @@ def quotas_dashboard(request):
             ter_admins.append([ter_adm[0], ter_adm[1]])
             ter_list.append(ter_adm[0])
             quotas.append(ter_list)
-    ter_list = ["Без Квоты", []]
+    ter_list = ["Без тер. управления", []]
     ter_quota = 0
     ter_spent_quota = 0
     schools = School.objects.filter(territorial_administration=None)
@@ -322,7 +322,7 @@ def school_dash(request, school_id):
                 group_list = []
                 group_list.append(group)
                 
-                slots = None
+                slots_list = []
                 subscribe = None
                 is_passed = False
                 timeslot = TimeSlot.objects.filter(group=group, test=test)
@@ -333,12 +333,13 @@ def school_dash(request, school_id):
                         slot_date_limit = date.today() + timedelta(days=7)
                         slots = TimeSlot.objects.filter(
                             test=test,
-                            participants_count__lte=group.participants_count,
                             date__gt = date.today(),
                             date__lte = slot_date_limit
                         )
-                        if len(slots) == 0:
-                            slots = None
+                        for slot in slots:
+                                slot_participants = VocGuidAssessment.objects.filter(slot=slot)
+                                if len(slot_participants) + group.participants_count <= school_limit:
+                                    slots_list.append([slot, len(slot_participants)])
                 # Проверяем записанна ли группа на слот
                     group_list.append(None)
                 else:
@@ -351,8 +352,9 @@ def school_dash(request, school_id):
                     else:
                         subscribe = True
                         
-                
-                group_list.append(slots)
+                if len(slots_list) == 0:
+                    slots_list =None
+                group_list.append(slots_list)
                 if subscribe is not None:
                     group_list.append(assessments.filter(slot=timeslot[0], participant__in=group.participants.all()))
                 else:

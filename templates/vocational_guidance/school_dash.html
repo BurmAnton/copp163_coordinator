@@ -317,9 +317,9 @@
                                                             </option>
                                                         {% endif %}
                                                         {% for slot in group.2 %}
-                                                            {% if group.1.id != slot.id %}
-                                                                <option value="{{slot.id}}">
-                                                                    {{slot.date}} {{slot.get_slot_display}} ({{slot.participants_count}}/8 участников)
+                                                            {% if group.1.id != slot.0.id %}
+                                                                <option value="{{slot.0.id}}">
+                                                                    {{slot.0.date}} {{slot.0.get_slot_display}} ({{slot.1}}/8 участников)
                                                                 </option>
                                                             {% endif %}
                                                         {% endfor %}
