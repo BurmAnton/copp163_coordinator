@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from citizens.models import Citizen, DisabilityType, School
 from users.models import User, Group
-from .models import VocGuidTest, TimeSlot, BiletDistribution, TestContact
+from .models import VocGuidAssessment, VocGuidTest, TimeSlot, BiletDistribution, TestContact
 from education_centers.models import EducationCenter
 
 def get_sheet(form):
@@ -387,4 +387,75 @@ def import_external_slots(form):
         else:
             nf_ed_centers.add(test[1])
     return [slots, nf_ed_centers]
+
+def load_worksheet_dict(sheet, fields_names_set, col_name):
+    row_count = sheet.max_row
+    sheet_dict = {}
+    for col in fields_names_set:
+        sheet_dict[fields_names_set[col]] = []
+        for row in range(2, row_count+1): 
+            login = sheet[f"{col_name}{row}"].value
+            if login != None:
+                sheet_dict[fields_names_set[col]].append(sheet.cell(row=row,column=col).value)
+    return sheet_dict
+
+def matching_bvb_students(form):
+    try:
+        sheet = get_sheet(form)
+    except IndexError:
+        return [False, 'IndexError']
+
+    fields_names_set = {
+        '№пп', 'Федеральный округ',
+        'Регион', 'Муниципалитет', 'ФИО', 
+        'образовательная организация', 
+        'класс (без буквы)', 'почта, телефон', 'наличие ОВЗ',
+        'нозология', 'скан согласия родителей на обработку перс.данных',
+        'количество пройденных диагностик', 'даты пройденных диагностик',
+        'даты пройденных диагностик'
+    }
+
+    cheak = cheak_col_match(sheet, fields_names_set)
+    if cheak[0] == False:
+        return cheak
     
+    sheet_dict = load_worksheet_dict(sheet, cheak[1], 'E')
+    
+    missing_schools = []
+    import_schools_set = set()
+    find_students = 0
+    for row in range(len(sheet_dict['ФИО'])):
+        school = sheet_dict['образовательная организация'][row]
+        import_schools_set.add(school)
+        full_name = sheet_dict['ФИО'][row].split(' ')
+        first_name = full_name[1]
+        last_name = full_name[0]
+        if len(full_name) == 3:
+            middle_name=full_name[2]
+        else:
+            middle_name = ""
+        schools = School.objects.filter(name=school)
+        if len(schools) != 0:
+            for school in schools:
+                student = Citizen.objects.filter(
+                    first_name=first_name,
+                    last_name=last_name,
+                    middle_name=middle_name,
+                    school=school
+                )
+                if len(student) != 0:
+                    student = student[0]
+                    find_students += 1
+                    student_assessments = VocGuidAssessment.objects.filter(participant=student)
+                    if len(student_assessments) != 0:
+                        for assessment in student_assessments:
+                            assessment.bilet_platform = True
+                            assessment.diagnostics_count =sheet_dict['количество пройденных диагностик'][row]
+                            assessment.save()
+                            
+    #Проверяем наличие школы с платформы в списке, фиксируем не найденные
+    for school in BiletDistribution.objects.filter(quota__gt=0):
+        if school.school.name not in import_schools_set:
+            missing_schools.append(school.school)
+    
+    return [missing_schools, find_students, "OK"]

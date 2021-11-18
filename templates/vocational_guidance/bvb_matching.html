@@ -1,0 +1,39 @@
+{% extends "federal_empl_program/layout.html" %}
+{% load static %}
+
+{% block title %}Импорт слотов | ФП «Содействие занятости»{% endblock %}
+{% block style %}
+    <link href="{% static 'federal_empl_program/css/citizens.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'federal_empl_program/js/citizens.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="card" style="width: 25rem;" id='import_form'>
+        <div class="alert alert-success" role="alert">
+            <p>Школьников найденно – <strong>{{ message.1 }}</strong></p>
+        </div> 
+        <h2>Импортировать&nbspданные</h2>
+        <form enctype="multipart/form-data" action="{% url 'import_bvb_matching' %}" method="post">
+            <div class="input-group mb-3">
+                {{ form }}
+            </div>
+            <div class="submit">
+                <input type="submit" value="Загрузить данные" class="btn btn-primary">   
+            </div>
+        </form>
+              
+        {% if message.0 is not Empty %}
+            <div class="alert alert-danger" role="alert">
+                <p>Ненайденные школы:</strong></p>
+                <ol>
+                {% for school in message.0 %}
+                    <li>{{school.name}}</li>
+                {% endfor %}
+                </ol>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}

@@ -11,7 +11,7 @@ from django.db import IntegrityError
 from education_centers.models import EducationCenter
 
 from .forms import ImportDataForm
-from .imports import bvb_teachers, slots_import
+from .imports import bvb_teachers, slots_import, matching_bvb_students
 
 from users.models import User, Group
 from citizens.models import Citizen, DisabilityType, School, SchoolClass
@@ -35,7 +35,7 @@ def index(request):
         user = User.objects.filter(email=request.user.email)
         school = School.objects.filter(school_coordinators=user[0].id)
         return HttpResponseRedirect(reverse("school_dash", args=(school[0].id,)))
-    elif request.user.is_stuff:
+    elif request.user.is_staff:
         return HttpResponseRedirect(reverse("bilet_dashboard"))
     return HttpResponseRedirect(reverse("index"))
     #school_dash(school.id)
@@ -843,6 +843,25 @@ def import_slots(request):
     else:
         form = ImportDataForm()
         return render(request, "vocational_guidance/import_slots.html",{
+            'form': form
+        })
+
+@csrf_exempt
+def import_bvb_matching(request):
+    if request.method == "POST":
+        form = ImportDataForm(request.POST, request.FILES)
+        if form.is_valid():
+            message = matching_bvb_students(form)
+        else:
+            data = form.errors
+        form = ImportDataForm()
+        return render(request, "vocational_guidance/bvb_matching.html",{
+            'form': form,
+            'message': message
+        })
+    else:
+        form = ImportDataForm()
+        return render(request, "vocational_guidance/bvb_matching.html",{
             'form': form
         })
 

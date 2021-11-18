@@ -34,6 +34,7 @@ urlpatterns = [
     path('import/teachers/', views.import_teachers, name="import_teachers"),
     path('import/slots/', views.import_slots, name="import_slots"),
     path('import/slots/external/', views.import_external_slots, name="import_external_slots"),
+    path('import/slots/bvb/matching/', views.import_bvb_matching, name="import_bvb_matching"),
 
 #Временные
     path('add_assessment_all/', views.add_assessment_all, name='add_assessment_all'),

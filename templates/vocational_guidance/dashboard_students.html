@@ -22,9 +22,11 @@
                 <th scope="col">Дата (дд.мм.гггг)</th>
                 <th scope="col">Время начала</th>
                 <th scope="col">Время конца</th>
+                <th scope="col">Школа</th>
                 <th scope="col">Фамилия</th>
                 <th scope="col">Имя</th>
                 <th scope="col">Отчеств</th>
+                <th scope="col">BVB</th>
                 <th scope="col">Отчётная ссылка</th>
                 <th scope="col">Адрес</th>
                 <th scope="col">Контактное лицо на площадке</th>
@@ -51,9 +53,11 @@
                         <td scope="row" class="ed-center program-cell">16:30</td>
                         <td scope="row" class="ed-center program-cell">18:00</td>
                     {% endif%}
+                    <td scope="row" class="ed-center program-cell">{{assessment.participant.school}}</td>
                     <td scope="row" class="ed-center program-cell">{{assessment.participant.last_name}}</td>
                     <td scope="row" class="ed-center program-cell">{{assessment.participant.first_name}}</td>
                     <td scope="row" class="ed-center program-cell">{{assessment.participant.middle_name}}</td>
+                    <td scope="row" class="ed-center program-cell">{{assessment.bilet_platform}}</td>
                     {% if assessment.slot.report_link == None %}
                         <td scope="row" class="ed-center program-cell">–</a></td>
                     {% else %}

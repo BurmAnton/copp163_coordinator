@@ -127,6 +127,8 @@ class VocGuidAssessment(models.Model):
         verbose_name="Слот", on_delete=CASCADE
     )
     attendance = models.BooleanField("Посещаемость", default=False)
+    bilet_platform = models.BooleanField("Есть на БВБ", default=False)
+    diagnostics_count = models.IntegerField("Колво пройденных диагностик", blank=True,null=True)
 
     class Meta:
         verbose_name = "Ассесмент"

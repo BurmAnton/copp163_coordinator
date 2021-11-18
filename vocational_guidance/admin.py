@@ -14,6 +14,7 @@ VocGuidAssessmentForm = select2_modelform(VocGuidAssessment, attrs={'width': '40
 
 @admin.register(VocGuidAssessment)
 class VocGuidAssessmentAdmin(admin.ModelAdmin):
+    form = VocGuidAssessmentForm
     search_fields = ["slot__id", 'test__name', 'slot__date', 'slot__slot', 'participant__first_name', 'participant__last_name']
     list_filter = (
         ('test', RelatedOnlyDropdownFilter),
@@ -25,6 +26,7 @@ class VocGuidAssessmentAdmin(admin.ModelAdmin):
         "attendance",
         "test",
         "slot",
+        "bilet_platform"
     )
 
 
