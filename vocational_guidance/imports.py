@@ -451,7 +451,8 @@ def matching_bvb_students(form):
                             assessment.bilet_platform = True
                             assessment.diagnostics_count =sheet_dict['количество пройденных диагностик'][row]
                             assessment.save()
-                            find_students += 1
+                            if assessment.attendance:
+                                find_students += 1
                             
     #Проверяем наличие школы с платформы в списке, фиксируем не найденные
     for school in BiletDistribution.objects.filter(quota__gt=0):
