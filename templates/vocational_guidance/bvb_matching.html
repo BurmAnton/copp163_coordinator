@@ -11,9 +11,11 @@
 
 {% block body %}
     <div class="card" style="width: 25rem;" id='import_form'>
-        <div class="alert alert-success" role="alert">
-            <p>Школьников найденно – <strong>{{ message.1 }}</strong></p>
-        </div> 
+        {% if message %}
+            <div class="alert alert-success" role="alert">
+                <p>Школьников найденно – <strong>{{ message.1 }}</strong></p>
+            </div> 
+        {% endif %}
         <h2>Импортировать&nbspданные</h2>
         <form enctype="multipart/form-data" action="{% url 'import_bvb_matching' %}" method="post">
             <div class="input-group mb-3">

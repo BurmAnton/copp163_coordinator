@@ -445,13 +445,13 @@ def matching_bvb_students(form):
                 )
                 if len(student) != 0:
                     student = student[0]
-                    find_students += 1
                     student_assessments = VocGuidAssessment.objects.filter(participant=student)
                     if len(student_assessments) != 0:
                         for assessment in student_assessments:
                             assessment.bilet_platform = True
                             assessment.diagnostics_count =sheet_dict['количество пройденных диагностик'][row]
                             assessment.save()
+                            find_students += 1
                             
     #Проверяем наличие школы с платформы в списке, фиксируем не найденные
     for school in BiletDistribution.objects.filter(quota__gt=0):
