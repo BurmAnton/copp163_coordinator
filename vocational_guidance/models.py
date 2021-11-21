@@ -98,9 +98,9 @@ class TimeSlot(models.Model):
         ("EVN", "с 16:30 до 18:00"),
     ]
     slot = models.CharField("Временной промежуток", max_length=5, choices=SLOT_CHOICES)
+    test = models.ForeignKey(VocGuidTest, verbose_name="Пробы", related_name="slots", blank=True, null=True, on_delete=CASCADE)
     group = models.ManyToManyField(VocGuidGroup, related_name="slots", verbose_name="Группы", blank=True)
     participants_count = models.IntegerField("Колво участников", default=0, validators=[MaxValueValidator(8),MinValueValidator(0)])
-    test = models.ForeignKey(VocGuidTest, verbose_name="Пробы", related_name="slots", blank=True, null=True, on_delete=CASCADE)
     zoom_link = models.URLField("Ссылка на конференцию (zoom)", max_length=400, blank=True, null=True)
     report_link = models.URLField("Отчетная ссылка", max_length=400, blank=True, null=True)
     attendance_limit = models.IntegerField("Максимальное кол-во участников", default=8, blank=True, null=True)
