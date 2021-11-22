@@ -1,3 +1,7 @@
+h1 {
+  margin-top: 50px;
+}
+
 .table {
   margin: auto;
   margin-top: 10px;
@@ -19,6 +23,10 @@
 }
 .table td {
   border-top: 0px solid #dee2e6;
+}
+.table .atendace-img {
+  width: 20px;
+  height: 20px;
 }
 
 tbody, td, tfoot, th, thead, tr {
