@@ -167,7 +167,7 @@ class SchoolClassesAdmin(admin.ModelAdmin):
     inlines = [
         CitizenInline
     ]
-
+    list_display = ('grade_number', 'grade_letter', 'school')
     search_fields = ['school', 'grade_number', 'grade_letter', 'students']
     list_filter = (
         ('school', RelatedOnlyDropdownFilter),

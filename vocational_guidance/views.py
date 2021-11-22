@@ -362,49 +362,28 @@ def school_dash(request, school_id):
                 group_list.append(is_passed)
                 #Добавляем лист с данными по группе
                 tests_dict[f'{test.name} (Код пробы – {test.id})']['groups'].append(group_list)
-
+    
+    #Статистика по зарегестрированным и записавщимся
     students = Citizen.objects.filter(school=school)
-    students_count = len(students)
-    six_grade = len(students.filter(school_class__grade_number__in = [6,7]))
-    eight_grade = len(students.filter(school_class__grade_number__in = [8,9]))
-    ten_grade = len(students.filter(school_class__grade_number__in = [10,11]))
+    school_stat = {}
+    school_stat['students_count'] = len(students)
+    school_stat['six_grade'] = len(students.filter(school_class__grade_number__in = [6,7]))
+    school_stat['eight_grade'] = len(students.filter(school_class__grade_number__in = [8,9]))
+    school_stat['ten_grade'] = len(students.filter(school_class__grade_number__in = [10,11]))
 
-    enroll_count = len(students.filter(voc_guid_tests__isnull=False))
-    six_grade_enroll = len(students.filter(school_class__grade_number__in = [6,7], voc_guid_tests__isnull=False))
-    eight_grade_enroll = len(students.filter(school_class__grade_number__in = [8,9], voc_guid_tests__isnull=False))
-    ten_grade_enroll = len(students.filter(school_class__grade_number__in = [10,11], voc_guid_tests__isnull=False))
+    school_stat['enroll_count'] = len(students.filter(voc_guid_tests__isnull=False))
+    school_stat['six_grade_enroll']= len(students.filter(school_class__grade_number__in = [6,7], voc_guid_tests__isnull=False))
+    school_stat['eight_grade_enroll'] = len(students.filter(school_class__grade_number__in = [8,9], voc_guid_tests__isnull=False))
+    school_stat['ten_grade_enroll'] = len(students.filter(school_class__grade_number__in = [10,11], voc_guid_tests__isnull=False))
 
-    #Проф. пробы
-    bundles = set()
-    slots = TimeSlot.objects.all()
-    slots_now = []
-    for slot in slots:
-        if date.today() < slot.date and slot.date < (date.today() + timedelta(days=7)):
-            bundles.add(slot.test)
-
-    school_guid_type = "VO"
-    bilet_distr = BiletDistribution.objects.filter(school=school)
-    if len(bilet_distr) != 0:
-        bilet_distr = bilet_distr[0]
-        if bilet_distr.test_type == True:
-            school_guid_type = "SPO"
+    school_stat['groups_count'] = len(school_groups)
+    school_stat['groups_enroll'] = groups_enroll
+    school_stat['school_limit'] = quota
 
     return render(request, 'vocational_guidance/school_dash.html', {
         'school': school,
-        'tests': tests_dict,
-        'bundles': bundles,
-        'bundle_len': len(bundles),
-        'school_limit': [quota-students_enroll, quota],
-        'groups_count': len(school_groups),
-        'groups_enroll': groups_enroll,
-        'students_count': students_count,
-        'six_grade': six_grade,
-        'eight_grade': eight_grade,
-        'ten_grade': ten_grade,
-        'enroll_count': enroll_count,
-        'six_grade_enroll': six_grade_enroll,
-        'eight_grade_enroll': eight_grade_enroll,
-        'ten_grade_enroll': ten_grade_enroll
+        'school_stat': school_stat,
+        'tests': tests_dict
     })
 
 def tests_list(request):
@@ -414,6 +393,21 @@ def tests_list(request):
     
     return render(request, 'vocational_guidance/tests_list.html', {
         "tests": tests
+    })
+
+def students_list(request, school_id):
+    students = {}
+    school = School.objects.filter(id=school_id)[0]
+    classes = SchoolClass.objects.filter(school=school)
+    for school_class in classes:
+        class_students = Citizen.objects.filter(school_class=school_class)
+        if len(class_students) > 0:
+            students[school_class] = class_students
+    
+    return render(request, 'vocational_guidance/students_list.html', {
+        "school": school,
+        "classes": classes,
+        "students": students
     })
 
 def ed_center_dash(request, ed_center_id):
@@ -1001,6 +995,7 @@ def cancel_participant(request):
         participant_id = request.POST["participant"]
         test = request.POST["test"]
         group = request.POST["group"]
+        slots = request.POST["slots"]
         group = VocGuidGroup.objects.get(id=group)
         participant = Citizen.objects.get(id=participant_id)
         if participant.school_class.grade_number >= 10:
@@ -1018,18 +1013,23 @@ def cancel_participant(request):
         groups = VocGuidGroup.objects.filter(bundle=test, school=school, age_group=age_group).annotate(participants_count=Count('participants'))
         
         test = VocGuidTest.objects.get(id=test)
+        
+        assessment = VocGuidAssessment.objects.filter(
+            participant=participant, 
+            test=test
+        )
+        assessment.delete()
+
         if len(groups) == 0:
             create_group(participant, test)
         else:
-            add = False
             for group in groups:
                 if group.participants_count < group.attendance_limit:
                     cheak_slot = TimeSlot.objects.filter(group=group)
                     if len(cheak_slot) == 0:
                         group.participants.add(participant)
-                        add = True
                         break
-            if not add:
+            else:
                 create_group(participant, test)
 
             return HttpResponseRedirect(reverse("school_dash", args=(school.id,)))

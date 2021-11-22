@@ -1,0 +1,47 @@
+{% extends "vocational_guidance/layout.html" %}
+{% load static %}
+{% block title %}Список проб | Билет в будущее{% endblock %}
+
+{% block style %}
+        <link href="{% static 'vocational_guidance/css/students_list.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block script %}
+{% endblock %}
+
+{% block body %}
+    <div class="section students-section">
+        <div class="container">
+            <div class="row row-cols-3 g-3">
+                <div class="col-12 justify-content-center text-center">
+                    <h2>Список учеников {{school.name}}</h2>
+                </div>
+                <table class="table table-striped">
+                        <tr class="sticky-top">
+                            <th scope="col">Фамилия</th>
+                            <th scope="col">Имя</th>
+                            <th scope="col">Отчество</th>
+                            <th scope="col">Записан на пробу</th>
+                            <th scope="col">Прошёл пробу</th>
+                        </tr>
+                        {% for key, value in students.items %}
+                                <tr сlass="class-row">
+                                    <td colspan="5">{{key.grade_number}}{{key.grade_letter}} класс</td>
+                                </tr>
+                                {% for student in value %}
+                                    <tr class="ALL school {{adm_ter.3}}">
+                                        <td scope="row">{{student.last_name}}</td>
+                                        <td scope="row">{{student.first_name}}</td>
+                                        <td scope="row">{{student.middle_name}}</td>
+                                        <td scope="row">–</td>
+                                        <td scope="row">–</td>
+                                    </tr>
+                                {% endfor %}
+                        {% endfor %}
+                    </table>
+            </div>
+        </div>
+</div>
+    
+
+{% endblock %}

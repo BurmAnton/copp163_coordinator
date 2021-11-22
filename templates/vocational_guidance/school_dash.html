@@ -167,70 +167,70 @@
                                 <div class="col-6">
                                     <div class="col card text-center main-stat">
                                         <div class="card-body">
-                                            <p class="card-title">Учеников зарегистрировано: {{students_count}}</p>
+                                            <p class="card-title">Учеников зарегистрировано: {{school_stat|get_item:'students_count'}}</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="card text-center main-stat">
                                         <div class="card-body">
-                                            <p class="card-title">Учеников записалось на пробы: {{enroll_count}}</p>
+                                            <p class="card-title">Учеников записалось на пробы: {{school_stat|get_item:'enroll_count'}}</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="col card text-centerы">
                                         <div class="card-body">
-                                            <p class="card-title">Учеников 6-7 классов: {{six_grade}}</p>
+                                            <p class="card-title">Учеников 6-7 классов: {{school_stat|get_item:'six_grade'}}</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="card text-center">
                                         <div class="card-body">
-                                            <p class="card-title">Учеников 6-7 классов: {{six_grade_enroll}}</p>
+                                            <p class="card-title">Учеников 6-7 классов: {{school_stat|get_item:'six_grade_enroll'}}</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="col card text-centerы">
                                         <div class="card-body">
-                                            <p class="card-title">Учеников 8-9 классов: {{eight_grade}}</p>
+                                            <p class="card-title">Учеников 8-9 классов: {{school_stat|get_item:'eight_grade'}}</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="card text-center">
                                         <div class="card-body">
-                                            <p class="card-title">Учеников 8-9 классов: {{eight_grade_enroll}}</p>
+                                            <p class="card-title">Учеников 8-9 классов: {{school_stat|get_item:'eight_grade_enroll'}}</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="col card text-centerы">
                                         <div class="card-body">
-                                            <p class="card-title">Учеников 10-11 классов: {{ten_grade}}</p>
+                                            <p class="card-title">Учеников 10-11 классов: {{school_stat|get_item:'ten_grade'}}</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="card text-center">
                                         <div class="card-body">
-                                            <p class="card-title">Учеников 10-11 классов: {{ten_grade_enroll}}</p>
+                                            <p class="card-title">Учеников 10-11 классов: {{school_stat|get_item:'ten_grade_enroll'}}</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="col card text-center main-stat">
                                         <div class="card-body">
-                                            <p class="card-title">Групп записанно на проф. пробы: {{groups_enroll}} из {{groups_count}}</p>
+                                            <p class="card-title">Групп записанно на проф. пробы: {{school_stat|get_item:'groups_enroll'}} из {{school_stat|get_item:'groups_count'}}</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="col card text-center main-stat">
                                         <div class="card-body">
-                                            <p class="card-title">Квота школы: {{school_limit.0}} из {{school_limit.1}}</p>
+                                            <p class="card-title">Квота школы: {{school_stat|get_item:'school_limit'}}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -284,6 +284,7 @@
                                                                     <input style="display:none;" type="input" name="participant" value={{assessment.participant.id}}>
                                                                     <input style="display:none;" type="input" name="test" value={{group.0.bundle.id}}>
                                                                     <input style="display:none;" type="input" name="group" value={{group.0.id}}>
+                                                                    <input style="display:none;" type="input" name="slots" value={{group.0.slots}}>
                                                                     <button type="submit" class="btn btn-danger">Искл.</button>
                                                                 </form>
                                                             <div>
