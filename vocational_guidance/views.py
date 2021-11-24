@@ -407,7 +407,8 @@ def students_list(request, school_id):
     return render(request, 'vocational_guidance/students_list.html', {
         "school": school,
         "classes": classes,
-        "students": students
+        "students": students,
+        "disability_types": DisabilityType.objects.all(),
     })
 
 def ed_center_dash(request, ed_center_id):
@@ -791,7 +792,58 @@ def change_profile_teacher(request):
         return HttpResponseRedirect(reverse("index"))
     return HttpResponseRedirect(reverse("index"))
 
-
+@login_required(login_url='signin')
+@csrf_exempt
+def change_profile_student(request):
+    if request.method == "POST":
+        citizen_id = request.POST["id"]
+        citizen = Citizen.objects.get(id=citizen_id)
+        email = request.POST["email"]
+        citizen.email = request.POST["email"]
+        user = User.objects.filter(email=request.POST["email_old"])
+        if len(user) == 1:
+            user = user[0]
+            user.email = email
+            user.first_name = request.POST["name"]
+            user.last_name = request.POST["last_name"]
+            user.save()
+        citizen.phone_number = request.POST["phone"]
+        citizen.first_name = request.POST['name']
+        citizen.last_name = request.POST['last_name']
+        citizen.middle_name = request.POST['middle_name']
+        citizen.birthday = request.POST['birthday']
+        
+        grade_number = request.POST['school_class']
+        grade_letter = request.POST['school_class_latter']
+        try:
+            disability_check = request.POST['disability-check']
+        except:
+            disability_check = False
+        if disability_check != False:
+            disability_type = request.POST['disability_type']
+            citizen.disability_type = DisabilityType.objects.get(id=disability_type)
+        else:
+            citizen.disability_type = None
+        school_id = request.POST['school']
+        school = School.objects.get(id=school_id)
+        school_class = SchoolClass.objects.filter(
+                school=school,
+                grade_number=grade_number,
+                grade_letter=grade_letter
+        )
+        if len(school_class) != 0:
+            school_class = school_class[0]
+        else:
+            school_class = SchoolClass(
+                school=school,
+                grade_number=int(grade_number),
+                grade_letter=grade_letter.upper()
+            )
+            school_class.save()
+        citizen.school_class = school_class
+        citizen.save()
+        return HttpResponseRedirect(reverse("students_list", args=(school.id,)))
+    return HttpResponseRedirect(reverse("index"))
 
 @login_required(login_url='signin')
 def signout(request):

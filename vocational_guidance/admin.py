@@ -56,7 +56,8 @@ class TimeSlotAdmin(admin.ModelAdmin):
     list_filter = (
         ('date', DropdownFilter),
         ('slot', DropdownFilter),
-        ('test', RelatedOnlyDropdownFilter)
+        ('test', RelatedOnlyDropdownFilter),
+        ('test__education_center', RelatedOnlyDropdownFilter),
     )
 
     readonly_fields = ['get_ed_center', 'get_participants']

@@ -25,8 +25,13 @@ h1 {
   border-top: 0px solid #dee2e6;
 }
 .table .atendace-img {
+  width: 15px;
+  height: 15px;
+}
+.table .edit-img {
   width: 20px;
   height: 20px;
+  margin: 2px 6px 0px 0px;
 }
 
 tbody, td, tfoot, th, thead, tr {

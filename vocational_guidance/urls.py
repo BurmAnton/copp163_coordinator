@@ -29,7 +29,8 @@ urlpatterns = [
     path('choose_slot/', views.choose_slot, name='choose_slot'),
     path('cancel_slot/', views.cancel_slot, name='cancel_slot'),
     path('cancel_participant/', views.cancel_participant, name='cancel_participant'),
-    path('change_profile_teacher/', views.change_profile_teacher, name='change_profile_teacher'),
+    path('change_profile/teacher/', views.change_profile_teacher, name='change_profile_teacher'),
+    path('change_profile/student/', views.change_profile_student, name='change_profile_student'),
     path('change_password/', views.change_password, name='change_password'),
 
 #Иморт
