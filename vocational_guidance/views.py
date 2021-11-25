@@ -138,6 +138,9 @@ def students_dashboard(request):
 
 def bilet_dashboard(request):
     assessments = VocGuidAssessment.objects.filter(attendance=True)
+    slots_unique = set()
+    for assessment in assessments:
+        slots_unique.add(TimeSlot.objects.get(assessments=assessment))
     slots_count = TimeSlot.objects.filter(assessments__in=assessments)
     slots_count_link = TimeSlot.objects.filter(assessments__in=assessments).exclude(report_link=None)
     count_assessments = len(assessments)
@@ -168,7 +171,7 @@ def bilet_dashboard(request):
         'count_quota': int(count_assessments/2),
         'tests_dict': tests_dict,
         'slots_count': len(slots_count),
-        "slots_count_link": len(slots_count_link)
+        "slots_count_link": len(slots_unique)
     })
 
 @login_required(login_url='signin')
@@ -815,12 +818,9 @@ def change_profile_student(request):
         
         grade_number = request.POST['school_class']
         grade_letter = request.POST['school_class_latter']
-        try:
-            disability_check = request.POST['disability-check']
-        except:
-            disability_check = False
-        if disability_check != False:
-            disability_type = request.POST['disability_type']
+        
+        disability_type = request.POST['disability_type']
+        if disability_type != "Нет нарушений":
             citizen.disability_type = DisabilityType.objects.get(id=disability_type)
         else:
             citizen.disability_type = None

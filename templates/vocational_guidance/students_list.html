@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block script %}
+    <script src="{% static 'vocational_guidance/js/students_list.js' %}"></script>
 {% endblock %}
 
 {% block body %}
@@ -30,7 +31,7 @@
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title">Изменить данные профиля</h5>
+                                                    <h5 class="modal-title">Изменить данные ученика</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <form action="{% url 'change_profile_student' %}" method="post">
@@ -95,42 +96,30 @@
                                                             <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номер телефона" value="{{student.phone_number}}" required>
                                                             <label for="Phone">Номер телефона</label>
                                                         </div>
-                                                        <div class="form-check" style="display:none;">
-                                                            {% if student.disability_type == none %}
-                                                                <input class="form-check-input" type="checkbox" id="disability-check" name="disability-check">
-                                                            {% else %}
-                                                                <input class="form-check-input" type="checkbox" id="disability-check" name="disability-check" checked>
-                                                            {% endif %}
-                                                            <label class="form-check-label" for="flexCheckDefault">
-                                                                Я отношусь к лицам с ОВЗ
-                                                            </label>
-                                                        </div>
-                                                        {% if student.disability_type == none %}
-                                                            <div class="form mb-3" id="form-disability" style="display:none;">
-                                                        {% else %}
-                                                            <div class="form mb-3" id="form-disability" style="display:none;">
-                                                        {% endif %}
-                                                            <select class="selectpicker" data-width="100%" data-live-search="true" name="disability_type" id="disability_type">
-                                                                {% if student.disability_type != none %}
-                                                                    {% for type in disability_types %}
-                                                                        {% if student.disability_type == type %}
-                                                                            <option value="{{type.id}}" class="disability_type" data-school="{{type}}" selected>{{type.name}}</option>
-                                                                        {% else %}
-                                                                            <option value="{{type.id}}" class="disability_type" data-school="{{type}}">{{type.name}}</option>
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                {% else %}
-                                                                    <option>Выберите вид нарушения</option>
-                                                                    {% for type in disability_types %}
-                                                                            <option value="{{type.id}}" class="disability_type" data-school="{{type}}">{{type.name}}</option>
-                                                                    {% endfor %}
-                                                                {% endif %}
+                                                        <div class="form mb-3" id="form-disability">
+                                                            <label for="disability_type">ОВЗ</label>
+                                                            <select class="form-control" name="disability_type" required>
+                                                                    {% if student.disability_type != none %}
+                                                                        {% for type in disability_types %}
+                                                                            {% if student.disability_type == type %}
+                                                                                <option value="{{type.id}}" class="disability_type" data-school="{{type}}" selected>{{type.name}}</option>
+                                                                            {% else %}
+                                                                                <option value="{{type.id}}" class="disability_type" data-school="{{type}}">{{type.name}}</option>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                        <option>Нет нарушений</option>
+                                                                    {% else %}
+                                                                        <option>Нет нарушений</option>
+                                                                        {% for type in disability_types %}
+                                                                                <option value="{{type.id}}" class="disability_type" data-school="{{type}}">{{type.name}}</option>
+                                                                        {% endfor %}
+                                                                    {% endif %}
                                                             </select>
-                                                                <div class="invalid-feedback">Example invalid select feedback</div>
                                                         </div>
                                                         <div style="display: none;">
                                                             <input type="input" class="form-control" name="id" value="{{student.id}}">
                                                         </div>
+                                                        
                                                     </div>
                                                     <div class="modal-footer">
                                                         <div class="d-grid gap-2">

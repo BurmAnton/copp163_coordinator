@@ -28,6 +28,7 @@
                 <th scope="col">Отчеств</th>
                 <th scope="col">BVB</th>
                 <th scope="col">Отчётная ссылка</th>
+                <th scope="col">Подтверждён</th>
                 <th scope="col">Адрес</th>
                 <th scope="col">Контактное лицо на площадке</th>
                 <th scope="col">Количество мест</th>
@@ -63,6 +64,7 @@
                     {% else %}
                         <td scope="row" class="ed-center program-cell"><a href={{assessment.slot.report_link}}>ссылка</a></td>
                     {% endif %}
+                    <td scope="row" class="ed-center program-cell">{{assessment.is_checked}}</td>
                     <td scope="row" class="ed-center program-cell">Онлайн</td>
                     <td scope="row" class="ed-center program-cell">{{assessment.test.contact.full_name}}</td>
                     <td scope="row" class="ed-center program-cell">8</td>

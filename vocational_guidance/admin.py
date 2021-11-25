@@ -26,20 +26,31 @@ class VocGuidAssessmentAdmin(admin.ModelAdmin):
         "attendance",
         "test",
         "slot",
-        "bilet_platform"
+        "bilet_platform",
+        "is_checked"
     )
 
 
 class VocGuidAssessmentInline(admin.TabularInline):
     form = VocGuidAssessmentForm
     model = VocGuidAssessment
-    fields = ['participant', 'attendance']
-    readonly_fields = ['participant',]
+    fields = ['participant', 'attendance', "bilet_platform", "is_checked"]
+    readonly_fields = ['participant', "bilet_platform"]
+    
     def get_extra(self, request, obj=None, **kwargs):
         extra = 0
         if obj:
             return extra
         return extra
+
+    def get_readonly_fields(self, request, obj=None):
+        cl_group = Group.objects.filter(name='Представитель ЦО')
+        if len(cl_group) != 0:
+            if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
+                return self.readonly_fields + [
+                    'is_checked',
+                ]
+        return self.readonly_fields
 
 TimeSlotForm = select2_modelform(TimeSlot, attrs={'width': '600px'})
 
@@ -121,12 +132,11 @@ class TimeSlotAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         cl_group = Group.objects.filter(name='Представитель ЦО')
-
         if len(cl_group) != 0:
             if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
                 return self.readonly_fields + [
                     'test','group',
-                    'slot', 'date', 
+                    'slot', 'date',
                 ]
         return self.readonly_fields
 
