@@ -8,14 +8,17 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.db import IntegrityError
 
-from education_centers.models import EducationCenter
+from django.http import HttpResponse
+from openpyxl import Workbook
+from openpyxl.writer.excel import save_virtual_workbook
 
 from .forms import ImportDataForm
 from .imports import bvb_teachers, slots_import, matching_bvb_students
 
-from users.models import User, Group
-from citizens.models import Citizen, DisabilityType, School, SchoolClass
 from .models import TimeSlot, VocGuidTest, VocGuidGroup, VocGuidAssessment, TestContact, BiletDistribution
+from users.models import User, Group
+from education_centers.models import EducationCenter
+from citizens.models import Citizen, DisabilityType, School, SchoolClass
 
 # Create your views here.
 @login_required(login_url='signin')
@@ -130,11 +133,93 @@ def students_dashboard(request):
         slots_list.append(slot.test.get_thematic_env_display)
         slots_list.append(90)
         slots_lists.append(slots_list)
-    
+
     return render(request, "vocational_guidance/dashboard_students.html", {
         'assessments': assessments,
         'slots': slots_lists
     })
+
+@csrf_exempt
+def bvb_students_report(request):
+    if request.method == 'POST':
+        slots = TimeSlot.objects.order_by('test', 'slot')
+        assessments = VocGuidAssessment.objects.filter(attendance=True, slot__in=slots)
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Cтуденты"
+        ws.cell(row=1, column=1, value="Субъект РФ")
+        ws.cell(row=1, column=2, value="Муниципальный район")
+        ws.cell(row=1, column=3, value="Тип")
+        ws.cell(row=1, column=4, value="Формат проведения")
+        ws.cell(row=1, column=5, value="ТУ")
+        ws.cell(row=1, column=6, value="ЦО")
+        ws.cell(row=1, column=7, value="Название")
+        ws.cell(row=1, column=8, value="Дата (дд.мм.гггг)")
+        ws.cell(row=1, column=9, value="Время начала")
+        ws.cell(row=1, column=10, value="Время конца")
+        ws.cell(row=1, column=11, value="Школа")
+        ws.cell(row=1, column=12, value="Фамилия")
+        ws.cell(row=1, column=13, value="Имя")
+        ws.cell(row=1, column=14, value="Отчество")
+        ws.cell(row=1, column=15, value="BVB")
+        ws.cell(row=1, column=16, value="Отчётная ссылка")
+        ws.cell(row=1, column=17, value="Подтверждён")
+        ws.cell(row=1, column=18, value="Адрес")
+        ws.cell(row=1, column=19, value="Контактное лицо на площадке")
+        ws.cell(row=1, column=20, value="Количество мест")
+        ws.cell(row=1, column=21, value="Описание мероприятия")
+        ws.cell(row=1, column=22, value="Спикеры")
+        ws.cell(row=1, column=23, value="Профессии")
+        ws.cell(row=1, column=24, value="Сферы")
+        ws.cell(row=1, column=25, value="Интервал таймслота (мин)")
+        x = 2
+        for assessment in assessments:
+            ws.cell(row=x, column=1, value="Самарская область")
+            ws.cell(row=x, column=2, value="")
+            ws.cell(row=x, column=3, value="Онлайн")
+            ws.cell(row=x, column=4, value="Проба")
+            ws.cell(row=x, column=5, value=assessment.participant.school.get_territorial_administration_display())
+            ws.cell(row=x, column=6, value=assessment.test.education_center.name)
+            ws.cell(row=x, column=7, value=assessment.test.name)
+            ws.cell(row=x, column=8, value=assessment.slot.date)
+            if assessment.slot.slot == "MRN":
+                ws.cell(row=x, column=9, value="10:00")
+                ws.cell(row=x, column=10, value="11:30")
+            elif assessment.slot.slot == "MID":
+                ws.cell(row=x, column=9, value="15:00")
+                ws.cell(row=x, column=10, value="16:30")
+            else:
+                ws.cell(row=x, column=9, value="16:30")
+                ws.cell(row=x, column=10, value="18:00")
+            ws.cell(row=x, column=11, value=f"{assessment.participant.school.name} ({assessment.participant.school.city})")
+            ws.cell(row=x, column=12, value=assessment.participant.last_name)
+            ws.cell(row=x, column=13, value=assessment.participant.first_name)
+            ws.cell(row=x, column=14, value=assessment.participant.middle_name)
+            ws.cell(row=x, column=15, value=assessment.bilet_platform)
+            if assessment.slot.report_link == None:
+                ws.cell(row=x, column=16, value="–")
+            else:
+                ws.cell(row=x, column=16, value=assessment.slot.report_link)
+            ws.cell(row=x, column=17, value=assessment.is_checked)
+            ws.cell(row=x, column=18, value="Онлайн")
+            if len(TestContact.objects.filter(test=assessment.test)) != 0:
+                contact = assessment.test.contact.full_name
+            else:
+                contact = "–"
+            ws.cell(row=x, column=19, value=contact)
+            ws.cell(row=x, column=20, value=8)
+            ws.cell(row=x, column=21, value=assessment.test.description)
+            ws.cell(row=x, column=22, value=contact)
+            ws.cell(row=x, column=23, value=assessment.test.profession)
+            ws.cell(row=x, column=24, value=assessment.test.get_thematic_env_display())
+            ws.cell(row=x, column=25, value=90)
+            x += 1
+        wb.template = False
+        wb.save('Report_BVB.xlsx')
+        response = HttpResponse(content=save_virtual_workbook(wb), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=Report_BVB.xlsx'
+        return response
+    return HttpResponseRedirect(reverse('admin:index'))
 
 def bilet_dashboard(request):
     assessments = VocGuidAssessment.objects.filter(attendance=True)

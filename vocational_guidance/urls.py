@@ -33,11 +33,14 @@ urlpatterns = [
     path('change_profile/student/', views.change_profile_student, name='change_profile_student'),
     path('change_password/', views.change_password, name='change_password'),
 
-#Иморт
+#Импорт
     path('import/teachers/', views.import_teachers, name="import_teachers"),
     path('import/slots/', views.import_slots, name="import_slots"),
     path('import/slots/external/', views.import_external_slots, name="import_external_slots"),
     path('import/slots/bvb/matching/', views.import_bvb_matching, name="import_bvb_matching"),
+
+#Экспорт
+    path('export/bvb/report/students', views.bvb_students_report, name="bvb_students_report"),
 
 #Временные
     path('add_assessment_all/', views.add_assessment_all, name='add_assessment_all'),
