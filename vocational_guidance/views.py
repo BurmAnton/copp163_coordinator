@@ -41,9 +41,6 @@ def index(request):
     elif request.user.is_staff:
         return HttpResponseRedirect(reverse("bilet_dashboard"))
     return HttpResponseRedirect(reverse("index"))
-    #school_dash(school.id)
-    #ed_center_dash(ed_center.id)
-    #region_dash()
 
 def quotas_dashboard(request):
     quotas = []
@@ -103,40 +100,9 @@ def students_dashboard(request):
     slots = TimeSlot.objects.order_by('test', 'slot')
     assessments = VocGuidAssessment.objects.filter(attendance=True, slot__in=slots)
     slots_lists = []
-    for slot in slots:
-        slots_list = []
-        slots_list.append(slot.test.education_center.name)
-        slots_list.append(slot.test.name)
-        slots_list.append(slot.date)
-        if slot.slot == "MRN":
-            slots_list.append("10:00")
-            slots_list.append("11:30")
-        elif slot.slot == "MID":
-            slots_list.append("15:00")
-            slots_list.append("16:30")
-        else:
-            slots_list.append("16:30")
-            slots_list.append("18:00")
-        slots_list.append("Онлайн")
-        contract = TestContact.objects.filter(test=slot.test)
-        if len(contract) != 0:
-            slots_list.append(slot.test.contact.full_name)
-        else:
-            slots_list.append("–")
-        slots_list.append(8)
-        slots_list.append(slot.test.description)
-        if len(contract) != 0:
-            slots_list.append(slot.test.contact.full_name)
-        else:
-            slots_list.append("–")
-        slots_list.append("–")
-        slots_list.append(slot.test.get_thematic_env_display)
-        slots_list.append(90)
-        slots_lists.append(slots_list)
 
     return render(request, "vocational_guidance/dashboard_students.html", {
         'assessments': assessments,
-        'slots': slots_lists
     })
 
 @csrf_exempt

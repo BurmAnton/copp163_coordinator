@@ -106,7 +106,10 @@ DATABASES = {
         'OPTIONS': {
             'sql_mode': 'traditional',
             #'charset': 'utf8mb4'  # This is the important line
-        }
+        },
+        'TEST': {
+            'NAME': 'u1429070_mytestdatabase',
+        },
     }
 }
 
