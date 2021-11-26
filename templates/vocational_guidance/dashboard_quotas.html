@@ -3,7 +3,7 @@
 {% block title %}Квота | Билет в будущее{% endblock %}
 
 {% block style %}
-    <link href="{% static 'region163_dashboard/css/ed_centers_empl.css' %}" rel="stylesheet">
+    <link href="{% static 'vocational_guidance/css/dashboard_quotas.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block script %}
@@ -16,14 +16,17 @@
             <h1>Квота ТУ/школ по проекту «Билет в будущее»</h1>
         </div>
         <div class="filter">
-            <div class="col-6 form mb-3">
-                <select class="selectpicker dropup" data-style="btn-primary" data-dropup-auto="false" data-width="fit" data-live-search="true" name="school" id="School" required>
+            <div class="form">
+                <select class="selectpicker dropup active" data-style="btn-primary" data-dropup-auto="false" data-width="fit" data-live-search="true" name="school" id="School" required>
                     <option value="">Выберите тер. управление</option>
                     {% for ter_admin in ter_admins %}
                         <option value="{{ter_admin.1}}" class="{{ter_admin.0}}">{{ter_admin.1}}</option>
                     {% endfor %}
                 </select>
             </div>
+            <a href="{% url 'balance_quotas' %}">
+                <button type="button" class="btn btn-dark">Выровнять квоту</button>
+            </a>
         </div>
         <table class="table table-striped">
             <tr class="sticky-top">

@@ -1079,18 +1079,19 @@ def add_quotas_all(request):
     return HttpResponseRedirect(reverse("index"))
 
 def balance_quotas(request):
-    schools = School.objects.all()
-    for school in schools:
-        distribution = BiletDistribution.objects.filter(school=school)
-        quota = BiletDistribution.objects.filter(school=school).values("quota")
-        if len(quota) != 0:
-            participants = Citizen.objects.filter(school=school)
-            spent_quota = len(VocGuidAssessment.objects.filter(participant__in=participants, attendance=True))
-            if quota[0]['quota'] < spent_quota:
-                distribution = distribution[0]
-                distribution.quota = spent_quota
-                distribution.save()
-    return HttpResponseRedirect(reverse("index"))
+    if request.user.is_superuser:
+        schools = School.objects.all()
+        for school in schools:
+            distribution = BiletDistribution.objects.filter(school=school)
+            quota = BiletDistribution.objects.filter(school=school).values("quota")
+            if len(quota) != 0:
+                participants = Citizen.objects.filter(school=school)
+                spent_quota = len(VocGuidAssessment.objects.filter(participant__in=participants, attendance=True))
+                if quota[0]['quota'] < spent_quota:
+                    distribution = distribution[0]
+                    distribution.quota = spent_quota
+                    distribution.save()
+    return HttpResponseRedirect(reverse("quotas_dashboard"))
 
 @csrf_exempt
 def cancel_participant(request):
