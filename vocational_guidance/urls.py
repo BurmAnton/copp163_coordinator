@@ -4,12 +4,13 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('profile/<int:citizen_id>/', views.profile, name='profile'),
-    path('school/dashboard/<int:school_id>/', views.school_dash, name='school_dash'),
-    path('school/dashboard/<int:school_id>/students/', views.students_list, name='students_list'),
-    path('ed_center/dashboard/<int:ed_center_id>/', views.ed_center_dash, name='ed_center_dash'),
-    path('tests/', views.tests_list, name='tests_list'),
+    path('student/profile/<int:citizen_id>/', views.profile, name='profile'),
+    path('school/profile/<int:school_id>/', views.school_dash, name='school_dash'),
+    path('school/profile/<int:school_id>/students/', views.students_list, name='students_list'),
+    path('ed_center/profile/<int:ed_center_id>/', views.ed_center_dash, name='ed_center_dash'),
+    path('tests/all/', views.tests_list, name='tests_list'),
 
+#Dashboards
     path('dashboard/region/', views.region_dash, name='region_dash'),
     path('dashboard/bilet/', views.bilet_dashboard, name="bilet_dashboard"),
     path('dashboard/students/', views.students_dashboard, name="students_dashboard"),
@@ -33,13 +34,13 @@ urlpatterns = [
     path('change_profile/student/', views.change_profile_student, name='change_profile_student'),
     path('change_password/', views.change_password, name='change_password'),
 
-#Импорт
+#Import
     path('import/teachers/', views.import_teachers, name="import_teachers"),
     path('import/slots/', views.import_slots, name="import_slots"),
     path('import/slots/external/', views.import_external_slots, name="import_external_slots"),
     path('import/slots/bvb/matching/', views.import_bvb_matching, name="import_bvb_matching"),
 
-#Экспорт
+#Export
     path('export/bvb/report/students', views.bvb_students_report, name="bvb_students_report"),
 
 #Временные

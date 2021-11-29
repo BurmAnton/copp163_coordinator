@@ -453,7 +453,7 @@ def matching_bvb_students(form):
                             assessment.save()
                             if assessment.attendance:
                                 find_students += 1
-                            
+
     #Проверяем наличие школы с платформы в списке, фиксируем не найденные
     for school in BiletDistribution.objects.filter(quota__gt=0):
         if school.school.name not in import_schools_set:

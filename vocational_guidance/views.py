@@ -113,73 +113,77 @@ def bvb_students_report(request):
         wb = Workbook()
         ws = wb.active
         ws.title = "Cтуденты"
-        ws.cell(row=1, column=1, value="Субъект РФ")
-        ws.cell(row=1, column=2, value="Муниципальный район")
-        ws.cell(row=1, column=3, value="Тип")
-        ws.cell(row=1, column=4, value="Формат проведения")
-        ws.cell(row=1, column=5, value="ТУ")
-        ws.cell(row=1, column=6, value="ЦО")
-        ws.cell(row=1, column=7, value="Название")
-        ws.cell(row=1, column=8, value="Дата (дд.мм.гггг)")
-        ws.cell(row=1, column=9, value="Время начала")
-        ws.cell(row=1, column=10, value="Время конца")
-        ws.cell(row=1, column=11, value="Школа")
-        ws.cell(row=1, column=12, value="Фамилия")
-        ws.cell(row=1, column=13, value="Имя")
-        ws.cell(row=1, column=14, value="Отчество")
-        ws.cell(row=1, column=15, value="BVB")
-        ws.cell(row=1, column=16, value="Отчётная ссылка")
-        ws.cell(row=1, column=17, value="Подтверждён")
-        ws.cell(row=1, column=18, value="Адрес")
-        ws.cell(row=1, column=19, value="Контактное лицо на площадке")
-        ws.cell(row=1, column=20, value="Количество мест")
-        ws.cell(row=1, column=21, value="Описание мероприятия")
-        ws.cell(row=1, column=22, value="Спикеры")
-        ws.cell(row=1, column=23, value="Профессии")
-        ws.cell(row=1, column=24, value="Сферы")
-        ws.cell(row=1, column=25, value="Интервал таймслота (мин)")
-        x = 2
+        column_names = [
+            "Субъект РФ", "Муниципальный район",
+            "Тип", "Формат проведения", "ТУ",
+            "ЦО", "Название","Дата (дд.мм.гггг)", 
+            "Время начала", "Время конца", "Школа",
+            "Фамилия", "Имя", "Отчество", "BVB", 
+            "Отчётная ссылка", "Подтверждён", "Адрес", 
+            "Контактное лицо на площадке", "Количество мест",
+            "Описание мероприятия", "Спикеры", "Профессии", 
+            "Сферы", "Интервал таймслота (мин)"
+        ]
+        active_column = 1
+        for name in column_names:
+            ws.cell(row=1, column=active_column, value=name)
+            active_column += 1
+        
+        active_row = 2
         for assessment in assessments:
-            ws.cell(row=x, column=1, value="Самарская область")
-            ws.cell(row=x, column=2, value="")
-            ws.cell(row=x, column=3, value="Онлайн")
-            ws.cell(row=x, column=4, value="Проба")
-            ws.cell(row=x, column=5, value=assessment.participant.school.get_territorial_administration_display())
-            ws.cell(row=x, column=6, value=assessment.test.education_center.name)
-            ws.cell(row=x, column=7, value=assessment.test.name)
-            ws.cell(row=x, column=8, value=assessment.slot.date)
             if assessment.slot.slot == "MRN":
-                ws.cell(row=x, column=9, value="10:00")
-                ws.cell(row=x, column=10, value="11:30")
+                start="10:00"
+                end="11:30"
             elif assessment.slot.slot == "MID":
-                ws.cell(row=x, column=9, value="15:00")
-                ws.cell(row=x, column=10, value="16:30")
+                start="15:00"
+                end="16:30"
             else:
-                ws.cell(row=x, column=9, value="16:30")
-                ws.cell(row=x, column=10, value="18:00")
-            ws.cell(row=x, column=11, value=f"{assessment.participant.school.name} ({assessment.participant.school.city})")
-            ws.cell(row=x, column=12, value=assessment.participant.last_name)
-            ws.cell(row=x, column=13, value=assessment.participant.first_name)
-            ws.cell(row=x, column=14, value=assessment.participant.middle_name)
-            ws.cell(row=x, column=15, value=assessment.bilet_platform)
+                start="16:30"
+                end="18:00"
+
             if assessment.slot.report_link == None:
-                ws.cell(row=x, column=16, value="–")
+                report_link="–"
             else:
-                ws.cell(row=x, column=16, value=assessment.slot.report_link)
-            ws.cell(row=x, column=17, value=assessment.is_checked)
-            ws.cell(row=x, column=18, value="Онлайн")
+                report_link=assessment.slot.report_link
+
             if len(TestContact.objects.filter(test=assessment.test)) != 0:
                 contact = assessment.test.contact.full_name
             else:
                 contact = "–"
-            ws.cell(row=x, column=19, value=contact)
-            ws.cell(row=x, column=20, value=8)
-            ws.cell(row=x, column=21, value=assessment.test.description)
-            ws.cell(row=x, column=22, value=contact)
-            ws.cell(row=x, column=23, value=assessment.test.profession)
-            ws.cell(row=x, column=24, value=assessment.test.get_thematic_env_display())
-            ws.cell(row=x, column=25, value=90)
-            x += 1
+
+            cell_values = {
+                "Субъект РФ": "Самарская область", 
+                "Муниципальный район": "",
+                "Тип": "Онлайн", 
+                "Формат проведения": "Проба", 
+                "ТУ": assessment.participant.school.get_territorial_administration_display(),
+                "ЦО": assessment.test.education_center.name, 
+                "Название": assessment.test.name,
+                "Дата (дд.мм.гггг)": assessment.slot.date, 
+                "Время начала": start, 
+                "Время конца": end, 
+                "Школа": f"{assessment.participant.school.name} ({assessment.participant.school.city})",
+                "Фамилия": assessment.participant.last_name, 
+                "Имя": assessment.participant.first_name, 
+                "Отчество": assessment.participant.middle_name, 
+                "BVB": assessment.bilet_platform, 
+                "Отчётная ссылка": report_link, 
+                "Подтверждён": assessment.is_checked, 
+                "Адрес": "Онлайн", 
+                "Контактное лицо на площадке": contact, 
+                "Количество мест": 8,
+                "Описание мероприятия": assessment.test.description, 
+                "Спикеры": contact, 
+                "Профессии": assessment.test.profession, 
+                "Сферы": assessment.test.get_thematic_env_display(), 
+                "Интервал таймслота (мин)": 90
+            }
+            active_col = 1
+            for key, value in cell_values.items():
+                ws.cell(row=active_row, column=active_col, value=value)
+                active_col += 1
+            active_row += 1
+
         wb.template = False
         wb.save('Report_BVB.xlsx')
         response = HttpResponse(content=save_virtual_workbook(wb), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -337,8 +341,18 @@ def profile(request, citizen_id):
         "guid_type": school_guid_type
     })
 
+@login_required(login_url='signin')
 def school_dash(request, school_id):
-    school = School.objects.get(id=school_id)
+    #Проверяем есть ли такая школа
+    try:
+        school = School.objects.get(id=school_id)
+    except:
+         return HttpResponseRedirect(reverse("index"))
+
+    #Проверяем относиться ли пользователь к школе
+    if request.user not in school.school_coordinators.all():
+        return HttpResponseRedirect(reverse("index"))
+
     participants = Citizen.objects.filter(school=school)
     school_groups = VocGuidGroup.objects.filter(school=school)
     slots_enroll = TimeSlot.objects.filter(group__in=school_groups)

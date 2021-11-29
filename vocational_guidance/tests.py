@@ -3,7 +3,7 @@ from datetime import timedelta, date
 
 
 from citizens.models import Citizen, School, SchoolClass
-from vocational_guidance.models import VocGuidTest, TimeSlot
+from vocational_guidance.models import BiletDistribution, VocGuidTest, TimeSlot
 from education_centers.models import EducationCenter
 from users.models import User
 
@@ -35,6 +35,10 @@ class VocationGuidanceTestCase(TestCase):
 
         school = School.objects.create(
             name = "Тестовая школа №1",
+        )
+        quota = BiletDistribution.objects.create(
+            school=school,
+            quota=0
         )
         school_class = SchoolClass.objects.create(
             school=school,
@@ -76,34 +80,33 @@ class VocationGuidanceTestCase(TestCase):
         response = c.get("/bilet/registration/parent/")
         self.assertTrue(response.status_code, 200)
     
-    def test_profile(self):
+    def test_student_profile(self):
         c = Client()
-        response = c.get("/bilet/profile/1/")
+        response = c.get("/bilet/student/profile/1/")
         self.assertEqual(response.status_code, 302)
 
         user = User.objects.get(email='student@user.com')
         c.force_login(user, backend=None)
 
         student = Citizen.objects.get(email='student@user.com')
-        response = c.get(f"/bilet/profile/{student.id}/", follow=True)
+        response = c.get(f"/bilet/student/profile/{student.id}/", follow=True)
         self.assertEqual(response.status_code, 200)
     
-    def test_school_dash(self):
+    def test_school_profile(self):
         c = Client()
-
-        response = c.get("/bilet/school_dash/1/")
+        school = School.objects.first()
+        response = c.get(f"/bilet/school/profile/{school.id}/")
         self.assertEqual(response.status_code, 302)
-
-        teacher = User.objects.get(email='teacher@user.com')
-        c.force_login(teacher, backend=None)
         
-        response = c.get(f"/bilet/school_dash/{teacher.coordinated_schools.first().id}/", follow=True)
+        teacher = User.objects.get(coordinated_schools=school)
+        c.force_login(teacher, backend=None)
+        response = c.get(f"/bilet/school/profile/{school.id}/", follow=True)
         self.assertEqual(response.status_code, 200)
 
     def test_tests_list(self):
         c = Client()
 
-        response = c.get("/bilet/tests/")
+        response = c.get("/bilet/tests/all/")
         test = VocGuidTest.objects.get(name="test")
         
         self.assertEqual(response.status_code, 200)
