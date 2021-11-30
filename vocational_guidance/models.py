@@ -110,7 +110,13 @@ class TimeSlot(models.Model):
         verbose_name_plural = "Слоты"
 
     def __str__(self):
-        return  f"{self.id} {self.test} – {self.date} {self.slot}"
+        if self.slot == "MRN":
+            slot = "с 10:00 до 11:30"
+        elif self.slot == "MID":
+            slot = "с 15:00 до 16:30"
+        else:
+            slot = "с 16:30 до 18:00"
+        return  f"{self.id} {self.test} – {self.date} {slot}"
 
 
 class VocGuidAssessment(models.Model):
