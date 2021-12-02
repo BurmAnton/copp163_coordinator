@@ -1243,5 +1243,3 @@ def import_external_slots(request):
                 "schools": schools,
                 "test_limit": range(1,9)
             })
-
-
