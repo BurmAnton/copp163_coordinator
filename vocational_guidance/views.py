@@ -1,4 +1,5 @@
 from datetime import timedelta, date
+from django.core.checks import messages
 from django.db.models import Count
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -11,6 +12,9 @@ from django.db import IntegrityError
 from django.http import HttpResponse
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
+from pysendpulse.pysendpulse import PySendPulse
+import string
+import random
 
 from .forms import ImportDataForm
 from .imports import bvb_teachers, slots_import, matching_bvb_students
@@ -593,6 +597,56 @@ def signin(request):
                 })
     else:
         return render(request, "vocational_guidance/login.html") 
+
+def code_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+@csrf_exempt
+def password_recovery(request):
+    if request.method == "POST":
+        email = request.POST["email"]
+        user = User.objects.filter(email=email)
+        if len(user) != 0:
+            user = user[0]
+            code = code_generator()
+            user.code = code
+            user.save()
+            email = {
+                'subject': 'This is the test task from REST API',
+                'html': f'<h1>Добрый день!</h1><p>Вы получили это письмо потому, что вы (либо кто-то, выдающий себя за вас) попросили выслать новый пароль к вашей учётной записи на сайте http://copp63-coordinator.ru/bilet/. <br> Если вы не просили выслать пароль, то не обращайте внимания на это письмо. <br> Код подтверждения для смены пароля: {code} <br> Это автоматическое письмо с на него не нужно отвечать.</p>',
+                'text': f'Добрый день!\n Вы получили это письмо потому, что вы (либо кто-то, выдающий себя за вас) попросили выслать новый пароль к вашей учётной записи на сайте http://copp63-coordinator.ru/bilet/. \n Если вы не просили выслать пароль, то не обращайте внимания на это письмо. \n Код подтверждения для смены пароля: {code} \n Это автоматическое письмо с на него не нужно отвечать.',
+                'from': {'name': 'ЦОПП СО', 'email': 'bvb@copp63.ru'},
+                'to': [
+                    {'name': "f{user.first_name} {user.last_name}", 'email': email}
+                ],
+            }
+            SPApiProxy = mailing()
+            SPApiProxy.smtp_send_mail(email)
+            return HttpResponseRedirect(reverse("password_recovery_code", args=(user.id,)))
+    return render(request, "vocational_guidance/password_recovery.html")
+
+@csrf_exempt
+def password_recovery_code(request, user_id):
+    user = User.objects.get(id=user_id)
+    message = None
+    if request.method == "POST":
+        code = request.POST["code"]
+        password = request.POST["password"]
+        confirmation = request.POST["confirmation"]
+        if user.code == code:
+            if password == confirmation:
+                user.set_password(password)
+                user.save()
+                login(request, user)
+                return HttpResponseRedirect(reverse("index"))
+            else:
+                message = "Пароли несовпадают"
+        else:
+            message = "Неверный код подтверждения"
+    return render(request, "vocational_guidance/password_recovery_code.html", {
+        'user_id': user_id,
+        'message': message
+    })
 
 @login_required(login_url='signin')
 @csrf_exempt
@@ -1243,3 +1297,13 @@ def import_external_slots(request):
                 "schools": schools,
                 "test_limit": range(1,9)
             })
+
+
+def mailing():
+    REST_API_ID = 'e071900fe5ab9aa6dd4dec2f42160ead'
+    REST_API_SECRET = '7e82daa1ccfd678487a894b3e3487967'
+    TOKEN_STORAGE = 'memcached'
+    MEMCACHED_HOST = '127.0.0.1:11211'
+    SPApiProxy = PySendPulse(REST_API_ID, REST_API_SECRET, TOKEN_STORAGE, memcached_host=MEMCACHED_HOST)
+
+    return SPApiProxy
