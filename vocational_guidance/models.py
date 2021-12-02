@@ -104,6 +104,7 @@ class TimeSlot(models.Model):
     zoom_link = models.URLField("Ссылка на конференцию (zoom)", max_length=400, blank=True, null=True)
     report_link = models.URLField("Отчетная ссылка", max_length=400, blank=True, null=True)
     attendance_limit = models.IntegerField("Максимальное кол-во участников", default=8, blank=True, null=True)
+    is_nonprofit = models.BooleanField("На безвозмездной основе", default=False)
 
     class Meta:
         verbose_name = "Слот"

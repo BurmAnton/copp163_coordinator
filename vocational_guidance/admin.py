@@ -69,6 +69,7 @@ class TimeSlotAdmin(admin.ModelAdmin):
         ('slot', DropdownFilter),
         ('test', RelatedOnlyDropdownFilter),
         ('test__education_center', RelatedOnlyDropdownFilter),
+        ('is_nonprofit', DropdownFilter)
     )
 
     readonly_fields = ['get_ed_center', 'get_participants']
@@ -78,7 +79,7 @@ class TimeSlotAdmin(admin.ModelAdmin):
                 'get_ed_center', 'test', 
                 'date', 'slot', 'group',
                 'zoom_link', 'report_link',
-                'attendance_limit'
+                'attendance_limit', 'is_nonprofit'
             )
         }),
     )
