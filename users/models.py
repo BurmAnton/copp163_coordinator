@@ -9,6 +9,7 @@ class User(AbstractUser):
     middle_name = models.CharField("Отчество", max_length=30, blank=True, null=True)
     email = models.EmailField(_('email address'), unique=True)
     phone_number = models.CharField("Номер телефона", max_length=20, blank=True, null=True)
+    code = models.CharField("Код подтверждения", max_length=10, blank=True, null=True, default=None)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

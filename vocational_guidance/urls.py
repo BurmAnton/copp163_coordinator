@@ -18,6 +18,8 @@ urlpatterns = [
 
 #Auth
     path('login/', views.signin, name='signin'),
+    path('password/recovery/', views.password_recovery, name="password_recovery"),
+    path('password/recovery/code/<int:user_id>', views.password_recovery_code, name="password_recovery_code"),
     path('registration/', views.signup, name='signup'),
     path('registration/parent/', views.signup_parent, name='signup_parent'),
     path('registration/child/', views.signup_child, name='signup_child'),

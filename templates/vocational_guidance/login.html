@@ -24,6 +24,7 @@
                     <div class="mb-3">
                         <label for="InputPassword" class="form-label">Пароль</label>
                         <input type="password" class="form-control" name="password" id="InputPassword" required>
+                        <div id="SignUpHelp" class="form-text"><a href="{% url 'password_recovery' %}">Забыли пароль?</a></div>
                         <div id="SignUpHelp" class="form-text"><a href="{% url 'signup' %}">Регистрация</a></div>
                     </div>
                     {% if message %}

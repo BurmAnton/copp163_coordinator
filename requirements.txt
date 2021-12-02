@@ -1,4 +1,3 @@
-#dal==0.2
 Django==3.2.8
 django_admin_list_filter_dropdown==1.0.3
 django_field_history==0.8.0
