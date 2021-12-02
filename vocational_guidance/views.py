@@ -60,7 +60,8 @@ def quotas_dashboard(request):
             quota = BiletDistribution.objects.filter(school=school).values("quota")
             if len(quota) != 0:
                 participants = Citizen.objects.filter(school=school)
-                spent_quota = len(VocGuidAssessment.objects.filter(participant__in=participants, attendance=True))
+                nonprofit_slots = TimeSlot.objects.filter(is_nonprofit=True)
+                spent_quota = len(VocGuidAssessment.objects.filter(participant__in=participants, attendance=True).exclude(slot__in=nonprofit_slots))
                 ter_spent_quota += spent_quota
                 all_spent_quota += spent_quota
                 ter_quota += quota[0]['quota']
@@ -81,7 +82,8 @@ def quotas_dashboard(request):
         quota = BiletDistribution.objects.filter(school=school).values("quota")
         if len(quota) != 0:
             participants = Citizen.objects.filter(school=school)
-            spent_quota = len(VocGuidAssessment.objects.filter(participant__in=participants, attendance=True))
+            nonprofit_slots = TimeSlot.objects.filter(is_nonprofit=True)
+            spent_quota = len(VocGuidAssessment.objects.filter(participant__in=participants, attendance=True).exclude(slot__in=nonprofit_slots))
             ter_spent_quota += spent_quota
             all_spent_quota += spent_quota
             ter_quota += quota[0]['quota']
@@ -364,11 +366,12 @@ def school_dash(request, school_id):
     groups_enroll = len(VocGuidGroup.objects.filter(school=school, slots__in=slots_enroll))
     tests = VocGuidTest.objects.all()
     quota = BiletDistribution.objects.filter(school=school).values("quota")[0]['quota']
+    nonprofit_slots = TimeSlot.objects.filter(is_nonprofit=True)
     assessments = VocGuidAssessment.objects.filter(participant__in=participants)
 
     #Вычисляем лимит размера группы с учётом квоты школы
     school_limit = 0
-    students_enroll = len(assessments)
+    students_enroll = len(assessments.exclude(slot__in=nonprofit_slots))
     if quota != 0:
         limit = quota - students_enroll
         if limit >= 8:
@@ -1222,12 +1225,18 @@ def import_external_slots(request):
             test = VocGuidTest.objects.get(id=test_id)
             time = request.POST["time"]
             date = request.POST["date"]
+            is_nonprofit = request.POST["is_nonprofit"]
+            if is_nonprofit == "on":
+                is_nonprofit = True
+            else:
+                is_nonprofit = False
             report_link = request.POST["report_link"]
             slot = TimeSlot(
                 test=test,
                 date=date,
                 slot=time,
-                report_link=report_link
+                report_link=report_link,
+                is_nonprofit=is_nonprofit
             )
             slot.save()
             group = VocGuidGroup(
