@@ -606,7 +606,6 @@ def code_generator(size=6, chars=string.ascii_uppercase + string.digits):
 
 @csrf_exempt
 def password_recovery(request):
-    message = None
     if request.method == "POST":
         email = request.POST["email"]
         user = User.objects.filter(email=email)
@@ -616,9 +615,9 @@ def password_recovery(request):
             user.code = code
             user.save()
             email = {
-                'subject': 'Востановление пароля copp63-coordinator.ru',
-                'html': f'Добрый день! <br> <p>Вы получили это письмо потому, что вы (либо кто-то, выдающий себя за вас) попросили выслать новый пароль к вашей учётной записи на сайте http://copp63-coordinator.ru/bilet/. <br> Если вы не просили выслать пароль, то не обращайте внимания на это письмо. <br> <b>Код подтверждения для смены пароля: {code}</b> <br> Это автоматическое письмо с на него не нужно отвечать.</p>',
-                'text': f'Добрый день!\n Вы получили это письмо потому, что вы (либо кто-то, выдающий себя за вас) попросили выслать новый пароль к вашей учётной записи на сайте http://copp63-coordinator.ru/bilet/. \n Если вы не просили выслать пароль, то не обращайте внимания на это письмо. \n Код подтверждения для смены пароля: {code} \n Это автоматическое письмо на него не нужно отвечать.',
+                'subject': 'This is the test task from REST API',
+                'html': f'<h1>Добрый день!</h1><p>Вы получили это письмо потому, что вы (либо кто-то, выдающий себя за вас) попросили выслать новый пароль к вашей учётной записи на сайте http://copp63-coordinator.ru/bilet/. <br> Если вы не просили выслать пароль, то не обращайте внимания на это письмо. <br> Код подтверждения для смены пароля: {code} <br> Это автоматическое письмо с на него не нужно отвечать.</p>',
+                'text': f'Добрый день!\n Вы получили это письмо потому, что вы (либо кто-то, выдающий себя за вас) попросили выслать новый пароль к вашей учётной записи на сайте http://copp63-coordinator.ru/bilet/. \n Если вы не просили выслать пароль, то не обращайте внимания на это письмо. \n Код подтверждения для смены пароля: {code} \n Это автоматическое письмо с на него не нужно отвечать.',
                 'from': {'name': 'ЦОПП СО', 'email': 'bvb@copp63.ru'},
                 'to': [
                     {'name': "f{user.first_name} {user.last_name}", 'email': email}
@@ -627,11 +626,7 @@ def password_recovery(request):
             SPApiProxy = mailing()
             SPApiProxy.smtp_send_mail(email)
             return HttpResponseRedirect(reverse("password_recovery_code", args=(user.id,)))
-        else:
-            message = "Email не зарегистрирован"
-    return render(request, "vocational_guidance/password_recovery.html", {
-        "message": message
-    })
+    return render(request, "vocational_guidance/password_recovery.html")
 
 @csrf_exempt
 def password_recovery_code(request, user_id):
@@ -1164,10 +1159,9 @@ def balance_quotas(request):
             if len(quota) != 0:
                 participants = Citizen.objects.filter(school=school)
                 spent_quota = len(VocGuidAssessment.objects.filter(participant__in=participants, attendance=True))
-                if quota[0]['quota'] < spent_quota:
-                    distribution = distribution[0]
-                    distribution.quota = spent_quota + 480
-                    distribution.save()
+                distribution = distribution[0]
+                distribution.quota = spent_quota + 560
+                distribution.save()
     return HttpResponseRedirect(reverse("quotas_dashboard"))
 
 @csrf_exempt
