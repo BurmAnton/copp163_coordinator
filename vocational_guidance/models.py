@@ -102,7 +102,7 @@ class TimeSlot(models.Model):
     group = models.ManyToManyField(VocGuidGroup, related_name="slots", verbose_name="Группы", blank=True)
     participants_count = models.IntegerField("Колво участников", default=0, validators=[MaxValueValidator(8),MinValueValidator(0)])
     zoom_link = models.URLField("Ссылка на конференцию (zoom)", max_length=400, blank=True, null=True)
-    report_link = models.URLField("Отчетная ссылка", max_length=400, blank=True, null=True)
+    report_link = models.URLField("Отчетная ссылка", blank=True, null=True)
     attendance_limit = models.IntegerField("Максимальное кол-во участников", default=8, blank=True, null=True)
     is_nonprofit = models.BooleanField("На безвозмездной основе", default=False)
 
@@ -117,7 +117,7 @@ class TimeSlot(models.Model):
             slot = "с 15:00 до 16:30"
         else:
             slot = "с 16:30 до 18:00"
-        return  f"{self.id} {self.test} – {self.date} {slot}"
+        return  f"{self.id} {self.test} – {self.date} {slot}"
 
 
 class VocGuidAssessment(models.Model):

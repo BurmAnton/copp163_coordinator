@@ -59,11 +59,11 @@ class TimeSlotAdmin(admin.ModelAdmin):
     form = TimeSlotForm
     inlines = [VocGuidAssessmentInline,]
     list_display = (
-        "test", "date",
+        "test", "id", "date",
         "get_time", "get_participants",
         "get_ed_center"
     )
-    search_fields = ["test__name","date", "group__id"]
+    search_fields = ["id", "test__name","date", "group__id"]
     list_filter = (
         ('date', DropdownFilter),
         ('slot', DropdownFilter),
