@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.parent-step-optional').forEach(field => {
             field.style.display = 'none';
         })
+
         document.querySelector('.step-title').firstElementChild.innerHTML = "Шаг 2/3: Данные ребенка";
         document.querySelector('.parent-step-back').style.display = 'block';
         document.querySelector('.first-step-end').style.display = 'block';
@@ -146,7 +147,7 @@ function cheak_parent_step(){
             fields_is_filled = false
         }
     })
-    if (fields_is_filled){
+    if (fields_is_filled) {
         button.classList.remove('disabled')
         button.classList.remove('btn-secondary')
         button.classList.add('btn-primary')

@@ -1,31 +1,29 @@
 {% extends "vocational_guidance/layout.html" %}
 {% load static %}
-{% block title %}Авторизация | Билет в будущее{% endblock %}
+{% block title %}{{page_name}}{% endblock %}
 
 {% block style %}
         <link href="{% static 'vocational_guidance/css/login.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block script %}
+    <script src="{% static 'vocational_guidance/js/login.js' %}"></script>
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="row justify-content-center">
-        </div>
-        <div class="row justify-content-center align-self-center">
-            <div class="h2"><h2>Авторизация</h2></div>
-            <div class="card" style="width: 25rem;">
+    <div class="row justify-content-center align-self-center">
+        <div class="card sign-card">
+            <div class="form-title"><p>Авторизация</p></div>
+        <!--Авторизация-->
+            <div class="sign-form">
                 <form action="{% url 'signin' %}" method="post">
-                    <div class="mb-3">
-                        <label for="Email" class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" id="Email" required>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control email-login" name="email" placeholder="Email" aria-label="Email" aria-describedby="at">
+                        <span class="input-group-text" id="at">@</span>
                     </div>
-                    <div class="mb-3">
-                        <label for="InputPassword" class="form-label">Пароль</label>
-                        <input type="password" class="form-control" name="password" id="InputPassword" required>
-                        <div id="SignUpHelp" class="form-text"><a href="{% url 'password_recovery' %}">Забыли пароль?</a></div>
-                        <div id="SignUpHelp" class="form-text"><a href="{% url 'signup' %}">Регистрация</a></div>
+                    <div class="input-group mb-3 password-input">
+                        <input type="password" class="form-control" name="password" placeholder="Пароль" id="InputPassword" required>
+                        <button class="btn btn-outline-secondary sign-button" type="submit">Войти</button>
                     </div>
                     {% if message %}
                         <div class="alert alert-danger d-flex align-items-center" role="alert">
@@ -35,10 +33,171 @@
                             </div>
                         </div>
                     {% endif %}
+                </form>
+                <div>
+                    <button class="btn btn-view btn-primary reg-button" data-section="1">
+                        Регистрация
+                    </button>
+                </div>
+                <div id="SignUpHelp" class="form-text pass-recovery">Забыли пароль или не можете войти?</div>
+            </div>
+        <!--Востановление пароля-->
+            <div class="pass-rec-form" style="display:none;">
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                        <p></p>
+                    </div>
+                    <div class="step-title">
+                        <p>Введите Ваш email и мы пришлём вам код для востановления пароля.</p>
+                    </div>
+                    <div class="input-group mb-3 email-step">
+                        <input type="email" class="form-control email-recovery" name="email" placeholder="Email" aria-label="Email" aria-describedby="at">
+                        <span class="input-group-text" id="at">@</span>
+                    </div>
+                    <div class="input-group mb-3 code-step" style="display:none;">
+                        <input type="input" class="form-control code-recovery" name="code" id="code" placeholder="Код востановления" aria-label="Code" required>
+                    </div>
+                    <div class="input-group mb-3 password-step" style="display:none;">
+                        <input type="password" class="form-control password-recovery" name="password" id="Password" placeholder="Введите новый пароль" aria-label="Password" required>
+                    </div>
+                    <div class="input-group mb-3 password-step" style="display:none;">
+                        <input type="password" class="form-control confirmation-recovery" name="confirmation" id="Confirmation" placeholder="Повторите пароль" aria-label="Сonfirmation" required>
+                    </div>
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Войти</button>
+                        <button class="btn btn-recovery-code"></button>
+                    </div>
+            </div>
+        <!--Выбор вида регистрации-->
+            <div class="reg-choice-form" data-choice={{reg_choice}}>
+                <div class="reg-option" id='parent-option'>
+                    <h5>Родитель</h5>
+                    <p>Зарегистрируйте аккаунт для ребенка младше 14 лет для прохождения проф проб.</p>
+                    <div>
+                        <button class="btn btn-view option-btn parent-option-btn">Зарегистрироваться</button>
+                    </div>
+                </div>
+                <div class="vertical_line"></div>
+                <div class="reg-option" id='child-option'>
+                    <h5>Ученик</h5>
+                    <p>Если тебе есть 14 лет, зарегистрируй аккаунт для прохождения проф проб.</p>
+                    <div>
+                        <button class="btn btn-view option-btn child-option-btn">Зарегистрироваться</button>
+                    </div>
+                </div>
+            </div>
+        <!--Регистрация-->
+            <div class="reg-form">
+                <div class="reg-form-type"></div>
+                <form onsubmit="myFunction(); return false;" method="POST">
+                <!--Название шага-->
+                    <div class="step-title" style="text-align:center;"><h5>Шаг 1/3: Данные родителя</h5></div>
+                <!--Первый шаг-->
+                    <div class="input-group mb-3 parent-step parent-step-mandatory">
+                        <input type="input" class="form-control" name="parent_last_name" id="parentLastName" placeholder="Фамилия">
+                    </div>
+                    <div class="input-group mb-3 parent-step parent-step-mandatory">
+                        <input type="input" class="form-control" name="parent_name" id="parentName" placeholder="Имя">
+                    </div>
+                    <div class="input-group mb-3 parent-step parent-step-optional">
+                        <input type="input" class="form-control" name="parent_middle_name" id="parentMiddleName" placeholder="Отчество">
+                    </div>
+                <!--Второй шаг-->
+                    <div class="input-group mb-3 child-step child-step-mandatory">
+                        <input type="input" class="form-control" name="last_name" id="LastName" placeholder="Фамилия">
+                    </div>
+                    <div class="input-group mb-3 child-step child-step-mandatory">
+                        <input type="input" class="form-control" name="name" id="Name" placeholder="Имя" required>
+                    </div>
+                    <div class="input-group mb-3 child-step child-step-optional">
+                        <input type="input" class="form-control" name="middle_name" id="MiddleName" placeholder="Отчество">
+                    </div>
+                    <div class="input-group mb-3 child-step child-step-mandatory">
+                        <input type="date" class="form-control" name="birthday" id="Birthday" placeholder="Дата рождения" required>
+                    </div>
+                    <div class="form form-city mb-3 child-step">
+                        <select class="selectpicker child-step child-step-mandatory-select" data-width="100%" data-live-search="true" name="city" id="City" required>
+                            <option value="">Выберите населённый пункт</option>
+                            {% for city in cities %}
+                                <option class="city" value="{{city}}">{{city}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form form-city mb-3 child-step">
+                        <select class="selectpicker child-step child-step-mandatory-select" data-width="100%" data-live-search="true" name="school" id="School" required>
+                            <option value="">Выберите школу</option>
+                            {% for school in schools %}
+                                <option value="{{school.id}}" class="school" data-school="{{school.city}}">{{school.name}} ({{school.city}})</option>
+                            {% endfor %}
+                        </select>
+                        <div class="invalid-feedback">Example invalid select feedback</div>
+                    </div>
+                    <div class="form mb-3 child-step child-step-row">
+                        <div class="row g-3">
+                            <div class="col class-col">
+                                <select class="form-select child-step-mandatory-select" data-width="100%"  name="school_class" id="school_class" required>
+                                    <option value="">Класс</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                </select>
+                            </div>
+                            <div class="col letter-col child-step-mandatory">
+                                <input type="input" class="form-control" data-width="100%" name="school_class_latter" id="school_class_latter" placeholder="Буква класса" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-check child-step child-step-optional">
+                        <input class="form-check-input disability-check" type="checkbox" id="disability-check" name="disability-check">
+                        <label class="form-check-label disability-label" for="disability-check"></label>
+                    </div>
+                    <div class="form mb-3 child-step-hidden" id="form-disability">
+                        <select class="selectpicker" data-width="100%" data-live-search="true" name="disability_type" id="disability_type">
+                            <option>Выберите вид нарушения</option>
+                            {% for type in disability_types %}
+                                <option value="{{type.id}}" class="disability_type" data-school="{{type}}">{{type.name}}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="invalid-feedback">Example invalid select feedback</div>
+                    </div>
+                <!--Финальный шаг-->
+                    <div class="input-group mb-3 auth-step">
+                        <input type="email" class="form-control" name="email" id="Email" placeholder="Email" required>
+                    </div>
+                    <div class="input-group mb-3 auth-step">
+                        <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номер телефона" required>
+                    </div>
+                    <div class="input-group mb-3 auth-step">
+                        <input type="password" class="form-control" name="password" id="InputPasswordReg" placeholder="Пароль" required>
+                    </div>
+                    <div class="input-group mb-3 auth-step">
+                        <input type="password" class="form-control" name="confirmation" id="СonfirmPassword" placeholder="Пароль" required>
+                    </div>
+                    <div class="form-check auth-step data-proc-agrement">
+                        <input class="form-check-input" type="checkbox" id="personal-data-check" name="personal-data" required>
+                        <label class="form-check-label" for="flexCheckDefault">
+                            Соглашаюсь на обработку моих персональных данных в соответствии с Политикой конфиденциальности
+                        </label>
+                    </div>
+                    {% if message %}
+                        <div class="alert alert-danger d-flex align-items-center" role="alert">
+                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                            <div>
+                                {{message}}
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="d-grid gap-2 auth-step">
+                        <button type="button" class="btn btn-primary btn-submit">Зарегистрироваться</button>
                     </div>
                 </form>
+            <!--Переходы-->
+                <div class="reg-control mb-3 d-grid gap-2">
+                    <button class="btn btn-view btn-secondary btn-forward disabled">Продолжить</button>
+                    <button class="btn btn-view btn-dark btn-backward"  style="display:none;">Назад</button>
+                    <div id="SignUpHelpReg" class="form-text finale-step" style="display:none;">Уже есть аккаунт? <a href="{% url 'signin' %}">Войти</a></div>
+                </div>
             </div>
         </div>
     </div>
