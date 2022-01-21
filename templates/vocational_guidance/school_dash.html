@@ -314,13 +314,13 @@
                                                             <option value="">Выберите дату и время</option>
                                                         {% else %}
                                                             <option value="{{group.3.id}}">
-                                                                {{slot.date}} {{slot.get_slot_display}} ({{slot.participants_count}}/8 участников)
+                                                                {{slot.date}} {{slot.get_slot_display}} ({{slot.participants_count}}/{{slot.attendance_limit}}
                                                             </option>
                                                         {% endif %}
                                                         {% for slot in group.2 %}
                                                             {% if group.1.id != slot.0.id %}
                                                                 <option value="{{slot.0.id}}">
-                                                                    {{slot.0.date}} {{slot.0.get_slot_display}} ({{slot.1}}/8 участников)
+                                                                    {{slot.0.date}} {{slot.0.get_slot_display}} ({{slot.1}}/{{slot.0.attendance_limit}})
                                                                 </option>
                                                             {% endif %}
                                                         {% endfor %}

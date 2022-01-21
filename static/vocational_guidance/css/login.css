@@ -1,30 +1,198 @@
-.card {
-  padding: 20px;
-  padding-bottom: 30px;
-  background-color: #E9ECF7;
-  border: 0px;
-  color: #394959;
-  box-shadow: 4px 4px 10px 1px #394959;
-}
-.card label {
-  margin-bottom: 2px;
-}
-.card button {
-  background-color: #587490;
-  border: 0px;
-}
-.card a {
-  color: #394959;
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+h1 {
+  font-family: "Roboto", sans-serif;
+  font-size: 36px;
+  margin-bottom: 25px;
+  font-weight: 400;
 }
 
-.h2 {
-  text-align: center;
-  margin-top: 20vh;
-  color: #394959;
-  margin-bottom: 20px;
+h2 {
+  font-family: "Roboto", sans-serif;
+  font-size: 28px;
+  margin-bottom: 25px;
 }
-.h2 h2 {
-  margin: 0px;
+
+body {
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+}
+
+body {
+  background-color: #E9ECF7;
+}
+@media (max-width: 600px) {
+  body {
+    max-height: 272px;
+  }
+}
+
+.navbar .container {
+  width: 250px;
+}
+
+.sign-card {
+  background-color: white;
+  display: flex;
+  margin-top: 5vh;
+  width: 40%;
+  display: flex;
+  justify-content: center;
+  max-width: 600px;
+  padding-top: 40px;
+  padding-bottom: 50px;
+  border: 1px solid #dddddd;
+  color: #394959;
+}
+.sign-card label {
+  margin-bottom: 2px;
+}
+.sign-card .sign-button {
+  background-color: #587490;
+  color: white;
+  border: 0px;
+}
+.sign-card .reg-button {
+  margin-top: 10px;
+  background-color: #4BB34B;
+  color: white;
+  border: 0px;
+  width: 100%;
+}
+.sign-card a {
+  color: #394959;
+}
+@media (max-width: 1300px) {
+  .sign-card {
+    width: 75%;
+  }
+}
+@media (max-width: 600px) {
+  .sign-card {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border: 0;
+    border-radius: 0;
+  }
+  .sign-card input {
+    height: 40px;
+  }
+}
+.sign-card .pass-recovery {
+  text-decoration: underline;
+  color: #394959;
+  font-size: 14px !important;
+  cursor: pointer;
+}
+.sign-card .sign-form, .sign-card .pass-rec-form {
+  margin: auto;
+  width: 50%;
+  min-width: 250px;
+}
+@media (max-width: 600px) {
+  .sign-card .sign-form, .sign-card .pass-rec-form {
+    width: 90%;
+  }
+}
+.sign-card .pass-rec-form {
+  display: none;
+}
+.sign-card .pass-rec-form .alert {
+  display: none !important;
+}
+.sign-card .pass-rec-form .btn-recovery-code {
+  background-color: #587490;
+  color: white;
+}
+.sign-card .pass-rec-form .step-title {
+  text-align: center;
+}
+.sign-card .pass-rec-form .step-title p {
+  margin-bottom: 5px;
+}
+
+.form-title {
+  font-size: 20px;
+  text-align: center;
+  color: black;
+}
+
+#SignUpHelp {
+  font-size: 13px;
+  padding-top: 20px;
+  text-align: center;
+}
+
+.reg-choice-form {
+  justify-content: center;
+}
+@media (max-width: 600px) {
+  .reg-choice-form {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+.reg-choice-form .vertical_line {
+  border-left: 1px solid #00000050;
+  height: 100%;
+  margin: 0 10px;
+}
+@media (max-width: 600px) {
+  .reg-choice-form .vertical_line {
+    border-top: 1px solid #00000050;
+    height: 0;
+    width: 90%;
+    margin: 10px 0;
+  }
+}
+.reg-choice-form .reg-option {
+  width: 60%;
+  text-align: center;
+}
+@media (max-width: 600px) {
+  .reg-choice-form .reg-option {
+    width: 95%;
+  }
+}
+.reg-choice-form .reg-option .option-btn {
+  background-color: #587490;
+  color: white;
+}
+
+.reg-form form, .reg-form .reg-control {
+  width: 60%;
+  margin: auto;
+}
+.reg-form form .child-step-row, .reg-form .reg-control .child-step-row {
+  justify-content: center;
+}
+.reg-form form .child-step-row .row, .reg-form .reg-control .child-step-row .row {
+  width: 100%;
+}
+.reg-form form .child-step-row .row .letter-col, .reg-form .reg-control .child-step-row .row .letter-col {
+  padding: 0;
+  padding-left: 5px;
+}
+.reg-form form .child-step-row .row .class-col, .reg-form .reg-control .child-step-row .row .class-col {
+  padding: 0;
+  padding-right: 5px;
+}
+.reg-form .bootstrap-select {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+.reg-form .bootstrap-select .dropdown-toggle {
+  background-color: #fff;
+}
+.reg-form .bootstrap-select .filter-option {
+  color: #000;
+}
+.reg-form .data-proc-agrement label {
+  font-size: 12px;
+}
+.reg-form .btn-submit {
+  text-align: center;
+  margin-bottom: 15px;
 }
 
 /*# sourceMappingURL=login.css.map */

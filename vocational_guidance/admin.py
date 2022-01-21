@@ -9,7 +9,6 @@ from .models import TimeSlot, VocGuidTest, VocGuidGroup, VocGuidAssessment, Test
 from users.models import Group, User
 from education_centers.models import EducationCenter
 
-
 VocGuidAssessmentForm = select2_modelform(VocGuidAssessment, attrs={'width': '400px'})
 
 @admin.register(VocGuidAssessment)

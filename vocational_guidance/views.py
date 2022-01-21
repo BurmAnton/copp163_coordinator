@@ -1,11 +1,12 @@
 from datetime import timedelta, date
 from django.core.checks import messages
 from django.db.models import Count
+from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse
 from django.db import IntegrityError
 
@@ -13,8 +14,10 @@ from django.http import HttpResponse
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 from pysendpulse.pysendpulse import PySendPulse
+
 import string
 import random
+import json
 
 from .forms import ImportDataForm
 from .imports import bvb_teachers, slots_import, matching_bvb_students
@@ -124,7 +127,7 @@ def bvb_students_report(request):
             "Тип", "Формат проведения", "ТУ",
             "ЦО", "Название","Дата (дд.мм.гггг)", 
             "Время начала", "Время конца", "Школа",
-            "Фамилия", "Имя", "Отчество", "BVB", 
+            "Фамилия", "Имя", "Отчество", "Email", "BVB", 
             "Отчётная ссылка", "Подтверждён", "Адрес", 
             "Контактное лицо на площадке", "Количество мест",
             "Описание мероприятия", "Спикеры", "Профессии", 
@@ -172,7 +175,8 @@ def bvb_students_report(request):
                 "Школа": f"{assessment.participant.school.name} ({assessment.participant.school.city})",
                 "Фамилия": assessment.participant.last_name, 
                 "Имя": assessment.participant.first_name, 
-                "Отчество": assessment.participant.middle_name, 
+                "Отчество": assessment.participant.middle_name,
+                "Email": assessment.participant.email,
                 "BVB": assessment.bilet_platform, 
                 "Отчётная ссылка": report_link, 
                 "Подтверждён": assessment.is_checked, 
@@ -374,8 +378,8 @@ def school_dash(request, school_id):
     students_enroll = len(assessments.exclude(slot__in=nonprofit_slots))
     if quota != 0:
         limit = quota - students_enroll
-        if limit >= 80:
-            school_limit = 80
+        if limit >= 8:
+            school_limit = 8
         else:
             school_limit = limit
     
@@ -573,6 +577,7 @@ def reject_bundle(request):
 
 @csrf_exempt
 def signin(request):
+    message = None
     if request.user.is_authenticated:
         return HttpResponseRedirect(reverse("index"))
     elif request.method == "POST":
@@ -588,68 +593,73 @@ def signin(request):
             if User.objects.filter(email=email, groups=sch_group):
                 if user is not None:
                     if len(citizen) == 0:
-                        return render(request, "vocational_guidance/login.html", {
-                            "message": "Ошибка авторизации, аккаунт не активирован. Обратитесь в поддержку – support@copp63.ru"
-                        })
-            if user is not None:
-                login(request, user)
-                return HttpResponseRedirect(reverse("index"))
-            else:
-                return render(request, "vocational_guidance/login.html", {
-                    "message": "Неверный логин и/или пароль."
-                })
-    else:
-        return render(request, "vocational_guidance/login.html") 
+                        message = "Ошибка авторизации, аккаунт не активирован. Обратитесь в поддержку – support@copp63.ru"
+                    elif user is not None:
+                        login(request, user)
+                        return HttpResponseRedirect(reverse("index"))
+                    else:
+                        message = "Неверный логин и/или пароль."
+    
+    schools = School.objects.all()
+    cities = set()
+    for school in schools:
+        cities.add(school.city) 
+    return render(request, "vocational_guidance/login.html", {
+        "message": message,
+        "page_name": "Авторизация | Билет в будущее",
+        'schools': schools,
+        'cities': cities,
+        'disability_types': DisabilityType.objects.all()
+    }) 
 
 def code_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
 @csrf_exempt
-def password_recovery(request):
+def password_recovery(request, step):
     if request.method == "POST":
-        email = request.POST["email"]
-        user = User.objects.filter(email=email)
-        if len(user) != 0:
-            user = user[0]
-            code = code_generator()
-            user.code = code
-            user.save()
-            email = {
-                'subject': 'This is the test task from REST API',
-                'html': f'<h1>Добрый день!</h1><p>Вы получили это письмо потому, что вы (либо кто-то, выдающий себя за вас) попросили выслать новый пароль к вашей учётной записи на сайте http://copp63-coordinator.ru/bilet/. <br> Если вы не просили выслать пароль, то не обращайте внимания на это письмо. <br> Код подтверждения для смены пароля: {code} <br> Это автоматическое письмо с на него не нужно отвечать.</p>',
-                'text': f'Добрый день!\n Вы получили это письмо потому, что вы (либо кто-то, выдающий себя за вас) попросили выслать новый пароль к вашей учётной записи на сайте http://copp63-coordinator.ru/bilet/. \n Если вы не просили выслать пароль, то не обращайте внимания на это письмо. \n Код подтверждения для смены пароля: {code} \n Это автоматическое письмо с на него не нужно отвечать.',
-                'from': {'name': 'ЦОПП СО', 'email': 'bvb@copp63.ru'},
-                'to': [
-                    {'name': "f{user.first_name} {user.last_name}", 'email': email}
-                ],
-            }
-            SPApiProxy = mailing()
-            SPApiProxy.smtp_send_mail(email)
-            return HttpResponseRedirect(reverse("password_recovery_code", args=(user.id,)))
-    return render(request, "vocational_guidance/password_recovery.html")
-
-@csrf_exempt
-def password_recovery_code(request, user_id):
-    user = User.objects.get(id=user_id)
-    message = None
-    if request.method == "POST":
-        code = request.POST["code"]
-        password = request.POST["password"]
-        confirmation = request.POST["confirmation"]
-        if user.code == code:
+        if step == 1:
+            data = json.loads(request.body)
+            email = data.get("email", "")
+            user = User.objects.filter(email=email)
+            if len(user) != 0:
+                user = user[0]
+                code = code_generator()
+                user.code = code
+                user.save()
+                email = {
+                    'subject': 'Востановление пароля copp63-coordinator.ru',
+                    'html': f'<h1>Добрый день!</h1><p>Вы получили это письмо потому, что вы (либо кто-то, выдающий себя за вас) попросили выслать новый пароль к вашей учётной записи на сайте http://copp63-coordinator.ru/bilet/. <br> Если вы не просили выслать пароль, то не обращайте внимания на это письмо. <br> Код подтверждения для смены пароля: {code} <br> Это автоматическое письмо с на него не нужно отвечать.</p>',
+                    'text': f'Добрый день!\n Вы получили это письмо потому, что вы (либо кто-то, выдающий себя за вас) попросили выслать новый пароль к вашей учётной записи на сайте http://copp63-coordinator.ru/bilet/. \n Если вы не просили выслать пароль, то не обращайте внимания на это письмо. \n Код подтверждения для смены пароля: {code} \n Это автоматическое письмо с на него не нужно отвечать.',
+                    'from': {'name': 'ЦОПП СО', 'email': 'bvb@copp63.ru'},
+                    'to': [
+                        {'name': "f{user.first_name} {user.last_name}", 'email': email}
+                    ],
+                }
+                SPApiProxy = mailing()
+                SPApiProxy.smtp_send_mail(email)
+                return JsonResponse({"message": "Email exict"}, status=201)
+            return JsonResponse({"message": "Email not found"}, status=201)
+        if step == 2:
+            data = json.loads(request.body)
+            email = data.get("email", "")
+            code = data.get("code", "")
+            user = User.objects.get(email=email)
+            if user.code == code:
+                return JsonResponse({"message": "Code matches"}, status=201)
+            return JsonResponse({"message": "Code not matches"}, status=201)
+        if step == 3:
+            data = json.loads(request.body)
+            email = data.get("email", "")
+            password = data.get("password", "")
+            confirmation = data.get("confirmation", "")
             if password == confirmation:
+                user = User.objects.get(email=email)
                 user.set_password(password)
                 user.save()
-                login(request, user)
-                return HttpResponseRedirect(reverse("index"))
-            else:
-                message = "Пароли несовпадают"
-        else:
-            message = "Неверный код подтверждения"
-    return render(request, "vocational_guidance/password_recovery_code.html", {
-        'user_id': user_id,
-        'message': message
-    })
+                return JsonResponse({"message": "Password changed"}, status=201)
+            return JsonResponse({"message": "Passwords mismatch"}, status=201)
+    return HttpResponseRedirect(reverse("index"))
 
 @login_required(login_url='signin')
 @csrf_exempt
@@ -667,41 +677,34 @@ def change_password(request):
                 login(request, user)
     return HttpResponseRedirect(reverse("index"))
 
+@csrf_exempt
 def signup(request):
-    return render(request, "vocational_guidance/registration_select.html")
-
-@csrf_exempt
-def signup_child(request):
     if request.method == "POST":
-        email = request.POST["email"]
-        phone = request.POST["phone"]
-        if len(phone) > 19:
-            phone = phone[0:19]
-        password = request.POST["password"]
-        confirmation = request.POST["confirmation"]
-        first_name = request.POST['name']
-        last_name = request.POST['last_name']
-        middle_name = request.POST['middle_name']
-        birthday = request.POST['birthday']
-        grade_number = request.POST['school_class']
-        grade_letter = request.POST['school_class_latter']
-        school_id = request.POST['school']
+        data = json.loads(request.body)
+        email = data.get("email", "")
+        password = data.get("password", "")
+        confirmation = data.get("confirmation", "")
+
+        phone = data.get("phone", "")
+        first_name = data.get("first_name", "")
+        last_name = data.get("last_name", "")
+        middle_name = data.get("middle_name", "")
+        birthday = data.get("birthday", "")
+        disability_type = data.get("disability_type", "")
+
+        school_id = data.get("school_id", "")
+        grade_number = data.get("grade_number", "")
+        grade_letter = data.get("grade_letter", "")
         school = School.objects.get(id=school_id)
-        try:
-            disability_check = request.POST['disability-check']
-        except:
-            disability_check = False
-        if disability_check != False:
-            disability_type = request.POST['disability_type']
+
+        if disability_type != 'Выберите вид нарушения':
             disability_type = DisabilityType.objects.filter(id=disability_type)
             if len(disability_type) != 0:
                 disability_type = disability_type[0]
         else:
             disability_type = None
         if password != confirmation:
-            return render(request, "vocational_guidance/registration.html", {
-                "message": "Введённые пароли не совпадают"
-            })
+            return JsonResponse({"message": "Password mismatch."}, status=201)
         try:
             user = User.objects.create_user(email, password)
             user.first_name = first_name
@@ -737,120 +740,16 @@ def signup_child(request):
             citizen.save()
             user.save()
         except IntegrityError:
-            schools = School.objects.all()
-            cities = set()
-            for school in schools:
-                cities.add(school.city) 
-            return render(request, "vocational_guidance/registration.html", {
-                "message": "Email уже использован",
-                'schools': schools,
-                'cities': cities,
-                "disability_types": DisabilityType.objects.all()
-            })
-        login(request, user)
-        return HttpResponseRedirect(reverse("index"))
-    else:
-        schools = School.objects.all()
-        cities = set()
-        for school in schools:
-            cities.add(school.city) 
-    
-        return render(request, "vocational_guidance/registration.html", {
-            'schools': schools,
-            'cities': cities,
-            "disability_types": DisabilityType.objects.all()
-        })
+            return JsonResponse({"message": "Email already taken."}, status=201)
 
-@csrf_exempt
-def signup_parent(request):
-    if request.method == "POST":
-        email = request.POST["email"]
-        phone = request.POST["phone"]
-        if len(phone) > 30:
-            phone = phone[0:30]
-        password = request.POST["password"]
-        confirmation = request.POST["confirmation"]
-        first_name = request.POST['name']
-        last_name = request.POST['last_name']
-        middle_name = request.POST['middle_name']
-        birthday = request.POST['birthday']
-        grade_number = request.POST['school_class']
-        grade_letter = request.POST['school_class_latter']
-        school_id = request.POST['school']
-        school = School.objects.get(id=school_id)
-        try:
-            disability_check = request.POST['disability-check']
-        except:
-            disability_check = False
-        if disability_check != False:
-            disability_type = request.POST['disability_type']
-            disability_type = DisabilityType.objects.filter(id=disability_type)
-            if len(disability_type) != 0:
-                disability_type = disability_type[0]
-        else:
-            disability_type = None
-        if password != confirmation:
-            return render(request, "vocational_guidance/registration.html", {
-                "message": "Введённые пароли не совпадают"
-            })
-        try:
-            user = User.objects.create_user(email, password)
-            user.first_name = first_name
-            user.last_name = last_name
-            school_group = Group.objects.get(name='Школьник')
-            user.groups.add(school_group)
-            school_class = SchoolClass.objects.filter(
-                school=school,
-                grade_number=grade_number,
-                grade_letter=grade_letter
-            )
-            if len(school_class) != 0:
-                school_class = school_class[0]
-            else:
-                school_class = SchoolClass(
-                    school=school,
-                    grade_number=int(grade_number),
-                    grade_letter=grade_letter.upper()
-                )
-                school_class.save()
-            citizen = Citizen(
-                first_name=first_name,
-                last_name=last_name,
-                middle_name=middle_name,
-                birthday=birthday,
-                email=email,
-                social_status='SCHS',
-                school=school,
-                school_class=school_class,
-                phone_number = phone,
-                disability_type = disability_type
-            )
-            citizen.save()
-            user.save()
-        except IntegrityError:
-            schools = School.objects.all()
-            cities = set()
-            for school in schools:
-                cities.add(school.city) 
-            return render(request, "vocational_guidance/registration_parent.html", {
-                "message": "Email уже использован",
-                'schools': schools,
-                'cities': cities,
-                "disability_types": DisabilityType.objects.all()
-            })
-        login(request, user)
-        return HttpResponseRedirect(reverse("index"))
-    else:
-        schools = School.objects.all()
-        cities = set()
-        for school in schools:
-            cities.add(school.city) 
-    
-        return render(request, "vocational_guidance/registration_parent.html", {
-            'schools': schools,
-            'cities': cities,
-            "disability_types": DisabilityType.objects.all()
-        })
+        return JsonResponse({"message": "Account created successfully."}, status=201)
+    return HttpResponseRedirect(reverse("index"))
+
+def reg_choice(request):
+    return HttpResponseRedirect(reverse("index"))
+
+def reg_stage(request, choice, stage):
+    return HttpResponseRedirect(reverse("index"))
 
 @login_required(login_url='signin')
 @csrf_exempt
@@ -1159,9 +1058,10 @@ def balance_quotas(request):
             if len(quota) != 0:
                 participants = Citizen.objects.filter(school=school)
                 spent_quota = len(VocGuidAssessment.objects.filter(participant__in=participants, attendance=True))
-                distribution = distribution[0]
-                distribution.quota = spent_quota + 560
-                distribution.save()
+                if quota[0]['quota'] < spent_quota:
+                    distribution = distribution[0]
+                    distribution.quota = spent_quota
+                    distribution.save()
     return HttpResponseRedirect(reverse("quotas_dashboard"))
 
 @csrf_exempt
