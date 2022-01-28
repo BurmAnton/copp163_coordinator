@@ -207,4 +207,9 @@ body {
   margin-bottom: 15px;
 }
 
+/*footer */
+.wrap {
+  position: absolute;
+}
+
 /*# sourceMappingURL=login.css.map */
