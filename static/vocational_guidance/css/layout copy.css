@@ -1,0 +1,17 @@
+/* Error: Expected newline.
+ *   ,
+ * 1 | h1, h3, h5 {
+ *   |            ^
+ *   '
+ *   static/vocational_guidance/css/layout copy.sass 1:12  root stylesheet */
+
+body::before {
+  font-family: "Source Code Pro", "SF Mono", Monaco, Inconsolata, "Fira Mono",
+      "Droid Sans Mono", monospace, monospace;
+  white-space: pre;
+  display: block;
+  padding: 1em;
+  margin-bottom: 1em;
+  border-bottom: 2px solid black;
+  content: "Error: Expected newline.\a   \2577 \a 1 \2502  h1, h3, h5 {\d\a   \2502             ^\a   \2575 \a   static/vocational_guidance/css/layout copy.sass 1:12  root stylesheet";
+}
