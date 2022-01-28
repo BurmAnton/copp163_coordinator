@@ -1,13 +1,22 @@
 @use 'styles'
 
 body
-    background-color: #E9ECF7
-    @media (max-width: 600px)
-        max-height: 272px
+    background-color: #e9ecf7
 
 .navbar
     .container
         width: 250px
+        justify-content: center
+    .home-link
+        text-decoration: none
+    .navbar-brand
+        display: flex
+        justify-content: center
+        margin: auto
+        p   
+            margin: auto
+            margin-left: 10px
+            font-size: 18px
 
 .sign-card
     background-color: white
@@ -19,7 +28,7 @@ body
     max-width: 600px
     padding-top: 40px
     padding-bottom: 50px
-    
+
     border: 1px solid #dddddd
     color: #394959
     label
@@ -68,8 +77,6 @@ body
             text-align: center
             p 
                 margin-bottom: 5px
-
-        
 
 .form-title
     font-size: 20px

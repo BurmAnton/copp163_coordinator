@@ -18,16 +18,25 @@ body {
 }
 
 body {
-  background-color: #E9ECF7;
-}
-@media (max-width: 600px) {
-  body {
-    max-height: 272px;
-  }
+  background-color: #e9ecf7;
 }
 
 .navbar .container {
   width: 250px;
+  justify-content: center;
+}
+.navbar .home-link {
+  text-decoration: none;
+}
+.navbar .navbar-brand {
+  display: flex;
+  justify-content: center;
+  margin: auto;
+}
+.navbar .navbar-brand p {
+  margin: auto;
+  margin-left: 10px;
+  font-size: 18px;
 }
 
 .sign-card {
