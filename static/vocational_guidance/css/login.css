@@ -86,6 +86,9 @@ body {
   .sign-card input {
     height: 40px;
   }
+  .sign-card input[type=checkbox] {
+    height: 14px;
+  }
 }
 .sign-card .pass-recovery {
   text-decoration: underline;
