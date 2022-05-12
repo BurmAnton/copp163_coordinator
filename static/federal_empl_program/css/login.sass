@@ -1,0 +1,159 @@
+@use 'styles'
+
+body
+    background-color: #e9ecf7
+
+.navbar
+    .container
+        width: 250px
+        justify-content: center
+    .home-link
+        text-decoration: none
+    .navbar-brand
+        display: flex
+        justify-content: center
+        margin: auto
+        p   
+            margin: auto
+            margin-left: 10px
+            font-size: 18px
+
+.sign-card
+    background-color: white
+    display: flex
+    margin-top: 5vh
+    width: 40%
+    display: flex
+    justify-content: center
+    max-width: 600px
+    padding-top: 40px
+    padding-bottom: 50px
+
+    border: 1px solid #dddddd
+    color: #394959
+    label
+        margin-bottom: 2px
+    .sign-button
+        background-color: #587490
+        color: white
+        border: 0px
+    .reg-button
+        margin-top: 10px
+        background-color: #4BB34B
+        color: white
+        border: 0px
+        width: 100%
+    a
+        color: #394959
+    @media (max-width: 1300px)
+        width: 75%
+    @media (max-width: 600px)
+        width: 100%
+        margin-top: 10px
+        padding: 10px
+        border: 0
+        border-radius: 0
+        input
+            height: 40px
+        input[type="checkbox"]
+            height: 14px
+    .pass-recovery
+        text-decoration: underline
+        color: #394959
+        font-size: 14px !important
+        cursor: pointer
+    .sign-form, .pass-rec-form
+        margin: auto
+        width: 50%
+        min-width: 250px
+        @media (max-width: 600px)
+            width: 90%
+    .pass-rec-form
+        display: none
+        .btn-recovery-code
+            background-color: #587490
+            color: white
+        .step-title
+            text-align: center
+            p 
+                margin-bottom: 5px
+        .alert-recovery
+            display: none
+            .alert
+                width: 100%
+                text-align: center
+                padding: 8px 16px
+                font-size: 16px
+                p
+                    margin: auto
+
+.alert-danger
+    display: none
+    width: 100%
+    margin: auto
+    margin-bottom: 16px
+
+.form-title
+    font-size: 20px
+    text-align: center
+    color: black
+
+#SignUpHelp
+    font-size: 13px
+    padding-top: 20px
+    text-align: center
+
+.reg-choice-form
+    justify-content: center
+    @media (max-width: 600px)
+        flex-direction: column
+        align-items: center
+    .vertical_line
+        border-left: 1px solid #00000050
+        height: 100%
+        margin: 0 10px
+        @media (max-width: 600px)
+            border-top: 1px solid #00000050
+            height: 0
+            width: 90%
+            margin: 10px 0
+    .reg-option
+        width: 60%
+        text-align: center
+        @media (max-width: 600px)
+            width: 95%
+        .option-btn
+            background-color: #587490
+            color: white
+
+.reg-form
+    form, .reg-control
+        width: 60%
+        margin: auto
+        .child-step-row
+            justify-content: center
+            .row
+                width: 100%
+                .letter-col
+                    padding: 0
+                    padding-left: 5px
+                .class-col 
+                    padding: 0
+                    padding-right: 5px
+    .bootstrap-select
+        border: 1px solid #ced4da
+        border-radius: .25rem 
+        .dropdown-toggle
+            background-color: #fff
+        .filter-option
+            color: #000
+    .data-proc-agrement
+        label
+            font-size: 12px
+    .btn-submit
+        text-align: center
+        margin-bottom: 15px
+        
+/*footer */
+.wrap  
+     position: absolute

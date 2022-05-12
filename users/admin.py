@@ -21,7 +21,7 @@ class UserAdmin(UserAdmin):
         (None,
             {'fields': ('email', 'password', 'first_name', 'last_name', 'middle_name', 'phone_number')}),
         ('Права доступа',
-            {'fields': ('is_superuser', 'is_staff', 'is_active', 'groups', 'user_permissions')}),
+            {'fields': ('role','is_superuser', 'is_staff', 'is_active', 'groups', 'user_permissions')}),
         ('Важные даты', 
             {'fields': ('last_login', 'date_joined')}),
     )

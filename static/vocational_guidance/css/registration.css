@@ -3,16 +3,20 @@
   padding-bottom: 10px;
   margin-bottom: 5vh;
 }
+
 .card .bootstrap-select {
   border: 1px solid #ced4da;
-  border-radius: 0.25rem;
+  border-radius: .25rem;
 }
+
 .card .bootstrap-select .dropdown-toggle {
   background-color: #fff;
 }
+
 .card .bootstrap-select .filter-option {
   color: #000;
 }
+
 .card .form-check {
   padding-left: 25px;
   margin-bottom: 16px;
@@ -26,5 +30,4 @@
 .first-step-back {
   margin-top: 5px;
 }
-
 /*# sourceMappingURL=registration.css.map */

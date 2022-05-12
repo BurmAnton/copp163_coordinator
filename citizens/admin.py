@@ -1,15 +1,13 @@
 from django.contrib import admin
 import django.contrib.auth.models
-from django.utils.safestring import mark_safe
-from django.urls import reverse
 from django.db.models import Q
 
 from easy_select2 import select2_modelform
-from datetime import datetime, timedelta
+from datetime import timedelta
 from django_admin_listfilter_dropdown.filters import DropdownFilter, RelatedOnlyDropdownFilter
 
 from .models import Citizen, Job, School, SchoolClass, DisabilityType
-from vocational_guidance.models import VocGuidGroup, BiletDistribution
+from vocational_guidance.models import BiletDistribution
 from federal_empl_program.models import Application
 from education_centers.models import EducationCenter
 from users.models import User
@@ -24,6 +22,7 @@ class JobInline(admin.TabularInline):
         if obj:
             return extra + obj.jobs.count()
         return extra
+
 
 ApplicationForm = select2_modelform(Application, attrs={'width': '400px'})
 

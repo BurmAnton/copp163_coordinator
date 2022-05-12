@@ -3,10 +3,10 @@ from django.contrib import admin
 from .models import Company, Vacancy
 
 # Register your models here.
-@admin.register(Company)
+#@admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(Vacancy)
+#@admin.register(Vacancy)
 class VacancyAdmin(admin.ModelAdmin):
     pass

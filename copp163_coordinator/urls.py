@@ -17,10 +17,10 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('federal_programs/employment/', include('federal_empl_program.urls')),
+    path('', include('federal_empl_program.urls')),
     path('dashboard/', include('region163_dashboard.urls')),
     path('education_centers/', include('education_centers.urls')),
     path('bilet/', include('vocational_guidance.urls')),
-    path('', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('select2/', include('django_select2.urls')),
 ]

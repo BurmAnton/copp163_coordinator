@@ -1,4 +1,4 @@
-{% extends "region163_dashboard/layout.html" %}
+{% extends "federal_empl_program/layout.html" %}
 {% load static %}
 
 {% block title %}Статистика по ЦО{% endblock %}
@@ -63,15 +63,15 @@
                                     <b>
                                         Программа подготовки:
                                     </b> 
-                                    {%if group.program.program_link != None%}
+                                    {%if group.program_link != None%}
                                         <a href={{group.program.program_link}} target="_blank">
-                                            {{group.program.program_name}}
+                                            {{group.program}}
                                         </a>
                                     {% else %}
-                                        {{group.program.program_name}}
+                                        {{group.program}}
                                     {% endif %}
                                 </p>
-                                <p class="card-text ed_program"><b>Длительность подготовки:</b> {{group.program.duration}}ч.</p>
+                                <p class="card-text ed_program"><b>Длительность подготовки:</b> {{group.duration}}ч.</p>
                                 {%if group.study_period == 'MRNG'%}
                                     <p class="card-text ed_program"><b>Период проведения занятий:</b> 09:00-13:00</p>
                                 {% endif %}

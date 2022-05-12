@@ -1,0 +1,25 @@
+{% extends "vocational_guidance/layout.html" %}
+{% load static %}
+{% block title %} ЛК Центра обучения | Билет в будущее{% endblock %}
+
+{% block style %}
+        <link href="{% static 'vocational_guidance/css/edu_center.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block script %}
+{% endblock %}
+
+{% block body %}
+    <div class="cover">
+        <div class="cover-background"></div>
+        <div class="cover-text">
+            <h1>ПОГРУЖЕНИЕ В МИР ДЕЯТЕЛЬНОСТИ</h1>
+            <p>Личный кабинет центра обучения:<br><b>{{edu_center}}</b></p>
+        </div>
+    </div>
+    <div class="section profile-section">
+        <div class="container-xxl">
+            <div class="h2"><h2>Панель управления</h2></div>
+            {{cycles_list}}
+        </div>
+{% endblock %}
