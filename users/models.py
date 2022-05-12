@@ -11,6 +11,13 @@ class User(AbstractUser):
     phone_number = models.CharField("Номер телефона", max_length=20, blank=True, null=True)
     code = models.CharField("Код подтверждения", max_length=10, blank=True, null=True, default=None)
 
+    ROLES = (
+        ('CTZ', 'Гражданин'),
+        ('CO', 'Представитель ЦО'),
+        ('COR', 'Координатор')
+    )
+    role = models.CharField(max_length=3, choices=ROLES, verbose_name='Роль', blank=True, null=True)
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 

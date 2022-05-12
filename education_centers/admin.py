@@ -143,7 +143,6 @@ class EducationCenterGroupAdmin(admin.ModelAdmin):
     list_filter = (
         ('education_center', RelatedOnlyDropdownFilter),
         ('competence', RelatedOnlyDropdownFilter),
-        ('program', RelatedOnlyDropdownFilter),
         ('city', DropdownFilter),
         ('start_date'),
         ('end_date')
@@ -153,7 +152,7 @@ class EducationCenterGroupAdmin(admin.ModelAdmin):
     list_display = ('get_id', 'competence', 'program', 'education_center', 'city', 'education_period')
     fieldsets = (
         (None, {
-            'fields': ('education_center', 'competence', 'program', 'is_visible')
+            'fields': ('education_center', 'competence', 'program', 'program_link', 'duration', 'is_visible')
         }),
         ('Формат и место проведения', {
             'fields': ('is_online', 'city')

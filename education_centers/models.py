@@ -122,7 +122,19 @@ class Group(models.Model):
 class EducationCenterGroup(models.Model):
     education_center = models.ForeignKey(EducationCenter, verbose_name='Центр обучения', on_delete=CASCADE, related_name='ed_center_groups')
     competence = models.ForeignKey(Competence, verbose_name='Компетенция', on_delete=CASCADE, related_name='ed_center_groups')
-    program = models.ForeignKey(EducationProgram, verbose_name='Программа подготовки', on_delete=CASCADE, related_name='ed_center_groups')
+    program = models.CharField("Название программы", max_length=200, null=True, blank=False)
+    program_link = models.CharField("Ссылка на программу", max_length=200, null=True, blank=True)
+    PROGRAM_DURATIONS = (
+        ('72', '72 ч.'),
+        ('144', '144 ч.'),
+        ('256', '256 ч.')
+    )
+    duration = models.CharField("Длительность (ак. часов)", max_length=3, choices=PROGRAM_DURATIONS, blank=True)
+    ED_REQ = [   
+        ("scl","Школьное"),
+        ("clg","Среднее специальное/Высшее")
+    ]
+    educational_requirements = models.CharField("Требования к образованию", max_length=4, choices=ED_REQ)
     is_visible = models.BooleanField("Показывать в списке планируемого обучения", default=False)
 
     FORMATS = [   

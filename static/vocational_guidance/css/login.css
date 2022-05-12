@@ -1,38 +1,28 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
-h1 {
-  font-family: "Roboto", sans-serif;
-  font-size: 36px;
-  margin-bottom: 25px;
-  font-weight: 400;
-}
-
-h2 {
-  font-family: "Roboto", sans-serif;
-  font-size: 28px;
-  margin-bottom: 25px;
-}
-
-body {
-  font-family: "Roboto", sans-serif;
-  font-size: 16px;
-}
-
-body {
+@use 'styles' {}body {
   background-color: #e9ecf7;
 }
 
 .navbar .container {
   width: 250px;
-  justify-content: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }
+
 .navbar .home-link {
   text-decoration: none;
 }
+
 .navbar .navbar-brand {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  justify-content: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   margin: auto;
 }
+
 .navbar .navbar-brand p {
   margin: auto;
   margin-left: 10px;
@@ -41,25 +31,32 @@ body {
 
 .sign-card {
   background-color: white;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   margin-top: 5vh;
   width: 40%;
   display: flex;
-  justify-content: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   max-width: 600px;
   padding-top: 40px;
   padding-bottom: 50px;
   border: 1px solid #dddddd;
   color: #394959;
 }
+
 .sign-card label {
   margin-bottom: 2px;
 }
+
 .sign-card .sign-button {
   background-color: #587490;
   color: white;
   border: 0px;
 }
+
 .sign-card .reg-button {
   margin-top: 10px;
   background-color: #4BB34B;
@@ -67,14 +64,17 @@ body {
   border: 0px;
   width: 100%;
 }
+
 .sign-card a {
   color: #394959;
 }
+
 @media (max-width: 1300px) {
   .sign-card {
     width: 75%;
   }
 }
+
 @media (max-width: 600px) {
   .sign-card {
     width: 100%;
@@ -86,39 +86,47 @@ body {
   .sign-card input {
     height: 40px;
   }
-  .sign-card input[type=checkbox] {
+  .sign-card input[type="checkbox"] {
     height: 14px;
   }
 }
+
 .sign-card .pass-recovery {
   text-decoration: underline;
   color: #394959;
   font-size: 14px !important;
   cursor: pointer;
 }
+
 .sign-card .sign-form, .sign-card .pass-rec-form {
   margin: auto;
   width: 50%;
   min-width: 250px;
 }
+
 @media (max-width: 600px) {
   .sign-card .sign-form, .sign-card .pass-rec-form {
     width: 90%;
   }
 }
+
 .sign-card .pass-rec-form {
   display: none;
 }
+
 .sign-card .pass-rec-form .alert {
   display: none !important;
 }
+
 .sign-card .pass-rec-form .btn-recovery-code {
   background-color: #587490;
   color: white;
 }
+
 .sign-card .pass-rec-form .step-title {
   text-align: center;
 }
+
 .sign-card .pass-rec-form .step-title p {
   margin-bottom: 5px;
 }
@@ -136,19 +144,29 @@ body {
 }
 
 .reg-choice-form {
-  justify-content: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }
+
 @media (max-width: 600px) {
   .reg-choice-form {
-    flex-direction: column;
-    align-items: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
   }
 }
+
 .reg-choice-form .vertical_line {
   border-left: 1px solid #00000050;
   height: 100%;
   margin: 0 10px;
 }
+
 @media (max-width: 600px) {
   .reg-choice-form .vertical_line {
     border-top: 1px solid #00000050;
@@ -157,15 +175,18 @@ body {
     margin: 10px 0;
   }
 }
+
 .reg-choice-form .reg-option {
   width: 60%;
   text-align: center;
 }
+
 @media (max-width: 600px) {
   .reg-choice-form .reg-option {
     width: 95%;
   }
 }
+
 .reg-choice-form .reg-option .option-btn {
   background-color: #587490;
   color: white;
@@ -175,33 +196,44 @@ body {
   width: 60%;
   margin: auto;
 }
+
 .reg-form form .child-step-row, .reg-form .reg-control .child-step-row {
-  justify-content: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }
+
 .reg-form form .child-step-row .row, .reg-form .reg-control .child-step-row .row {
   width: 100%;
 }
+
 .reg-form form .child-step-row .row .letter-col, .reg-form .reg-control .child-step-row .row .letter-col {
   padding: 0;
   padding-left: 5px;
 }
+
 .reg-form form .child-step-row .row .class-col, .reg-form .reg-control .child-step-row .row .class-col {
   padding: 0;
   padding-right: 5px;
 }
+
 .reg-form .bootstrap-select {
   border: 1px solid #ced4da;
-  border-radius: 0.25rem;
+  border-radius: .25rem;
 }
+
 .reg-form .bootstrap-select .dropdown-toggle {
   background-color: #fff;
 }
+
 .reg-form .bootstrap-select .filter-option {
   color: #000;
 }
+
 .reg-form .data-proc-agrement label {
   font-size: 12px;
 }
+
 .reg-form .btn-submit {
   text-align: center;
   margin-bottom: 15px;
@@ -211,5 +243,4 @@ body {
 .wrap {
   position: absolute;
 }
-
 /*# sourceMappingURL=login.css.map */

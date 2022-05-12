@@ -11,7 +11,7 @@ from education_centers.models import EducationCenter
 
 VocGuidAssessmentForm = select2_modelform(VocGuidAssessment, attrs={'width': '400px'})
 
-@admin.register(VocGuidAssessment)
+#@admin.register(VocGuidAssessment)
 class VocGuidAssessmentAdmin(admin.ModelAdmin):
     form = VocGuidAssessmentForm
     search_fields = ["slot__id", 'test__name', 'slot__date', 'slot__slot', 'participant__first_name', 'participant__last_name']
@@ -53,7 +53,7 @@ class VocGuidAssessmentInline(admin.TabularInline):
 
 TimeSlotForm = select2_modelform(TimeSlot, attrs={'width': '600px'})
 
-@admin.register(TimeSlot)
+#@admin.register(TimeSlot)
 class TimeSlotAdmin(admin.ModelAdmin):
     form = TimeSlotForm
     inlines = [VocGuidAssessmentInline,]
@@ -148,7 +148,7 @@ class QuestionnaireInline(admin.StackedInline):
 
 VocGuidTestForm = select2_modelform(VocGuidTest, attrs={'width': '400px'})
 
-@admin.register(VocGuidTest)
+#@admin.register(VocGuidTest)
 class VocGuidTestAdmin(admin.ModelAdmin):
     form = VocGuidTestForm
     inlines = [QuestionnaireInline,]
@@ -205,7 +205,7 @@ class VocGuidTestAdmin(admin.ModelAdmin):
 
 VocGuidGroupForm = select2_modelform(VocGuidGroup, attrs={'width': '400px'})
 
-@admin.register(VocGuidGroup)
+#@admin.register(VocGuidGroup)
 class VocGuidGroupAdmin(admin.ModelAdmin):
     form = VocGuidGroupForm
 

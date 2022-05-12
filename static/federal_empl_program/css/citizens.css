@@ -6,7 +6,8 @@
 
 .card {
   background-color: #e9ecf7;
-  box-shadow: 1px 0px 5px 2px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: 1px 0px 5px 2px rgba(0, 0, 0, 0.2);
+          box-shadow: 1px 0px 5px 2px rgba(0, 0, 0, 0.2);
 }
 
 form {
@@ -19,6 +20,7 @@ form {
   padding-bottom: 0px;
   margin: 0 !important;
 }
+
 .alert p {
   margin-bottom: 10px;
 }
@@ -42,6 +44,7 @@ h2 {
   margin-top: 20px;
   margin-bottom: 20px;
 }
+
 .submit .btn-primary {
   background-color: #426cf8 !important;
   border-color: #426cf8 !important;
@@ -58,5 +61,4 @@ h2 {
   margin: auto;
   margin-bottom: 10px;
 }
-
 /*# sourceMappingURL=citizens.css.map */
