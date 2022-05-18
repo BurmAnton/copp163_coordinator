@@ -246,7 +246,10 @@ def registration(request):
 
 
 def reg_stage(request, stage):
-    return HttpResponseRedirect(reverse("login"))
+    return render(request, "federal_empl_program/login.html", {
+        "page_name": "ЦОПП СО | Регистрация",
+        "stage": 'registration'
+    })
 
 def code_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))

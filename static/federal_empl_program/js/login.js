@@ -55,8 +55,12 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.btn-recovery-code').addEventListener('click', () => {
         passRecovery();
     });
+    stage = document.querySelector(".stage")
 
     replaceState();
+    if (stage.innerHTML == 'registration'){
+        registration()
+    }
 });
 
 function replaceState(){
@@ -74,7 +78,7 @@ function replaceState(){
         last_step: document.querySelector('.auth-step').style.display
     }
     //Заменяем начальное состояние
-    window.history.replaceState(state, null, "");
+    window.history.replaceState(state, null, "/login/");
     renderState(state);
 }
 

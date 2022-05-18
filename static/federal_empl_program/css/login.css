@@ -89,6 +89,9 @@
   .sign-card input[type="checkbox"] {
     height: 14px;
   }
+  .sign-card .form-check-input[type="radio"] {
+    height: 16px;
+  }
 }
 
 .sign-card .pass-recovery {
