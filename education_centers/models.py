@@ -124,6 +124,7 @@ class EducationCenterGroup(models.Model):
     competence = models.ForeignKey(Competence, verbose_name='Компетенция', on_delete=CASCADE, related_name='ed_center_groups')
     program = models.CharField("Название программы", max_length=200, null=True, blank=False)
     program_link = models.CharField("Ссылка на программу", max_length=200, null=True, blank=True)
+    description = models.TextField("Описание", max_length=120, null=True, blank=True)
     PROGRAM_DURATIONS = (
         ('72', '72 ч.'),
         ('144', '144 ч.'),
@@ -146,6 +147,7 @@ class EducationCenterGroup(models.Model):
 
     min_group_size = models.IntegerField('Минимальный размер')
     max_group_size = models.IntegerField('Максимальный размер')
+    
 
     start_date = models.DateField('Дата старта')
     end_date = models.DateField('Дата окончания', blank=True, null=True)

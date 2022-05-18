@@ -1,7 +1,9 @@
+from email.mime import application
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls.base import reverse
 from django.views.decorators.csrf import csrf_exempt
+from citizens.models import Citizen
 
 from education_centers.models import Competence, EducationCenter, EducationProgram, EducationCenterGroup
 from federal_empl_program.models import  Application
@@ -9,13 +11,32 @@ from django.template.defaulttags import register
 
 @csrf_exempt
 def dashboard(request):
+    education_type='scl'
+    is_not_chose = True
+    ed_center_group = None
+    user = request.user
+    citizen = Citizen.objects.filter(email=user.email)
+    if len(citizen) != 0:
+        citizen = citizen[0]
+        if citizen.education_type in ['SPVO','STDN']:
+            education_type='clg'
+        application = Application.objects.filter(applicant=citizen)
+        if len(application) != 0:
+            application = application[0]
+            if application.ed_center_group is not None:
+                is_not_chose = False
+                ed_center_group = application.ed_center_group
     if request.method == 'POST':
         filter_status = []
         group_type = request.POST["group_type"]
         city = request.POST["city"]
         ed_center = request.POST["ed_center"]
         competence = request.POST["competence"]
-        group_list = EducationCenterGroup.objects.exclude(is_visible=False)
+        
+        if education_type == 'scl':
+            group_list = EducationCenterGroup.objects.exclude(is_visible=False, educational_requirements='clg')
+        else:
+            group_list = EducationCenterGroup.objects.exclude(is_visible=False)
         if group_type != 'None':
             group_list = group_list.filter(is_online=group_type)
             filter_status.append(group_type)
@@ -41,9 +62,13 @@ def dashboard(request):
         group_list = [group_list]
         filtration = '1'
     else:
-        group_list = [EducationCenterGroup.objects.exclude(is_visible=False)]
+        if education_type == 'scl':
+            group_list = [EducationCenterGroup.objects.exclude(is_visible=False, educational_requirements='clg')]
+        else:
+            group_list = [EducationCenterGroup.objects.exclude(is_visible=False)]
         filter_status = [None,None,None,None]
         filtration = '0'
+    
     filter_lists = [EducationCenterGroup.objects.exclude(is_visible=False)]
     ed_centers_set = set()
     competencies_set = set()
@@ -60,8 +85,28 @@ def dashboard(request):
         'competencies': competencies_set,
         'cities': cities_set,
         'filter_status': filter_status,
-        'filtration': filtration
+        'filtration': filtration,
+        'is_not_chose': is_not_chose,
+        'ed_center_group': ed_center_group
     })
+
+@csrf_exempt
+def chose_group(request):
+    if request.method == 'POST':
+        group_id = request.POST["group_id"]
+        group = EducationCenterGroup.objects.get(id=group_id)
+        user = request.user
+        citizen = Citizen.objects.filter(email=user.email)
+        if len(citizen) != 0:
+            citizen = citizen[0]
+            citizen.ed_center_group = group
+            citizen.save()
+            application = Application.objects.filter(applicant=citizen)
+            if len(application) != 0:
+                application = application[0]
+                application.ed_center_group = group
+                application.save()
+    return HttpResponseRedirect(reverse("dashboard"))
 
 def ed_centers_empl(request, **kwargs):
     stat = {}

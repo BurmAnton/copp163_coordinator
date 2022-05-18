@@ -1,7 +1,6 @@
 from django.db import models
 from users.models import User
 from django.db.models.deletion import DO_NOTHING, CASCADE
-from django.db.models.expressions import Value
 from field_history.tracker import FieldHistoryTracker
 
 from django.db.models.fields.related import OneToOneField
@@ -9,7 +8,18 @@ from django.utils.timezone import now
 
 from citizens.models import Citizen
 from organizations.models import Company
-from education_centers.models import Competence, EducationProgram, EducationCenter, Group
+from education_centers.models import Competence, EducationCenterGroup, EducationProgram, EducationCenter, Group
+
+class CitizenCategory(models.Model):
+    short_name = models.CharField("Название", max_length=100, blank=False)
+    official_name = models.CharField("Офицальное наименованние", max_length=500, blank=True)
+    
+    def __str__(self):
+        return  self.short_name
+
+    class Meta:
+        verbose_name = "Категория граждан"
+        verbose_name_plural = "Категории граждан"
 
 class Application(models.Model):
     legacy_id = models.IntegerField('ID', blank=True, null=True)
@@ -38,6 +48,7 @@ class Application(models.Model):
         ('DUPL', "Дубликат")
     ]
     appl_status = models.CharField("Статус заявки", max_length=4, default='NEW', choices=APPL_STATUS_CHOICES)
+    #Устарело (2021 год), использовать CitizenCategory
     CATEGORY_CHOICES = [
         ('EMPS', "Граждане, ищущие работу и обратившиеся в органы службы занятости, включая безработных граждан"),
         ('JOBS', 'Ищущий работу'),
@@ -47,11 +58,14 @@ class Application(models.Model):
         ('50+',"Граждане в возрасте 50-ти лет и старше"),
         ('SC', "Граждане предпенсионного возраста")
     ]
+    #Устарело (2021 год), использовать CitizenCategory
     category = models.CharField("Категория слушателя", max_length=50, choices=CATEGORY_CHOICES, default="EMPS")
+    citizen_category = models.ForeignKey(CitizenCategory, verbose_name="категория", related_name="application", on_delete=DO_NOTHING, blank=True, null=True)
     distance_education = models.BooleanField("Дистанционное обучение", default=False)
     competence = models.ForeignKey(Competence, verbose_name="Компетенция", on_delete=DO_NOTHING, related_name='competence_applicants', blank=True, null=True)
     education_program = models.ForeignKey(EducationProgram, verbose_name="Програма обучения", on_delete=DO_NOTHING, related_name='programm_applicants', blank=True, null=True)
     education_center = models.ForeignKey(EducationCenter, verbose_name="Центр обучения", on_delete=DO_NOTHING, related_name='edcenter_applicants', blank=True, null=True)
+    ed_center_group = models.ForeignKey(EducationCenterGroup, verbose_name="Предварительная заявка", on_delete=DO_NOTHING, related_name="applications", blank=True, null=True)
     group = models.ForeignKey(Group, verbose_name="Группа", on_delete=DO_NOTHING, related_name='students', blank=True, null=True)
     CONTR_TYPE_CHOICES = [
         ('OLD', "Трехсторонний договор со старым работодателем"),
@@ -70,9 +84,12 @@ class Application(models.Model):
         ('OCT', "В октябре"),
         ('NOV', "В ноябре"),
         ('NY', "В следующем году"),
-        ('ALR', "Уже зачислен")
+        ('ALR', "Уже зачислен"),
+        ('ltr_month', "Позднее чем через месяц"),
+        ('month', "В течение месяца"),
+        ('week', "В течение 1 недели"),
     ]
-    ed_ready_time = models.CharField("Хочет начать учиться", max_length=4, choices=ED_TIMELINE_CHOICES, blank=True, null=True)
+    ed_ready_time = models.CharField("Хочет начать учиться", max_length=10, choices=ED_TIMELINE_CHOICES, blank=True, null=True)
     
     #Общее
     consent_pers_data = models.BooleanField("Согласие на обработку перс. данных", default=False)
@@ -156,11 +173,12 @@ class Questionnaire(models.Model):
     ]
     convenient_study_periods = models.CharField("Удобное время занятий", max_length=4, blank=True, null=True, choices=TIME_SLOTS)
     PURPOSE_CHOICES = [
-        ('RECA', "Самозанятость, предпринимательство"),
-        ('CONT', "Сохранение работы"),
-        ('RECD', "Поиск новой работы"),
+        ('RECA', "Открытие своего дела (ИП или самозанятость)"),
+        ('CONT', "Сохранение текущего места работы"),
+        ('RECD', "Трудоустройство на новую работу"),
         ('CONF', "Саморазвитие"),
     ]
+        
     purpose = models.CharField("Цель", max_length=4, blank=True, null=True, choices=PURPOSE_CHOICES)
     need_consultation = models.BooleanField("Нужна ли консультация по самозаятости", default=False)
     CONTR_TYPE_CHOICES = [

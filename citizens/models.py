@@ -6,6 +6,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from users.models import User
 from organizations.models import Company
+from education_centers.models import EducationCenterGroup
 
 class School(models.Model):
     name = models.CharField("Название школы", max_length=100)
@@ -91,6 +92,9 @@ class Citizen(models.Model):
     res_city = models.CharField("Населённый пункт", max_length=150, blank=True, null=True)
     res_disctrict = models.CharField("Населённый пункт", max_length=50, blank=True, null=True)
 
+    ed_center_group = models.ForeignKey(EducationCenterGroup, verbose_name="Предварительная заявка", on_delete=DO_NOTHING, related_name="citizens", blank=True, null=True)
+
+
     STATUS_CHOICES = [
         ('SCHT', "Учитель в школе"),
         ('SCHS', "Обучающиеся общеообразовательных организаций"),
@@ -107,12 +111,9 @@ class Citizen(models.Model):
     school = models.ForeignKey(School, verbose_name="Школа", related_name="students", blank=True, null=True, on_delete=DO_NOTHING)
     school_class = models.ForeignKey(SchoolClass, verbose_name="Школный класс", related_name="students", blank=True, null=True, on_delete=DO_NOTHING)
     EDUCATION_CHOICES = [
-        ('SPO', "СПО"),
-        ('VO', "ВО"),
-        ('SSPO', "Cтудент ВО"),
-        ('SVO', "Cтудент СПО"),
-        ('11', '11 классов'),
-        ('9', '9 классов'),
+        ('SPVO', "СПО/ВО"),
+        ('STDN', "Cтудент ВО/СПО"),
+        ('SCHL', 'Школа'),
         ('OTHR', "Другой")
     ]
     education_type = models.CharField("Образование", max_length=4, choices=EDUCATION_CHOICES, blank=True, null=True)

@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector(".nav-link-fp").classList.remove("active")
     setTimeout(function(){
         document.querySelectorAll('.filter-option-inner-inner').forEach(selector => {
             selector.click();

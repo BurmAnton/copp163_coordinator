@@ -10,13 +10,12 @@ from easy_select2 import select2_modelform
 from django_admin_listfilter_dropdown.filters import  RelatedDropdownFilter, ChoiceDropdownFilter, RelatedOnlyDropdownFilter
 from field_history.models import FieldHistory
 
-from .models import Application, Questionnaire, InteractionHistory
+from .models import Application, Questionnaire, InteractionHistory, CitizenCategory
 from education_centers.models import EducationCenter, EducationProgram
 from users.models import Group
 
-
-
 from datetime import datetime, timedelta
+
 
 QuestionnaireForm = select2_modelform(Questionnaire, attrs={'width': '400px'})
 
@@ -38,6 +37,13 @@ class InteractionHistoryInLine(admin.TabularInline):
             return extra
         return extra
 
+@admin.register(CitizenCategory)
+class CitizenCategoryAdmin(admin.ModelAdmin):
+    list_display = (
+        "short_name",
+        "official_name"
+    )
+
 ApplicationForm = select2_modelform(Application, attrs={'width': '400px'})
 
 @admin.register(Application)
@@ -45,22 +51,16 @@ class ApplicationAdmin(admin.ModelAdmin):
     form = ApplicationForm
     inlines = [InteractionHistoryInLine, QuestionnaireInline]
 
-    readonly_fields = ['get_applicant', 'get_history', 'legacy_id', 'get_phone', 'get_email']
+    readonly_fields = ['get_applicant', 'get_history', 'id', 'get_phone', 'get_email']
 
     fieldsets = (
         (None, {
-            'fields': ('get_applicant', 'legacy_id', 'get_phone', 'get_email')
+            'fields': ('get_applicant', 'id', 'get_phone', 'get_email')
         }),
         ('Работа с заявкой', {
             'fields': ('citizen_consultant', 'admit_status', 'appl_status', 
-            'category', 'competence', 'education_program', 'education_center', 'ed_ready_time',
-            'group', 'is_enrolled', 'is_deducted'),
-        }),
-        ('Документы', {
-            'fields': ('education_document', 'pasport', 'resume', 'worksearcher_certificate',
-            'consent_pers_data', 'workbook', 'unemployed_certificate', 'senior_certificate',
-            'parental_leave_confirm','birth_certificate', 'birth_certificate_undr_seven', 
-            'notIP_certificate'),
+            'citizen_category', 'competence', 'education_program', 'education_center', 'ed_ready_time',
+            'ed_center_group', 'group', 'is_enrolled', 'is_deducted'),
         }),
         ('Работа по трудоустройству', {
             'classes': ('collapse',),
@@ -102,14 +102,14 @@ class ApplicationAdmin(admin.ModelAdmin):
     get_history.short_description='Дата последнего изменения'
 
     search_fields = ['applicant__phone_number','applicant__email','applicant__snils_number',
-    'applicant__first_name','applicant__middle_name','applicant__last_name', 'legacy_id']
+    'applicant__first_name','applicant__middle_name','applicant__last_name', 'id']
     actions = ['allow_applications']
 
     list_display = (
-        'legacy_id',
+        'id',
         'applicant', 
         'appl_status', 
-        'category',
+        'citizen_category',
         'creation_date',
         'contract_type',
         'competence',
@@ -123,7 +123,7 @@ class ApplicationAdmin(admin.ModelAdmin):
 
         if len(cl_group) == 0:
             if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) == 0:
-                form.base_fields['category'].widget.attrs['style'] = 'width: 55em;'
+                form.base_fields['citizen_category'].widget.attrs['style'] = 'width: 55em;'
                 form.base_fields['education_program'].widget.attrs['style'] = 'width: 75em;'
                 form.base_fields['education_center'].widget.attrs['style'] = 'width: 75em;'
         return form
@@ -135,10 +135,11 @@ class ApplicationAdmin(admin.ModelAdmin):
         ('competence', RelatedOnlyDropdownFilter),
         ('education_program', RelatedOnlyDropdownFilter),
         ('education_center', RelatedOnlyDropdownFilter),
-        ('category', ChoiceDropdownFilter),
+        ('citizen_category', ChoiceDropdownFilter),
         ('ed_ready_time',ChoiceDropdownFilter),
         ('group', RelatedOnlyDropdownFilter),
         ('contract_type', ChoiceDropdownFilter),
+        ('ed_center_group', ChoiceDropdownFilter),
     )
 
     def allow_applications(self, request, queryset):
@@ -169,7 +170,7 @@ class ApplicationAdmin(admin.ModelAdmin):
             if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
                 return self.readonly_fields + [
                     'citizen_consultant','admit_status', 'appl_status', 
-                    'category', 'competence', 'education_program', 'education_center',
+                    'citizen_category', 'competence', 'education_program', 'education_center',
                     'group', 'is_enrolled', 'is_deducted', 'education_document', 'pasport', 'resume', 'worksearcher_certificate',
                     'consent_pers_data', 'workbook', 'unemployed_certificate', 'senior_certificate',
                     'parental_leave_confirm','birth_certificate', 'birth_certificate_undr_seven', 

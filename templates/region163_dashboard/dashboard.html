@@ -12,7 +12,7 @@
     <div class="filter">
         <div class="container">
             <div class="text-center">
-                <h1>Федеральный проект «Содействие занятости»‎</h1>
+                <h1>Федеральный проект «Содействие занятости»</h1>
             </div>
             <h5>Фильтр</h5>
             <div class="row g-2">
@@ -43,21 +43,89 @@
         </div>
     </div>
     <div class="container group_list">
+        {% if is_not_chose == False %}
+            <div class="text-center">
+                <h2>Выбранная группа</h2>
+            </div>
+            <div class="chosen_group">
+                <div class="card h-100">
+                    <h5 class="card-header">
+                        Группа №{{ed_center_group.id}} {{ed_center_group.competence}}
+                    </h5>
+                    <div class="card-body">
+                      <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <h6 class="card-title">{{ed_center_group.education_center}}</h6>
+                            </li>
+                            {% if ed_center_group.description is not None %}
+                                <li class="list-group-item">
+                                    {{ed_center_group.description}}
+                                </li>
+                            {% endif %}
+                            <li class="list-group-item">
+                                <p class="card-text ed_program">
+                                    <b>
+                                        Программа подготовки:
+                                    </b> 
+                                    {%if ed_center_group.program_link != None%}
+                                        <a href={{group.program.program_link}} target="_blank">
+                                            {{ed_center_group.program}}
+                                        </a>
+                                    {% else %}
+                                        {{ed_center_group.program}}
+                                    {% endif %}
+                                </p>
+                                <p class="card-text ed_program"><b>Длительность подготовки:</b> {{ed_center_group.duration}}ч.</p>
+                                {%if ed_center_group.study_period == 'MRNG'%}
+                                    <p class="card-text ed_program"><b>Период проведения занятий:</b> 09:00-13:00</p>
+                                {% endif %}
+                                {%if ed_center_group.study_period == 'DAYT'%}
+                                    <p class="card-text ed_program"><b>Период проведения занятий:</b> 13:00-17:00</p>
+                                {% endif %}
+                                {%if ed_center_group.study_period == 'EVNG'%}
+                                    <p class="card-text ed_program"><b>Период проведения занятий:</b> 17:00-21:00</p>
+                                {% endif %}
+                                {%if ed_center_group.study_days_count != None%}
+                                    <p class="card-text"><b>Занятий в неделю:</b> {{ed_center_group.study_days_count}}</p>
+                                {% endif %}
+                            </li>
+                            <li class="list-group-item">
+                                <p class="card-text start-date"><b>Дата начала:</b> {{ed_center_group.start_date}}</p>
+                                {% if ed_center_group.end_date != None %}
+                                    <p class="card-text"><b>Дата окончания:</b> {{ed_center_group.end_date}}</p>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-footer text-end border-dark">
+                        {% if ed_center_group.ed_schedule_link != None %}
+                            <a href={{ed_center_group.ed_schedule_link}} class="btn btn-dark" target="_blank">График обучения</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
         <div class="text-center">
-            <h2>Список ближайших групп‎</h2>
+            <h2>Список ближайших групп</h2>
         </div>
         <div class="row row-cols-2 g-3">
             {% for group in group_list.0 %}
             <div class="col" data-type="{{group.is_online}}" data-education_center="{{group.education_center}}" data-education_center="{{group.education_center}}" data-city="{{group.city}}" data-competence="{{group.competence}}">
                 <div class="card h-100">
                     <h5 class="card-header">
-                        Группа №{{group.id}}   {{group.competence}}
+                        Группа №{{group.id}} {{group.competence}}
+                        
                     </h5>
                     <div class="card-body">
                       <ul class="list-group list-group-flush">
                             <li class="list-group-item">
                                 <h6 class="card-title">{{group.education_center}}</h6>
                             </li>
+                            {% if group.description is not None %}
+                                <li class="list-group-item">
+                                    {{group.description}}
+                                </li>
+                            {% endif %}
                             <li class="list-group-item">
                                 <p class="card-text ed_program">
                                     <b>
@@ -97,9 +165,12 @@
                         {% if group.ed_schedule_link != None %}
                             <a href={{group.ed_schedule_link}} class="btn btn-dark" target="_blank">График обучения</a>
                         {% endif %}
-                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdmzY-KjLvBOUEnCMQFx6P-wnFYmlCyvRi77LsosDPBCT941A/viewform" class="btn btn-primary" target="_blank">
-                            Записаться на обучение
-                        </a>
+                        {% if is_not_chose == True %}
+                            <form action="{% url 'chose_group' %}" method="POST">
+                                <input style="display: none;" type="text" value="{{group.id}}" name="group_id">
+                                <button class="btn btn-primary">Записаться на обучение</button>
+                            </form>
+                        {% endif %}
                     </div>
                 </div>
             </div>

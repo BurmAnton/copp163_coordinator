@@ -1,3 +1,5 @@
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 import string
 import random
 import json
@@ -16,6 +18,8 @@ from .imports import express_import, import_in_db_gd, import_statuses, import_sc
 from pysendpulse.pysendpulse import PySendPulse
 
 from users.models import User
+from citizens.models import Citizen
+from federal_empl_program.models import Application, CitizenCategory, Questionnaire
 
 # Create your views here.
 @login_required
@@ -136,8 +140,35 @@ def change_password(request):
                 login(request, user)
     return HttpResponseRedirect(reverse("login"))
 
-@csrf_exempt
+def category_search(answers):
+    prepensioner = answers.get("prepensioner", "")
+    if (prepensioner):
+        return 'Предпенсионер'
+    
+    birthday = datetime.strptime(answers.get("birthday", ""),"%Y-%m-%d")
+    age = relativedelta(date.today(), birthday).years
+    if age >= 50:
+        return '50+'
 
+    empl_status = answers.get("empl_status", "")
+    if empl_status == 'unempl_czn':
+        return 'Безработные зарег. в ЦЗН'
+    if empl_status == 'unempl':
+        return 'Безработные незарег. в ЦЗН'
+    if empl_status == 'vacation':
+         return 'В отпуске по уходу за ребенком'
+
+    if age <= 35 and age >= 16:
+        education_lvl = answers.get("education_lvl", "")
+        if education_lvl == 'fy_student':
+            return '16-35 студенты 2022'
+        if education_lvl == 'school':
+            return '16-35 без ВО/СПО'
+
+    return 'Под риском увольнения'
+
+
+@csrf_exempt
 def registration(request):
     if request.method == "POST":
         data = json.loads(request.body)
@@ -145,55 +176,70 @@ def registration(request):
         password = data.get("password", "")
         confirmation = data.get("confirmation", "")
 
-        phone = data.get("phone", "")
         first_name = data.get("first_name", "")
         last_name = data.get("last_name", "")
         middle_name = data.get("middle_name", "")
+        gender = data.get("gender", "")
         birthday = data.get("birthday", "")
-        disability_type = data.get("disability_type", "")
 
-        school_id = data.get("school_id", "")
-        grade_number = data.get("grade_number", "")
-        grade_letter = data.get("grade_letter", "")
-        school = School.objects.get(id=school_id)
-
-        if disability_type.isdigit():
-            disability_type = DisabilityType.objects.filter(id=disability_type)
-            if len(disability_type) != 0:
-                disability_type = disability_type[0]
-        else:
-            disability_type = None
+        phone = data.get("phone", "")
+        snils = data.get("snils", "")
+        
+        convenient_time = data.get("convenient_time", "")
+        education_time = data.get("education_time", "")
+        education_goal = data.get("education_goal", "")
+        
         if password != confirmation:
             return JsonResponse({"message": "Password mismatch."}, status=201)
         try:
             user = User.objects.create_user(email, password)
             user.first_name = first_name
-            user.middle_name  = middle_name
+            user.middle_name = middle_name
             user.last_name = last_name
-            user.birthday = birthday
             user.phone_number = phone
-            user.disability_type = disability_type
-
-            user.role = 'ST'
-            school_class = SchoolClass.objects.filter(
-                school=school,
-                grade_number=grade_number,
-                grade_letter=grade_letter
-            )
-            if len(school_class) != 0:
-                school_class = school_class[0]
-            else:
-                school_class = SchoolClass(
-                    school=school,
-                    grade_number=int(grade_number),
-                    grade_letter=grade_letter.upper()
-                )
-                school_class.save()
-            user.school = school
-            user.school_class = school_class
+            user.role = 'CTZ'
             user.save()
         except IntegrityError:
             return JsonResponse({"message": "Email already taken."}, status=201)
+
+        education_lvl = data.get("education_lvl", "")
+        education = 'SCHL'
+        if education_lvl in ['fy_student', 'student']:
+            education = 'STDN'
+        if education_lvl == 'university':
+            education = 'SPVO'
+
+        citizen = Citizen(
+            first_name = first_name,
+            middle_name = middle_name,
+            last_name = last_name,
+            email = email,
+            phone_number = phone,
+            snils_number = snils,
+            sex=gender,
+            birthday=birthday,
+            education_type=education
+        )
+        citizen.save()
+
+        category = CitizenCategory.objects.get(short_name=category_search(data))
+
+        application = Application(
+            applicant=citizen,
+            creation_date=date.today(),
+            admit_status='RECA',
+            appl_status='NEW',
+            citizen_category=category,
+            ed_ready_time=education_time,
+        )
+        application.save()
+
+        questionnaire = Questionnaire(
+            applicant=application,
+            convenient_study_periods=convenient_time,
+            purpose=education_goal
+        )
+        questionnaire.save()
 
         return JsonResponse({"message": "Account created successfully."}, status=201)
     return HttpResponseRedirect(reverse("login"))
