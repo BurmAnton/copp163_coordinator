@@ -135,11 +135,33 @@ class GroupAdmin(admin.ModelAdmin):
                     return queryset
         return queryset
 
+
+    fields = ('applicant', 'phone_')
+
+
+CitizenForm = select2_modelform(Application, attrs={'width': '400px'})
+
+class CitizensInline(admin.TabularInline):
+    model = Citizen
+    form = CitizenForm
+    fields = ('last_name', 'first_name', 'middle_name', 'phone_number', 'email')
+
+    def get_readonly_fields(self, request, obj=None):
+        cl_group = users.models.Group.objects.filter(name='Представитель ЦО')
+
+        if len(cl_group) != 0:
+            if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
+                return self.readonly_fields + ('last_name', 'first_name', 'middle_name', 'phone_number', 'email')
+        return self.readonly_fields
+
 EducationCenterForm = select2_modelform(EducationCenterGroup, attrs={'width': '400px'})
 
 @admin.register(EducationCenterGroup)
 class EducationCenterGroupAdmin(admin.ModelAdmin):
     form = EducationCenterForm
+    inlines = [
+        CitizensInline, 
+    ]
     list_filter = (
         ('education_center', RelatedOnlyDropdownFilter),
         ('competence', RelatedOnlyDropdownFilter),
@@ -152,7 +174,7 @@ class EducationCenterGroupAdmin(admin.ModelAdmin):
     list_display = ('get_id', 'competence', 'program', 'education_center', 'city', 'education_period')
     fieldsets = (
         (None, {
-            'fields': ('education_center', 'competence', 'program', 'program_link', 'duration', 'is_visible')
+            'fields': ('education_center', 'competence', 'program', 'program_link', 'educational_requirements', 'duration', 'description', 'is_visible')
         }),
         ('Формат и место проведения', {
             'fields': ('is_online', 'city')

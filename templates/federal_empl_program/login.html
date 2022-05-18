@@ -11,6 +11,25 @@
 {% endblock %}
 
 {% block body %}
+    <div class="modal fade" id="InstructionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="InstructionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="InstructionModalLabel">Спасибо за регистрацию!</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Ваша предворительная заявка принята. Дальнейшие инструкции по тому, как попасть на обучение отправлена на указанную Вами почту.</p>
+                    <p>
+                        После регистрации Вам будет доступен список ближайщих планируемых центрами обучения групп для предварительной записи. 
+                        После записи в группу, мы передадим Ваши контактные данные и с вами свяжется представитель выбранного цетра обучения.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary cont-btn">Перейти к выбору группы</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row justify-content-center align-self-center">
         <div class="card sign-card">
             <div class="form-title"><p>Авторизация</p></div>
@@ -41,6 +60,7 @@
                     </button>
                 </div>
                 <div id="SignUpHelp" class="form-text pass-recovery">Забыли пароль или не можете войти?</div>
+                  
             </div>
         <!--Востановление пароля-->
             <div class="pass-rec-form" style="display:none;">
@@ -94,19 +114,19 @@
                         <label class="form-check-label ">Укажите свой пол</label>
                     </div>
                     <div class="first-step">
-                        <div class="form-check form-check-inline first-step">
+                        <div class="form-check form-check-inline">
                             <input style="margin-top: 4px;" class="form-check-input" type="radio" name="GenderOptions" id="MaleOptions" value="male" checked>
                             <label class="form-check-label" for="MaleOptions">Мужской</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input  class="form-check-input" type="radio" name="GenderOptions" id="FemaleOptions" value="female">
+                            <input style="margin-top: 4px;" class="form-check-input" type="radio" name="GenderOptions" id="FemaleOptions" value="female">
                             <label class="form-check-label" for="FemaleOptions">Женский</label>
                         </div>  
                     </div>
                 <!--Параметры обучения-->
                     <label class="form-check-label second-step" for="education_lvl">Уровень образования</label>
                     <div class="form mb-3 second-step">
-                        <select class="selectpicker second-step second-step-mandatory-select" data-width="100%" data-live-search="true" name="education_lvl" required>
+                        <select class="selectpicker second-step second-step-mandatory-select" data-width="100%" data-live-search="true" id="Education_lvl" name="education_lvl" required>
                             <option value="">Выберите уровень образования</option>
                             <option value="university">Имею диплом о среднем профессиональном или высшем образовании</option>
                             <option value="fy_student">Студент и завершаю обучение в 2022 году</option>
@@ -114,36 +134,42 @@
                             <option value="school">Не имею образования/учусь в школе</option>
                         </select>
                     </div>
-                    <label class="form-check-label second-step" for="education_goal">Планируемая занятость после обучения</label>
+                    <label class="form-check-label second-step" for="education_goal">Текущий статус трудоустройства</label>
                     <div class="form mb-3 second-step">
-                        <select class="selectpicker second-step second-step-mandatory-select" data-width="100%" data-live-search="true" name="education_goal" required>
-                            <option value="">Выберите занятость</option>
-                            <option value="business">Открытие своего дела (ИП или самозанятость)</option>
-                            <option value="find_work">Трудоустройство на новую работу</option>
-                            <option value="save_work">Сохранение текущего места работы</option>
+                        <select class="selectpicker second-step second-step-mandatory-select" data-width="100%" data-live-search="true" id="Empl_status" name="empl_status" required>
+                            <option value="">Выберите трудовой статус</option>
+                            <option value="empl">Трудоустроен (официально)</option>
+                            <option value="vacation">В отпуске по уходу за ребёнком до 3-х лет</option>
+                            <option value="unempl_czn">Безработный (зарегестрирован в центре занятости) </option>
+                            <option value="unempl">Безработный (не зарегестрирован в центре занятости)</option>
                         </select>
                     </div>
                     <label class="form-check-label second-step" for="convenient_time">Удобное время для занятий</label>
                     <div class="form mb-3 second-step">
-                        <select class="selectpicker second-step second-step-mandatory-select" data-width="100%" data-live-search="true" name="convenient_time" required>
+                        <select class="selectpicker second-step second-step-mandatory-select" data-width="100%" data-live-search="true" id="Convenient_time" name="convenient_time" required>
                             <option value="">Выберите время</option>
-                            <option value="morning">9:00-13:00</option>
-                            <option value="midday">13:00-17:00</option>
-                            <option value="evening">17:00-21:00</option>
+                            <option value="MRNG">9:00-13:00</option>
+                            <option value="DAYT">13:00-17:00</option>
+                            <option value="EVNG">17:00-21:00</option>
                         </select>
                     </div>
                     <label class="form-check-label second-step" for="convenient_time">Готовность приступить к обучение</label>
                     <div class="form mb-3 second-step">
-                        <select class="selectpicker second-step second-step-mandatory-select" data-width="100%" data-live-search="true" name="education_time" required>
+                        <select class="selectpicker second-step second-step-mandatory-select" data-width="100%" data-live-search="true" id="Education_time" name="education_time" required>
                             <option value="">Выберите срок</option>
                             <option value="week">В течение 1 недели</option>
                             <option value="month">В течение месяца</option>
                             <option value="ltr_month">Позднее чем через месяц</option>
                         </select>
                     </div>
-                    <div class="form-check second-step second-step-optional">
-                        <input class="form-check-input employment-check" type="checkbox" id="employment-check" name="employment-check">
-                        <label class="form-check-label employment-label" for="employment-check">Официально трудоустроен</label>
+                    <label class="form-check-label second-step" for="education_goal">Планируемая занятость после обучения</label>
+                    <div class="form mb-3 second-step">
+                        <select class="selectpicker second-step second-step-mandatory-select" data-width="100%" data-live-search="true" id="Education_goal" name="education_goal" required>
+                            <option value="">Выберите занятость</option>
+                            <option value="RECA">Открытие своего дела (ИП или самозанятость)</option>
+                            <option value="RECD">Трудоустройство на новую работу</option>
+                            <option value="CONT">Сохранение текущего места работы</option>
+                        </select>
                     </div>
                     <div class="form-check second-step second-step-optional">
                         <input class="form-check-input elderly-check" type="checkbox" id="elderly-check" name="elderly-check">
@@ -151,10 +177,13 @@
                     </div>
                 <!--Финальный шаг-->
                     <div class="input-group mb-3 auth-step">
+                        <input type="input" class="form-control" name="snils" id="Snils" placeholder="Номер СНИЛС" minlength="11" maxlength="11" onkeydown="return /[0-9 Backspace]+/i.test(event.key)" required>
+                    </div>
+                    <div class="input-group mb-3 auth-step">
                         <input type="email" class="form-control reg-email" name="email" id="Email" placeholder="Email" required>
                     </div>
                     <div class="input-group mb-3 auth-step">
-                        <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номер телефона" maxlength="18" onkeydown="return /[a\1-9 + ( ) ]/i.test(event.key)" required>
+                        <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номер телефона" maxlength="18" onkeydown="return /[+ ( ) 0-9 Backspace]+/i.test(event.key)" required>
                     </div>
                     <div class="input-group mb-3 auth-step">
                         <input type="password" class="form-control" name="password" id="InputPasswordReg" placeholder="Пароль" required>
@@ -189,4 +218,5 @@
             </div>
         </div>
     </div>
+    
 {% endblock %}

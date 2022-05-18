@@ -28,6 +28,12 @@
   margin-bottom: 20px;
 }
 
+.chosen_group {
+  margin: auto;
+  margin-bottom: 20px;
+  max-width: 50%;
+}
+
 .card {
   --bs-gutter-x: 0rem;
   border-color: #394959;

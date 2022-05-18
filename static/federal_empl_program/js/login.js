@@ -3,7 +3,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.reg-form').style.display = "none";
 
     //Добавляем прослушивание кнопки регистрации
-    document.querySelector('.reg-button').addEventListener('click', () => {registration()});
+    document.querySelector('.reg-button').addEventListener('click', () => {
+        registration()
+    });
 
     document.querySelectorAll('.first-step-mandatory').forEach(input =>{
         input.addEventListener('input', () => {cheak_step('.first-step-mandatory')});
@@ -20,7 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
         click_forward();
     });
 
-    document.querySelector('.btn-backward').addEventListener("click", () => window.history.back());
+    document.querySelector('.btn-backward').addEventListener("click", () =>{
+        window.history.back();
+    });
     document.querySelector('.btn-submit').addEventListener('click', () =>{
         send_reg_info();
     });
@@ -132,7 +136,7 @@ function renderState(state){
             document.querySelector('.btn-forward').style.display = 'block';
             document.querySelector('.btn-submit').style.display = 'none';
             document.querySelector('.btn-backward').style.display = 'none';
-            cheak_step('.second-step-mandatory');
+            cheak_step('.first-step-mandatory');
         } else if (state.second_step != 'none') {
             document.querySelectorAll('.first-step').forEach(input =>{
                 input.style.display = 'none';
@@ -278,9 +282,18 @@ function click_forward(){
 };
 
 function send_reg_info(){
-    let email = document.querySelector('.reg-email')
+    let email = document.querySelector('.reg-email');
+    let male_gender = document.querySelector('#MaleOptions');
+    
+    let gender = 'F';
+    if (male_gender.checked){
+        gender = 'M';
+    };
+    console.log(male_gender.checked);
+    console.log(gender);
+
     if (email.classList.contains('is-valid')){
-        fetch('/user/registration/', {
+        fetch('/registration/', {
             method: 'POST',
             body: JSON.stringify({
                 email: document.querySelector("#Email").value,
@@ -291,22 +304,36 @@ function send_reg_info(){
                 last_name: document.querySelector("#LastName").value,
                 middle_name: document.querySelector("#MiddleName").value,
                 birthday: document.querySelector("#Birthday").value,
-                phone: document.querySelector("#Phone").value,
-                disability_check: document.querySelector("#disability-check").value,
-                disability_type: document.querySelector("#disability_type").value,
+                gender: gender,
                 
-                school_id: document.querySelector("#School").value,
-                grade_number: document.querySelector("#school_class").value,
-                grade_letter: document.querySelector("#school_class_latter").value,
+                phone: document.querySelector("#Phone").value,
+                snils: document.querySelector("#Snils").value,
+                
+                convenient_time: document.querySelector("#Convenient_time").value,
+                education_time: document.querySelector("#Education_time").value,
+                education_goal: document.querySelector("#Education_goal").value,
+                empl_status: document.querySelector("#Empl_status").value,
+                education_lvl: document.querySelector("#Education_lvl").value,
+                prepensioner: document.querySelector('#MaleOptions').cheked
             })
             })
             .then(response => response.json())
             .then(result => {
                 console.log(result.message);
                 if (result.message === "Account created successfully."){
-                    document.querySelector(".email-login").value = document.querySelector("#Email").value;
-                    document.querySelector("#InputPassword").value = document.querySelector("#InputPasswordReg").value;
-                    document.querySelector(".sign-button").click();
+                    
+                    var myModal = new bootstrap.Modal(document.querySelector('#InstructionModal'), {
+                        keyboard: false,
+                        backdrop: 'static'
+                      })
+                    myModal.show()
+                    let cont_btn = document.querySelector('.cont-btn')
+                    cont_btn.addEventListener('click', () => {
+                        document.querySelector(".email-login").value = document.querySelector("#Email").value;
+                        document.querySelector("#InputPassword").value = document.querySelector("#InputPasswordReg").value;
+                        document.querySelector(".sign-button").click();
+                    });
+
                 } else if (result.message == 'Password mismatch.') {
                     let message = "Введённые пароли не совпадают."
                     alert_fade(message);

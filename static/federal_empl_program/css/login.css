@@ -261,4 +261,13 @@
 .wrap {
   position: absolute;
 }
+
+/* modal */
+#InstructionModal p {
+  text-align: justify;
+}
+
+#InstructionModal h5, #InstructionModal button {
+  margin: auto;
+}
 /*# sourceMappingURL=login.css.map */

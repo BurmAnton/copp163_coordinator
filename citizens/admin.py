@@ -60,7 +60,7 @@ class CitizensAdmin(admin.ModelAdmin):
     ]
     fieldsets = (
         (None, {
-            'fields': ('last_name', 'first_name', 'middle_name', 'sex', 'snils_number', 'inn_number')
+            'fields': ('last_name', 'first_name', 'middle_name', 'birthday', 'sex', 'snils_number', 'inn_number')
         }),
         ('Контактная информация', {
             'fields': ('email', 'phone_number', 'res_region', 'res_city', "copp_registration"),
