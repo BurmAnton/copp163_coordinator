@@ -53,10 +53,10 @@ function filter(){
     })
     document.querySelectorAll(".col").forEach(card => {
         card.style.display = "block"
-        if (!(options.includes("Оффлайн"))&&(card.dataset.type === "on")){
+        if (!(options.includes("Оффлайн"))&&(card.dataset.type === "off")){
             card.style.display = "none"
         }
-        if (!(options.includes("Онлайн")) && card.dataset.type === "off"){
+        if (!(options.includes("Онлайн")) && card.dataset.type === "on"){
             card.style.display = "none"
         }
         if (!(options.includes("Оффлайн"))&&!(options.includes("Онлайн"))){

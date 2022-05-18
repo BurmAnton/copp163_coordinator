@@ -196,3 +196,18 @@ class Questionnaire(models.Model):
     
     def __str__(self):
         return  f"{self.applicant} (анкета)"
+
+
+class CategoryInstruction(models.Model):
+    category = models.ForeignKey(CitizenCategory, verbose_name="категория", related_name="instructions", on_delete=DO_NOTHING, blank=True, null=True)
+    subject = models.CharField("Тема письма", max_length=150)
+    text = models.TextField("Текст")
+    html = models.TextField("HTML")
+
+    class Meta:
+        verbose_name = "Инструкция"
+        verbose_name_plural = "Инструкции"
+        
+    
+    def __str__(self):
+        return self.category.short_name

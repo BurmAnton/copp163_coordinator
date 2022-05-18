@@ -10,7 +10,7 @@ from easy_select2 import select2_modelform
 from django_admin_listfilter_dropdown.filters import  RelatedDropdownFilter, ChoiceDropdownFilter, RelatedOnlyDropdownFilter
 from field_history.models import FieldHistory
 
-from .models import Application, Questionnaire, InteractionHistory, CitizenCategory
+from .models import Application, Questionnaire, InteractionHistory, CitizenCategory, CategoryInstruction
 from education_centers.models import EducationCenter, EducationProgram
 from users.models import Group
 
@@ -178,3 +178,9 @@ class ApplicationAdmin(admin.ModelAdmin):
                     'ed_ready_time'
                 ]
         return self.readonly_fields
+
+
+
+@admin.register(CategoryInstruction)
+class CategoryInstructionAdmin(admin.ModelAdmin):
+    pass

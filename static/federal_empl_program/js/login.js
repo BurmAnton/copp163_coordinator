@@ -293,8 +293,7 @@ function send_reg_info(){
     if (male_gender.checked){
         gender = 'M';
     };
-    console.log(male_gender.checked);
-    console.log(gender);
+    console.log(document.querySelector('#elderly-check').checked);
 
     if (email.classList.contains('is-valid')){
         fetch('/registration/', {
@@ -318,7 +317,7 @@ function send_reg_info(){
                 education_goal: document.querySelector("#Education_goal").value,
                 empl_status: document.querySelector("#Empl_status").value,
                 education_lvl: document.querySelector("#Education_lvl").value,
-                prepensioner: document.querySelector('#MaleOptions').cheked
+                prepensioner: document.querySelector('#elderly-check').checked
             })
             })
             .then(response => response.json())

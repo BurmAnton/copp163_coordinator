@@ -19,7 +19,7 @@ from pysendpulse.pysendpulse import PySendPulse
 
 from users.models import User
 from citizens.models import Citizen
-from federal_empl_program.models import Application, CitizenCategory, Questionnaire
+from federal_empl_program.models import Application, CitizenCategory, Questionnaire, CategoryInstruction
 
 # Create your views here.
 @login_required
@@ -124,6 +124,13 @@ def login(request):
         "message": message,
         "page_name": "ЦОПП СО | Авторизация"
     })
+
+@login_required
+def logout(request):
+    if request.user.is_authenticated:
+        auth.logout(request)
+    return HttpResponseRedirect(reverse("login"))
+
 @login_required()
 @csrf_exempt
 def change_password(request):
@@ -142,7 +149,7 @@ def change_password(request):
 
 def category_search(answers):
     prepensioner = answers.get("prepensioner", "")
-    if (prepensioner):
+    if prepensioner:
         return 'Предпенсионер'
     
     birthday = datetime.strptime(answers.get("birthday", ""),"%Y-%m-%d")
@@ -241,11 +248,14 @@ def registration(request):
         )
         questionnaire.save()
 
+        send_instruction(user, category)
         return JsonResponse({"message": "Account created successfully."}, status=201)
     return HttpResponseRedirect(reverse("login"))
 
 
 def reg_stage(request, stage):
+    if request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("login"))
     return render(request, "federal_empl_program/login.html", {
         "page_name": "ЦОПП СО | Регистрация",
         "stage": 'registration'
@@ -275,12 +285,12 @@ def password_recovery(request, step):
                 user.code = code
                 user.save()
                 email = {
-                    'subject': 'Востановление пароля skillsguide.ru',
+                    'subject': 'Востановление пароля copp63-coordinator.ru',
                     'html': f'Здравствуйте!<p>Вы получили это письмо потому, что вы (либо кто-то, выдающий себя за вас) попросили выслать новый пароль к вашей учётной записи на сайте http://skillsguide.ru/. <br> Если вы не просили выслать пароль, то не обращайте внимания на это письмо. <br> Код подтверждения для смены пароля: {code} <br> Это автоматическое письмо на него не нужно отвечать.</p>',
                     'text': f'Здравствуйте!\n Вы получили это письмо потому, что вы (либо кто-то, выдающий себя за вас) попросили выслать новый пароль к вашей учётной записи на сайте http://skillsguide.ru/. \n Если вы не просили выслать пароль, то не обращайте внимания на это письмо. \n Код подтверждения для смены пароля: {code} \n Это автоматическое письмо на него не нужно отвечать.',
                     'from': {'name': 'ЦОПП СО', 'email': 'bvb@copp63.ru'},
                     'to': [
-                        {'name': "f{user.first_name} {user.last_name}", 'email': email}
+                        {'name': f"{user.first_name} {user.last_name}", 'email': email}
                     ],
                 }
                 SPApiProxy = mailing()
@@ -308,8 +318,17 @@ def password_recovery(request, step):
             return JsonResponse({"message": "Passwords mismatch"}, status=201)
     return HttpResponseRedirect(reverse("login"))
 
-@login_required
-def logout(request):
-    if request.user.is_authenticated:
-        auth.logout(request)
-    return HttpResponseRedirect(reverse("login"))
+
+def send_instruction(user, category):
+    instruction = CategoryInstruction.objects.get(category=category)
+    email = {
+        'subject': instruction.subject,
+        'html': instruction.html,
+        'text': instruction.text,
+        'from': {'name': 'ЦОПП СО', 'email': 'bvb@copp63.ru'},
+        'to': [
+            {'name': f"{user.first_name} {user.last_name}", 'email': user.email}
+        ],
+    }
+    SPApiProxy = mailing()
+    SPApiProxy.smtp_send_mail(email)

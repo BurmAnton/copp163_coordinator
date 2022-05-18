@@ -154,6 +154,12 @@
                                 {% endif %}
                             </li>
                             <li class="list-group-item">
+                                <p class="card-text start-date"><b>Формат:</b> {{group.get_is_online_display}}</p>
+                                {% if group.city != None %}
+                                    <p class="card-text"><b>Населённый пункт:</b> {{group.city}}</p>
+                                {% endif %}
+                            </li>
+                            <li class="list-group-item">
                                 <p class="card-text start-date"><b>Дата начала:</b> {{group.start_date}}</p>
                                 {% if group.end_date != None %}
                                     <p class="card-text"><b>Дата окончания:</b> {{group.end_date}}</p>
