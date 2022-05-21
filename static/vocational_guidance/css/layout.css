@@ -25,7 +25,6 @@ html {
 body {
   position: relative;
   min-height: 100%;
-  height: 0px !important;
 }
 
 @media (max-height: 600px) {
@@ -104,6 +103,7 @@ body {
   -webkit-box-pack: space-evenly;
       -ms-flex-pack: space-evenly;
           justify-content: space-evenly;
+  height: 0px !important;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   background: #394959;

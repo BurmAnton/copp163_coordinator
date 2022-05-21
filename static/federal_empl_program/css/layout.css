@@ -109,7 +109,6 @@ body {
   -webkit-box-pack: space-evenly;
       -ms-flex-pack: space-evenly;
           justify-content: space-evenly;
-  height: 180px;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   background: #394959;
