@@ -30,13 +30,19 @@ EducationCentersForm = select2_modelform(EducationCenter, attrs={'width': '400px
 class EducationCentersAdmin(admin.ModelAdmin):
     form = EducationCentersForm
     
-    list_display = ['id', 'name']
+    list_display = ['name', 'reg_link']
     filter_horizontal = ('competences',)
     inlines = [
         WorkshopInline,
        #VocGuidTestInline
     ]
     search_fields = ['name',]
+
+    def reg_link(self, group):
+        reg_link = f"https://copp63-coordinator.ru/registration/1?c={group.id}"
+        return reg_link
+    reg_link.short_description = 'Ссылка на рег.'
+
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         cl_group = users.models.Group.objects.filter(name='Представитель ЦО')
