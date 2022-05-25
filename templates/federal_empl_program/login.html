@@ -30,11 +30,13 @@
             </div>
         </div>
     </div>
+
     {% if stage == 'registration' %}
         <div style="display: none;" class="stage">registration</div>
     {% else %}
         <div style="display: none;" class="stage">login</div>
     {% endif %}
+
     <div class="row justify-content-center align-self-center">
         <div class="card sign-card">
             <div class="form-title"><p>Авторизация</p></div>
@@ -42,6 +44,7 @@
         <!--Авторизация-->
             <div class="sign-form">
                 <form action="{% url 'login' %}" method="post">
+                    <input style="display: none;" type="input" class="form-control input-c" name="c">
                     <div class="input-group mb-3">
                         <input type="email" class="form-control email-login" name="email" placeholder="Email" aria-label="Email" aria-describedby="at">
                         <span class="input-group-text" id="at">@</span>

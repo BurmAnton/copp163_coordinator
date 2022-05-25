@@ -30,6 +30,7 @@ EducationCentersForm = select2_modelform(EducationCenter, attrs={'width': '400px
 class EducationCentersAdmin(admin.ModelAdmin):
     form = EducationCentersForm
     
+    list_display = ['id', 'name']
     filter_horizontal = ('competences',)
     inlines = [
         WorkshopInline,

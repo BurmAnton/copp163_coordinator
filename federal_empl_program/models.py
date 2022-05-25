@@ -20,6 +20,7 @@ class CitizenCategory(models.Model):
     class Meta:
         verbose_name = "Категория граждан"
         verbose_name_plural = "Категории граждан"
+        
 
 class Application(models.Model):
     legacy_id = models.IntegerField('ID', blank=True, null=True)
