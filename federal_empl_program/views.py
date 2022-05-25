@@ -20,11 +20,11 @@ from pysendpulse.pysendpulse import PySendPulse
 from users.models import User
 from citizens.models import Citizen
 from federal_empl_program.models import Application, CitizenCategory, Questionnaire, CategoryInstruction
+from education_centers.models import EducationCenterGroup, EducationCenter, Competence
 
-# Create your views here.
 @login_required
 def index(request):
-    return HttpResponseRedirect(reverse('admin:index'))
+    return HttpResponseRedirect(reverse('login'))
 
 @login_required
 @csrf_exempt
@@ -106,17 +106,20 @@ def login(request):
     if request.user.is_authenticated:
         #Переадресация авторизованных пользователей
         if request.user.role == 'CTZ':
-            return HttpResponseRedirect(reverse("dashboard"))
+            return HttpResponseRedirect(reverse("group_list"))
         return HttpResponseRedirect(reverse("admin:index"))
         
     elif request.method == "POST":
         email = request.POST["email"]
         password = request.POST["password"]
         user = auth.authenticate(email=email, password=password)
-
         if user is not None:
             auth.login(request, user)
-            return HttpResponseRedirect(reverse("login"))
+            ed_center_id = request.POST["c"]
+            if ed_center_id is None:
+                return HttpResponseRedirect(reverse("group_list"))
+            else:
+                return HttpResponseRedirect(reverse("group_list") + f"?c={ed_center_id}")
         else:
             message = "Неверный логин и/или пароль."
 
@@ -131,7 +134,7 @@ def logout(request):
         auth.logout(request)
     return HttpResponseRedirect(reverse("login"))
 
-@login_required()
+@login_required
 @csrf_exempt
 def change_password(request):
     if request.method == "POST":
@@ -253,12 +256,13 @@ def registration(request):
     return HttpResponseRedirect(reverse("login"))
 
 
-def reg_stage(request, stage):
+def reg_stage(request, stage, ed_cenret_id=None):
     if request.user.is_authenticated:
         return HttpResponseRedirect(reverse("login"))
     return render(request, "federal_empl_program/login.html", {
         "page_name": "ЦОПП СО | Регистрация",
-        "stage": 'registration'
+        "stage": 'registration',
+        "ed_cenret_id": ed_cenret_id
     })
 
 def code_generator(size=6, chars=string.ascii_uppercase + string.digits):
@@ -332,3 +336,71 @@ def send_instruction(user, category):
     }
     SPApiProxy = mailing()
     SPApiProxy.smtp_send_mail(email)
+
+
+@csrf_exempt
+def group_list(request, ed_cenret_id=None):
+    education_type=['scl',]
+    is_selected = False
+    
+    ed_center_group = None
+    user = request.user
+    citizen = Citizen.objects.filter(email=user.email)
+    if len(citizen) != 0:
+        citizen = citizen[0]
+        if citizen.education_type in ['SPVO','STDN']:
+            education_type.append('clg')
+        application = Application.objects.filter(applicant=citizen)
+        if len(application) != 0:
+            application = application[0]
+            if application.ed_center_group is not None:
+                is_selected = True
+                ed_center_group = application.ed_center_group
+
+    ed_center_id = request.GET.get('c','')
+    if ed_center_id != '':
+        ed_center_id = int(ed_center_id)
+        ed_center = EducationCenter.objects.get(id=ed_center_id)
+    
+        group_list = EducationCenterGroup.objects.filter(
+            educational_requirements__in=education_type,
+            education_center=ed_center
+        ).exclude(is_visible=False)
+    else:
+        group_list = EducationCenterGroup.objects.filter(educational_requirements__in=education_type).exclude(is_visible=False)
+
+    ed_centers_set = set()
+    competencies_set = set()
+    cities_set = set()
+    for group in group_list:
+        ed_centers_set.add(group.education_center)
+        competencies_set.add(group.competence)
+        if group.city != "" and group.city is not None:
+            cities_set.add(group.city)
+
+    return render(request, 'federal_empl_program/group_list.html', {
+        'group_list': group_list,
+        'is_selected': is_selected,
+        'ed_center_group': ed_center_group,
+        'ed_centers': ed_centers_set,
+        'competencies': competencies_set,
+        'cities': cities_set
+    })
+
+@csrf_exempt
+def group_select(request):
+    if request.method == 'POST':
+        group_id = request.POST["group_id"]
+        group = EducationCenterGroup.objects.get(id=group_id)
+        user = request.user
+        citizen = Citizen.objects.filter(email=user.email)
+        if len(citizen) != 0:
+            citizen = citizen[0]
+            citizen.ed_center_group = group
+            citizen.save()
+            application = Application.objects.filter(applicant=citizen)
+            if len(application) != 0:
+                application = application[0]
+                application.ed_center_group = group
+                application.save()
+    return HttpResponseRedirect(reverse("group_list"))

@@ -61,6 +61,16 @@ document.addEventListener('DOMContentLoaded', function() {
     if (stage.innerHTML == 'registration'){
         registration()
     }
+
+    const queryString = window.location.search;
+    console.log(queryString);
+    const urlParams = new URLSearchParams(queryString);
+    const c = urlParams.get('c');
+    console.log(c);
+    if (c != null){
+        console.log( document.querySelector('.input-c'));
+        document.querySelector('.input-c').value = c;
+    }
 });
 
 function replaceState(){
@@ -78,7 +88,9 @@ function replaceState(){
         last_step: document.querySelector('.auth-step').style.display
     }
     //Заменяем начальное состояние
-    window.history.replaceState(state, null, "/login/");
+    const queryString = window.location.search;
+    console.log(queryString);
+    window.history.replaceState(state, null, `/login${queryString}`);
     renderState(state);
 }
 
@@ -190,7 +202,9 @@ function registration(){
         last_step: 'none'
     }
 
-    window.history.pushState(state, null, `/registration/1`);
+    const queryString = window.location.search;
+    console.log(queryString);
+    window.history.pushState(state, null, `/registration/1${queryString}`);
     renderState(state);
 
     //Обработка кнопки "Назад"
@@ -281,7 +295,9 @@ function click_forward(){
         last_step: last_step
     }
     //Заменяем начальное состояние
-    window.history.pushState(state, null, `/registration/${path}`);
+    const queryString = window.location.search;
+    console.log(queryString);
+    window.history.pushState(state, null, `/registration/${path}${queryString}`);
     renderState(state);
 };
 
@@ -294,7 +310,7 @@ function send_reg_info(){
         gender = 'M';
     };
     console.log(document.querySelector('#elderly-check').checked);
-
+   
     if (email.classList.contains('is-valid')){
         fetch('/registration/', {
             method: 'POST',
@@ -507,6 +523,7 @@ function passChange() {
         last_step: 'none'
     }
     //Сохраняем новое состояние и рендерим его
+
     window.history.pushState(state, null, `/password/recovery/3`);
     renderState(state);
 }

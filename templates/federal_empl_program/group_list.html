@@ -3,7 +3,7 @@
 
 {% block title %}Статистика по ЦО{% endblock %}
 {% block style %}
-        <link href="{% static 'region163_dashboard/css/dashboard.css' %}" rel="stylesheet">
+        <link href="{% static 'federal_empl_program/css/group_list.css' %}" rel="stylesheet">
 {% endblock %}
 {% block script %}
 {% endblock %}
@@ -13,6 +13,7 @@
         <div class="container">
             <div class="text-center">
                 <h1>Федеральный проект «Содействие занятости»</h1>
+                <div>{{ed_center_id}}</div>
             </div>
             <h5>Фильтр</h5>
             <div class="row g-2">
@@ -43,7 +44,7 @@
         </div>
     </div>
     <div class="container group_list">
-        {% if is_not_chose == False %}
+        {% if is_selected == True %}
             <div class="text-center">
                 <h2>Выбранная группа</h2>
             </div>
@@ -109,7 +110,7 @@
             <h2>Список ближайших групп</h2>
         </div>
         <div class="row row-cols-2 g-3">
-            {% for group in group_list.0 %}
+            {% for group in group_list %}
             <div class="col" data-type="{{group.is_online}}" data-education_center="{{group.education_center}}" data-education_center="{{group.education_center}}" data-city="{{group.city}}" data-competence="{{group.competence}}">
                 <div class="card h-100">
                     <h5 class="card-header">
@@ -171,8 +172,8 @@
                         {% if group.ed_schedule_link != None %}
                             <a href={{group.ed_schedule_link}} class="btn btn-dark" target="_blank">График обучения</a>
                         {% endif %}
-                        {% if is_not_chose == True %}
-                            <form action="{% url 'chose_group' %}" method="POST">
+                        {% if is_selected == False %}
+                            <form action="{% url 'group_select' %}" method="POST">
                                 <input style="display: none;" type="text" value="{{group.id}}" name="group_id">
                                 <button class="btn btn-primary">Записаться на обучение</button>
                             </form>
