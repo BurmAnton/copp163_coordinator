@@ -339,7 +339,7 @@ def send_instruction(user, category):
 
 
 @csrf_exempt
-def group_list(request, ed_cenret_id=None):
+def group_list(request):
     education_type=['scl',]
     is_selected = False
     
@@ -372,11 +372,14 @@ def group_list(request, ed_cenret_id=None):
     ed_centers_set = set()
     competencies_set = set()
     cities_set = set()
+
     for group in group_list:
         ed_centers_set.add(group.education_center)
         competencies_set.add(group.competence)
         if group.city != "" and group.city is not None:
             cities_set.add(group.city)
+    
+    format = request.GET.get('format','')
 
     return render(request, 'federal_empl_program/group_list.html', {
         'group_list': group_list,
@@ -384,7 +387,8 @@ def group_list(request, ed_cenret_id=None):
         'ed_center_group': ed_center_group,
         'ed_centers': ed_centers_set,
         'competencies': competencies_set,
-        'cities': cities_set
+        'cities': cities_set,
+        'format': format
     })
 
 @csrf_exempt

@@ -39,6 +39,7 @@ ALLOWED_HOSTS = ['127.0.0.1',]
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
     'field_history',
     'django_admin_listfilter_dropdown',
     'users',
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     'federal_empl_program',
     'vocational_guidance',
     'easy_select2',
+    'acdmx_bot_api',
     'copp163_coordinator.apps.MyAdminConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',

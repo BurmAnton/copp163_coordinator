@@ -124,6 +124,7 @@ class EducationCenterGroup(models.Model):
     competence = models.ForeignKey(Competence, verbose_name='Компетенция', on_delete=CASCADE, related_name='ed_center_groups')
     program = models.CharField("Название программы", max_length=200, null=True, blank=False)
     program_link = models.CharField("Ссылка на программу", max_length=200, null=True, blank=True)
+    reg_link = models.CharField("Ссылка на программу на сайте работа в россии", max_length=300, null=True, blank=False)
     description = models.TextField("Описание", max_length=120, null=True, blank=True)
     PROGRAM_DURATIONS = (
         ('72', '72 ч.'),
