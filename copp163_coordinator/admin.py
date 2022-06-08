@@ -14,7 +14,8 @@ class MyAdminSite(admin.AdminSite):
             "компании": 5,
             "пользователи и права": 6,
             'field_history': 7,
-            'пользователи и группы': 8
+            'пользователи и группы': 8,
+            'acdmx_bot_api': 9
         }
         app_dict = self._build_app_dict(request)
         app_list = sorted(app_dict.values(), key=lambda x: ordering[x['name'].lower()])
