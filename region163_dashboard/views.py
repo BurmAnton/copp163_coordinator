@@ -79,7 +79,7 @@ def ed_centers_empl(request, **kwargs):
             stat[application['competence__title']]['Empty'] = False
             stat[application['competence__title']][application['education_center__name']]['Empty'] = False
 
-    stages = ['NEW', 'VER', 'ADM', 'SED', 'COMP', 'NCOM', 'RES'] 
+    stages = ['NEW', 'VER', 'ADM', 'SED', 'COMP', 'NCOM', 'RES', 'NADM'] 
     stages_count = []
     for stage in stages:
         stages_count.append(stages_dict[stage])
