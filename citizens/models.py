@@ -89,7 +89,7 @@ class Citizen(models.Model):
     inn_number = models.CharField("ИНН", max_length=30, blank=True, null=True)
 
     res_region = models.CharField("Регион проживания", max_length=150, blank=True, null=True)
-    res_city = models.CharField("Населённый пункт", max_length=150, blank=True, null=True)
+    res_city = models.CharField("Населённый пункт", max_length=250, blank=True, null=True)
     res_disctrict = models.CharField("Населённый пункт", max_length=50, blank=True, null=True)
 
     ed_center_group = models.ForeignKey(EducationCenterGroup, verbose_name="Предварительная заявка", on_delete=DO_NOTHING, related_name="citizens", blank=True, null=True)

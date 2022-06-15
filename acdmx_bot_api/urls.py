@@ -1,18 +1,14 @@
-from django.urls import include, path
+from django.urls import path
 from acdmx_bot_api import views
 
-from rest_framework import routers
-
-from acdmx_bot_api.views import DiscordSeverViewSet, EducationTrackViewSet, GuildMemberViewSet
-
-router = routers.DefaultRouter()
-router.register(r'tracks', EducationTrackViewSet)
-router.register(r'guidls', GuildMemberViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
     path('servers/', views.servers_list),
-    path('servers/<int:pk>', views.server_details),
+    path('servers/<int:server_id>', views.server_details),
     path('tracks/', views.tracks_list),
-    path('tracks/<int:pk>', views.track_details)
+    path('roles/', views.roles_list),
+    path('roles/<int:user_id>', views.role_details),
+    path('members/', views.members_list),
+    path('members/<int:user_id>', views.member_details),
+    path('tasks/', views.task_list)
 ]
