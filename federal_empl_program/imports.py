@@ -108,6 +108,10 @@ def add_citizen(sheet_dict, row):
         middle_name = sheet_dict["Отчество"][row].capitalize()
     else:
         middle_name = None
+    if sheet_dict["Город проживания"][row] == None:
+        res_city = None
+    else: 
+        res_city = sheet_dict["Город проживания"][row].capitalize()
     citizen = Citizen(
         first_name = sheet_dict["Имя"][row].capitalize(),
         last_name = sheet_dict["Фамилия"][row].capitalize(),
@@ -117,7 +121,7 @@ def add_citizen(sheet_dict, row):
         email=sheet_dict["Email"][row],
         snils_number=sheet_dict["СНИЛС"][row],
         res_region = sheet_dict["Регион проживания"][row].capitalize(),
-        res_city = sheet_dict["Город проживания"][row].capitalize()
+        res_city = res_city
     )
     citizen.save()
     return citizen
@@ -148,7 +152,10 @@ def update_citizen(sheet_dict, row, citizen):
     res_region = sheet_dict["Регион проживания"][row].capitalize()
     if citizen.res_region != res_region:
         citizen.res_region = res_region
-    res_city = sheet_dict["Город проживания"][row].capitalize()
+    if sheet_dict["Город проживания"][row] == None:
+        res_city = None
+    else: 
+        res_city = sheet_dict["Город проживания"][row].capitalize()
     if citizen.res_region != res_region:
         citizen.res_region = res_region  
     citizen.save()
