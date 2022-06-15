@@ -112,6 +112,8 @@ def add_citizen(sheet_dict, row):
         res_city = None
     else: 
         res_city = sheet_dict["Город проживания"][row].capitalize()
+        if len(res_city) > 50:
+            res_city = res_city[0:49]
     citizen = Citizen(
         first_name = sheet_dict["Имя"][row].capitalize(),
         last_name = sheet_dict["Фамилия"][row].capitalize(),
@@ -156,6 +158,8 @@ def update_citizen(sheet_dict, row, citizen):
         res_city = None
     else: 
         res_city = sheet_dict["Город проживания"][row].capitalize()
+        if len(res_city) > 50:
+            res_city = res_city[0:49]
     if citizen.res_region != res_region:
         citizen.res_region = res_region  
     citizen.save()
@@ -171,6 +175,9 @@ def load_application(sheet_dict, row, applicant):
         if len(applications) > 0:
             applications[0].appl_status = 'NCOM'
             return [applications[0], "Updated"]
+        else:
+            application = add_application(sheet_dict, row, applicant)
+            return [application, 'Added']
     else:
         applications = Application.objects.filter(applicant=applicant)
         if len(applications) == 0:
@@ -203,7 +210,7 @@ def add_application(sheet_dict, row, applicant):
         ed_ready_time = None
     else:
         ed_ready_time = 'ALR'
-        group = sheet_dict["Группа"][row].value.partition('(')[0]
+        group = sheet_dict["Группа"][row].partition('(')[0]
         if len(Group.objects.filter(name=sheet_dict["Группа"][row])) != 0:
             group = Group.objects.get(name=sheet_dict["Группа"][row])
         
@@ -279,7 +286,7 @@ def set_application_status(express_status):
         appl_status = 'NCOM'
     elif express_status == 'Заявка отменена':
         admit_status = 'REF'
-        appl_status = 'NADM'   
+        appl_status = 'NADM'
     else:
         admit_status = 'RECA'
         appl_status = 'NEW'
@@ -627,7 +634,7 @@ def set_application_status_gd(gd_status, application):
     elif gd_status == "отчислен":
         admit_status = application.admit_status
         appl_status = 'NCOM'
-    elif gd_status == "не допущен":
+    elif gd_status == "Заявка отменена":
         admit_status = application.admit_status
         appl_status = 'NADM'
     elif gd_status == "резерв":
