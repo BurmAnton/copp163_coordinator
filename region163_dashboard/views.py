@@ -40,7 +40,9 @@ def ed_centers_empl(request, **kwargs):
     for education_center in ed_centers:
         if len(delayed_appl.filter(education_center=education_center)) > 0:
             stat_delays.append([education_center.name, len(Application.objects.filter(appl_status='ADM', education_center=education_center)), len(delayed_appl.filter(education_center=education_center))])
-
+    def takeDelays(elem):
+        return elem[2]
+    stat_delays.sort(key=takeDelays, reverse=True)
     for competence in competencies:
         competence = competence['title']
         stat[competence] = {}
