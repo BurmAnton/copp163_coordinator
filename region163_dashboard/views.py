@@ -15,7 +15,7 @@ def ed_centers_empl(request, **kwargs):
     stat = {}
     stat_programs = {}
     stages_dict = {}
-    stages = ['NEW', 'VER', 'ADM', 'SED', 'COMP', 'NCOM', 'RES'] 
+    stages = ['ADM', 'SED', 'COMP', 'NCOM', 'RES', 'NADM'] 
     program_types = {
         'DPOPK': 'ДПО ПК',
         'DPOPP': 'ДПО ПП',
@@ -23,11 +23,11 @@ def ed_centers_empl(request, **kwargs):
         'POPP': 'ПО ПП',
         'POPK': 'ПО ПК',
     }
-    
+    applications = Application.objects.all()
+    competencies = [competence for competence in Competence.objects.filter(competence_applicants__in=applications).distinct().values('title')]
+    education_centers = [education_center for education_center in EducationCenter.objects.filter(edcenter_applicants__in=applications).distinct().values('name')]
+    education_programs = [education_program for education_program in EducationProgram.objects.filter(programm_applicants__in=applications).distinct().values('program_name', 'duration', 'program_type')]
     applications = [application for application in Application.objects.all().values('competence__title', 'education_center__name', 'appl_status', 'education_program__program_name')]
-    competencies = [competence for competence in Competence.objects.all().values('title')]
-    education_centers = [education_center for education_center in EducationCenter.objects.all().values('name')]
-    education_programs = [education_program for education_program in EducationProgram.objects.all().values('program_name', 'duration', 'program_type')]
 
     for competence in competencies:
         competence = competence['title']
@@ -57,18 +57,18 @@ def ed_centers_empl(request, **kwargs):
 
     for stage in stages:
         stages_dict[stage] = 0
-    stages = ['NEW', 'VER', 'ADM', 'SED', 'COMP', 'NCOM', 'RES', 'EXAM']
+    stages = ['ADM', 'SED', 'COMP', 'NCOM', 'RES', 'EXAM', 'NADM']
     
     appl_count = 0
     for application in applications:
         if application['appl_status'] in stages:
             if application['appl_status'] == 'EXAM':
                 stat[application['competence__title']][application['education_center__name']]['SED'] += 1
-                stages_dict['SED'] += 1     
+                stages_dict['SED'] += 1
                 if application['education_program__program_name'] is not None:
                     stat_programs[application['education_program__program_name']][application['education_center__name']]['SED'] += 1
                     stat_programs[application['education_program__program_name']]['Empty'] = False
-                    stat_programs[application['education_program__program_name']][application['education_center__name']]['Empty'] = False         
+                    stat_programs[application['education_program__program_name']][application['education_center__name']]['Empty'] = False
             else:
                 stat[application['competence__title']][application['education_center__name']][application['appl_status']] += 1
                 stages_dict[application['appl_status']] += 1
@@ -79,13 +79,13 @@ def ed_centers_empl(request, **kwargs):
             stat[application['competence__title']]['Empty'] = False
             stat[application['competence__title']][application['education_center__name']]['Empty'] = False
 
-    stages = ['NEW', 'VER', 'ADM', 'SED', 'COMP', 'NCOM', 'RES', 'NADM'] 
+    stages = ['ADM', 'SED', 'COMP', 'NCOM', 'RES', 'NADM']
     stages_count = []
     for stage in stages:
         stages_count.append(stages_dict[stage])
-        if stage != 'RES' and stage != 'NCOM':
+        if stage not in ['RES', 'NCOM', 'NADM']:
             appl_count += stages_dict[stage]
-            
+
     return render(request, 'region163_dashboard/ed_centers_empl.html', {
         'stat': stat,
         'stat_programs': stat_programs,
@@ -94,7 +94,8 @@ def ed_centers_empl(request, **kwargs):
         'education_centers_count': len(education_centers),
         'competencies_count': len(competencies),
         'education_programs_count': len(education_programs),
-        'stages_count': stages_count
+        'stages_count': stages_count,
+        'competencies': competencies
     })
 
 @register.filter

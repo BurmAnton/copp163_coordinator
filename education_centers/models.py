@@ -123,7 +123,7 @@ class EducationCenterGroup(models.Model):
     education_center = models.ForeignKey(EducationCenter, verbose_name='Центр обучения', on_delete=CASCADE, related_name='ed_center_groups')
     competence = models.ForeignKey(Competence, verbose_name='Компетенция', on_delete=CASCADE, related_name='ed_center_groups')
     program = models.CharField("Название программы", max_length=200, null=True, blank=False)
-    program_link = models.CharField("Ссылка на программу", max_length=200, null=True, blank=True)
+    program_link = models.CharField("Ссылка на программу", max_length=200, null=True, blank=False)
     reg_link = models.CharField("Ссылка на программу на сайте работа в россии", max_length=300, null=True, blank=False)
     description = models.TextField("Описание", max_length=120, null=True, blank=True)
     PROGRAM_DURATIONS = (
@@ -134,6 +134,7 @@ class EducationCenterGroup(models.Model):
     duration = models.CharField("Длительность (ак. часов)", max_length=3, choices=PROGRAM_DURATIONS, blank=True)
     ED_REQ = [   
         ("scl","Школьное"),
+        ("pro", "Свидетельство о профессии"),
         ("clg","Среднее специальное/Высшее")
     ]
     educational_requirements = models.CharField("Требования к образованию", max_length=4, choices=ED_REQ)
@@ -149,15 +150,10 @@ class EducationCenterGroup(models.Model):
     min_group_size = models.IntegerField('Минимальный размер')
     max_group_size = models.IntegerField('Максимальный размер')
     
-
     start_date = models.DateField('Дата старта')
     end_date = models.DateField('Дата окончания', blank=True, null=True)
-    TIME_SLOTS = [
-        ('MRNG', "09.00-13.00"),
-        ('DAYT', "13.00-17.00"),
-        ('EVNG', "17.00-21.00")
-    ]
-    study_period = models.CharField("Период проведения занятий", max_length=4, blank=True, null=True, choices=TIME_SLOTS)
+
+    study_period = models.CharField("Период проведения занятий", max_length=128, blank=True, null=True)
     study_days_count = models.IntegerField("Занятий в неделю", validators=[MaxValueValidator(7),MinValueValidator(1)], blank=True, null=True)
     ed_schedule_link = models.URLField("Ссылка на график обучения", max_length=256, blank=True, null=True)
 
