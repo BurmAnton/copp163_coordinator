@@ -133,7 +133,7 @@ class EducationCenterGroup(models.Model):
     )
     duration = models.CharField("Длительность (ак. часов)", max_length=3, choices=PROGRAM_DURATIONS, blank=True)
     ED_REQ = [   
-        ("scl","Школьное"),
+        ("scl","Не требуется"),
         ("pro", "Свидетельство о профессии"),
         ("clg","Среднее специальное/Высшее")
     ]
