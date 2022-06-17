@@ -212,6 +212,7 @@ class EducationCenterGroupAdmin(admin.ModelAdmin):
     get_id.short_description = 'ID'
     get_id.admin_order_field = 'id'
     
+    
     def get_readonly_fields(self, request, obj=None):
         cl_group = users.models.Group.objects.filter(name='Представитель ЦО')
 

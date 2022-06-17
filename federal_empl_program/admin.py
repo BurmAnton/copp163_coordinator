@@ -58,7 +58,7 @@ class ApplicationAdmin(admin.ModelAdmin):
             'fields': ('get_applicant', 'id', 'get_phone', 'get_email')
         }),
         ('Работа с заявкой', {
-            'fields': ('citizen_consultant', 'admit_status', 'appl_status', 
+            'fields': ('citizen_consultant', 'admit_status', 'appl_status', 'change_status_date', 
             'citizen_category', 'competence', 'education_program', 'education_center', 'ed_ready_time',
             'ed_center_group', 'group', 'is_enrolled', 'is_deducted'),
         }),
