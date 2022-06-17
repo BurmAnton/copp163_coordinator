@@ -181,7 +181,7 @@ class EducationCenterGroupAdmin(admin.ModelAdmin):
     list_display = ('get_id', 'competence', 'program', 'education_center', 'city', 'education_period')
     fieldsets = (
         (None, {
-            'fields': ('education_center', 'competence', 'program', 'program_link', 'reg_link', 'educational_requirements', 'duration', 'description', 'is_visible')
+            'fields': ('education_center', 'competence', 'program', 'program_link', 'educational_requirements', 'duration', 'description', 'is_visible')
         }),
         ('Формат и место проведения', {
             'fields': ('is_online', 'city')
@@ -191,9 +191,6 @@ class EducationCenterGroupAdmin(admin.ModelAdmin):
         }),
         ('Период', {
             'fields': ('start_date', 'end_date', 'study_period', 'study_days_count', 'ed_schedule_link'),
-        }),
-        ('Express', {
-            'fields': ('group',),
         }),
     )
 
