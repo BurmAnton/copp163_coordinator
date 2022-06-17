@@ -99,6 +99,12 @@ tbody, td, tfoot, th, thead, tr {
 }
 
 .filter {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
   width: 90%;
   margin: auto;
 }

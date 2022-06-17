@@ -25,7 +25,7 @@ def express_import(form):
         'Регион проживания', 'Категория слушателя', 'Подкатегория слушателя', 
         'Компетенция','Выбранное место обучения', 
         'Адрес выбранного место обучения', 'Вид, подвид программы', 
-        'Дата создания заявки на обучение', 'Статус заявки на обучение', 
+        'Дата создания заявки на обучение', 'Статус заявки на обучение', 'Дата последней смены статуса',
         'Группа', 'Тип договора', 'Дата начала обучения', 'Дата окончания обучения', 
     }
 
@@ -199,6 +199,7 @@ def add_application(sheet_dict, row, applicant):
     contract_type = set_contract_type(sheet_dict["Тип договора"][row])
     express_status = sheet_dict["Статус заявки на обучение"][row]
     appl_status, admit_status = set_application_status(express_status)
+    change_status_date = sheet_dict["Дата последней смены статуса"][row]
     categories = Application.CATEGORY_CHOICES
     category = 'EMPS'
     for categ in categories:
@@ -220,6 +221,7 @@ def add_application(sheet_dict, row, applicant):
         creation_date=creation_date,
         admit_status=admit_status,
         appl_status=appl_status,
+        change_status_date=change_status_date,
         category=category,
         group=group,
         contract_type=contract_type,
@@ -243,6 +245,7 @@ def update_application(sheet_dict, row, applicant, application_date):
     aplication_status = update_application_status(express_status, application)
     appl_status = aplication_status[0]
     admit_status = aplication_status[1]
+    application.change_status_date = sheet_dict["Дата последней смены статуса"][row]
     if application.appl_status != appl_status:
         application.appl_status = appl_status
     if application.admit_status != admit_status:

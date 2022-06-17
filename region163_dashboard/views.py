@@ -1,4 +1,6 @@
+from datetime import datetime, timedelta
 from email.mime import application
+
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls.base import reverse
@@ -14,6 +16,7 @@ from django.template.defaulttags import register
 def ed_centers_empl(request, **kwargs):
     stat = {}
     stat_programs = {}
+    
     stages_dict = {}
     stages = ['ADM', 'SED', 'COMP', 'NCOM', 'RES', 'NADM'] 
     program_types = {
@@ -23,11 +26,20 @@ def ed_centers_empl(request, **kwargs):
         'POPP': 'ПО ПП',
         'POPK': 'ПО ПК',
     }
+
     applications = Application.objects.all()
     competencies = [competence for competence in Competence.objects.filter(competence_applicants__in=applications).distinct().values('title')]
     education_centers = [education_center for education_center in EducationCenter.objects.filter(edcenter_applicants__in=applications).distinct().values('name')]
     education_programs = [education_program for education_program in EducationProgram.objects.filter(programm_applicants__in=applications).distinct().values('program_name', 'duration', 'program_type')]
     applications = [application for application in Application.objects.all().values('competence__title', 'education_center__name', 'appl_status', 'education_program__program_name')]
+
+    delay_date = datetime.now() - timedelta(days=10)
+    delayed_appl = Application.objects.filter(appl_status='ADM', change_status_date__lte=delay_date)
+    stat_delays = []
+    ed_centers = EducationCenter.objects.filter(edcenter_applicants__in=Application.objects.all()).distinct()
+    for education_center in ed_centers:
+        if len(delayed_appl.filter(education_center=education_center)) > 0:
+            stat_delays.append([education_center.name, len(Application.objects.filter(appl_status='ADM', education_center=education_center)), len(delayed_appl.filter(education_center=education_center))])
 
     for competence in competencies:
         competence = competence['title']
@@ -95,7 +107,8 @@ def ed_centers_empl(request, **kwargs):
         'competencies_count': len(competencies),
         'education_programs_count': len(education_programs),
         'stages_count': stages_count,
-        'competencies': competencies
+        'competencies': competencies,
+        'stat_delays': stat_delays
     })
 
 @register.filter

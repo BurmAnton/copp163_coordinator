@@ -49,6 +49,8 @@ class Application(models.Model):
         ('DUPL', "Дубликат")
     ]
     appl_status = models.CharField("Статус заявки", max_length=4, default='NEW', choices=APPL_STATUS_CHOICES)
+    change_status_date = models.DateTimeField("Дата последней смены статуса",null=True, blank=False)
+
     #Устарело (2021 год), использовать CitizenCategory
     CATEGORY_CHOICES = [
         ('EMPS', "Граждане, ищущие работу и обратившиеся в органы службы занятости, включая безработных граждан"),

@@ -72,17 +72,19 @@
         <div class="filter">
             <button type="button" class="btn btn-dark" id="program_switch">Программы подготовки</button>
             <button type="button" class="btn btn-dark" id="competence_switch">Компетенции</button>
+            <button type="button" class="btn btn-dark" id="delays_btn">Задержки</button>
         </div>
 
         <table class="table table-striped">
             <tr class="sticky-top"> 
                 <th scope="col" class='comp' id="view_name">Компетенция</th>
                 <th scope="col" class="stage">Допущено</th>
-                <th scope="col" class="stage">Учатся</th>
-                <th scope="col" class="stage">Завершили обучение</th>
-                <th scope="col" class="stage">Отчислено</th>
-                <th scope="col" class="stage">Резерв</th>
-                <th scope="col" class="stage">Отклонено</th>
+                <th scope="col" class="stage delay-cell">Простой</th>
+                <th scope="col" class="stage non-delay-stage">Учатся</th>
+                <th scope="col" class="stage non-delay-stage">Завершили обучение</th>
+                <th scope="col" class="stage non-delay-stage">Отчислено</th>
+                <th scope="col" class="stage non-delay-stage">Резерв</th>
+                <th scope="col" class="stage non-delay-stage">Отклонено</th>
             </tr>
             {% for comp_key, comp_value in stat.items %}
                 {% if comp_value|get_item:'Empty' == False %}
@@ -126,6 +128,21 @@
                     {% endfor %}
                 {% endif %}
             {% endfor %}
+            {% for delay in stat_delays %}
+                <tr>
+                    <td class="stages delay-cell">
+                        {{delay.0}}
+                    </td>
+                    <td class="stages delay-cell">
+                        {{delay.1}}
+                    </td>
+                    <td class="stages delay-cell">
+                        {{delay.2}}
+                    </td>
+                </tr>
+            {% endfor %}
         </table>
     </div>
+
+    
 {% endblock %}
