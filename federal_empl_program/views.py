@@ -340,7 +340,7 @@ def send_instruction(user, category):
 
 @csrf_exempt
 def group_list(request):
-    education_type=['scl',]
+    education_type=['scl','pro']
     is_selected = False
     
     ed_center_group = None
