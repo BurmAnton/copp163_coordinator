@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from email.mime import application
 
+from pandas.tseries.offsets import BDay
+
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls.base import reverse
@@ -33,7 +35,7 @@ def ed_centers_empl(request, **kwargs):
     education_programs = [education_program for education_program in EducationProgram.objects.filter(programm_applicants__in=applications).distinct().values('program_name', 'duration', 'program_type')]
     applications = [application for application in Application.objects.all().values('competence__title', 'education_center__name', 'appl_status', 'education_program__program_name')]
 
-    delay_date = datetime.now() - timedelta(days=9)
+    delay_date = datetime.now() - BDay(8)
     delayed_appl = Application.objects.filter(appl_status='ADM', change_status_date__lte=delay_date)
     stat_delays = []
     ed_centers = EducationCenter.objects.filter(edcenter_applicants__in=Application.objects.all()).distinct()
