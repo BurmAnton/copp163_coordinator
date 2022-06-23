@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from acdmx_bot_api.models import GuildMember, GuildRole, EducationTrack, DiscordSever, Assessment, Assignment, Task, Criterion
 
+from easy_select2 import select2_modelform
 # Register your models here.
 @admin.register(GuildMember)
 class GuildMemberAdmin(admin.ModelAdmin):
@@ -23,9 +24,21 @@ class DiscordSeverAdmin(admin.ModelAdmin):
 class AssessmentAdmin(admin.ModelAdmin):
     pass
 
+AssessmentForm = select2_modelform(Assessment, attrs={'width': '400px'})
+
+class AssessmentInLine(admin.TabularInline):
+    model = Assessment
+    form = AssessmentForm
+    fields = ['criterion', 'is_met']
+    def get_extra(self, request, obj=None, **kwargs):
+        extra = 0
+        if obj:
+            return extra
+        return extra
+
 @admin.register(Assignment)
 class AssignmentAdmin(admin.ModelAdmin):
-    pass
+    inlines = [AssessmentInLine,]
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
