@@ -345,17 +345,19 @@ def group_list(request):
     
     ed_center_group = None
     user = request.user
-    citizen = Citizen.objects.filter(email=user.email)
-    if len(citizen) != 0:
-        citizen = citizen[0]
-        if citizen.education_type in ['SPVO','STDN']:
-            education_type.append('clg')
-        application = Application.objects.filter(applicant=citizen)
-        if len(application) != 0:
-            application = application[0]
-            if application.ed_center_group is not None:
-                is_selected = True
-                ed_center_group = application.ed_center_group
+    
+    if user.is_authenticated:
+        citizen = Citizen.objects.filter(email=user.email)
+        if len(citizen) > 0:
+            citizen = citizen[0]
+            if citizen.education_type in ['SPVO','STDN']:
+                education_type.append('clg')
+            application = Application.objects.filter(applicant=citizen)
+            if len(application) != 0:
+                application = application[0]
+                if application.ed_center_group is not None:
+                    is_selected = True
+                    ed_center_group = application.ed_center_group
 
     ed_center_id = request.GET.get('c','')
     if ed_center_id != '':

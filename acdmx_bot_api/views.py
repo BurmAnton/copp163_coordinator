@@ -5,8 +5,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from acdmx_bot_api.serializers import DiscordSeverSerializer, EducationTrackSerializer, GuildRoleSerializer, GuildMemberSerializer, TaskSerializer
-from acdmx_bot_api.models import DiscordSever, EducationTrack, GuildMember, GuildRole, Task
+from acdmx_bot_api.serializers import DiscordSeverSerializer, EducationTrackSerializer, GuildRoleSerializer, GuildMemberSerializer, TaskSerializer, CriterionSerializer, AssignmentSerializer, AssessmentSerializer
+from acdmx_bot_api.models import DiscordSever, EducationTrack, GuildMember, GuildRole, Task, Criterion, Assignment, Assessment
 
 
 @api_view(['GET', 'POST'])
@@ -50,6 +50,17 @@ def tracks_list(request, format=None):
     if request.method == 'GET':
         snippets = EducationTrack.objects.all()
         serializer = EducationTrackSerializer(snippets, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def track_details(request, server_id, name, format=None):
+    try:
+        track = EducationTrack.objects.get(server=server_id, name=name)
+    except EducationTrack.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = EducationTrackSerializer(track)
         return Response(serializer.data)
 
 @api_view(['GET', 'POST'])
@@ -133,6 +144,48 @@ def task_list(request, format=None):
 
     elif request.method == 'POST':
         serializer = TaskSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'POST'])
+def criteria_list(request, format=None):
+    if request.method == 'GET':
+        criteria = Criterion.objects.all()
+        serializer = CriterionSerializer(criteria, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = CriterionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'POST'])
+def assignments_list(request, format=None):
+    if request.method == 'GET':
+        members = Assignment.objects.all()
+        serializer = AssignmentSerializer(members, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = AssignmentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'POST'])
+def assessment_list(request, format=None):
+    if request.method == 'GET':
+        members = Assessment.objects.all()
+        serializer = AssessmentSerializer(members, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = AssessmentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

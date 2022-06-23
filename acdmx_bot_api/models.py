@@ -59,7 +59,7 @@ class GuildMember(models.Model):
     )
     status = models.CharField(max_length=3, choices=STATUSES, verbose_name='Статус', default='ST', blank=False, null=False)
     server = models.ForeignKey(DiscordSever, verbose_name="Сервер", related_name="members", null=False, on_delete=CASCADE)
-    server_role = models.ForeignKey(GuildRole, verbose_name="Роли на сервере", related_name="members", on_delete=CASCADE, null=True, blank=True)
+    server_role = models.ForeignKey(GuildRole, verbose_name="Роль на сервере", related_name="members", on_delete=CASCADE, null=True, blank=True)
 
     class Meta:
         verbose_name = "Участник сервера"
@@ -70,7 +70,7 @@ class GuildMember(models.Model):
 
 
 class Criterion(models.Model):
-    name = models.CharField("Название роли", max_length=200, blank=False, null=False)
+    name = models.CharField("Название роли", max_length=200, blank=False, null=False, unique=True)
 
     class Meta:
         verbose_name = "Критерий оценки"
@@ -85,7 +85,7 @@ class Task(models.Model):
     number = models.IntegerField("Номер задания", validators=[MinValueValidator(1)])
     description = models.TextField("Описание")
     days_required = models.IntegerField("Дней на выполнение задания", validators=[MinValueValidator(1)])
-    criteria = models.ManyToManyField(Criterion, verbose_name="Критерии оценки", blank=True)
+    criteria = models.ManyToManyField(Criterion, verbose_name="Критерии оценки", related_name="tasks", blank=True)
     
     class Meta:
         verbose_name = "Задание"
@@ -98,9 +98,9 @@ class Task(models.Model):
 class Assignment(models.Model):
     task = models.ForeignKey(Task, verbose_name="Задание", related_name="assigments", on_delete=CASCADE)
     executor = models.ForeignKey(GuildMember, verbose_name="Исполнитель", related_name="assigments", on_delete=CASCADE)
-    start_date = models.DateField("Дата начала", null=False, blank=False)
-    deadline = models.DateField("Дедлайн", null=False, blank=False)
-    delivery_day = models.DateField("Дата сдачи", null=True, blank=True)
+    start_date = models.DateTimeField("Дата и время начала", null=True, blank=True)
+    deadline = models.DateTimeField("Дедлайн", null=True, blank=True)
+    delivery_day = models.DateTimeField("Дата и время сдачи", null=True, blank=True)
     is_done = models.BooleanField("Задание сдано", default=False)
 
     class Meta:
@@ -119,3 +119,6 @@ class Assessment(models.Model):
     class Meta:
         verbose_name = "Ассессмент"
         verbose_name_plural = "Ассессмент"
+
+    def __str__(self):
+        return f"{self.assignment.executor}: {self.criterion} (#{self.assignment.task.number})"
