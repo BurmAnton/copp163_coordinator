@@ -1,5 +1,6 @@
 from email.policy import default
 from enum import unique
+from typing_extensions import Required
 from requests import request
 from rest_framework import serializers
 from django.db.models import Max
@@ -112,6 +113,7 @@ class CriterionSerializer(serializers.Serializer):
 
 class TaskSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
+
     track = serializers.SlugRelatedField(
         many=False,
         read_only=False,
@@ -165,17 +167,20 @@ class AssignmentSerializer(serializers.Serializer):
         many=False,
         read_only=False,
         slug_field='id',
-        queryset=Task.objects.all()
+        queryset=Task.objects.all(),
+        required=False
     )
+
     executor = serializers.SlugRelatedField(
         many=False,
         read_only=False,
-        slug_field='server_id',
-        queryset=GuildMember.objects.all()
+        slug_field='user_id',
+        queryset=GuildMember.objects.all(),
+        required=False
     )
-    start_date = serializers.DateField(required=False)
-    deadline = serializers.DateField(required=False)
-    delivery_day = serializers.DateField(required=False)
+    start_date = serializers.DateTimeField(required=False)
+    deadline = serializers.DateTimeField(required=False)
+    delivery_day = serializers.DateTimeField(required=False)
     is_done = serializers.BooleanField(required=False)
 
     def create(self, validated_data):
@@ -188,7 +193,7 @@ class AssignmentSerializer(serializers.Serializer):
         instance.deadline = validate_data.get('deadline', instance.deadline)
         instance.delivery_day = validate_data.get('delivery_day', instance.delivery_day)
         instance.is_done = validate_data.get('is_done', instance.is_done)
-        
+
         instance.save()
         return instance
 
