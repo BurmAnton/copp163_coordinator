@@ -134,12 +134,15 @@
                                         Программа подготовки:
                                     </b> 
                                     {%if group.program_link != None%}
-                                        <a href={{group.program.program_link}} target="_blank">
+                                        <a href={{group.program_link}} target="_blank">
                                             {{group.program}}
                                         </a>
                                     {% else %}
                                         {{group.program}}
                                     {% endif %}
+                                </p>
+                                <p class="card-text ed_program">
+                                    <b>Требования к образованию для участия:</b> {{group.get_educational_requirements_display}}
                                 </p>
                                 <p class="card-text ed_program"><b>Длительность подготовки:</b> {{group.duration}}ч.</p>
                                 {%if group.study_period == 'MRNG'%}
