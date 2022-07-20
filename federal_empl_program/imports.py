@@ -48,7 +48,8 @@ def express_import(form):
                 application = application[0]
             if sheet_dict["Компетенция"][row] is not None:
                 competence = load_Competence(sheet_dict, row, application)
-                if sheet_dict["Вид, подвид программы"][row] is not None:
+                program_name = sheet_dict["Вид, подвид программы"][row]
+                if program_name is not None and program_name != 'Не указаана заявка у Группы':
                     education_program = load_EducationProgram(sheet_dict, row, competence, application)
                 if sheet_dict["Выбранное место обучения"][row] is not None:
                     education_center = load_EducationCenter(sheet_dict, row, competence, application)
@@ -361,6 +362,7 @@ def load_EducationProgram(sheet_dict, row, competence, application):
         education_program = add_EducationProgram(program_name, competence)
     else:
         education_program = education_program[0]
+
     if application is not None and application.education_program != education_program:
         application.education_program = education_program
         application.save()

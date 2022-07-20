@@ -12,7 +12,9 @@ urlpatterns = [
     path('members/', views.members_list),
     path('members/<int:user_id>', views.member_details),
     path('tasks/', views.task_list),
+    path('tasks/<int:task_id>', views.task_details),
     path('criteria/', views.criteria_list),
     path('assignments/', views.assignments_list),
+    path('assignments/<int:assignment_id>', views.assignment_details),
     path('assessments/', views.assessment_list),
 ]

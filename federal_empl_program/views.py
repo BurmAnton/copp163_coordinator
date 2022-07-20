@@ -352,12 +352,17 @@ def group_list(request):
             citizen = citizen[0]
             if citizen.education_type in ['SPVO','STDN']:
                 education_type.append('clg')
+            elif user.is_staff:
+                education_type.append('clg')
             application = Application.objects.filter(applicant=citizen)
             if len(application) != 0:
                 application = application[0]
                 if application.ed_center_group is not None:
                     is_selected = True
                     ed_center_group = application.ed_center_group
+    else:
+        education_type.append('clg')
+    
 
     ed_center_id = request.GET.get('c','')
     if ed_center_id != '':

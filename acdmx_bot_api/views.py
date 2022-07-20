@@ -141,13 +141,35 @@ def task_list(request, format=None):
         tasks = Task.objects.all()
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
-
+    
     elif request.method == 'POST':
         serializer = TaskSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def task_details(request, task_id, format=None):
+    try:
+        task = Task.objects.get(id=task_id)
+    except Task.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = TaskSerializer(task)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = TaskSerializer(task, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        task.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET', 'POST'])
 def criteria_list(request, format=None):
@@ -166,8 +188,8 @@ def criteria_list(request, format=None):
 @api_view(['GET', 'POST'])
 def assignments_list(request, format=None):
     if request.method == 'GET':
-        members = Assignment.objects.all()
-        serializer = AssignmentSerializer(members, many=True)
+        assignments = Assignment.objects.all()
+        serializer = AssignmentSerializer(assignments, many=True)
         return Response(serializer.data)
 
     elif request.method == 'POST':
@@ -176,6 +198,28 @@ def assignments_list(request, format=None):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def assignment_details(request, assignment_id, format=None):
+    try:
+        member = Assignment.objects.get(id=assignment_id)
+    except Assignment.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = AssignmentSerializer(member)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = AssignmentSerializer(member, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        member.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET', 'POST'])
 def assessment_list(request, format=None):
