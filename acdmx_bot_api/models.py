@@ -98,11 +98,18 @@ class Task(models.Model):
 class Assignment(models.Model):
     task = models.ForeignKey(Task, verbose_name="Задание", related_name="assigments", on_delete=CASCADE)
     executor = models.ForeignKey(GuildMember, verbose_name="Исполнитель", related_name="assigments", on_delete=CASCADE)
+    
     start_date = models.DateTimeField("Дата и время начала", null=True, blank=True)
     deadline = models.DateTimeField("Дедлайн", null=True, blank=True)
+    
     delivery_day = models.DateTimeField("Дата и время сдачи", null=True, blank=True)
+    is_delivered = models.BooleanField("Задание выполнено", default=False)
+    message_id = models.BigIntegerField("ID собщения", null=True, blank=True)
+    assignment_text = models.TextField("Ответ", blank=True)
+    
+    teacher_comment = models.TextField("Комментарий", blank=True)
     is_done = models.BooleanField("Задание сдано", default=False)
-
+    
     class Meta:
         verbose_name = "Задача"
         verbose_name_plural = "Задачи"

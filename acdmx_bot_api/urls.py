@@ -8,7 +8,7 @@ urlpatterns = [
     path('tracks/', views.tracks_list),
     path('tracks/<int:server_id>/<str:name>', views.track_details),
     path('roles/', views.roles_list),
-    path('roles/<int:user_id>', views.role_details),
+    path('roles/<int:role_id>', views.role_details),
     path('members/', views.members_list),
     path('members/<int:user_id>', views.member_details),
     path('tasks/', views.task_list),
