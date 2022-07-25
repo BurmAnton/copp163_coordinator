@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from acdmx_bot_api.serializers import DiscordSeverSerializer, EducationTrackSerializer, GuildRoleSerializer, GuildMemberSerializer, TaskSerializer, CriterionSerializer, AssignmentSerializer, AssessmentSerializer
+from acdmx_bot_api.serializers import DiscordServerSerializer, EducationTrackSerializer, GuildRoleSerializer, GuildMemberSerializer, TaskSerializer, CriterionSerializer, AssignmentSerializer, AssessmentSerializer
 from acdmx_bot_api.models import DiscordSever, EducationTrack, GuildMember, GuildRole, Task, Criterion, Assignment, Assessment
 
 
@@ -13,11 +13,11 @@ from acdmx_bot_api.models import DiscordSever, EducationTrack, GuildMember, Guil
 def servers_list(request, format=None):
     if request.method == 'GET':
         servers = DiscordSever.objects.all()
-        serializer = DiscordSeverSerializer(servers, many=True)
+        serializer = DiscordServerSerializer(servers, many=True)
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = DiscordSeverSerializer(data=request.data)
+        serializer = DiscordServerSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -31,11 +31,11 @@ def server_details(request, server_id, format=None):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = DiscordSeverSerializer(server)
+        serializer = DiscordServerSerializer(server)
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = DiscordSeverSerializer(server, data=request.data)
+        serializer = DiscordServerSerializer(server, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -67,6 +67,13 @@ def track_details(request, server_id, name, format=None):
 def roles_list(request, format=None):
     if request.method == 'GET':
         roles = GuildRole.objects.all()
+        user_id = request.query_params.get('user_id')
+        if user_id is not None:
+            try:
+                user = GuildMember.objects.get(user_id=user_id)
+                roles = roles.filter(name=user.server_role)
+            except:
+                pass
         serializer = GuildRoleSerializer(roles, many=True)
         return Response(serializer.data)
 
@@ -103,6 +110,12 @@ def role_details(request, role_id, format=None):
 def members_list(request, format=None):
     if request.method == 'GET':
         members = GuildMember.objects.all()
+        server_role = request.query_params.get('server_role')
+        if server_role is not None:
+            members = members.filter(server_role__name=server_role)
+        member_status = request.query_params.get('status')
+        if member_status is not None:
+            members = members.filter(status=member_status)
         serializer = GuildMemberSerializer(members, many=True)
         return Response(serializer.data)
 
@@ -139,6 +152,12 @@ def member_details(request, user_id, format=None):
 def task_list(request, format=None):
     if request.method == 'GET':
         tasks = Task.objects.all()
+        track = request.query_params.get('name')
+        if track is not None:
+            tasks = tasks.filter(track=track)
+        number = request.query_params.get('number')
+        if number is not None:
+            tasks = tasks.filter(number=number)
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
     
@@ -189,6 +208,21 @@ def criteria_list(request, format=None):
 def assignments_list(request, format=None):
     if request.method == 'GET':
         assignments = Assignment.objects.all()
+        task = request.query_params.get('task')
+        if task is not None:
+            assignments = assignments.filter(task=task)
+        executor = request.query_params.get('executor')
+        if executor is not None:
+            assignments = assignments.filter(executor__user_id=executor)
+        is_done = request.query_params.get('is_done')
+        if is_done is not None:
+            assignments = assignments.filter(is_done=is_done)
+        is_delivered = request.query_params.get('is_delivered')
+        if is_delivered is not None:
+            assignments = assignments.filter(is_delivered=is_delivered)
+        is_started = request.query_params.get('is_started')
+        if is_started is not None:
+            assignments = assignments.exclude(start_date=None)
         serializer = AssignmentSerializer(assignments, many=True)
         return Response(serializer.data)
 

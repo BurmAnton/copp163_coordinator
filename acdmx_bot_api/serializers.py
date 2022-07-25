@@ -7,7 +7,7 @@ from django.db.models import Max
 
 from acdmx_bot_api.models import DiscordSever, EducationTrack, GuildRole, GuildMember, Task, Criterion, Assignment, Assessment
 
-class DiscordSeverSerializer(serializers.Serializer):
+class DiscordServerSerializer(serializers.Serializer):
     server_id = serializers.CharField(required=True, allow_blank=False, max_length=200)
     name = serializers.CharField(required=False, allow_blank=True, max_length=200)
 
@@ -42,6 +42,12 @@ class GuildRoleSerializer(serializers.Serializer):
         slug_field='server_id',
         queryset=DiscordSever.objects.all()
     )
+    track = serializers.SlugRelatedField(
+        many=False,
+        read_only=False,
+        slug_field='name',
+        queryset=EducationTrack.objects.all()
+    )
 
     def create(self, validated_data):
         return GuildRole.objects.create(**validated_data)
@@ -50,7 +56,7 @@ class GuildRoleSerializer(serializers.Serializer):
         instance.role_id = validate_data.get('role_id', instance.role_id)
         instance.name = validate_data.get('name', instance.name)
         instance.server = validate_data.get('server', instance.server)
-        
+        instance.track = validate_data.get('track', instance.track)
         instance.save()
         return instance
 
@@ -76,6 +82,7 @@ class GuildMemberSerializer(serializers.Serializer):
         slug_field='name',
         queryset=GuildRole.objects.all()
     )
+    
     
     def create(self, validated_data):
         return GuildMember.objects.create(**validated_data)
@@ -180,8 +187,12 @@ class AssignmentSerializer(serializers.Serializer):
     )
     start_date = serializers.DateTimeField(required=False)
     deadline = serializers.DateTimeField(required=False)
-    delivery_day = serializers.DateTimeField(required=False)
+    delivery_day = serializers.DateTimeField(required=False, allow_null=True)
     is_done = serializers.BooleanField(required=False)
+    is_delivered = serializers.BooleanField(required=False)
+    message_id = serializers.IntegerField(required=False, allow_null=True)
+    assignment_text = serializers.CharField(required=False, allow_blank=True, max_length=10000)
+    teacher_comment = serializers.CharField(required=False, allow_blank=True, max_length=10000)
 
     def create(self, validated_data):
         return Assignment.objects.create(**validated_data)
@@ -193,6 +204,10 @@ class AssignmentSerializer(serializers.Serializer):
         instance.deadline = validate_data.get('deadline', instance.deadline)
         instance.delivery_day = validate_data.get('delivery_day', instance.delivery_day)
         instance.is_done = validate_data.get('is_done', instance.is_done)
+        instance.is_delivered = validate_data.get('is_delivered', instance.is_delivered)
+        instance.message_id = validate_data.get('message_id', instance.message_id)
+        instance.assignment_text = validate_data.get('assignment_text', instance.assignment_text)
+        instance.teacher_comment = validate_data.get('teacher_comment', instance.teacher_comment)
 
         instance.save()
         return instance
