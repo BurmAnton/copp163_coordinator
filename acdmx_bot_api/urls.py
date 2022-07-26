@@ -6,7 +6,7 @@ urlpatterns = [
     path('servers/', views.servers_list),
     path('servers/<int:server_id>', views.server_details),
     path('tracks/', views.tracks_list),
-    path('tracks/<int:server_id>/<str:name>', views.track_details),
+    path('tracks/<int:track_id>', views.track_details),
     path('roles/', views.roles_list),
     path('roles/<int:role_id>', views.role_details),
     path('members/', views.members_list),

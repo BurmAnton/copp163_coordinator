@@ -53,9 +53,9 @@ def tracks_list(request, format=None):
         return Response(serializer.data)
 
 @api_view(['GET'])
-def track_details(request, server_id, name, format=None):
+def track_details(request, track_id, format=None):
     try:
-        track = EducationTrack.objects.get(server=server_id, name=name)
+        track = EducationTrack.objects.get(id=track_id)
     except EducationTrack.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -112,7 +112,7 @@ def members_list(request, format=None):
         members = GuildMember.objects.all()
         server_role = request.query_params.get('server_role')
         if server_role is not None:
-            members = members.filter(server_role__name=server_role)
+            members = members.filter(server_role__role_id=server_role)
         member_status = request.query_params.get('status')
         if member_status is not None:
             members = members.filter(status=member_status)

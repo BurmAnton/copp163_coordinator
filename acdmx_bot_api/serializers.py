@@ -28,7 +28,7 @@ class EducationTrackSerializer(serializers.Serializer):
     track_role = serializers.SlugRelatedField(
         many=False,
         read_only=False,
-        slug_field='name',
+        slug_field='role_id',
         queryset=GuildRole.objects.all()
     )
 
@@ -45,8 +45,10 @@ class GuildRoleSerializer(serializers.Serializer):
     track = serializers.SlugRelatedField(
         many=False,
         read_only=False,
-        slug_field='name',
-        queryset=EducationTrack.objects.all()
+        slug_field='id',
+        queryset=EducationTrack.objects.all(),
+        required=False
+        
     )
 
     def create(self, validated_data):
@@ -79,10 +81,9 @@ class GuildMemberSerializer(serializers.Serializer):
     server_role = serializers.SlugRelatedField(
         many=False,
         read_only=False,
-        slug_field='name',
+        slug_field='role_id',
         queryset=GuildRole.objects.all()
     )
-    
     
     def create(self, validated_data):
         return GuildMember.objects.create(**validated_data)
@@ -124,7 +125,7 @@ class TaskSerializer(serializers.Serializer):
     track = serializers.SlugRelatedField(
         many=False,
         read_only=False,
-        slug_field='name',
+        slug_field='id',
         queryset=EducationTrack.objects.all()
     )
     number = serializers.IntegerField(required=False)
