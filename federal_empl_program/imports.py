@@ -174,6 +174,7 @@ def load_application(sheet_dict, row, applicant):
     if sheet_dict["Статус заявки на обучение"][row] == 'Заявка отменена':
         applications = applications.filter(creation_date=application_date)
         if len(applications) > 0:
+            application = update_application(sheet_dict, row, applicant, application_date)
             applications[0].appl_status = 'NCOM'
             return [applications[0], "Updated"]
         else:
