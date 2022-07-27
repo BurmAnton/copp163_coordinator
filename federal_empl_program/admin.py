@@ -51,11 +51,11 @@ class ApplicationAdmin(admin.ModelAdmin):
     form = ApplicationForm
     inlines = [InteractionHistoryInLine, QuestionnaireInline]
 
-    readonly_fields = ['get_applicant', 'get_history', 'id', 'get_phone', 'get_email']
+    readonly_fields = ['get_applicant', 'get_history', 'id', 'get_phone', 'get_email', 'get_city']
 
     fieldsets = (
         (None, {
-            'fields': ('get_applicant', 'id', 'get_phone', 'get_email')
+            'fields': ('get_applicant', 'id', 'get_phone', 'get_email', 'get_city')
         }),
         ('Работа с заявкой', {
             'fields': ('citizen_consultant', 'admit_status', 'appl_status', 'change_status_date', 
@@ -85,6 +85,11 @@ class ApplicationAdmin(admin.ModelAdmin):
         email = application.applicant.email
         return email
     get_email.short_description='Email'
+
+    def get_city(self, application):
+        city = application.applicant.res_city
+        return city
+    get_city.short_description='Город'
 
     def get_comment(self, application):
         comment = InteractionHistory.objects.filter(application=application).latest().short_description

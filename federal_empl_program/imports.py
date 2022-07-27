@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from citizens.models import Citizen, School
 from education_centers.models import EducationProgram, EducationCenter, Workshop, Competence
-from .models import Application, Group, InteractionHistory, Questionnaire
+from .models import Application, Group, InteractionHistory, Questionnaire, CitizenCategory
 
 def get_sheet(form):
     workbook = load_workbook(form.cleaned_data['import_file'])
@@ -201,12 +201,13 @@ def add_application(sheet_dict, row, applicant):
     express_status = sheet_dict["Статус заявки на обучение"][row]
     appl_status, admit_status = set_application_status(express_status)
     change_status_date = sheet_dict["Дата последней смены статуса"][row]
-    categories = Application.CATEGORY_CHOICES
-    category = 'EMPS'
-    for categ in categories:
-        if categ[1] == sheet_dict["Категория слушателя"][row]:
-            category = categ[0]
-            break
+    category = sheet_dict["Категория слушателя"][row]
+    category = CitizenCategory.objects.filter(official_name=category)
+    print(category)
+    if len(category) != 0:
+        category = category[0]
+    else:
+        category = None
     if len(Group.objects.filter(name=sheet_dict["Группа"][row])) == 0:
         group = None
         ed_ready_time = None
@@ -216,14 +217,13 @@ def add_application(sheet_dict, row, applicant):
         if len(Group.objects.filter(name=sheet_dict["Группа"][row])) != 0:
             group = Group.objects.get(name=sheet_dict["Группа"][row])
         
-
     application = Application(
         applicant=applicant,
         creation_date=creation_date,
         admit_status=admit_status,
         appl_status=appl_status,
         change_status_date=change_status_date,
-        category=category,
+        citizen_category=category,
         group=group,
         contract_type=contract_type,
         ed_ready_time=ed_ready_time
@@ -251,14 +251,15 @@ def update_application(sheet_dict, row, applicant, application_date):
         application.appl_status = appl_status
     if application.admit_status != admit_status:
         application.admit_status = admit_status
-    categories = Application.CATEGORY_CHOICES
-    category = 'EMPS'
-    for categ in categories:
-        if categ[1] == sheet_dict["Категория слушателя"][row]:
-            category = categ[0]
-            break
-    if application.category != category:
-        application.category = category
+    category = sheet_dict["Категория слушателя"][row]
+    print(category)
+    category = CitizenCategory.objects.filter(official_name=category)
+    print(category)
+    if len(category) != 0:
+        category = category[0]
+    else:
+        category = None
+    application.citizen_category = category
     if len(Group.objects.filter(name=sheet_dict["Группа"][row])) == 0:
         group = None
     else:
