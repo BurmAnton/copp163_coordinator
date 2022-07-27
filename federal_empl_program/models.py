@@ -61,8 +61,8 @@ class Application(models.Model):
         ('50+',"Граждане в возрасте 50-ти лет и старше"),
         ('SC', "Граждане предпенсионного возраста")
     ]
-    #Устарело (2021 год), использовать CitizenCategory
     category = models.CharField("Категория слушателя", max_length=50, choices=CATEGORY_CHOICES, default="EMPS")
+    
     citizen_category = models.ForeignKey(CitizenCategory, verbose_name="категория", related_name="application", on_delete=DO_NOTHING, blank=True, null=True)
     distance_education = models.BooleanField("Дистанционное обучение", default=False)
     competence = models.ForeignKey(Competence, verbose_name="Компетенция", on_delete=DO_NOTHING, related_name='competence_applicants', blank=True, null=True)
