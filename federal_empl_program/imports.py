@@ -180,11 +180,8 @@ def load_application(sheet_dict, row, applicant):
         elif len(dublicate_applications) > 0:
             if dublicate_applications[0].creation_date < application_date:
                 dublicate_applications[0].delete()
-                application = add_application(sheet_dict, row, applicant)
-                return [application, 'Added']
-            else:
-                application = update_application(sheet_dict, row, applicant, application_date)
-                return [applications[0], "Updated"]
+            application = add_application(sheet_dict, row, applicant)
+            return [application, 'Added']
         else:
             application = add_application(sheet_dict, row, applicant)
             return [application, 'Added']
