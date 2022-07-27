@@ -24,7 +24,7 @@ def express_import(form):
         'Email', 'Телефон', 'Регион для обучения', 'Город проживания', 
         'Регион проживания', 'Категория слушателя', 'Подкатегория слушателя', 
         'Компетенция','Выбранное место обучения', 
-        'Адрес выбранного место обучения', 'Вид, подвид программы', 
+        'Адрес выбранного место обучения', 'Программа обучения в заявке', 
         'Дата создания заявки на обучение', 'Статус заявки на обучение', 'Дата последней смены статуса',
         'Группа', 'Тип договора', 'Дата начала обучения', 'Дата окончания обучения', 
     }
@@ -48,7 +48,7 @@ def express_import(form):
                 application = application[0]
             if sheet_dict["Компетенция"][row] is not None:
                 competence = load_Competence(sheet_dict, row, application)
-                program_name = sheet_dict["Вид, подвид программы"][row]
+                program_name = sheet_dict["Программа обучения в заявке"][row]
                 if program_name is not None and program_name != 'Не указаана заявка у Группы':
                     education_program = load_EducationProgram(sheet_dict, row, competence, application)
                 if sheet_dict["Выбранное место обучения"][row] is not None:
@@ -356,7 +356,7 @@ def add_competence(title):
     return competence
 
 def load_EducationProgram(sheet_dict, row, competence, application):
-    program_name=sheet_dict["Вид, подвид программы"][row]
+    program_name=sheet_dict["Программа обучения в заявке"][row]
     education_program = EducationProgram.objects.filter(program_name=set_program_name(program_name))
     if len(education_program) == 0:
         education_program = add_EducationProgram(program_name, competence)

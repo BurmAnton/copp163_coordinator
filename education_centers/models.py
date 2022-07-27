@@ -38,7 +38,7 @@ class Competence(models.Model):
 
 
 class EducationProgram(models.Model):
-    program_name = models.CharField("Название программы", max_length=300)
+    program_name = models.CharField("Название программы", max_length=500)
     competence = models.ForeignKey(Competence, verbose_name="Компетенция", on_delete=CASCADE, related_name='programs')
     PROGRAM_TYPES = (
         ('DPOPK', 'ДПО ПК'),
@@ -122,7 +122,7 @@ class Group(models.Model):
 class EducationCenterGroup(models.Model):
     education_center = models.ForeignKey(EducationCenter, verbose_name='Центр обучения', on_delete=CASCADE, related_name='ed_center_groups')
     competence = models.ForeignKey(Competence, verbose_name='Компетенция', on_delete=CASCADE, related_name='ed_center_groups')
-    program = models.CharField("Название программы", max_length=200, null=True, blank=False)
+    program = models.CharField("Название программы", max_length=500, null=True, blank=False)
     program_link = models.CharField("Ссылка на программу", max_length=200, null=True, blank=False)
     reg_link = models.CharField("Ссылка на программу на сайте работа в россии", max_length=300, null=True, blank=False)
     description = models.TextField("Описание", max_length=120, null=True, blank=True)
