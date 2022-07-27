@@ -172,11 +172,15 @@ def load_application(sheet_dict, row, applicant):
     application_date = timezone.make_aware(application_date)
     applications = Application.objects.filter(applicant=applicant)
     if sheet_dict["Статус заявки на обучение"][row] == 'Заявка отменена':
-        applications = applications.filter(creation_date=application_date)
-        if len(applications) > 0:
+        applications_by_date = applications.filter(creation_date=application_date)
+        dublicate_applications = applications.filter(appl_status = 'NCOM')
+        if len(applications_by_date) > 0:
             application = update_application(sheet_dict, row, applicant, application_date)
-            applications[0].appl_status = 'NCOM'
             return [applications[0], "Updated"]
+        elif len(dublicate_applications) > 0:
+            dublicate_applications[0].delete()
+            application = add_application(sheet_dict, row, applicant)
+            return [application, 'Added']
         else:
             application = add_application(sheet_dict, row, applicant)
             return [application, 'Added']
@@ -261,6 +265,7 @@ def update_application(sheet_dict, row, applicant, application_date):
     else:
         category = None
     application.citizen_category = category
+    application.save()
     if len(Group.objects.filter(name=sheet_dict["Группа"][row])) == 0:
         group = None
     else:
