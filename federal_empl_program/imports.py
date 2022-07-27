@@ -297,7 +297,7 @@ def set_application_status(express_status):
         appl_status = 'NCOM'
     elif express_status == 'Заявка отменена':
         admit_status = 'REF'
-        appl_status = 'NADM'
+        appl_status = 'NCOM'
     else:
         admit_status = 'RECA'
         appl_status = 'NEW'
