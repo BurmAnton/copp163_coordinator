@@ -154,7 +154,7 @@ def task_list(request, format=None):
         tasks = Task.objects.all()
         track = request.query_params.get('name')
         if track is not None:
-            tasks = tasks.filter(track=track)
+            tasks = tasks.filter(track__id=track)
         number = request.query_params.get('number')
         if number is not None:
             tasks = tasks.filter(number=number)
