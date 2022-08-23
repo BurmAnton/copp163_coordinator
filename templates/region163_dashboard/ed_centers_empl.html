@@ -13,7 +13,7 @@
     <div class="stat">
         <div class="container">
             <div class="text-center">
-                <h1>Федеральный проект «Содействие занятости»‎</h1>
+                <h1>Федеральный проект «Содействие занятости»</h1>
             </div>
             <div class="row justify-content-center main-stats">
                 <div class="card text-center mb-3" style="max-width: 12rem;">
@@ -41,7 +41,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row justify-content-between">
+            <div style="gap:10px" class="row justify-content-center">
                 <div class="card text-center mb-3" style="max-width: 15rem;">
                     <div class="card-body">
                         <h5 class="card-title">Допущено: {{stages_count.0}}</h5>
@@ -55,11 +55,6 @@
                 <div class="card text-center mb-3" style="max-width: 17rem;">
                     <div class="card-body">
                         <h5 class="card-title">Завершили обучение: {{stages_count.2}}</h5>
-                    </div>
-                </div>
-                <div class="card text-center mb-3" style="max-width: 17rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Отклонено: {{stages_count.5}}</h5>
                     </div>
                 </div>
             </div>
@@ -82,13 +77,10 @@
                 <th scope="col" class="stage delay-cell">Простой</th>
                 <th scope="col" class="stage non-delay-stage">Учатся</th>
                 <th scope="col" class="stage non-delay-stage">Завершили обучение</th>
-                <th scope="col" class="stage non-delay-stage">Отчислено</th>
-                <th scope="col" class="stage non-delay-stage">Резерв</th>
-                <th scope="col" class="stage non-delay-stage">Отклонено</th>
             </tr>
             {% for comp_key, comp_value in stat.items %}
                 {% if comp_value|get_item:'Empty' == False %}
-                    <tr class="competence-row"><td colspan="7" scope="row">{{comp_key}}</td></tr>
+                    <tr class="competence-row"><td colspan="4" scope="row">{{comp_key}}</td></tr>
                     {% for ed_key, ed_value in comp_value.items %}
                         {% if ed_value|get_item:'Empty' == False %}
                             <tr>

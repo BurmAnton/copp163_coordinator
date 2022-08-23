@@ -20,7 +20,7 @@ def ed_centers_empl(request, **kwargs):
     stat_programs = {}
     
     stages_dict = {}
-    stages = ['ADM', 'SED', 'COMP', 'NCOM', 'RES', 'NADM'] 
+    stages = ['ADM', 'SED', 'COMP']
     program_types = {
         'DPOPK': 'ДПО ПК',
         'DPOPP': 'ДПО ПП',
@@ -73,7 +73,6 @@ def ed_centers_empl(request, **kwargs):
 
     for stage in stages:
         stages_dict[stage] = 0
-    stages = ['ADM', 'SED', 'COMP', 'NCOM', 'RES', 'EXAM', 'NADM']
     
     appl_count = 0
     for application in applications:
@@ -95,12 +94,10 @@ def ed_centers_empl(request, **kwargs):
             stat[application['competence__title']]['Empty'] = False
             stat[application['competence__title']][application['education_center__name']]['Empty'] = False
 
-    stages = ['ADM', 'SED', 'COMP', 'NCOM', 'RES', 'NADM']
     stages_count = []
     for stage in stages:
         stages_count.append(stages_dict[stage])
-        if stage not in ['RES', 'NCOM', 'NADM']:
-            appl_count += stages_dict[stage]
+        appl_count += stages_dict[stage]
 
     return render(request, 'region163_dashboard/ed_centers_empl.html', {
         'stat': stat,
