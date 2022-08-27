@@ -20,6 +20,9 @@ urlpatterns = [
     #pass_recovery
     path('password/recovery/<int:step>/', views.password_recovery, name="password_recovery"),
     
+    #applicants
+    path('applicant/profile/<int:user_id>/', views.applicant_profile, name="applicant_profile"),
+
     #Groups
     re_path(r'^groups/$', views.group_list, name='group_list'),
     path('groups/?c=<ed_cenret_id>/', views.group_list, name='group_list'),

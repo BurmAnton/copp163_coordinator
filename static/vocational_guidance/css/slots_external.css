@@ -4,35 +4,27 @@
   padding-top: 1%;
   width: 50rem;
   background-color: #e9ecf7;
-  -webkit-box-shadow: 1px 0px 5px 2px rgba(0, 0, 0, 0.2);
-          box-shadow: 1px 0px 5px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 0px 5px 2px rgba(0, 0, 0, 0.2);
   text-align: center;
 }
-
 #import_form p {
   margin-bottom: 2px;
 }
-
 #import_form .col-6 {
   margin-top: 5px;
 }
-
 #import_form form {
   padding: 20px;
 }
-
 #import_form form .submit {
   width: 50%;
   margin: auto;
 }
-
 #import_form form .submit .btn-primary {
   background-color: #426cf8 !important;
   border-color: #426cf8 !important;
   width: 100%;
 }
-
 #import_form form #EdCenter {
   margin-bottom: 5px !important;
-}
-/*# sourceMappingURL=slots_external.css.map */
+}/*# sourceMappingURL=slots_external.css.map */

@@ -17,7 +17,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  color: #394959;
+  color: rgb(57, 73, 89);
   width: 45%;
   min-width: 600px;
   height: 250px;
@@ -50,6 +50,4 @@
 .profile-section .table {
   width: 60%;
   margin: auto;
-}
-
-/*# sourceMappingURL=edu_center.css.map */
+}/*# sourceMappingURL=edu_center.css.map */

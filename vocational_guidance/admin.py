@@ -11,7 +11,7 @@ from education_centers.models import EducationCenter
 
 VocGuidAssessmentForm = select2_modelform(VocGuidAssessment, attrs={'width': '400px'})
 
-#@admin.register(VocGuidAssessment)
+@admin.register(VocGuidAssessment)
 class VocGuidAssessmentAdmin(admin.ModelAdmin):
     form = VocGuidAssessmentForm
     search_fields = ["slot__id", 'test__name', 'slot__date', 'slot__slot', 'participant__first_name', 'participant__last_name']
@@ -53,10 +53,10 @@ class VocGuidAssessmentInline(admin.TabularInline):
 
 TimeSlotForm = select2_modelform(TimeSlot, attrs={'width': '600px'})
 
-#@admin.register(TimeSlot)
+@admin.register(TimeSlot)
 class TimeSlotAdmin(admin.ModelAdmin):
     form = TimeSlotForm
-    inlines = [VocGuidAssessmentInline,]
+    #inlines = [VocGuidAssessmentInline,]
     list_display = (
         "test", "id", "date",
         "get_time", "get_participants",
@@ -148,7 +148,7 @@ class QuestionnaireInline(admin.StackedInline):
 
 VocGuidTestForm = select2_modelform(VocGuidTest, attrs={'width': '400px'})
 
-#@admin.register(VocGuidTest)
+@admin.register(VocGuidTest)
 class VocGuidTestAdmin(admin.ModelAdmin):
     form = VocGuidTestForm
     inlines = [QuestionnaireInline,]
@@ -165,7 +165,7 @@ class VocGuidTestAdmin(admin.ModelAdmin):
         (None, {
             'fields': 
             (
-                'name', 'education_center', 'thematic_env', 'profession',
+                'name', 'education_center', 'competence', 'thematic_env', 'profession',
                 'education_program_link', 'img_link', 'description',
                 'attendance_limit', 'age_group', 'disability_types', 'guid_type'
             )

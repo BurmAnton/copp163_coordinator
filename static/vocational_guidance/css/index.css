@@ -32,7 +32,8 @@ body {
   background-color: white;
 }
 .card img {
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
   display: block;
   width: auto;
   height: auto;
@@ -96,7 +97,7 @@ body {
 }
 
 .online-section, .park-section {
-  background-color: rgba(13, 109, 253, 0.1);
+  background-color: hsla(216deg, 98%, 52%, 0.1);
   padding-bottom: 100px;
   color: #394959;
 }
@@ -136,6 +137,4 @@ body {
   color: white !important;
   max-width: 500px;
   margin: auto;
-}
-
-/*# sourceMappingURL=index.css.map */
+}/*# sourceMappingURL=index.css.map */
