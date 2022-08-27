@@ -62,6 +62,8 @@
         <div class="graphic">
             <div><h3>Заявки по неделям</h3></div>
             <div><img src="data:image/png;base64,{{ graphic|safe }}"></div>
+            {{last_week}}
+            {{start}}-{{end}}
         </div>
     </div>
     <div class="stat-table">
@@ -79,7 +81,7 @@
                 <th scope="col" class='comp' id="view_name">Компетенция</th>
                 <th scope="col" class="stage">Допущено</th>
                 <th scope="col" class="stage delay-cell">Простой</th>
-                <th scope="col" class="stage non-delay-stage">Учатся</th>
+                <th scope="col" class="stage">Учатся</th>
                 <th scope="col" class="stage non-delay-stage">Завершили обучение</th>
             </tr>
             {% for comp_key, comp_value in stat.items %}
@@ -134,6 +136,9 @@
                     </td>
                     <td class="stages delay-cell">
                         {{delay.2}}
+                    </td>
+                    <td class="stages delay-cell">
+                        {{delay.3}}
                     </td>
                 </tr>
             {% endfor %}

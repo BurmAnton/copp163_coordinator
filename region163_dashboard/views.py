@@ -21,33 +21,32 @@ def get_graphic():
     approved_appl = []
     started_appl = []
     
-    end_date = date.today()
+    end_date = datetime.now()
     if end_date.weekday() < 4:
         delta = timedelta(4 - end_date.weekday())
         end_date = end_date + delta
     elif end_date.weekday() > 4:
         delta = timedelta(end_date.weekday() - 4)
         end_date = end_date - delta
-    start_date = end_date - timedelta(7*6)
+    start_date = end_date - timedelta(7*7)
     start_week_date = start_date
     end_week_date = start_date + timedelta(7)
 
     while end_week_date <= end_date:
         start_week_date = start_week_date + timedelta(7)
         end_week_date = end_week_date + timedelta(7)
-        print(end_week_date)
-        labels.append(start_week_date.strftime("%d/%m"))
+        labels.append(end_week_date.strftime("%d/%m"))
         approved_appl.append(Application.objects.filter(
                 appl_status='ADM',
                 change_status_date__lte=end_week_date,
-                change_status_date__gte=start_week_date,
-            ).count()
+                change_status_date__gt=start_week_date,
+            ).exclude(change_status_date=None).count()
         )
         started_appl.append(Application.objects.filter(
                 appl_status__in=['SED', 'COMP'],
                 change_status_date__lte=end_week_date,
-                change_status_date__gte=start_week_date,
-            ).count()
+                change_status_date__gt=start_week_date,
+            ).exclude(change_status_date=None).count()
         )
     
     x = np.arange(len(labels))
@@ -56,7 +55,7 @@ def get_graphic():
     mpl.rcParams['axes.prop_cycle'] = cycler(color=['#778899', '#364554'])
     fig, ax = plt.subplots(figsize=(10, 4))
     
-    rects1 = ax.bar(x - width/2, approved_appl, width, label='Одобренные заявки')
+    rects1 = ax.bar(x - width/2, approved_appl, width, label='Допущено')
     rects2 = ax.bar(x + width/2, started_appl, width, label='Приступило к обучению')
 
     ax.set_ylabel('Заявки')
@@ -85,7 +84,6 @@ def get_graphic():
     
     return graphic
 
-
 def ed_centers_empl(request, **kwargs):
     stat = {}
     stat_programs = {}
@@ -112,7 +110,12 @@ def ed_centers_empl(request, **kwargs):
     ed_centers = EducationCenter.objects.filter(edcenter_applicants__in=Application.objects.all()).distinct()
     for education_center in ed_centers:
         if len(delayed_appl.filter(education_center=education_center)) > 0:
-            stat_delays.append([education_center.name, len(Application.objects.filter(appl_status='ADM', education_center=education_center)), len(delayed_appl.filter(education_center=education_center))])
+            stat_delays.append([
+                education_center.name, 
+                len(Application.objects.filter(appl_status='ADM', education_center=education_center)), 
+                len(delayed_appl.filter(education_center=education_center)), 
+                len(Application.objects.filter(appl_status='SED', education_center=education_center))
+            ])
     def takeDelays(elem):
         return elem[2]
     stat_delays.sort(key=takeDelays, reverse=True)
@@ -184,6 +187,13 @@ def ed_centers_empl(request, **kwargs):
         'competencies': competencies,
         'stat_delays': stat_delays,
         'graphic': graphic,
+        'end': date.today() - timedelta(1),
+        'start': date.today() - timedelta(8),
+        'last_week': Application.objects.filter(
+                appl_status='ADM',
+                change_status_date__lte=date.today() - timedelta(1),
+                change_status_date__gte=date.today() - timedelta(7),
+            ).exclude(change_status_date=None).count()
     })
 
 
