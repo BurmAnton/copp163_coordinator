@@ -1,18 +1,89 @@
-from datetime import datetime, timedelta
-from email.mime import application
+from datetime import date, datetime, timedelta
+
+from io import BytesIO
+import base64
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import numpy as np
+from cycler import cycler
 
 from pandas.tseries.offsets import BDay
 
-from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
-from django.urls.base import reverse
-from django.views.decorators.csrf import csrf_exempt
-from citizens.models import Citizen
 
 from education_centers.models import Competence, EducationCenter, EducationProgram, EducationCenterGroup
 from federal_empl_program.models import  Application
 from django.template.defaulttags import register
 
+
+def get_graphic():
+    labels = []
+    approved_appl = []
+    started_appl = []
+    
+    end_date = date.today()
+    if end_date.weekday() < 4:
+        delta = timedelta(4 - end_date.weekday())
+        end_date = end_date + delta
+    elif end_date.weekday() > 4:
+        delta = timedelta(end_date.weekday() - 4)
+        end_date = end_date - delta
+    start_date = end_date - timedelta(7*6)
+    start_week_date = start_date
+    end_week_date = start_date + timedelta(7)
+
+    while end_week_date <= end_date:
+        start_week_date = start_week_date + timedelta(7)
+        end_week_date = end_week_date + timedelta(7)
+        print(end_week_date)
+        labels.append(start_week_date.strftime("%d/%m"))
+        approved_appl.append(Application.objects.filter(
+                appl_status='ADM',
+                change_status_date__lte=end_week_date,
+                change_status_date__gte=start_week_date,
+            ).count()
+        )
+        started_appl.append(Application.objects.filter(
+                appl_status__in=['SED', 'COMP'],
+                change_status_date__lte=end_week_date,
+                change_status_date__gte=start_week_date,
+            ).count()
+        )
+    
+    x = np.arange(len(labels))
+    width = 0.35
+
+    mpl.rcParams['axes.prop_cycle'] = cycler(color=['#778899', '#364554'])
+    fig, ax = plt.subplots(figsize=(10, 4))
+    
+    rects1 = ax.bar(x - width/2, approved_appl, width, label='Одобренные заявки')
+    rects2 = ax.bar(x + width/2, started_appl, width, label='Приступило к обучению')
+
+    ax.set_ylabel('Заявки')
+    ax.set_xticks(x, labels)
+    ax.margins(y=0.1)
+    ax.legend(loc='upper right')
+
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
+    ax.bar_label(rects1, padding=3)
+    ax.bar_label(rects2, padding=3)
+ 
+    plt.tight_layout()
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    buffer.close()
+
+    graphic = base64.b64encode(image_png)
+    graphic = graphic.decode('utf-8')
+    
+    return graphic
 
 
 def ed_centers_empl(request, **kwargs):
@@ -99,6 +170,8 @@ def ed_centers_empl(request, **kwargs):
         stages_count.append(stages_dict[stage])
         appl_count += stages_dict[stage]
 
+    graphic = get_graphic()
+
     return render(request, 'region163_dashboard/ed_centers_empl.html', {
         'stat': stat,
         'stat_programs': stat_programs,
@@ -109,8 +182,11 @@ def ed_centers_empl(request, **kwargs):
         'education_programs_count': len(education_programs),
         'stages_count': stages_count,
         'competencies': competencies,
-        'stat_delays': stat_delays
+        'stat_delays': stat_delays,
+        'graphic': graphic,
     })
+
+
 
 @register.filter
 def get_item(dictionary, key):

@@ -32,7 +32,8 @@ body {
   background-color: white;
 }
 .card img {
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
   display: block;
   width: auto;
   height: auto;
@@ -129,7 +130,7 @@ body {
 }
 .group-card .card-body .card-header {
   padding: 10px;
-  background-color: #394959;
+  background-color: rgb(57, 73, 89);
   color: white;
   text-align: center;
 }
@@ -164,7 +165,7 @@ body {
 }
 
 .bundles-section {
-  background-color: rgba(13, 109, 253, 0.1);
+  background-color: hsla(216deg, 98%, 52%, 0.1);
   color: #394959;
 }
 
@@ -198,6 +199,4 @@ body {
   padding-top: 0px;
   padding-bottom: 5px;
   font-weight: bold;
-}
-
-/*# sourceMappingURL=school_dash.css.map */
+}/*# sourceMappingURL=school_dash.css.map */

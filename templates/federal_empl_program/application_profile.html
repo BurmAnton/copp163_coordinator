@@ -1,0 +1,138 @@
+{% extends "federal_empl_program/layout.html" %}
+{% load static %}
+
+{% block title %}Личный кабинет{% endblock %}
+{% block style %}
+        <link href="{% static 'federal_empl_program/css/application_profile.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+        <script src="{% static 'federal_empl_program/js/application_profile.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="profile-block">
+        <div class="profile">
+            <div class="profile-headline">
+                <div class="profile-pic">
+                    <img src="{% static 'federal_empl_program/img/profile-pic.svg' %}" alt="">
+                </div>
+                <div class="profile-data">
+                    <div class="name">
+                        {{citizen.last_name}} {{citizen.first_name}} 
+                        <span class="birthday">({{citizen.birthday|date:"d.m.Y"}})</span>
+                        <img  class="edit-icon" src="{% static 'federal_empl_program/img/edit-icon.svg' %}" alt="">
+                    </div>
+                    <div class="profile-city">{{citizen.res_city}}</div>
+                    <div class="line"></div>
+                </div>
+            </div>
+            <div class="profile-contacts">
+                <div class="profile-phone">
+                    <div class="profile-phone-headline">
+                        <img  class="phone-icon" src="{% static 'federal_empl_program/img/phone-icon.svg' %}" alt="">
+                        Телефон
+                    </div>
+                    {{citizen.phone_number}}
+                </div> 
+                <div class="profile-email">
+                    <div class="profile-email-headline">
+                        <img  class="email-icon" src="{% static 'federal_empl_program/img/email-icon.svg' %}" alt="">
+                        Электронная почта
+                    </div>
+                    <div>{{citizen.email}}</div>
+                </div>
+            </div>
+            <div class="profile-category">
+                <div class="profile-category-headline">
+                    Категория
+                </div>
+                <div>{{application.citizen_category}}</div>
+            </div>
+        </div>
+        <div class="schedule">
+            <h2>Расписание</h2>
+            <div class="schedule-body">
+                В данный момент у Вас нет запланированных мероприятий.
+            </div>
+        </div>
+    </div>
+    <div class="stages-block">
+        <div class="stage-1">
+            <div class="stage-preview">
+                <div class="stage-number"><p>1</p></div>
+                <div>
+                    <h3 class="stage-name">Профориентация</h3>
+                    <p class="stage-description">Пройдите бесплатные проф. пробы, они<br> помогут Вам корректно выбрать обучение. </p>
+                </div>
+                <button class="stage-end-btn">
+                    Завершить этап
+                </button>
+            </div>
+            <div class="filter filter-stage-1">
+                <h4>Фильтр</h4>
+                <div class="filter-form">
+                    <div class="filter-column">
+                        <select title="Компетенции" class="selectpicker form-control-sm filter-select filter-competence" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="competence">
+                            {% for competence in competencies %}
+                                <option value="{{competence.id}}" class="option-competence">{{competence.title}}</option>
+                            {% endfor %}
+                        </select>
+                        <select title="Формат проведения" class="selectpicker form-control-sm filter-select filter-type" id='filter-type' multiple data-actions-box="true" data-width="95%" data-live-search="true" name="group_type" id="group_type">
+                            <option value="off" class="option-type">Оффлайн</option>
+                            <option value="on" class="option-type">Онлайн</option>
+                        </select>
+                    </div>
+                    <div class="filter-column">
+                        <select title="Населённые пункты" class="selectpicker form-control-sm filter-select filter-city" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="city" id="city">
+                            {% for city in cities %}
+                                <option value="{{city}}" class="option-city">{{city}}</option>
+                            {% endfor %}
+                        </select>
+                        <select title="Центры обучения" class="selectpicker form-control-sm filter-select filter-ed" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="ed_center" id="ed_center">
+                            {% for ed_center in ed_centers %}
+                                <option value="{{ed_center}}" class="option-ed">{{ed_center}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-column-date">
+                        <div class="filter-date-title">Период проведения</div>
+                        <div class="form-floating start-date">
+                            <input type="date" class="form-control " name="start-date">
+                            <label for="floatingPassword">Дата начала</label>
+                        </div>
+                        <div class="form-floating end-date">
+                            <input type="date" class="form-control" name="end-date">
+                            <label for="floatingPassword">Дата окончания</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="vg-slots">
+                {% for slot in slots %}
+                    <div class="vg-slot-card">
+                        <p class="vg-slot-title">
+                            {{slot.test.name}}
+                            <span>
+                                (проф-проба)
+                            </span>
+                        </p>
+                        <p class="vg-slot-desc">
+                            {{slot.test.description}}
+                        </p>
+                        <p class="vg-slot-more">Подробнее...</p>
+                        <p class="vg-slot-list"><img src="{% static 'federal_empl_program/img/clock-icon.svg' %}" alt="">{{slot.date}}</p>
+                        <p class="vg-slot-list"><img src="{% static 'federal_empl_program/img/buildings-icon.svg' %}" alt="">Тольятти</p>
+                        <p class="vg-slot-list"><img class="business-icon" src="{% static 'federal_empl_program/img/business-icon.svg' %}" alt="">ТСПК, Мурысева 84</p>
+                        <button class="choose-slot-btn">
+                            Записаться
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="stage-2"></div>
+        <div class="stage-3"></div>
+        <div class="stage-4"></div>
+        <div class="stage-5"></div>
+    </div>
+{% endblock %}

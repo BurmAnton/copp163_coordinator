@@ -1,0 +1,283 @@
+.body {
+  background-color: #F2F2F2;
+  padding-bottom: 40px;
+  font-family: "Roboto", sans-serif;
+}
+.body h2 {
+  font-size: 20px;
+  margin-top: 20px;
+  text-align: center;
+}
+.body .profile-block {
+  margin: auto;
+  padding-top: 50px;
+  max-width: 950px;
+  display: flex;
+  justify-content: space-around;
+}
+.body .profile-block .profile {
+  min-width: 400px;
+  max-width: -webkit-fit-content;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
+  min-height: 200px;
+  max-height: -webkit-fit-content;
+  max-height: -moz-fit-content;
+  max-height: fit-content;
+  padding: 20px;
+  background-color: white;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  font-size: 12px;
+  font-style: normal;
+}
+.body .profile-block .profile .profile-headline {
+  white-space: nowrap;
+  display: flex;
+  align-items: end;
+  justify-content: flex-start;
+  margin-bottom: 15px;
+}
+.body .profile-block .profile .profile-headline .profile-data {
+  margin-left: 7px;
+}
+.body .profile-block .profile .profile-headline .profile-data .name {
+  font-size: 18px;
+  margin-right: 3px;
+}
+.body .profile-block .profile .profile-headline .profile-data .name .birthday {
+  font-size: 12px;
+}
+.body .profile-block .profile .profile-headline .profile-data .line {
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.062745098);
+}
+.body .profile-block .profile .profile-headline .profile-data .edit-icon {
+  margin-bottom: 3px;
+  margin-left: 5px;
+  width: 18px;
+}
+.body .profile-block .profile .profile-contacts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  text-align: center;
+}
+.body .profile-block .profile .profile-contacts .profile-contacts, .body .profile-block .profile .profile-contacts .profile-email {
+  max-width: 200px;
+}
+.body .profile-block .profile .profile-contacts .profile-phone-headline, .body .profile-block .profile .profile-contacts .profile-email-headline {
+  font-size: 16px;
+}
+.body .profile-block .profile .profile-contacts img {
+  width: 15px;
+  margin-bottom: 3px;
+}
+.body .profile-block .profile .profile-category {
+  max-width: 200px;
+  margin: auto;
+  margin-top: 20px;
+  text-align: center;
+}
+.body .profile-block .profile .profile-category .profile-category-headline {
+  font-size: 16px;
+}
+.body .profile-block .schedule {
+  width: -webkit-fill-available;
+  margin-left: 40px;
+  border-radius: 8px;
+  background-color: white;
+  height: inherit;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.15);
+}
+.body .profile-block .schedule .schedule-body {
+  text-align: center;
+  vertical-align: middle;
+  width: 250px;
+  margin: auto;
+  margin-top: 35px;
+}
+.body .stages-block {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 15px;
+  max-width: 950px;
+  margin: auto;
+  margin-top: 60px;
+}
+.body .stages-block .stage-1, .body .stages-block .stage-2, .body .stages-block .stage-3, .body .stages-block .stage-4, .body .stages-block .stage-5 {
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.15);
+  min-height: 70px;
+  width: 100%;
+  padding: 20px;
+}
+.body .stages-block .stage-1 .stage-preview, .body .stages-block .stage-2 .stage-preview, .body .stages-block .stage-3 .stage-preview, .body .stages-block .stage-4 .stage-preview, .body .stages-block .stage-5 .stage-preview {
+  display: flex;
+}
+.body .stages-block .stage-1 .stage-preview .stage-number, .body .stages-block .stage-2 .stage-preview .stage-number, .body .stages-block .stage-3 .stage-preview .stage-number, .body .stages-block .stage-4 .stage-preview .stage-number, .body .stages-block .stage-5 .stage-preview .stage-number {
+  width: 25px;
+  height: 25px;
+  background-color: #394959;
+  color: white;
+  text-align: center;
+  border-radius: 20px;
+  margin-right: 5px;
+  margin-top: 2px;
+}
+.body .stages-block .stage-1 .stage-preview .stage-number p, .body .stages-block .stage-2 .stage-preview .stage-number p, .body .stages-block .stage-3 .stage-preview .stage-number p, .body .stages-block .stage-4 .stage-preview .stage-number p, .body .stages-block .stage-5 .stage-preview .stage-number p {
+  margin-top: 1px;
+  font-size: 16px;
+  font-weight: bold;
+}
+.body .stages-block .stage-1 .stage-preview .stage-name, .body .stages-block .stage-2 .stage-preview .stage-name, .body .stages-block .stage-3 .stage-preview .stage-name, .body .stages-block .stage-4 .stage-preview .stage-name, .body .stages-block .stage-5 .stage-preview .stage-name {
+  font-size: 18px;
+  font-weight: 400;
+  margin-bottom: 2px;
+}
+.body .stages-block .stage-1 .stage-preview .stage-description, .body .stages-block .stage-2 .stage-preview .stage-description, .body .stages-block .stage-3 .stage-preview .stage-description, .body .stages-block .stage-4 .stage-preview .stage-description, .body .stages-block .stage-5 .stage-preview .stage-description {
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1.2;
+}
+.body .stages-block .stage-1 .stage-preview .stage-end-btn, .body .stages-block .stage-2 .stage-preview .stage-end-btn, .body .stages-block .stage-3 .stage-preview .stage-end-btn, .body .stages-block .stage-4 .stage-preview .stage-end-btn, .body .stages-block .stage-5 .stage-preview .stage-end-btn {
+  margin-left: auto;
+  width: 175px;
+  height: 30px;
+  background: #394959;
+  color: white;
+  font-weight: bold;
+  font-weight: 16px;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.body .stages-block .stage-1 .filter, .body .stages-block .stage-2 .filter, .body .stages-block .stage-3 .filter, .body .stages-block .stage-4 .filter, .body .stages-block .stage-5 .filter {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+  background-color: #F2F2F2;
+  margin: auto;
+  padding: 10px 15px 20px 15px;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.body .stages-block .stage-1 .filter .filter-form, .body .stages-block .stage-2 .filter .filter-form, .body .stages-block .stage-3 .filter .filter-form, .body .stages-block .stage-4 .filter .filter-form, .body .stages-block .stage-5 .filter .filter-form {
+  display: flex;
+  row-gap: 10px;
+}
+.body .stages-block .stage-1 .filter .filter-select, .body .stages-block .stage-2 .filter .filter-select, .body .stages-block .stage-3 .filter .filter-select, .body .stages-block .stage-4 .filter .filter-select, .body .stages-block .stage-5 .filter .filter-select {
+  padding-left: 0;
+  width: 230px !important;
+}
+.body .stages-block .stage-1 .filter input, .body .stages-block .stage-2 .filter input, .body .stages-block .stage-3 .filter input, .body .stages-block .stage-4 .filter input, .body .stages-block .stage-5 .filter input {
+  width: 150px;
+}
+.body .stages-block .stage-1 .filter h4, .body .stages-block .stage-2 .filter h4, .body .stages-block .stage-3 .filter h4, .body .stages-block .stage-4 .filter h4, .body .stages-block .stage-5 .filter h4 {
+  margin-top: 8px;
+  margin-bottom: 0px;
+  font-size: 16px;
+  font-weight: 400;
+  text-align: center;
+}
+.body .stages-block .stage-1 .filter .dropdown-toggle, .body .stages-block .stage-2 .filter .dropdown-toggle, .body .stages-block .stage-3 .filter .dropdown-toggle, .body .stages-block .stage-4 .filter .dropdown-toggle, .body .stages-block .stage-5 .filter .dropdown-toggle {
+  background-color: #fff;
+  border: 1px solid #ced4da;
+}
+.body .stages-block .stage-1 .filter .filter-option, .body .stages-block .stage-2 .filter .filter-option, .body .stages-block .stage-3 .filter .filter-option, .body .stages-block .stage-4 .filter .filter-option, .body .stages-block .stage-5 .filter .filter-option {
+  color: #000;
+}
+.body .stages-block .stage-1 .filter .filter-column, .body .stages-block .stage-2 .filter .filter-column, .body .stages-block .stage-3 .filter .filter-column, .body .stages-block .stage-4 .filter .filter-column, .body .stages-block .stage-5 .filter .filter-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 10px;
+}
+.body .stages-block .stage-1 .filter .filter-column-date, .body .stages-block .stage-2 .filter .filter-column-date, .body .stages-block .stage-3 .filter .filter-column-date, .body .stages-block .stage-4 .filter .filter-column-date, .body .stages-block .stage-5 .filter .filter-column-date {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  -moz-column-gap: 10px;
+       column-gap: 10px;
+}
+.body .stages-block .stage-1 .filter .filter-column-date .filter-date-title, .body .stages-block .stage-2 .filter .filter-column-date .filter-date-title, .body .stages-block .stage-3 .filter .filter-column-date .filter-date-title, .body .stages-block .stage-4 .filter .filter-column-date .filter-date-title, .body .stages-block .stage-5 .filter .filter-column-date .filter-date-title {
+  grid-row: 1;
+  grid-column-start: 1;
+  grid-column-end: 3;
+  text-align: center;
+}
+.body .stages-block .vg-slots {
+  margin-top: 40px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  -moz-column-gap: 20px;
+       column-gap: 20px;
+  row-gap: 24px;
+}
+.body .stages-block .vg-slots .vg-slot-card {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  max-width: 250px;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+  border-radius: 8px;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.15);
+  background-color: #F2F2F2;
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: 300;
+}
+.body .stages-block .vg-slots .vg-slot-card .vg-slot-title {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1;
+  margin-bottom: 7px;
+}
+.body .stages-block .vg-slots .vg-slot-card .vg-slot-title span {
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 200;
+}
+.body .stages-block .vg-slots .vg-slot-card .vg-slot-desc {
+  font-size: 14px;
+  margin: 0;
+}
+.body .stages-block .vg-slots .vg-slot-card .vg-slot-more {
+  font-size: 11px;
+  color: #007FBD;
+  text-decoration: underline;
+}
+.body .stages-block .vg-slots .vg-slot-card .vg-slot-list {
+  margin-bottom: 2px;
+}
+.body .stages-block .vg-slots .vg-slot-card .vg-slot-list img {
+  margin-right: 3px;
+  margin-bottom: 2px;
+}
+.body .stages-block .vg-slots .vg-slot-card .vg-slot-list .business-icon {
+  width: 12px;
+  margin-left: 1px;
+}
+.body .stages-block .vg-slots .vg-slot-card .choose-slot-btn {
+  width: 100%;
+  height: 25px;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  background-color: #394959;
+  color: white;
+  font-size: 14px;
+  font-weight: 400;
+  border: 0px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}/*# sourceMappingURL=application_profile.css.map */

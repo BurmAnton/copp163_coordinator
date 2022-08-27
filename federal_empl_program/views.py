@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from email.mime import application
 from dateutil.relativedelta import relativedelta
 import string
 import random
@@ -20,7 +21,8 @@ from pysendpulse.pysendpulse import PySendPulse
 from users.models import User
 from citizens.models import Citizen
 from federal_empl_program.models import Application, CitizenCategory, Questionnaire, CategoryInstruction
-from education_centers.models import EducationCenterGroup, EducationCenter, Competence
+from education_centers.models import Competence, EducationCenterGroup, EducationCenter
+from vocational_guidance.models import VocGuidTest, TimeSlot
 
 @login_required
 def index(request):
@@ -106,7 +108,7 @@ def login(request):
     if request.user.is_authenticated:
         #Переадресация авторизованных пользователей
         if request.user.role == 'CTZ':
-            return HttpResponseRedirect(reverse("group_list"))
+            return HttpResponseRedirect(reverse("applicant_profile", kwargs={'user_id': request.user.id}))
         return HttpResponseRedirect(reverse("admin:index"))
         
     elif request.method == "POST":
@@ -362,7 +364,6 @@ def group_list(request):
                     ed_center_group = application.ed_center_group
     else:
         education_type.append('clg')
-    
 
     ed_center_id = request.GET.get('c','')
     if ed_center_id != '':
@@ -398,6 +399,38 @@ def group_list(request):
         'format': format
     })
 
+@login_required
+def applicant_profile(request, user_id):
+    user = User.objects.get(id=user_id)
+    if user.role != "CTZ":
+        return HttpResponseRedirect(reverse("login"))
+
+    citizen = Citizen.objects.get(user=user)
+    applications = Application.objects.filter(applicant=citizen).exclude(appl_status__in=['NCOM', 'NADM', 'DUPL'])
+    if len(applications) != 0:
+        application = applications[0]
+       
+    stage        = citizen.get_aplication_stages_display()
+    slots        = None
+    groups       = None
+    competencies = None
+
+    if stage == "Профориентация":
+        vg_tests     = VocGuidTest.objects.all()
+        slots        = TimeSlot.objects.filter(date__gt=date.today(), test__in=vg_tests)
+        competencies = Competence.objects.filter(voc_guids__in=vg_tests)
+    elif stage == "Запись в группу":
+        pass
+
+    return render(request, 'federal_empl_program/application_profile.html', {
+        'citizen': citizen,
+        'application': application,
+        'stage': stage,
+        'slots': slots,
+        'groups': groups,
+        'competencies': competencies
+    })
+
 @csrf_exempt
 def group_select(request):
     if request.method == 'POST':
@@ -415,3 +448,4 @@ def group_select(request):
                 application.ed_center_group = group
                 application.save()
     return HttpResponseRedirect(reverse("group_list"))
+

@@ -5,18 +5,15 @@
 
 .card {
   margin: auto;
-  background-color: #007bff1e;
-  -webkit-box-shadow: 0px 5px 5px 2px rgba(0, 0, 0, 0.2);
-          box-shadow: 0px 5px 5px 2px rgba(0, 0, 0, 0.2);
-  color: #000000b2;
+  background-color: rgba(0, 123, 255, 0.1176470588);
+  box-shadow: 0px 5px 5px 2px rgba(0, 0, 0, 0.2);
+  color: rgba(0, 0, 0, 0.6980392157);
 }
-
 .card img {
   width: 6rem;
   margin: auto;
   margin-top: 10px;
 }
-
 .card .card-body {
   padding-top: 0;
 }
@@ -27,5 +24,4 @@ button {
 
 .container-sm {
   width: 720px;
-}
-/*# sourceMappingURL=registration_select.css.map */
+}/*# sourceMappingURL=registration_select.css.map */

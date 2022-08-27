@@ -8,11 +8,12 @@ from django.db.models.fields.related import ForeignKey
 
 from users.models import User, Group
 from citizens.models import Citizen, School, DisabilityType
-from education_centers.models import EducationCenter, EducationProgram, Workshop
+from education_centers.models import EducationCenter, Workshop, Competence
 
 class VocGuidTest(models.Model):
     name = models.CharField("Название пробы", max_length=500, default="")
     education_center = models.ForeignKey(EducationCenter, verbose_name="Центр обучения", related_name="voc_guid_sessions", on_delete=CASCADE)
+    competence = models.ForeignKey(Competence, verbose_name="Компетенция", related_name="voc_guids", on_delete=CASCADE, blank=True, null=True)
     education_program_link = models.URLField("Программа обучения (ссылка)", max_length=200, blank=True, null=True)
     AGE_GROUP_CHOICES = [
         ('6-7', "6-7 класс"),
