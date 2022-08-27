@@ -116,7 +116,7 @@ class ApplicationAdmin(admin.ModelAdmin):
         'appl_status', 
         'citizen_category',
         'creation_date',
-        'contract_type',
+        'change_status_date',
         'competence',
         'get_phone',
         'get_comment',
@@ -145,6 +145,7 @@ class ApplicationAdmin(admin.ModelAdmin):
         ('group', RelatedOnlyDropdownFilter),
         ('contract_type', ChoiceDropdownFilter),
         ('ed_center_group', ChoiceDropdownFilter),
+        'change_status_date'
     )
 
     def allow_applications(self, request, queryset):
