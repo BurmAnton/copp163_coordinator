@@ -35,13 +35,13 @@ def get_graphic():
     while end_week_date <= end_date:
         start_week_date = start_week_date + timedelta(7)
         end_week_date = end_week_date + timedelta(7)
-        labels.append(end_week_date.strftime("%d/%m"))
+        labels.append(f'{(start_week_date + timedelta(1)).strftime("%d/%m")}-{end_week_date.strftime("%d/%m")}')
         approved_appl.append(Application.objects.filter(
                 appl_status='ADM',
                 change_status_date__lte=end_week_date,
                 change_status_date__gt=start_week_date,
             ).exclude(change_status_date=None).count()
-        )
+        ) 
         started_appl.append(Application.objects.filter(
                 appl_status__in=['SED', 'COMP'],
                 change_status_date__lte=end_week_date,
@@ -60,7 +60,7 @@ def get_graphic():
 
     ax.set_ylabel('Заявки')
     ax.set_xticks(x, labels)
-    ax.margins(y=0.1)
+    ax.margins(y=0.3)
     ax.legend(loc='upper right')
 
     fig.patch.set_alpha(0)
