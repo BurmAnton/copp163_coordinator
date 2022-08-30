@@ -105,7 +105,7 @@
   margin: auto;
   margin-top: 60px;
 }
-.body .stages-block .stage-1, .body .stages-block .stage-2, .body .stages-block .stage-3, .body .stages-block .stage-4, .body .stages-block .stage-5 {
+.body .stages-block .stage-1-card, .body .stages-block .stage-2-card, .body .stages-block .stage-3-card, .body .stages-block .stage-4-card, .body .stages-block .stage-5-card {
   border-radius: 8px;
   background-color: white;
   box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.15);
@@ -113,36 +113,78 @@
   width: 100%;
   padding: 20px;
 }
-.body .stages-block .stage-1 .stage-preview, .body .stages-block .stage-2 .stage-preview, .body .stages-block .stage-3 .stage-preview, .body .stages-block .stage-4 .stage-preview, .body .stages-block .stage-5 .stage-preview {
+.body .stages-block .stage-1-card .stage-preview, .body .stages-block .stage-2-card .stage-preview, .body .stages-block .stage-3-card .stage-preview, .body .stages-block .stage-4-card .stage-preview, .body .stages-block .stage-5-card .stage-preview {
   display: flex;
+  gap: 5px;
 }
-.body .stages-block .stage-1 .stage-preview .stage-number, .body .stages-block .stage-2 .stage-preview .stage-number, .body .stages-block .stage-3 .stage-preview .stage-number, .body .stages-block .stage-4 .stage-preview .stage-number, .body .stages-block .stage-5 .stage-preview .stage-number {
+.body .stages-block .stage-1-card .stage-preview .stage-number-current, .body .stages-block .stage-2-card .stage-preview .stage-number-current, .body .stages-block .stage-3-card .stage-preview .stage-number-current, .body .stages-block .stage-4-card .stage-preview .stage-number-current, .body .stages-block .stage-5-card .stage-preview .stage-number-current {
   width: 25px;
   height: 25px;
   background-color: #394959;
   color: white;
   text-align: center;
   border-radius: 20px;
-  margin-right: 5px;
   margin-top: 2px;
 }
-.body .stages-block .stage-1 .stage-preview .stage-number p, .body .stages-block .stage-2 .stage-preview .stage-number p, .body .stages-block .stage-3 .stage-preview .stage-number p, .body .stages-block .stage-4 .stage-preview .stage-number p, .body .stages-block .stage-5 .stage-preview .stage-number p {
+.body .stages-block .stage-1-card .stage-preview .stage-number-current p, .body .stages-block .stage-2-card .stage-preview .stage-number-current p, .body .stages-block .stage-3-card .stage-preview .stage-number-current p, .body .stages-block .stage-4-card .stage-preview .stage-number-current p, .body .stages-block .stage-5-card .stage-preview .stage-number-current p {
   margin-top: 1px;
   font-size: 16px;
   font-weight: bold;
 }
-.body .stages-block .stage-1 .stage-preview .stage-name, .body .stages-block .stage-2 .stage-preview .stage-name, .body .stages-block .stage-3 .stage-preview .stage-name, .body .stages-block .stage-4 .stage-preview .stage-name, .body .stages-block .stage-5 .stage-preview .stage-name {
+.body .stages-block .stage-1-card .stage-preview .stage-number, .body .stages-block .stage-2-card .stage-preview .stage-number, .body .stages-block .stage-3-card .stage-preview .stage-number, .body .stages-block .stage-4-card .stage-preview .stage-number, .body .stages-block .stage-5-card .stage-preview .stage-number {
+  width: 25px;
+  height: 25px;
+  background-color: white;
+  color: #394959;
+  text-align: center;
+  border: 1px solid #394959;
+  border-radius: 20px;
+  margin-top: 2px;
+}
+.body .stages-block .stage-1-card .stage-preview .stage-number p, .body .stages-block .stage-2-card .stage-preview .stage-number p, .body .stages-block .stage-3-card .stage-preview .stage-number p, .body .stages-block .stage-4-card .stage-preview .stage-number p, .body .stages-block .stage-5-card .stage-preview .stage-number p {
+  font-size: 16px;
+  font-weight: bold;
+}
+.body .stages-block .stage-1-card .stage-preview .stage-number-hidden, .body .stages-block .stage-2-card .stage-preview .stage-number-hidden, .body .stages-block .stage-3-card .stage-preview .stage-number-hidden, .body .stages-block .stage-4-card .stage-preview .stage-number-hidden, .body .stages-block .stage-5-card .stage-preview .stage-number-hidden {
+  display: none;
+}
+.body .stages-block .stage-1-card .stage-preview .stage-check, .body .stages-block .stage-2-card .stage-preview .stage-check, .body .stages-block .stage-3-card .stage-preview .stage-check, .body .stages-block .stage-4-card .stage-preview .stage-check, .body .stages-block .stage-5-card .stage-preview .stage-check {
+  width: 25px;
+  height: 25px;
+  margin-bottom: 3px;
+  background-color: #4CAF50;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+}
+.body .stages-block .stage-1-card .stage-preview .stage-check img, .body .stages-block .stage-2-card .stage-preview .stage-check img, .body .stages-block .stage-3-card .stage-preview .stage-check img, .body .stages-block .stage-4-card .stage-preview .stage-check img, .body .stages-block .stage-5-card .stage-preview .stage-check img {
+  margin-top: 1px;
+  width: 18px;
+  height: 22px;
+}
+.body .stages-block .stage-1-card .stage-preview .stage-check-hidden, .body .stages-block .stage-2-card .stage-preview .stage-check-hidden, .body .stages-block .stage-3-card .stage-preview .stage-check-hidden, .body .stages-block .stage-4-card .stage-preview .stage-check-hidden, .body .stages-block .stage-5-card .stage-preview .stage-check-hidden {
+  display: none;
+}
+.body .stages-block .stage-1-card .stage-preview .stage-name, .body .stages-block .stage-2-card .stage-preview .stage-name, .body .stages-block .stage-3-card .stage-preview .stage-name, .body .stages-block .stage-4-card .stage-preview .stage-name, .body .stages-block .stage-5-card .stage-preview .stage-name {
   font-size: 18px;
   font-weight: 400;
   margin-bottom: 2px;
 }
-.body .stages-block .stage-1 .stage-preview .stage-description, .body .stages-block .stage-2 .stage-preview .stage-description, .body .stages-block .stage-3 .stage-preview .stage-description, .body .stages-block .stage-4 .stage-preview .stage-description, .body .stages-block .stage-5 .stage-preview .stage-description {
+.body .stages-block .stage-1-card .stage-preview .stage-description, .body .stages-block .stage-2-card .stage-preview .stage-description, .body .stages-block .stage-3-card .stage-preview .stage-description, .body .stages-block .stage-4-card .stage-preview .stage-description, .body .stages-block .stage-5-card .stage-preview .stage-description {
   font-size: 12px;
   font-weight: 300;
   line-height: 1.2;
 }
-.body .stages-block .stage-1 .stage-preview .stage-end-btn, .body .stages-block .stage-2 .stage-preview .stage-end-btn, .body .stages-block .stage-3 .stage-preview .stage-end-btn, .body .stages-block .stage-4 .stage-preview .stage-end-btn, .body .stages-block .stage-5 .stage-preview .stage-end-btn {
+.body .stages-block .stage-1-card .stage-preview .stage-description-hidden, .body .stages-block .stage-2-card .stage-preview .stage-description-hidden, .body .stages-block .stage-3-card .stage-preview .stage-description-hidden, .body .stages-block .stage-4-card .stage-preview .stage-description-hidden, .body .stages-block .stage-5-card .stage-preview .stage-description-hidden {
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1.2;
+  margin-bottom: 0px;
+}
+.body .stages-block .stage-1-card .stage-preview .stage-end-form, .body .stages-block .stage-2-card .stage-preview .stage-end-form, .body .stages-block .stage-3-card .stage-preview .stage-end-form, .body .stages-block .stage-4-card .stage-preview .stage-end-form, .body .stages-block .stage-5-card .stage-preview .stage-end-form {
   margin-left: auto;
+}
+.body .stages-block .stage-1-card .stage-preview .stage-end-form .stage-end-btn, .body .stages-block .stage-2-card .stage-preview .stage-end-form .stage-end-btn, .body .stages-block .stage-3-card .stage-preview .stage-end-form .stage-end-btn, .body .stages-block .stage-4-card .stage-preview .stage-end-form .stage-end-btn, .body .stages-block .stage-5-card .stage-preview .stage-end-form .stage-end-btn {
   width: 175px;
   height: 30px;
   background: #394959;
@@ -153,7 +195,37 @@
   border-radius: 8px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
-.body .stages-block .stage-1 .filter, .body .stages-block .stage-2 .filter, .body .stages-block .stage-3 .filter, .body .stages-block .stage-4 .filter, .body .stages-block .stage-5 .filter {
+.body .stages-block .stage-1-card .stage-preview .stage-end-form .stage-end-btn:hover, .body .stages-block .stage-2-card .stage-preview .stage-end-form .stage-end-btn:hover, .body .stages-block .stage-3-card .stage-preview .stage-end-form .stage-end-btn:hover, .body .stages-block .stage-4-card .stage-preview .stage-end-form .stage-end-btn:hover, .body .stages-block .stage-5-card .stage-preview .stage-end-form .stage-end-btn:hover {
+  background: white;
+  color: #394959;
+  border: 1px solid #394959;
+}
+.body .stages-block .stage-1-card .stage-preview .stage-end-form .stage-end-btn:active, .body .stages-block .stage-2-card .stage-preview .stage-end-form .stage-end-btn:active, .body .stages-block .stage-3-card .stage-preview .stage-end-form .stage-end-btn:active, .body .stages-block .stage-4-card .stage-preview .stage-end-form .stage-end-btn:active, .body .stages-block .stage-5-card .stage-preview .stage-end-form .stage-end-btn:active {
+  box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.body .stages-block .stage-1-card .stage-preview .stage-end-form .stage-end-btn-hidden, .body .stages-block .stage-2-card .stage-preview .stage-end-form .stage-end-btn-hidden, .body .stages-block .stage-3-card .stage-preview .stage-end-form .stage-end-btn-hidden, .body .stages-block .stage-4-card .stage-preview .stage-end-form .stage-end-btn-hidden, .body .stages-block .stage-5-card .stage-preview .stage-end-form .stage-end-btn-hidden {
+  display: none;
+}
+.body .stages-block .stage-1-card .stage-preview .deploy-btn, .body .stages-block .stage-2-card .stage-preview .deploy-btn, .body .stages-block .stage-3-card .stage-preview .deploy-btn, .body .stages-block .stage-4-card .stage-preview .deploy-btn, .body .stages-block .stage-5-card .stage-preview .deploy-btn {
+  margin-left: auto;
+  width: 30px;
+  height: 30px;
+  padding-left: 5px;
+  padding-top: 3px;
+  border-radius: 20px;
+  margin-top: 5px;
+  display: flex;
+}
+.body .stages-block .stage-1-card .stage-preview .deploy-btn:hover, .body .stages-block .stage-2-card .stage-preview .deploy-btn:hover, .body .stages-block .stage-3-card .stage-preview .deploy-btn:hover, .body .stages-block .stage-4-card .stage-preview .deploy-btn:hover, .body .stages-block .stage-5-card .stage-preview .deploy-btn:hover {
+  background: #F2F2F2;
+}
+.body .stages-block .stage-1-card .stage-preview .deploy-btn img, .body .stages-block .stage-2-card .stage-preview .deploy-btn img, .body .stages-block .stage-3-card .stage-preview .deploy-btn img, .body .stages-block .stage-4-card .stage-preview .deploy-btn img, .body .stages-block .stage-5-card .stage-preview .deploy-btn img {
+  width: 20px;
+}
+.body .stages-block .stage-1-card .stage-preview .deploy-btn-hidden, .body .stages-block .stage-2-card .stage-preview .deploy-btn-hidden, .body .stages-block .stage-3-card .stage-preview .deploy-btn-hidden, .body .stages-block .stage-4-card .stage-preview .deploy-btn-hidden, .body .stages-block .stage-5-card .stage-preview .deploy-btn-hidden {
+  display: none;
+}
+.body .stages-block .stage-1-card .filter, .body .stages-block .stage-2-card .filter, .body .stages-block .stage-3-card .filter, .body .stages-block .stage-4-card .filter, .body .stages-block .stage-5-card .filter {
   width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
@@ -167,45 +239,51 @@
   border-radius: 8px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
-.body .stages-block .stage-1 .filter .filter-form, .body .stages-block .stage-2 .filter .filter-form, .body .stages-block .stage-3 .filter .filter-form, .body .stages-block .stage-4 .filter .filter-form, .body .stages-block .stage-5 .filter .filter-form {
+.body .stages-block .stage-1-card .filter .filter-form, .body .stages-block .stage-2-card .filter .filter-form, .body .stages-block .stage-3-card .filter .filter-form, .body .stages-block .stage-4-card .filter .filter-form, .body .stages-block .stage-5-card .filter .filter-form {
   display: flex;
   row-gap: 10px;
 }
-.body .stages-block .stage-1 .filter .filter-select, .body .stages-block .stage-2 .filter .filter-select, .body .stages-block .stage-3 .filter .filter-select, .body .stages-block .stage-4 .filter .filter-select, .body .stages-block .stage-5 .filter .filter-select {
+.body .stages-block .stage-1-card .filter .filter-select, .body .stages-block .stage-2-card .filter .filter-select, .body .stages-block .stage-3-card .filter .filter-select, .body .stages-block .stage-4-card .filter .filter-select, .body .stages-block .stage-5-card .filter .filter-select {
   padding-left: 0;
   width: 230px !important;
 }
-.body .stages-block .stage-1 .filter input, .body .stages-block .stage-2 .filter input, .body .stages-block .stage-3 .filter input, .body .stages-block .stage-4 .filter input, .body .stages-block .stage-5 .filter input {
+.body .stages-block .stage-1-card .filter .filter-select .dropdown-menu, .body .stages-block .stage-2-card .filter .filter-select .dropdown-menu, .body .stages-block .stage-3-card .filter .filter-select .dropdown-menu, .body .stages-block .stage-4-card .filter .filter-select .dropdown-menu, .body .stages-block .stage-5-card .filter .filter-select .dropdown-menu {
+  min-width: 300px;
+}
+.body .stages-block .stage-1-card .filter .filter-select .dropdown-menu .bs-searchbox input, .body .stages-block .stage-2-card .filter .filter-select .dropdown-menu .bs-searchbox input, .body .stages-block .stage-3-card .filter .filter-select .dropdown-menu .bs-searchbox input, .body .stages-block .stage-4-card .filter .filter-select .dropdown-menu .bs-searchbox input, .body .stages-block .stage-5-card .filter .filter-select .dropdown-menu .bs-searchbox input {
+  width: 100%;
+}
+.body .stages-block .stage-1-card .filter input, .body .stages-block .stage-2-card .filter input, .body .stages-block .stage-3-card .filter input, .body .stages-block .stage-4-card .filter input, .body .stages-block .stage-5-card .filter input {
   width: 150px;
 }
-.body .stages-block .stage-1 .filter h4, .body .stages-block .stage-2 .filter h4, .body .stages-block .stage-3 .filter h4, .body .stages-block .stage-4 .filter h4, .body .stages-block .stage-5 .filter h4 {
+.body .stages-block .stage-1-card .filter h4, .body .stages-block .stage-2-card .filter h4, .body .stages-block .stage-3-card .filter h4, .body .stages-block .stage-4-card .filter h4, .body .stages-block .stage-5-card .filter h4 {
   margin-top: 8px;
   margin-bottom: 0px;
   font-size: 16px;
   font-weight: 400;
   text-align: center;
 }
-.body .stages-block .stage-1 .filter .dropdown-toggle, .body .stages-block .stage-2 .filter .dropdown-toggle, .body .stages-block .stage-3 .filter .dropdown-toggle, .body .stages-block .stage-4 .filter .dropdown-toggle, .body .stages-block .stage-5 .filter .dropdown-toggle {
+.body .stages-block .stage-1-card .filter .dropdown-toggle, .body .stages-block .stage-2-card .filter .dropdown-toggle, .body .stages-block .stage-3-card .filter .dropdown-toggle, .body .stages-block .stage-4-card .filter .dropdown-toggle, .body .stages-block .stage-5-card .filter .dropdown-toggle {
   background-color: #fff;
   border: 1px solid #ced4da;
 }
-.body .stages-block .stage-1 .filter .filter-option, .body .stages-block .stage-2 .filter .filter-option, .body .stages-block .stage-3 .filter .filter-option, .body .stages-block .stage-4 .filter .filter-option, .body .stages-block .stage-5 .filter .filter-option {
+.body .stages-block .stage-1-card .filter .filter-option, .body .stages-block .stage-2-card .filter .filter-option, .body .stages-block .stage-3-card .filter .filter-option, .body .stages-block .stage-4-card .filter .filter-option, .body .stages-block .stage-5-card .filter .filter-option {
   color: #000;
 }
-.body .stages-block .stage-1 .filter .filter-column, .body .stages-block .stage-2 .filter .filter-column, .body .stages-block .stage-3 .filter .filter-column, .body .stages-block .stage-4 .filter .filter-column, .body .stages-block .stage-5 .filter .filter-column {
+.body .stages-block .stage-1-card .filter .filter-column, .body .stages-block .stage-2-card .filter .filter-column, .body .stages-block .stage-3-card .filter .filter-column, .body .stages-block .stage-4-card .filter .filter-column, .body .stages-block .stage-5-card .filter .filter-column {
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding-top: 10px;
 }
-.body .stages-block .stage-1 .filter .filter-column-date, .body .stages-block .stage-2 .filter .filter-column-date, .body .stages-block .stage-3 .filter .filter-column-date, .body .stages-block .stage-4 .filter .filter-column-date, .body .stages-block .stage-5 .filter .filter-column-date {
+.body .stages-block .stage-1-card .filter .filter-column-date, .body .stages-block .stage-2-card .filter .filter-column-date, .body .stages-block .stage-3-card .filter .filter-column-date, .body .stages-block .stage-4-card .filter .filter-column-date, .body .stages-block .stage-5-card .filter .filter-column-date {
   display: grid;
   grid-template-columns: auto auto;
   grid-template-rows: auto auto;
   -moz-column-gap: 10px;
        column-gap: 10px;
 }
-.body .stages-block .stage-1 .filter .filter-column-date .filter-date-title, .body .stages-block .stage-2 .filter .filter-column-date .filter-date-title, .body .stages-block .stage-3 .filter .filter-column-date .filter-date-title, .body .stages-block .stage-4 .filter .filter-column-date .filter-date-title, .body .stages-block .stage-5 .filter .filter-column-date .filter-date-title {
+.body .stages-block .stage-1-card .filter .filter-column-date .filter-date-title, .body .stages-block .stage-2-card .filter .filter-column-date .filter-date-title, .body .stages-block .stage-3-card .filter .filter-column-date .filter-date-title, .body .stages-block .stage-4-card .filter .filter-column-date .filter-date-title, .body .stages-block .stage-5-card .filter .filter-column-date .filter-date-title {
   grid-row: 1;
   grid-column-start: 1;
   grid-column-end: 3;
@@ -280,4 +358,12 @@
   border: 0px;
   border-radius: 8px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.body .stages-block .vg-slots .vg-slot-card .choose-slot-btn:hover {
+  background: white;
+  color: #394959;
+  border: 1px solid #394959;
+}
+.body .stages-block .vg-slots .vg-slot-card .choose-slot-btn:active {
+  box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
 }/*# sourceMappingURL=application_profile.css.map */

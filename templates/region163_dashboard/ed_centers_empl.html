@@ -34,10 +34,25 @@
                         <h4 class="card-title">{{education_centers_count}}</h4>
                     </div>
                 </div>
-                <div class="card text-center mb-3" style="max-width: 15rem;">
+            </div>
+            <div class="row justify-content-center main-stats">
+                <div class="card text-center mb-3" style="max-width: 21rem;">
                     <div class="card-body">
-                        <h5 class="card-title">Заявок:</h5>
-                        <h4 class="card-title">{{appl_count}}</h4>
+                        <h5 class="card-title">Квота из средств ПРФ:</h5>
+                        <h4 class="card-title">{{quota_rf}}</h4>
+                    </div>
+                </div>
+                <div class="card text-center mb-3" style="max-width: 21rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Квота из средств ФБ: </h5>
+                        <h4 class="card-title">{{quota_fb}}</h4>
+                        <p style="margin:0">В том числе "до 35": {{qouta_fby}}</p>
+                    </div>
+                </div>
+                <div class="card text-center mb-3" style="max-width: 21rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Общая квота:</h5>
+                        <h4 class="card-title">{{all_quotas}}</h4>
                     </div>
                 </div>
             </div>

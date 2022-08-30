@@ -56,83 +56,156 @@
             </div>
         </div>
     </div>
+    <div style="display:none" class="stage">{{stage}}</div>
     <div class="stages-block">
-        <div class="stage-1">
-            <div class="stage-preview">
-                <div class="stage-number"><p>1</p></div>
+        <div class="stage-1-card">
+            <div class="stage-1 stage-preview">
+                <div class="stage-1 stage-number-current"><p>1</p></div>
+                <div class="stage-1 stage-check-hidden"><img src="{% static 'federal_empl_program/img/check-mark.png' %}" alt=""></div>
                 <div>
                     <h3 class="stage-name">Профориентация</h3>
-                    <p class="stage-description">Пройдите бесплатные проф. пробы, они<br> помогут Вам корректно выбрать обучение. </p>
+                    <p class="stage-description">Пройдите бесплатные проф. пробы, они помогут Вам корректно выбрать обучение. </p>
                 </div>
-                <button class="stage-end-btn">
-                    Завершить этап
-                </button>
-            </div>
-            <div class="filter filter-stage-1">
-                <h4>Фильтр</h4>
-                <div class="filter-form">
-                    <div class="filter-column">
-                        <select title="Компетенции" class="selectpicker form-control-sm filter-select filter-competence" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="competence">
-                            {% for competence in competencies %}
-                                <option value="{{competence.id}}" class="option-competence">{{competence.title}}</option>
-                            {% endfor %}
-                        </select>
-                        <select title="Формат проведения" class="selectpicker form-control-sm filter-select filter-type" id='filter-type' multiple data-actions-box="true" data-width="95%" data-live-search="true" name="group_type" id="group_type">
-                            <option value="off" class="option-type">Оффлайн</option>
-                            <option value="on" class="option-type">Онлайн</option>
-                        </select>
-                    </div>
-                    <div class="filter-column">
-                        <select title="Населённые пункты" class="selectpicker form-control-sm filter-select filter-city" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="city" id="city">
-                            {% for city in cities %}
-                                <option value="{{city}}" class="option-city">{{city}}</option>
-                            {% endfor %}
-                        </select>
-                        <select title="Центры обучения" class="selectpicker form-control-sm filter-select filter-ed" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="ed_center" id="ed_center">
-                            {% for ed_center in ed_centers %}
-                                <option value="{{ed_center}}" class="option-ed">{{ed_center}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="filter-column-date">
-                        <div class="filter-date-title">Период проведения</div>
-                        <div class="form-floating start-date">
-                            <input type="date" class="form-control " name="start-date">
-                            <label for="floatingPassword">Дата начала</label>
-                        </div>
-                        <div class="form-floating end-date">
-                            <input type="date" class="form-control" name="end-date">
-                            <label for="floatingPassword">Дата окончания</label>
-                        </div>
-                    </div>
+                <form class="stage-end-form" action="{% url 'applicant_profile' request.user.id %}" method="post">
+                    <input style="display:none;" type="text" name="stage" value="Профориентация">
+                    <button type="subbmit" class="stage-1 stage-end-btn">
+                        Завершить этап
+                    </button>
+                </form>
+                <div class="stage-1 deploy-btn-hidden">
+                    <img src="{% static 'federal_empl_program/img/deploy-icon.svg' %}" alt="">
                 </div>
             </div>
-            <div class="vg-slots">
-                {% for slot in slots %}
-                    <div class="vg-slot-card">
-                        <p class="vg-slot-title">
-                            {{slot.test.name}}
-                            <span>
-                                (проф-проба)
-                            </span>
-                        </p>
-                        <p class="vg-slot-desc">
-                            {{slot.test.description}}
-                        </p>
-                        <p class="vg-slot-more">Подробнее...</p>
-                        <p class="vg-slot-list"><img src="{% static 'federal_empl_program/img/clock-icon.svg' %}" alt="">{{slot.date}}</p>
-                        <p class="vg-slot-list"><img src="{% static 'federal_empl_program/img/buildings-icon.svg' %}" alt="">Тольятти</p>
-                        <p class="vg-slot-list"><img class="business-icon" src="{% static 'federal_empl_program/img/business-icon.svg' %}" alt="">ТСПК, Мурысева 84</p>
-                        <button class="choose-slot-btn">
-                            Записаться
-                        </button>
+            <div class="stage-1 stage-body">
+                <div class="filter">
+                    <h4>Фильтр</h4>
+                    <div class="filter-form">
+                        <div class="filter-column">
+                            <select title="Компетенции" class="selectpicker form-control-sm filter-select filter-competence" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="competence">
+                                {% for competence in competencies %}
+                                    <option value="{{competence.id}}" class="option-competence">{{competence.title}}</option>
+                                {% endfor %}
+                            </select>
+                            <select title="Формат проведения" class="selectpicker form-control-sm filter-select filter-type" id='filter-type' multiple data-actions-box="true" data-width="95%" data-live-search="true" name="group_type" id="group_type">
+                                <option value="off" class="option-type">Оффлайн</option>
+                                <option value="on" class="option-type">Онлайн</option>
+                            </select>
+                        </div>
+                        <div class="filter-column">
+                            <select title="Населённые пункты" class="selectpicker form-control-sm filter-select filter-city" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="city" id="city">
+                                {% for city in cities %}
+                                    <option value="{{city}}" class="option-city">{{city}}</option>
+                                {% endfor %}
+                            </select>
+                            <select title="Центры обучения" class="selectpicker form-control-sm filter-select filter-ed" multiple data-actions-box="true" data-width="95%" data-live-search="true" name="ed_center" id="ed_center">
+                                {% for ed_center in ed_centers %}
+                                    <option value="{{ed_center}}" class="option-ed">{{ed_center}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="filter-column-date">
+                            <div class="filter-date-title">Период проведения</div>
+                            <div class="form-floating start-date">
+                                <input type="date" class="form-control " name="start-date">
+                                <label for="floatingPassword">Дата начала</label>
+                            </div>
+                            <div class="form-floating end-date">
+                                <input type="date" class="form-control" name="end-date">
+                                <label for="floatingPassword">Дата окончания</label>
+                            </div>
+                        </div>
                     </div>
-                {% endfor %}
+                </div>
+                <div class="stage_body vg-slots">
+                    {% for slot in slots %}
+                        <div class="vg-slot-card">
+                            <p class="vg-slot-title">
+                                {{slot.name}}
+                                <span>
+                                    (проф-проба)
+                                </span>
+                            </p>
+                            <p class="vg-slot-desc">
+                                {{slot.short_description}}
+                            </p>
+                            <p class="vg-slot-more">Подробнее...</p>
+                            <p class="vg-slot-list"><img src="{% static 'federal_empl_program/img/clock-icon.svg' %}" alt="">{{slot.start_datetime}}</p>
+                            <p class="vg-slot-list"><img src="{% static 'federal_empl_program/img/buildings-icon.svg' %}" alt="">Тольятти</p>
+                            <p class="vg-slot-list"><img class="business-icon" src="{% static 'federal_empl_program/img/business-icon.svg' %}" alt="">ТСПК, Мурысева 84</p>
+                            <button class="choose-slot-btn">
+                                Записаться
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-        <div class="stage-2"></div>
-        <div class="stage-3"></div>
-        <div class="stage-4"></div>
-        <div class="stage-5"></div>
+        <div class="stage-2-card">
+            <div class="stage-2 stage-preview">
+                <div class="stage-2 stage-number-current"><p>2</p></div>
+                <div class="stage-2 stage-check-hidden"><img src="{% static 'federal_empl_program/img/check-mark.png' %}" alt=""></div>
+                <div>
+                    <h3 class="stage-name">Предварительная запись в группу</h3>
+                    <p class="stage-description-hidden">Выберите интересующую Вас программу проф. проб и предварительно запишитесь в группу</p>
+                </div>
+                
+                <form class="stage-end-form" action="{% url 'applicant_profile' request.user.id %}" method="post">
+                    <input style="display:none;" type="text" name="stage" value="Запись в группу">
+                    <button type="subbmit" class="stage-2 stage-end-btn">
+                        Завершить этап
+                    </button>
+                </form>
+                <div class="stage-2 deploy-btn-hidden">
+                    <img src="{% static 'federal_empl_program/img/deploy-icon.svg' %}" alt="">
+                </div>
+            </div>
+            <div class="stage-2 stage-body">
+                stage-content
+            </div>
+        </div>
+        <div class="stage-3-card">
+            <div class="stage-3 stage-preview">
+                <div class="stage-3 stage-number-current"><p>3</p></div>
+                <div class="stage-3 stage-check-hidden"><img src="{% static 'federal_empl_program/img/check-mark.png' %}" alt=""></div>
+                <div>
+                    <h3 class="stage-name">Подача заявки</h3>
+                    <p class="stage-description-hidden">Выберите интересующую Вас программу проф. проб и предварительно запишитесь в группу</p>
+                </div>
+                <form class="stage-end-form" action="{% url 'applicant_profile' request.user.id %}" method="post">
+                    <input style="display:none;" type="text" name="stage" value="Подача заявки">
+                    <button type="subbmit" class="stage-3 stage-end-btn">
+                        Завершить этап
+                    </button>
+                </form>
+                <div class="stage-3 deploy-btn-hidden">
+                    <img src="{% static 'federal_empl_program/img/deploy-icon.svg' %}" alt="">
+                </div>
+            </div>
+            <div class="stage-3 stage-body">
+                stage-content
+            </div>
+        </div>
+        <div class="stage-4-card">
+            <div class="stage-4 stage-preview">
+                <div class="stage-4 stage-number-current"><p>4</p></div>
+                <div class="stage-4 stage-check-hidden"><img src="{% static 'federal_empl_program/img/check-mark.png' %}" alt=""></div>
+                <div>
+                    <h3 class="stage-name">Начало обучение</h3>
+                    <p class="stage-description-hidden">Выберите интересующую Вас программу проф. проб и предварительно запишитесь в группу</p>
+                </div>
+                <form class="stage-end-form" style="display:none;" action="" method="post">
+                    <input style="display:none;" type="text" name="stage" value="Подача заявки">
+                    <button type="subbmit" class="stage-4 stage-end-btn">
+                        Завершить этап
+                    </button>
+                </form>
+                <div class="stage-4 deploy-btn-hidden">
+                    <img src="{% static 'federal_empl_program/img/deploy-icon.svg' %}" alt="">
+                </div>
+            </div>
+            <div class="stage-4 stage-body">
+                stage-content
+            </div>
+        </div>
     </div>
 {% endblock %}

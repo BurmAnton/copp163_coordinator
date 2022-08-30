@@ -22,7 +22,7 @@ from users.models import User
 from citizens.models import Citizen
 from federal_empl_program.models import Application, CitizenCategory, Questionnaire, CategoryInstruction
 from education_centers.models import Competence, EducationCenterGroup, EducationCenter
-from vocational_guidance.models import VocGuidTest, TimeSlot
+from vocational_guidance.models import VocGuidTest
 
 @login_required
 def index(request):
@@ -399,26 +399,37 @@ def group_list(request):
         'format': format
     })
 
+@csrf_exempt
 @login_required
 def applicant_profile(request, user_id):
     user = User.objects.get(id=user_id)
     if user.role != "CTZ":
         return HttpResponseRedirect(reverse("login"))
-
     citizen = Citizen.objects.get(user=user)
+    
+    if request.method == 'POST':
+        current_stage = request.POST["stage"]
+        if current_stage == "Профориентация":
+            aplication_stages = 'EG'
+        elif current_stage == "Запись в группу":
+            aplication_stages = 'APL'
+        elif current_stage == "Подача заявки":
+            aplication_stages = 'SE'
+        citizen.aplication_stages = aplication_stages
+        citizen.save()
+    
     applications = Application.objects.filter(applicant=citizen).exclude(appl_status__in=['NCOM', 'NADM', 'DUPL'])
     if len(applications) != 0:
         application = applications[0]
-       
+    
     stage        = citizen.get_aplication_stages_display()
     slots        = None
     groups       = None
     competencies = None
 
     if stage == "Профориентация":
-        vg_tests     = VocGuidTest.objects.all()
-        slots        = TimeSlot.objects.filter(date__gt=date.today(), test__in=vg_tests)
-        competencies = Competence.objects.filter(voc_guids__in=vg_tests)
+        tests        = VocGuidTest.objects.all()
+        competencies = Competence.objects.filter(voc_guids__in=tests).distinct()
     elif stage == "Запись в группу":
         pass
 
@@ -426,7 +437,7 @@ def applicant_profile(request, user_id):
         'citizen': citizen,
         'application': application,
         'stage': stage,
-        'slots': slots,
+        'slots': tests,
         'groups': groups,
         'competencies': competencies
     })

@@ -12,7 +12,7 @@ from pandas.tseries.offsets import BDay
 from django.shortcuts import render
 
 from education_centers.models import Competence, EducationCenter, EducationProgram, EducationCenterGroup
-from federal_empl_program.models import  Application
+from federal_empl_program.models import  Application, CitizenCategory
 from django.template.defaulttags import register
 
 
@@ -148,7 +148,6 @@ def ed_centers_empl(request, **kwargs):
     for stage in stages:
         stages_dict[stage] = 0
     
-    appl_count = 0
     for application in applications:
         if application['appl_status'] in stages:
             if application['appl_status'] == 'EXAM':
@@ -171,9 +170,39 @@ def ed_centers_empl(request, **kwargs):
     stages_count = []
     for stage in stages:
         stages_count.append(stages_dict[stage])
-        appl_count += stages_dict[stage]
+     
+    quote_stages = ['ADM', 'SED', 'COMP', 'EXAM']
+    appl_count = Application.objects.filter(appl_status__in=quote_stages).distinct().count()
 
-    graphic = get_graphic()
+    #Quotes
+    quote_fb_goal = 1206
+    categories = CitizenCategory.objects.exclude(short_name__in=['Безработные зарег. в ЦЗН', 'Безработные незарег. в ЦЗН', 'Под риском увольнения'])
+    quota_fb_fact = Application.objects.filter(appl_status__in=quote_stages, citizen_category__in=categories).count()
+    quota_fb_fact_p = round(quota_fb_fact / quote_fb_goal * 100)
+    quota_fb = f'{quota_fb_fact}/{quote_fb_goal} ({quota_fb_fact_p}%)'
+
+    qouta_fby_goal = 166
+    categories = CitizenCategory.objects.filter(short_name__in=[
+            'Граждане до 35 лет обратившиеся в СЗН',
+            'Граждане до 35 лет находящиеся под риском увольнения', 
+            'Граждане до 35 лет не занятые с получения образования', 
+            'Граждане до 35 лет, обучающиеся на последних курсах',
+            'Граждане до 35 лет не занятые после военной службы',
+            '16-35 без ВО/СПО',
+            '16-35 студенты 2022'
+        ])
+    qouta_fby_fact = Application.objects.filter(appl_status__in=quote_stages, citizen_category__in=categories).count()
+    quota_fby_fact_p = round(qouta_fby_fact / qouta_fby_goal * 100)
+    quota_fby = f'{qouta_fby_fact}/{qouta_fby_goal} ({quota_fby_fact_p}%)'
+
+    qouta_rf_goal = 915
+    categories = CitizenCategory.objects.filter(short_name__in=['Безработные зарег. в ЦЗН', 'Безработные незарег. в ЦЗН', 'Под риском увольнения'])
+    qouta_rf_fact = Application.objects.filter(appl_status__in=quote_stages, citizen_category__in=categories).count()
+    quota_rf_fact_p = round(qouta_fby_fact / qouta_fby_goal * 100)
+    quota_rf = f'{qouta_rf_fact}/{qouta_rf_goal} ({quota_rf_fact_p}%)'
+
+    all_quotas_p = round(appl_count / (quote_fb_goal+qouta_rf_goal) * 100)
+    all_quotas = f'{appl_count}/{quote_fb_goal+qouta_rf_goal} ({all_quotas_p}%)'
 
     return render(request, 'region163_dashboard/ed_centers_empl.html', {
         'stat': stat,
@@ -186,14 +215,11 @@ def ed_centers_empl(request, **kwargs):
         'stages_count': stages_count,
         'competencies': competencies,
         'stat_delays': stat_delays,
-        'graphic': graphic,
-        'end': date.today() - timedelta(1),
-        'start': date.today() - timedelta(8),
-        'last_week': Application.objects.filter(
-                appl_status='ADM',
-                change_status_date__lte=date.today() - timedelta(1),
-                change_status_date__gte=date.today() - timedelta(7),
-            ).exclude(change_status_date=None).count()
+        'graphic': get_graphic(),
+        'quota_fb': quota_fb,
+        'qouta_fby': quota_fby,
+        'quota_rf': quota_rf,
+        'all_quotas': all_quotas
     })
 
 

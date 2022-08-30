@@ -84,7 +84,11 @@ body {
 }
 
 .body {
-  min-height: calc(100vh - 252px);
+  min-height: calc(100vh - 234px);
+}
+.body .row {
+  width: 100%;
+  margin: auto;
 }
 
 /*footer*/

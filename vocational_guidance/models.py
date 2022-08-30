@@ -1,4 +1,4 @@
-import datetime
+import datetime 
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 from django.db import models
@@ -10,50 +10,84 @@ from users.models import User, Group
 from citizens.models import Citizen, School, DisabilityType
 from education_centers.models import EducationCenter, Workshop, Competence
 
+class City(models.Model):
+    name = models.CharField("Название", max_length=100, blank=False, null=False)
+
+    def __str__(self):
+        return  f"{self.city_type} {self.name}"
+
+    class Meta:
+        verbose_name = "Населённый пункт"
+        verbose_name_plural = "Населённые пункты"
+
+class Address(models.Model):
+    city = models.ForeignKey(
+        City, 
+        on_delete=CASCADE, 
+        related_name="addresses", 
+        verbose_name="Населённый пункт"
+    )
+    street = models.CharField("Улица", max_length=200, blank=False, null=False)
+    building_number = models.CharField("Дом", max_length=10, blank=False, null=False)
+    floor = models.IntegerField("Этаж", blank=True, null=True)
+    apartment = models.CharField("Аудитория", max_length=10, blank=True, null=True)
+
+    def __str__(self):
+        if self.floor is not None and self.apartment is not None:
+            return f'{self.city}, ул. {self.street}, дом №{self.building_number}, {self.floor} этаж, каб. {self.apartment}'
+        if self.apartment is not None:
+            return f'{self.city}, ул. {self.street}, дом {self.building_number}, каб. {self.apartment}'
+        return f'{self.city}, ул. {self.street}, дом {self.building_number}'
+    
+    class Meta:
+        verbose_name = "Адрес"
+        verbose_name_plural = "Адреса"
+
 class VocGuidTest(models.Model):
-    name = models.CharField("Название пробы", max_length=500, default="")
     education_center = models.ForeignKey(EducationCenter, verbose_name="Центр обучения", related_name="voc_guid_sessions", on_delete=CASCADE)
+
+    name = models.CharField("Название пробы", max_length=500, default="")
     competence = models.ForeignKey(Competence, verbose_name="Компетенция", related_name="voc_guids", on_delete=CASCADE, blank=True, null=True)
-    education_program_link = models.URLField("Программа обучения (ссылка)", max_length=200, blank=True, null=True)
-    AGE_GROUP_CHOICES = [
-        ('6-7', "6-7 класс"),
-        ('8-9',"8-9 класс"),
-        ('10-11', "10-11 класс"),
-        ('ALL', "Единая")
-    ]
-    age_group = models.CharField("Возрастная группа", max_length=5, choices=AGE_GROUP_CHOICES, blank=True, null=True)
+    short_description = models.CharField("Краткое описание", blank=False, null=False, max_length=130)
+    description = models.TextField("Описание", blank=False, null=False)
+    
     participants = models.ManyToManyField(Citizen, verbose_name="Участники", related_name="voc_guid_tests", blank=True)
-    THEMES_CHOICES = [
-        ('HLTH', "Здоровая среда"),
-        ('CMFRT',"Комфортная среда"),
-        ('SAFE', "Безопасная среда"),
-        ('SMRT', "Умная среда"),
-        ('CRTV', "Креативная среда"),
-        ('SCL', "Социальная среда"),
-        ('BSNSS', "Деловая среда"),
-        ('INDST', "Индустриальная среда")
-    ]
-    thematic_env = models.CharField("Проф. среда", max_length=100, choices=THEMES_CHOICES, blank=True, null=True)
-    profession = models.CharField("Профессии", max_length=200, blank=True, null=True)
-    description = models.TextField("Описание", blank=True, null=True, default="")
-    img_link = models.CharField("Ссылка на изображение", max_length=250, blank=True, null=True, default="")
-    attendance_limit = models.IntegerField("Максимальное кол-во участников", default=8)
-    workshop = models.ForeignKey(Workshop, verbose_name="Место проведения", on_delete=CASCADE, blank=True, null=True)
-    
-    TYPE_CHOICES = [
-        ('SPO', "На площадке исторический парк «Россия – Моя история»"),
-        ('VO', "В онлайн формате"),
-        ('EC', "На базе ЦО")
-    ]
-    guid_type = models.CharField("Тип проб", max_length=4, choices=TYPE_CHOICES, default="VO")
-    disability_types = models.ManyToManyField(DisabilityType, verbose_name="ОВЗ", blank=True)
-    
+    attendance_limit = models.IntegerField("Лимит участников", default=8)
+    participants_count = models.IntegerField("Колво участников", default=0)
+
+    start_datetime = models.DateTimeField('Дата и время начала', blank=False, null=False, default=datetime.datetime.now())
+
+    is_online = models.BooleanField("Онлайн", default=True)
+    conference_data = models.CharField("данные для подключения", blank=True, null=True, max_length=350)
+    address = models.ForeignKey(Address, verbose_name="Адресс", on_delete=CASCADE, blank=True, null=True)
+        
     class Meta:
         verbose_name = "Проф. проба"
         verbose_name_plural = "Проф. пробы"
 
     def __str__(self):
         return  f"{self.name} ({self.id})"
+
+
+class Assessment(models.Model):
+    test = models.ForeignKey(VocGuidTest, verbose_name="Проба", related_name="assessment", on_delete=models.CASCADE)
+    grade = models.IntegerField("Оценка", validators=[MinValueValidator(1),MaxValueValidator(3)], null=True, blank=True)
+    criterion = models.CharField("Название критерия", max_length=70, blank=False, null=True)
+    citizen = models.ForeignKey(Citizen, verbose_name="Ученик", related_name="assessment", on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Ассессмент"
+        verbose_name_plural = "Ассессмент"
+
+
+class Attendance(models.Model):
+    timeslot = models.ForeignKey(VocGuidTest, verbose_name="Проба",related_name="attendance", on_delete=models.CASCADE)
+    is_attend = models.BooleanField("Посетил", default=False)
+    citizen = models.ForeignKey(Citizen, verbose_name="Ученик", related_name="attendance", on_delete=models.CASCADE)
+    
+    class Meta:
+        verbose_name = "Посещаемость"
+        verbose_name_plural = "Посещаемость"
 
 
 class TestContact(models.Model):
@@ -70,103 +104,4 @@ class TestContact(models.Model):
         return  f"{self.test} ({self.full_name})"
 
 
-class VocGuidGroup(models.Model):
-    participants = models.ManyToManyField(Citizen, verbose_name="Участники", related_name='voc_guid_groups')
-    AGE_GROUP_CHOICES = [
-        ('6-7', "6-7 класс"),
-        ('8-9',"8-9 класс"),
-        ('10-11', "10-11 класс"),
-    ]
-    age_group = models.CharField("Возрастная группа", max_length=5, choices=AGE_GROUP_CHOICES, blank=True, null=True)
-    attendance_limit = models.IntegerField("Максимальное кол-во участников", default=8)
-    school = models.ForeignKey(School, verbose_name="Школа", related_name="guid_groups", on_delete=CASCADE, blank=True, null=True)
-    bundle = models.ForeignKey(VocGuidTest, verbose_name="Бандл", related_name="groups", on_delete=CASCADE, blank=True, null=True)
-    city = models.CharField("Населённый пункт", max_length=100, blank=True, null=True)
-
-    class Meta:
-        verbose_name = "Группа по проф. ориентации"
-        verbose_name_plural = "Группы по проф. ориентации"
-
-    def __str__(self):
-        return  f"{self.bundle} {self.school} {self.age_group} класс (ID: {self.id})"
-
-
-class TimeSlot(models.Model):
-    date = models.DateField("Дата")
-    SLOT_CHOICES = [
-        ("MRN", "с 10:00 до 11:30"),
-        ("MID", "с 15:00 до 16:30"),
-        ("EVN", "с 16:30 до 18:00"),
-    ]
-    slot = models.CharField("Временной промежуток", max_length=5, choices=SLOT_CHOICES)
-    test = models.ForeignKey(VocGuidTest, verbose_name="Пробы", related_name="slots", blank=True, null=True, on_delete=CASCADE)
-    group = models.ManyToManyField(VocGuidGroup, related_name="slots", verbose_name="Группы", blank=True)
-    participants_count = models.IntegerField("Колво участников", default=0, validators=[MaxValueValidator(8),MinValueValidator(0)])
-    zoom_link = models.URLField("Ссылка на конференцию (zoom)", max_length=400, blank=True, null=True)
-    report_link = models.URLField("Отчетная ссылка", blank=True, null=True)
-    attendance_limit = models.IntegerField("Максимальное кол-во участников", default=8, blank=True, null=True)
-    is_nonprofit = models.BooleanField("На безвозмездной основе", default=False)
-
-    class Meta:
-        verbose_name = "Слот"
-        verbose_name_plural = "Слоты"
-
-    def __str__(self):
-        if self.slot == "MRN":
-            slot = "с 10:00 до 11:30"
-        elif self.slot == "MID":
-            slot = "с 15:00 до 16:30"
-        else:
-            slot = "с 16:30 до 18:00"
-        return  f"{self.id} {self.test} – {self.date} {slot}"
-
-
-class VocGuidAssessment(models.Model):
-    participant = models.ForeignKey(
-        Citizen, related_name="voc_guid_assessment", 
-        verbose_name="Участник", on_delete=CASCADE
-    )
-    test = models.ForeignKey(
-        VocGuidTest, related_name="assessments", 
-        verbose_name="Проба", on_delete=CASCADE
-    )
-    slot = models.ForeignKey(
-        TimeSlot, related_name="assessments", 
-        verbose_name="Слот", on_delete=CASCADE
-    )
-    attendance = models.BooleanField("Посещаемость", default=False)
-    bilet_platform = models.BooleanField("Есть на БВБ", default=False)
-    diagnostics_count = models.IntegerField("Колво пройденных диагностик", blank=True,null=True)
-    is_checked = models.BooleanField("Подтверждён", default=False)
-
-    class Meta:
-        verbose_name = "Ассесмент"
-        verbose_name_plural = "Ассесмент"
-
-    def __str__(self):
-        cl_group = Group.objects.filter(name='Координатор')
-        if len(cl_group) != 0:
-            cl_group = cl_group[0]
-            school = self.participant.school
-            teacher = User.objects.filter(coordinated_schools=school, groups=cl_group)
-            if len(teacher) !=0:
-                teacher = teacher[0]
-                if teacher.phone_number is None:
-                    return f"{self.participant.school} {teacher} (–; {teacher.email})"
-                return f"{self.participant.school} {teacher} ({teacher.phone_number}; {teacher.email})"
-        return  f"{self.participant.school}"
-
-class BiletDistribution(models.Model):
-    school = models.OneToOneField(
-        School, 
-        verbose_name="Распределение по билету", 
-        related_name="bilet_distr", 
-        on_delete=CASCADE
-    )
-    test_type = models.BooleanField("Федеральные пробы", default=False)
-    quota = models.IntegerField("Квота", validators=[MinValueValidator(0),])
-    
-    class Meta:
-        verbose_name = "Распределение билет в будущее"
-        verbose_name_plural = "Распределение билет в будущее"
     
