@@ -84,7 +84,7 @@
         max-width: 950px
         margin: auto
         margin-top: 60px
-        .stage-1, .stage-2, .stage-3, .stage-4, .stage-5
+        .stage-1-card, .stage-2-card, .stage-3-card, .stage-4-card, .stage-5-card
             border-radius: 8px
             background-color: white
             box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.15)
@@ -93,7 +93,8 @@
             padding: 20px
             .stage-preview
                 display: flex
-                .stage-number
+                gap: 5px
+                .stage-number-current
                     width: 25px
                     height: 25px
                     background-color: #394959
@@ -105,8 +106,37 @@
                         margin-top: 1px
                         font-size: 16px
                         font-weight: bold
-                    margin-right: 5px
                     margin-top: 2px
+                .stage-number
+                    width: 25px
+                    height: 25px
+                    background-color: white
+
+                    color: #394959
+                    text-align: center
+                    border: 1px solid #394959
+                    border-radius: 20px
+                    p
+                        font-size: 16px
+                        font-weight: bold
+                    margin-top: 2px
+                .stage-number-hidden
+                    display: none
+                .stage-check
+                    width: 25px
+                    height: 25px
+                    margin-bottom: 3px
+                    background-color: #4CAF50
+                    border-radius: 20px
+
+                    display: flex
+                    justify-content: center
+                    img
+                        margin-top: 1px
+                        width: 18px
+                        height: 22px
+                .stage-check-hidden
+                    display: none
                 .stage-name
                     font-size: 18px
                     font-weight: 400
@@ -115,19 +145,48 @@
                     font-size: 12px
                     font-weight: 300
                     line-height: 1.2
-                .stage-end-btn
+                .stage-description-hidden
+                    font-size: 12px
+                    font-weight: 300
+                    line-height: 1.2
+                    margin-bottom: 0px
+                .stage-end-form
                     margin-left: auto
-                    width: 175px
+                    .stage-end-btn
+                        width: 175px
+                        height: 30px
+                        
+                        background: #394959
+                        color: white
+                        font-weight: bold
+                        font-weight: 16px
+                        
+                        border: 0
+                        border-radius: 8px
+                        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25)
+                        &:hover
+                            background: white
+                            color: #394959
+                            border: 1px solid #394959
+                        &:active
+                            box-shadow: inset 0px 4px 4px rgb(0 0 0 / 25%)
+                    .stage-end-btn-hidden
+                        display: none
+                .deploy-btn
+                    margin-left: auto
+                    width: 30px
                     height: 30px
-                    
-                    background: #394959
-                    color: white
-                    font-weight: bold
-                    font-weight: 16px
-                    
-                    border: 0
-                    border-radius: 8px
-                    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25)
+                    padding-left: 5px
+                    padding-top: 3px
+                    border-radius: 20px
+                    margin-top: 5px
+                    display: flex
+                    &:hover
+                        background: #F2F2F2
+                    img
+                        width: 20px
+                .deploy-btn-hidden   
+                    display: none
             .filter
                 width: fit-content
                 height: fit-content
@@ -143,6 +202,11 @@
                 .filter-select
                     padding-left: 0
                     width: 230px !important
+                    .dropdown-menu
+                        min-width: 300px 
+                        .bs-searchbox
+                            input
+                                width: 100%
                 input
                     width: 150px
                 h4
@@ -234,7 +298,12 @@
                     border: 0px
                     border-radius: 8px
                     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25)
-
+                    &:hover
+                        background: white
+                        color: #394959
+                        border: 1px solid #394959
+                    &:active
+                        box-shadow: inset 0px 4px 4px rgb(0 0 0 / 25%)
                         
 
 

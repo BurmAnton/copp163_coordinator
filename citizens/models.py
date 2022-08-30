@@ -77,7 +77,6 @@ class Citizen(models.Model):
     
     user = models.OneToOneField(User, verbose_name="Пользователь", related_name="citizen", on_delete=DO_NOTHING, null=True)
     STAGES_LIST = [
-        ('REG', 'Зарегистрирован'),
         ('VG', 'Профориентация'),
         ('EG', 'Запись в группу'),
         ('APL', 'Подача заявки'),

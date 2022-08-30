@@ -140,7 +140,7 @@ class ApplicationAdmin(admin.ModelAdmin):
         ('competence', RelatedOnlyDropdownFilter),
         ('education_program', RelatedOnlyDropdownFilter),
         ('education_center', RelatedOnlyDropdownFilter),
-        ('citizen_category', ChoiceDropdownFilter),
+        ('citizen_category', RelatedOnlyDropdownFilter),
         ('ed_ready_time',ChoiceDropdownFilter),
         ('group', RelatedOnlyDropdownFilter),
         ('contract_type', ChoiceDropdownFilter),
