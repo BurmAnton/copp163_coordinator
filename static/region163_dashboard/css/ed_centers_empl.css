@@ -10,6 +10,9 @@
   background-color: #426cf8 !important;
   border-color: #426cf8 !important;
 }
+.stat .qouta_table {
+  text-align: center;
+}
 .stat .graphic {
   display: flex;
   flex-wrap: wrap;

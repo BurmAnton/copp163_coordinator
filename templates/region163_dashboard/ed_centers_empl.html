@@ -35,43 +35,45 @@
                     </div>
                 </div>
             </div>
-            <div class="row justify-content-center main-stats">
-                <div class="card text-center mb-3" style="max-width: 21rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Квота из средств ПРФ:</h5>
-                        <h4 class="card-title">{{quota_rf}}</h4>
-                    </div>
-                </div>
-                <div class="card text-center mb-3" style="max-width: 21rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Квота из средств ФБ: </h5>
-                        <h4 class="card-title">{{quota_fb}}</h4>
-                        <p style="margin:0">В том числе "до 35": {{qouta_fby}}</p>
-                    </div>
-                </div>
-                <div class="card text-center mb-3" style="max-width: 21rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Общая квота:</h5>
-                        <h4 class="card-title">{{all_quotas}}</h4>
-                    </div>
-                </div>
-            </div>
-            <div style="gap:10px" class="row justify-content-center">
-                <div class="card text-center mb-3" style="max-width: 15rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Допущено: {{stages_count.0}}</h5>
-                    </div>
-                </div>
-                <div class="card text-center mb-3" style="max-width: 16rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Учатся: {{stages_count.1}}</h5>
-                    </div>
-                </div>
-                <div class="card text-center mb-3" style="max-width: 17rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Завершили обучение: {{stages_count.2}}</h5>
-                    </div>
-                </div>
+            <div class="qouta_table">
+                <div><h3>Заявки по стадиям и квотам</h3></div>
+                <table class="table table-striped">
+                    <thead>
+                        <th></th>
+                        <th>Квота из средств ПРФ</th>
+                        <th>в том числе "до 35"</th>
+                        <th>Квота из средств ФБ</th>
+                        <th>Общая квота</th>
+                    </thead>
+                    <tr>
+                        <th>Допущенно</th>
+                        <td>{{qouta_fb_ADM}}</td>
+                        <td>{{qouta_fby_ADM}}</td>
+                        <td>{{qouta_rf_ADM}}</td>
+                        <td>{{stages_count.0}}</td>
+                    </tr>
+                    <tr>
+                        <th>Учатся</th>
+                        <td>{{qouta_fb_SED}}</td>
+                        <td>{{qouta_fby_SED}}</td>
+                        <td>{{qouta_rf_SED}}</td>
+                        <td>{{stages_count.1}}</td>
+                    </tr>
+                    <tr>
+                        <th>Завершили обучение</th>
+                        <td>{{qouta_fb_COMP}}</td>
+                        <td>{{qouta_fby_COMP}}</td>
+                        <td>{{qouta_rf_COMP}}</td>
+                        <td>{{stages_count.2}}</td>
+                    </tr>
+                    <tr>
+                        <th>% выполнения</th>
+                        <td>{{quota_fb}}</td>
+                        <td>{{qouta_fby}}</td>
+                        <td>{{quota_rf}}</td>
+                        <td>{{all_quotas}}</td>
+                    </tr>
+                </table>
             </div>
         </div>
         <div class="graphic">
