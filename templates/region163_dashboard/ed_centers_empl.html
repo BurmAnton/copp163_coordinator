@@ -1,4 +1,4 @@
-{% extends "region163_dashboard/layout.html" %}
+{% extends "layout.html" %}
 {% load static %}
 
 {% block title %}Статистика по ЦО{% endblock %}
@@ -46,7 +46,7 @@
                         <th>Общая квота</th>
                     </thead>
                     <tr>
-                        <th>Допущенно</th>
+                        <th>Допущено</th>
                         <td>{{qouta_fb_ADM}}</td>
                         <td>{{qouta_fby_ADM}}</td>
                         <td>{{qouta_rf_ADM}}</td>
@@ -66,7 +66,7 @@
                         <td>{{qouta_rf_COMP}}</td>
                         <td>{{stages_count.2}}</td>
                     </tr>
-                    <tr>
+                    <tr class='table-dark'>
                         <th>% выполнения</th>
                         <td>{{quota_fb}}</td>
                         <td>{{qouta_fby}}</td>
