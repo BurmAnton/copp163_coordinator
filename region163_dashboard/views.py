@@ -171,7 +171,7 @@ def ed_centers_empl(request, **kwargs):
     for stage in stages:
         stages_count.append(stages_dict[stage])
      
-    quote_stages = ['ADM', 'SED', 'COMP', 'EXAM']
+    quote_stages = ['SED', 'COMP', 'EXAM']
     appl_count = Application.objects.filter(appl_status__in=quote_stages).distinct().count()
 
     #Quotes
@@ -180,7 +180,7 @@ def ed_centers_empl(request, **kwargs):
     qouta_fb_ADM = Application.objects.filter(appl_status='ADM', citizen_category__in=categories).count()
     qouta_fb_SED = Application.objects.filter(appl_status='SED', citizen_category__in=categories).count()
     qouta_fb_COMP = Application.objects.filter(appl_status__in=['COMP','EXAM'], citizen_category__in=categories).count()
-    quota_fb_fact = Application.objects.filter(appl_status__in=['SED', 'COMP','EXAM'], citizen_category__in=categories).count()
+    quota_fb_fact = Application.objects.filter(appl_status__in=quote_stages, citizen_category__in=categories).count()
     quota_fb_fact_p = round(quota_fb_fact / quote_fb_goal * 100)
     quota_fb = f'{quota_fb_fact}/{quote_fb_goal} ({quota_fb_fact_p}%)'
 
@@ -197,7 +197,7 @@ def ed_centers_empl(request, **kwargs):
     qouta_fby_ADM = Application.objects.filter(appl_status='ADM', citizen_category__in=categories).count()
     qouta_fby_SED = Application.objects.filter(appl_status='SED', citizen_category__in=categories).count()
     qouta_fby_COMP = Application.objects.filter(appl_status__in=['COMP','EXAM'], citizen_category__in=categories).count()
-    qouta_fby_fact = Application.objects.filter(appl_status__in=['SED', 'COMP','EXAM'], citizen_category__in=categories).count()
+    qouta_fby_fact = Application.objects.filter(appl_status__in=quote_stages, citizen_category__in=categories).count()
     quota_fby_fact_p = round(qouta_fby_fact / qouta_fby_goal * 100)
     quota_fby = f'{qouta_fby_fact}/{qouta_fby_goal} ({quota_fby_fact_p}%)'
 
@@ -206,7 +206,7 @@ def ed_centers_empl(request, **kwargs):
     qouta_rf_ADM = Application.objects.filter(appl_status='ADM', citizen_category__in=categories).count()
     qouta_rf_SED = Application.objects.filter(appl_status='SED', citizen_category__in=categories).count()
     qouta_rf_COMP = Application.objects.filter(appl_status__in=['COMP','EXAM'], citizen_category__in=categories).count()
-    qouta_rf_fact = Application.objects.filter(appl_status__in=['SED', 'COMP','EXAM'], citizen_category__in=categories).count()
+    qouta_rf_fact = Application.objects.filter(appl_status__in=quote_stages, citizen_category__in=categories).count()
     quota_rf_fact_p = round(qouta_fby_fact / qouta_fby_goal * 100)
     quota_rf = f'{qouta_rf_fact}/{qouta_rf_goal} ({quota_rf_fact_p}%)'
 
