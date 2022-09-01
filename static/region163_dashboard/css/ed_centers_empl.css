@@ -12,6 +12,8 @@
 }
 .stat .qouta_table {
   text-align: center;
+  width: 90%;
+  margin: auto;
 }
 .stat .graphic {
   display: flex;
@@ -20,6 +22,9 @@
   flex-direction: column;
   align-content: center;
   align-items: center;
+}
+.stat .graphic img {
+  width: 100%;
 }
 
 h1 {
@@ -43,6 +48,11 @@ h1 {
   margin-bottom: 20px;
   width: 90%;
   box-shadow: 1px 0px 5px 2px rgba(0, 0, 0, 0.2);
+}
+@media (max-width: 600px) {
+  .table {
+    width: 100%;
+  }
 }
 .table .sticky-top {
   background-color: #394959 !important;

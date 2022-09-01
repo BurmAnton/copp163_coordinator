@@ -207,7 +207,7 @@ def ed_centers_empl(request, **kwargs):
     qouta_rf_SED = Application.objects.filter(appl_status='SED', citizen_category__in=categories).count()
     qouta_rf_COMP = Application.objects.filter(appl_status__in=['COMP','EXAM'], citizen_category__in=categories).count()
     qouta_rf_fact = Application.objects.filter(appl_status__in=quote_stages, citizen_category__in=categories).count()
-    quota_rf_fact_p = round(qouta_fby_fact / qouta_fby_goal * 100)
+    quota_rf_fact_p = round(qouta_rf_fact / qouta_rf_goal * 100)
     quota_rf = f'{qouta_rf_fact}/{qouta_rf_goal} ({quota_rf_fact_p}%)'
 
     all_quotas_p = round(appl_count / (quote_fb_goal+qouta_rf_goal) * 100)

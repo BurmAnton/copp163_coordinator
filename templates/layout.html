@@ -4,7 +4,6 @@
 <html lang="ru">
     <head>
         <title>{% block title %}{% endblock %}</title>
-        
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="shortcut icon" type="image/png" href="{% static 'admin/img/favicon.png' %}"/>
         
@@ -64,10 +63,7 @@
                             <div class="d-flex">
                                 <a href="{% url 'admin:index' %}">
                                     <button type="submit" class="btn btn-dark admin-button">Админ-панель</button>
-                                </a>
-                                <a href="{% url 'logout' %}">
-                                    <button type="submit" class="btn">
-                                        <div class="logout">
+                                </a>$breakpoint-tablet  <div class="logout">
                                             <div class="logout-img">
                                                 <img src="{% static 'layout/img/logout-icon.png' %}" alt="logout-icon">
                                             </div>
