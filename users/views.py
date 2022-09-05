@@ -44,7 +44,8 @@ def contacts_list(request):
     return render(request, "users/contacts_list.html",{
         'contacts': contacts,
         'organizations': organizations,
-        'projects': projects
+        'projects': projects,
+        'contacts_count': len(contacts)
     })
 
 @csrf_exempt

@@ -125,7 +125,7 @@
                 <td>{{contact.job_title}}</td>
                 <td>
                     {% for project in contact.projects.all %}
-                        <div>{{project.project_name}}</div>
+                        <div style="white-space: nowrap">{{project.project_name}}</div>
                     {% endfor %}
                 </td>
                 <td>
@@ -133,9 +133,9 @@
                         <div>{{email.email}}</div>
                     {% endfor %}
                 </td>
-                <td>
+                <td >
                     {% for phone in contact.phones.all %}
-                        <div>{{phone.phone}}</div>
+                        <div style="white-space: nowrap">{{phone.phone}}</div>
                     {% endfor %}
                 </td>
             </tr>
@@ -148,7 +148,7 @@
             <th></th>
             <th></th>
             <th></th>
-            <th>Контактов: 12</th>
+            <th>Контактов: {{contacts_count}}</th>
         </thead>
     </table>
 {% endblock %}
