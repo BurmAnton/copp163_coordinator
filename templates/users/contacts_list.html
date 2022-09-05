@@ -1,0 +1,154 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}Контакты партнёров{% endblock %}
+{% block style %}
+    <link href="{% static 'users/css/contacts_list.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}{% endblock %}
+
+{% block body %}
+    <div class="modal fade" id="OrgModal" tabindex="-1" aria-labelledby="OrgModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="OrgModalLabel">Добавление организации</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'add_organization' %}" method="post">
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <input type="input" class="form-control" name="name" id="OrgName" placeholder="Название организации">
+                    </div>
+                    <div class="form mb-3">
+                        <select class="selectpicker" title="Выберите организацию" data-width="100%" data-live-search="true" name="organization_type" id="OrganizationType" required>
+                            <option class="organization_type" value="ECSPO">ЦО СПО</option>
+                            <option class="organization_type" value="ECVO">ЦО ВО</option>
+                            <option class="organization_type" value="ECP">ЦО частные</option>
+                            <option class="organization_type" value="GOV">Гос. орган</option>
+                            <option class="organization_type" value="OTH">Другие</option>
+                        </select>
+                </div>
+                <div class="modal-footer">
+                <button type="submit" class="btn btn-dark">Добавить</button>
+                </div>
+            </form>
+        </div>
+        </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Добавление контакта</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'contacts_list' %}"  method="post">
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <input type="input" class="form-control" name="last_name" id="LastName" placeholder="Фамилия">
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="input" class="form-control" name="first_name" id="Name" placeholder="Имя" required>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="input" class="form-control" name="middle_name" id="MiddleName" placeholder="Отчество">
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" name="email" placeholder="Email" aria-label="Email" aria-describedby="at">
+                        <span class="input-group-text" id="at">@</span>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номер телефона" maxlength="18" onkeydown="return /[+ ( ) 0-9 Backspace]+/i.test(event.key)" required>
+                    </div>
+                    <div class="form mb-3">
+                        <select class="selectpicker" title="Выберите организацию" data-width="100%" data-live-search="true" name="organization" id="Organization" required>
+                            {% for organization in organizations %}
+                                <option class="organization" value="{{organization.id}}">{{organization}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="input" class="form-control" name="job_title" id="JobTitle" placeholder="Должность">
+                    </div>
+                    <div class="form mb-3">
+                        <select class="selectpicker" title="Выберите проекты" multiple data-width="100%" data-live-search="true" name="project" id="Project" required>
+                            {% for project in projects %}
+                                <option class="project" value="{{project.id}}">{{project}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="commentary" class="form-label">Комментарий</label>
+                        <textarea class="form-control" name='commentary' id="commentary" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-dark">Добавить</button>
+                    
+                </div>
+            </form>
+
+        </div>
+        </div>
+    </div>
+
+    <div class="control-panel">
+        <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Добавить контакт
+        </button>
+        <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#OrgModal">
+            Добавить организацию
+        </button>
+        <!--<button class="btn btn-outline-dark disabled">
+            Импортировать контакты
+        </button>-->
+    </div>
+    <table class="contact-list table table-light table-striped table-hover">
+        <thead class="thead-dark sticky-top">
+            <th>Фамилия</th>
+            <th>Имя</th>
+            <th>Отчество</th>
+            <th>Организация</th>
+            <th>Должность</th>
+            <th>Проекты</th>
+            <th>Emails</th>
+            <th>Телефоны</th>
+        </thead>
+        {% for contact in contacts %}
+            <tr>
+                <td>{{contact.last_name}}</td> 
+                <td>{{contact.first_name}}</td>
+                <td>{{contact.middle_name}}</td>
+                <td>{{contact.organization}}</td>
+                <td>{{contact.job_title}}</td>
+                <td>
+                    {% for project in contact.projects.all %}
+                        <div>{{project.project_name}}</div>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for email in contact.emails.all %}
+                        <div>{{email.email}}</div>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for phone in contact.phones.all %}
+                        <div>{{phone.phone}}</div>
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+        <thead class="thead-dark">
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>Контактов: 12</th>
+        </thead>
+    </table>
+{% endblock %}

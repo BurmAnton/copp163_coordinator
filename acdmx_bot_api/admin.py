@@ -4,23 +4,23 @@ from acdmx_bot_api.models import GuildMember, GuildRole, EducationTrack, Discord
 
 from easy_select2 import select2_modelform
 # Register your models here.
-@admin.register(GuildMember)
+#@admin.register(GuildMember)
 class GuildMemberAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(GuildRole)
+#@admin.register(GuildRole)
 class GuildRoleAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(EducationTrack)
+#@admin.register(EducationTrack)
 class EducationTrackAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(DiscordSever)
+#@admin.register(DiscordSever)
 class DiscordSeverAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(Assessment)
+#@admin.register(Assessment)
 class AssessmentAdmin(admin.ModelAdmin):
     pass
 
@@ -36,14 +36,14 @@ class AssessmentInLine(admin.TabularInline):
             return extra
         return extra
 
-@admin.register(Assignment)
+#@admin.register(Assignment)
 class AssignmentAdmin(admin.ModelAdmin):
     inlines = [AssessmentInLine,]
 
-@admin.register(Task)
+#@admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(Criterion)
+#@admin.register(Criterion)
 class CriterionAdmin(admin.ModelAdmin):
     pass

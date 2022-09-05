@@ -21,6 +21,7 @@ urlpatterns = [
     path('dashboard/', include('region163_dashboard.urls')),
     path('education_centers/', include('education_centers.urls')),
     path('bilet/', include('vocational_guidance.urls')),
+    path('users/', include('users.urls')),
     path('bot/acdmx/', include('acdmx_bot_api.urls')),
     path('admin/', admin.site.urls),
     path('select2/', include('django_select2.urls')),

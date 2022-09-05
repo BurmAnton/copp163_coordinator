@@ -15,6 +15,9 @@
   width: 90%;
   margin: auto;
 }
+.stat .qouta_table .table-dark td {
+  background-color: #394959 !important;
+}
 .stat .graphic {
   display: flex;
   flex-wrap: wrap;
