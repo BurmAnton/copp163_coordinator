@@ -1,11 +1,12 @@
+from easy_select2 import select2_modelform
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 
 from django_admin_listfilter_dropdown.filters import  RelatedOnlyDropdownFilter
 
-
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import User, Group
+from .models import User, Group, PartnerContact, PartnerOrganization, Project, PartnerContactEmail, PartnerContactPhone
 
 @admin.register(User)
 class UserAdmin(UserAdmin):
@@ -62,3 +63,35 @@ class UserAdmin(UserAdmin):
 @admin.register(Group)
 class GroupAdmin(GroupAdmin):
     pass
+
+@admin.register(PartnerOrganization)
+class PartnerOrganizationAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Project)
+class ProjectAdmin(admin.ModelAdmin):
+    pass
+
+
+class PartnerContactEmailInline(admin.StackedInline):
+    model = PartnerContactEmail
+
+class PartnerContactPhoneInline(admin.StackedInline):
+    model = PartnerContactPhone
+
+PartnerContactForm = select2_modelform(PartnerContact, attrs={'width': '400px'})
+
+@admin.register(PartnerContact)
+class PartnerContactAdmin(admin.ModelAdmin):
+    form = PartnerContactForm
+    inlines = [PartnerContactEmailInline, PartnerContactPhoneInline]
+
+    fieldsets = (
+        (None, {
+            'fields': ('user', 'first_name', 'middle_name', 'last_name', 'job_title', 'organization', 'commentary')
+        }),
+        (None, {
+            'fields': ('projects',)
+        })
+    )

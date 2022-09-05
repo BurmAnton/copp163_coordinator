@@ -1,0 +1,48 @@
+$light: white
+$dark: #394959
+$table-striped-bg-factor: .045
+$table-hover-color: #0037ff
+$table-hover-bg-factor: .08
+@import "../../layout/bootstrap/scss/bootstrap"
+
+.modal
+    .dropdown-toggle
+        border: 1px solid #0000003b
+.control-panel
+    width: 85%
+    margin: auto
+    padding-top: 25px
+    margin-bottom: 15px
+//Таблица-контактов
+.contact-list
+    width: 85%
+    margin: auto
+    margin-bottom: 25px
+    text-align: center
+    background-color: #ffffff00
+    box-shadow: 1px 3px 8px 5px #828282ab
+    border-radius: 10px
+    td
+        border: 0
+        border-bottom: 1px solid white
+
+        color: #394959 
+        vertical-align: middle !important
+    thead:first-child th
+        background-color: #394959
+        color: white
+        font-weight: 500
+        border-top: 0
+        &:first-child
+            border-top-left-radius: 7px
+        &:last-child
+            border-top-right-radius: 7px
+    thead:last-child th
+            background-color: #394959   
+            color: white
+            font-weight: 500
+            border: 0
+            &:first-child
+                border-bottom-left-radius: 7px
+            &:last-child
+                border-bottom-right-radius: 7px
