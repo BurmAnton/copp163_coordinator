@@ -48,6 +48,7 @@ class Permission(Permission):
 
 class PartnerOrganization(models.Model):
     name = models.CharField("Название организации", max_length=250, blank=False, null=False)
+    organization_inn = models.CharField("ИНН Организации", max_length=20, blank=False, null=False)
     ORG_TYPES = (
         ('ECSPO', 'ЦО СПО'),
         ('ECVO', 'ЦО ВО'),
@@ -99,7 +100,7 @@ class PartnerContact(models.Model):
 
 class PartnerContactEmail(models.Model):
     contact = models.ForeignKey(PartnerContact, verbose_name="Контакт", related_name="emails", on_delete=CASCADE)
-    email = models.EmailField(_("email address"), max_length=254, unique=True)
+    email = models.EmailField(_("email address"), max_length=254, unique=False)
 
     def __str__(self):
         return self.email
