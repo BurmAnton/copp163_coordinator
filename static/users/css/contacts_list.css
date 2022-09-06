@@ -9884,12 +9884,30 @@ textarea.form-control-lg {
 .modal .dropdown-toggle {
   border: 1px solid rgba(0, 0, 0, 0.231372549);
 }
+.modal .import-field label, .modal .import-field .errorlist {
+  display: none;
+}
+
+.messages-board {
+  padding-top: 15px;
+  width: 85%;
+  margin: auto;
+}
+.messages-board .alert {
+  padding: 5px 5px;
+  margin-bottom: 10px;
+}
 
 .control-panel {
   width: 85%;
   margin: auto;
+  display: flex;
+  justify-content: space-between;
   padding-top: 25px;
   margin-bottom: 15px;
+}
+.control-panel .import-btn img {
+  width: 21px;
 }
 
 .contact-list {

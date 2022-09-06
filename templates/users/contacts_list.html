@@ -5,43 +5,17 @@
 {% block style %}
     <link href="{% static 'users/css/contacts_list.css' %}" rel="stylesheet">
 {% endblock %}
-{% block script %}{% endblock %}
+{% block script %}
+    <script src="{% static 'users/js/contacts_list.js' %}" rel="stylesheet"></script>
+{% endblock %}
 
 {% block body %}
-    <div class="modal fade" id="OrgModal" tabindex="-1" aria-labelledby="OrgModalLabel" aria-hidden="true">
+    <!--Modals--> 
+    <div class="modal fade" id="AddContactModal" tabindex="-1" aria-labelledby="AddContactModalLabel" aria-hidden="true">
         <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-            <h5 class="modal-title" id="OrgModalLabel">Добавление организации</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="{% url 'add_organization' %}" method="post">
-                <div class="modal-body">
-                    <div class="input-group mb-3">
-                        <input type="input" class="form-control" name="name" id="OrgName" placeholder="Название организации">
-                    </div>
-                    <div class="form mb-3">
-                        <select class="selectpicker" title="Выберите организацию" data-width="100%" data-live-search="true" name="organization_type" id="OrganizationType" required>
-                            <option class="organization_type" value="ECSPO">ЦО СПО</option>
-                            <option class="organization_type" value="ECVO">ЦО ВО</option>
-                            <option class="organization_type" value="ECP">ЦО частные</option>
-                            <option class="organization_type" value="GOV">Гос. орган</option>
-                            <option class="organization_type" value="OTH">Другие</option>
-                        </select>
-                </div>
-                <div class="modal-footer">
-                <button type="submit" class="btn btn-dark">Добавить</button>
-                </div>
-            </form>
-        </div>
-        </div>
-        </div>
-    </div>
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Добавление контакта</h5>
+            <h5 class="modal-title" id="AddContactModalLabel">Добавление контакта</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{% url 'contacts_list' %}"  method="post">
@@ -60,7 +34,7 @@
                         <span class="input-group-text" id="at">@</span>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номер телефона" maxlength="18" onkeydown="return /[+ ( ) 0-9 Backspace]+/i.test(event.key)" required>
+                        <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номер телефона" maxlength="18"  required>
                     </div>
                     <div class="form mb-3">
                         <select class="selectpicker" title="Выберите организацию" data-width="100%" data-live-search="true" name="organization" id="Organization" required>
@@ -85,7 +59,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-dark">Добавить</button>
+                    <button type="submit" class="btn btn-dark" name="add_contact">Добавить</button>
                     
                 </div>
             </form>
@@ -93,17 +67,118 @@
         </div>
         </div>
     </div>
-
+    <div class="modal fade" id="OrgModal" tabindex="-1" aria-labelledby="OrgModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="OrgModalLabel">Добавление организации</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'add_organization' %}" method="post" name="add_organization">
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <input type="input" class="form-control" name="name" id="OrgName" placeholder="Название организации">
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="input" class="form-control" name="organization_inn" id="OrganizationINN" placeholder="ИНН организации">
+                        </div>
+                        <div class="form mb-3">
+                            <select class="selectpicker" title="Выберите тип организации" data-width="100%" data-live-search="true" name="organization_type" id="OrganizationType" required>
+                                <option class="organization_type" value="ECSPO">ЦО СПО</option>
+                                <option class="organization_type" value="ECVO">ЦО ВО</option>
+                                <option class="organization_type" value="ECP">ЦО частные</option>
+                                <option class="organization_type" value="GOV">Гос. орган</option>
+                                <option class="organization_type" value="OTH">Другие</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-dark">Добавить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ImportContactsModal" tabindex="-1" aria-labelledby="ImportContactsLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ImportContactsLabel">Импорт контактов</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form enctype="multipart/form-data" action="{% url 'contacts_list' %}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-3 import-field">
+                            {{ form }}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="submit">
+                            <input type="submit" value="Загрузить данные" class="btn btn-dark" name="import_contacts">   
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="messages-board">
+        {% if message == 'IndexError' %}
+            <div class="alert alert-danger" role="alert">
+                Проблема обработки файла!
+            </div> 
+        {% elif message == 'EmptySheet' %}
+            <div class="alert alert-danger" role="alert">
+                Таблица пуста!
+            </div> 
+        {% elif message == 'MissingFieldsError' %}
+            <div class="alert alert-danger" role="alert">
+                Часть полей отсутствует:
+                <ul>
+                    {% for field in data.2 %}
+                        <li>{{field}}</li>
+                    {% endfor %}
+                </ul>
+            </div> 
+        {% elif message %}
+            {% if data.1 != 0 %}
+                <div class="alert alert-success" role="alert">
+                    Контактов добавлено: {{data.1}}
+                </div>
+            {% endif %}
+             {% if data.3 != 0 %}
+                <div class="alert alert-success" role="alert">
+                    Организаций добавлено: {{data.3}}
+                </div>
+            {% endif %}
+            <!--Ошибки-->
+            {% for problem in data.2 %}
+                {% if problem.0 == 'ContactDublicateError' %}
+                    <div class="alert alert-danger" role="alert">
+                        Пользователь '{{problem.1.last_name}} {{problem.1.first_name}} {{problem.1.middle_name}} ({{problem.1.organization}})' уже существует!
+                    </div> 
+                {% endif %}
+                {% if problem.0 == 'ProjectError' %}
+                    <div class="alert alert-danger" role="alert">
+                        Проекта с названием '{{problem.1}}' не найдено!
+                        Пользователи с этим теруправлением не добавлены.
+                    </div> 
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
     <div class="control-panel">
-        <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            Добавить контакт
-        </button>
-        <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#OrgModal">
-            Добавить организацию
-        </button>
-        <!--<button class="btn btn-outline-dark disabled">
+        <div>
+            <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#AddContactModal">
+                Добавить контакт
+            </button>
+            <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#OrgModal">
+                Добавить организацию
+            </button>
+        </div>
+        <button class="btn btn-dark import-btn" data-bs-toggle="modal" data-bs-target="#ImportContactsModal">
+            <img src="{%static 'users/img/icon-xls-import.png' %}" alt="">
             Импортировать контакты
-        </button>-->
+        </button>
     </div>
     <table class="contact-list table table-light table-striped table-hover">
         <thead class="thead-dark sticky-top">

@@ -4,15 +4,34 @@ $table-striped-bg-factor: .045
 $table-hover-color: #0037ff
 $table-hover-bg-factor: .08
 @import "../../layout/bootstrap/scss/bootstrap"
-
+//Popups
 .modal
     .dropdown-toggle
         border: 1px solid #0000003b
+    .import-field
+        label, .errorlist
+            display: none
+//Messages
+.messages-board
+    padding-top: 15px
+    width: 85%
+    margin: auto
+    .alert
+        padding: 5px 5px
+        margin-bottom: 10px
+//Панель управления
 .control-panel
     width: 85%
     margin: auto
+
+    display: flex
+    justify-content: space-between
+
     padding-top: 25px
     margin-bottom: 15px
+    .import-btn img
+        width: 21px
+
 //Таблица-контактов
 .contact-list
     width: 85%
