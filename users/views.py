@@ -41,6 +41,8 @@ def contacts_list(request):
             projects_id = request.POST.getlist("project")
             contact.projects.add(*projects_id)
             contact.save()
+            message = "AddContact"
+            data = contact
         elif 'import_contacts' in request.POST:
             form = ImportDataForm(request.POST, request.FILES)
             if form.is_valid():
