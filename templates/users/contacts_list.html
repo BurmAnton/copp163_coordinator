@@ -122,6 +122,7 @@
         </div>
     </div>
     <div class="messages-board">
+
         {% if message == 'IndexError' %}
             <div class="alert alert-danger" role="alert">
                 Проблема обработки файла!
@@ -139,6 +140,10 @@
                     {% endfor %}
                 </ul>
             </div> 
+        {% elif message == 'AddContact' %}
+            <div class="alert alert-success" role="alert">
+                Пользователь '{{data.last_name}} {{data.first_name}} {{data.middle_name}}' добавлен успешно!
+            </div>
         {% elif message %}
             {% if data.1 != 0 %}
                 <div class="alert alert-success" role="alert">
