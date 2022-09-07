@@ -9881,11 +9881,23 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+.disappear {
+  display: none !important;
+}
+
 .modal .dropdown-toggle {
   border: 1px solid rgba(0, 0, 0, 0.231372549);
 }
 .modal .import-field label, .modal .import-field .errorlist {
   display: none;
+}
+.modal .change_contact_panel {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.modal input:disabled, .modal textarea:disabled {
+  background-color: white;
 }
 
 .messages-board {

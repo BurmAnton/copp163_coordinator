@@ -43,6 +43,44 @@ def contacts_list(request):
             contact.save()
             message = "AddContact"
             data = contact
+        elif 'edit_contact' in request.POST:
+            contact_id = request.POST['id']
+            contact = PartnerContact.objects.get(id=contact_id)
+            contact.last_name = request.POST["last_name"]
+            contact.first_name = request.POST["first_name"]
+            contact.middle_name = request.POST["middle_name"]
+            contact.job_title = request.POST["job_title"]
+            contact.commentary = request.POST["commentary"]
+            organization_id = request.POST["organization"]
+            contact.organization = PartnerOrganization.objects.get(id=organization_id)
+            contact.save()
+            
+            old_emails = PartnerContactEmail.objects.filter(contact=contact).delete()
+            emails = request.POST["email"].split(',')
+            for email in emails:
+                email = email.strip()
+                email = PartnerContactEmail(contact=contact, email=email)
+                email.save()
+
+            old_phones = PartnerContactPhone.objects.filter(contact=contact).delete()
+            phones = request.POST["phone"].split(',')
+            for phone in phones:
+                phone = phone.strip()
+                phone = PartnerContactPhone(contact=contact, phone=phone)
+                phone.save()
+
+            projects_id = request.POST.getlist("project")
+            contact.projects.remove(*Project.objects.all())
+            contact.projects.add(*projects_id)
+            contact.save()
+            message = "Change Contact"
+            data = contact
+        elif 'delete_contact' in request.POST:
+            contact_id = request.POST['id']
+            contact = PartnerContact.objects.get(id=contact_id)
+            data = f'{contact.last_name} {contact.first_name} {contact.middle_name}'
+            contact.delete()
+            message = "Delete Contact"
         elif 'import_contacts' in request.POST:
             form = ImportDataForm(request.POST, request.FILES)
             if form.is_valid():

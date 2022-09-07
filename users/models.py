@@ -53,6 +53,7 @@ class PartnerOrganization(models.Model):
         ('ECSPO', 'ЦО СПО'),
         ('ECVO', 'ЦО ВО'),
         ('ECP', 'ЦО частные'),
+        ('SCHL', 'СОУ'),
         ('GOV', 'Гос. орган'),
         ('OTH', 'Другие')
     )
