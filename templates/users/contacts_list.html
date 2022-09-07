@@ -108,6 +108,9 @@
                 </div>
                 <form enctype="multipart/form-data" action="{% url 'contacts_list' %}" method="post">
                     <div class="modal-body">
+                        <p><a href="https://docs.google.com/spreadsheets/d/1ZEa8TR7C_cwAyZNRU_6pYf8XcLwGSQf6agHYnDGF7tY/edit?usp=sharing" target="_blank">
+                            Шаблон
+                        </a></p>
                         <div class="mb-3 import-field">
                             {{ form }}
                         </div>
@@ -121,8 +124,68 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="ContactModal" tabindex="-1" aria-labelledby="ContactModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ContactModalLabel">Контакт</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'contacts_list' %}"  method="post">
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <input style="display: none;" type="input" class="form-control ID_input" name="id" id="ID" placeholder="ID">
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="input" class="form-control last_name_input" name="last_name" id="LastName" placeholder="Фамилия" disabled>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="input" class="form-control first_name_input" name="first_name" id="Name" placeholder="Имя" required disabled>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="input" class="form-control middle_name_input" name="middle_name" id="MiddleName" placeholder="Отчество" disabled>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="input" class="form-control email_input" name="email" placeholder="Email" aria-label="Email" aria-describedby="at" disabled>
+                            <span class="input-group-text" id="at">@</span>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="phone2numeric" class="form-control phone_input" name="phone" id="Phone" placeholder="Номер телефона" required disabled>
+                        </div>
+                        <div class="form mb-3 organization_input">
+                            <select class="selectpicker organization_input_selectpicker" title="Выберите организацию" data-width="100%" data-live-search="true" name="organization" id="Organization" required disabled>
+                                {% for organization in organizations %}
+                                    <option class="organization" value="{{organization.id}}">{{organization}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="input" class="form-control job_title_input" name="job_title" id="JobTitle" placeholder="Должность" disabled>
+                        </div>
+                        <div class="form mb-3 project_input">
+                            <select class="selectpicker project_input_selectpicker" title="Выберите проекты" multiple data-width="100%" data-live-search="true" name="project" id="Project" required disabled>
+                                {% for project in projects %}
+                                    <option value="{{project.id}}">{{project}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="commentary" class="form-label">Комментарий</label>
+                            <textarea class="form-control commentary_input" name='commentary' id="commentary" rows="3" disabled></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="change_contact_panel disappear">
+                            <button type="submit" class="btn btn-outline-danger" name="delete_contact">Удалить</button>
+                            <button type="submit" class="btn btn-dark" name="edit_contact">Сохранить</button>
+                        </div>
+                        <div class="btn btn-dark change_contact_btn">Изменить</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <div class="messages-board">
-
         {% if message == 'IndexError' %}
             <div class="alert alert-danger" role="alert">
                 Проблема обработки файла!
@@ -143,6 +206,14 @@
         {% elif message == 'AddContact' %}
             <div class="alert alert-success" role="alert">
                 Пользователь '{{data.last_name}} {{data.first_name}} {{data.middle_name}}' добавлен успешно!
+            </div>
+        {% elif message == 'Delete Contact' %}
+        <div class="alert alert-warning" role="alert">
+            Контакт '{{data}}' успешно удалён!
+        </div>
+        {% elif message == 'Change Contact' %}
+            <div class="alert alert-warning" role="alert">
+                Контакт '{{data.last_name}} {{data.first_name}} {{data.middle_name}}' изменён!
             </div>
         {% elif message %}
             {% if data.1 != 0 %}
@@ -197,27 +268,29 @@
             <th>Телефоны</th>
         </thead>
         {% for contact in contacts %}
-            <tr>
-                <td>{{contact.last_name}}</td> 
-                <td>{{contact.first_name}}</td>
-                <td>{{contact.middle_name}}</td>
-                <td>{{contact.organization}}</td>
-                <td>{{contact.job_title}}</td>
-                <td>
+            <tr class="contact-row">
+                <td style="display: none;" class="id">{{contact.id}}</td>
+                <td class="last_name">{{contact.last_name}}</td> 
+                <td class="first_name">{{contact.first_name}}</td>
+                <td class="middle_name">{{contact.middle_name}}</td>
+                <td class="organization">{{contact.organization}}</td>
+                <td class="job_title">{{contact.job_title}}</td>
+                <td class="projects">
                     {% for project in contact.projects.all %}
                         <div style="white-space: nowrap">{{project.project_name}}</div>
                     {% endfor %}
                 </td>
-                <td>
+                <td class="emails">
                     {% for email in contact.emails.all %}
                         <div>{{email.email}}</div>
                     {% endfor %}
                 </td>
-                <td >
+                <td class="phones">
                     {% for phone in contact.phones.all %}
                         <div style="white-space: nowrap">{{phone.phone}}</div>
                     {% endfor %}
                 </td>
+                <td style="display: none;" class="commentary">{{contact.commentary}}</td>
             </tr>
         {% endfor %}
         <thead class="thead-dark">
@@ -231,4 +304,5 @@
             <th>Контактов: {{contacts_count}}</th>
         </thead>
     </table>
+    <button class="ContactModalBtn" style="display: none" data-bs-toggle="modal" data-bs-target="#ContactModal"></button>
 {% endblock %}

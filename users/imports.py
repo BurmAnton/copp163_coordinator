@@ -89,6 +89,7 @@ def load_organization(sheet, row):
         'ЦО СПО': 'ECSPO',
         'ЦО частные': 'ECP',
         'Гос. орган': 'GOV',
+        'СОУ': 'SCHL',
         'Другие': 'OTH'
     }
     organization = PartnerOrganization(

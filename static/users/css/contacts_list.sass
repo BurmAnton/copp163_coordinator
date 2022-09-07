@@ -5,12 +5,22 @@ $table-hover-color: #0037ff
 $table-hover-bg-factor: .08
 @import "../../layout/bootstrap/scss/bootstrap"
 //Popups
+.disappear
+    display: none !important
+
 .modal
     .dropdown-toggle
         border: 1px solid #0000003b
     .import-field
         label, .errorlist
             display: none
+    .change_contact_panel
+        width: 100%
+        display: flex
+        justify-content: space-between
+    input:disabled, textarea:disabled
+        background-color: white
+
 //Messages
 .messages-board
     padding-top: 15px
