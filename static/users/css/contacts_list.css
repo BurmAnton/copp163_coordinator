@@ -9915,27 +9915,68 @@ textarea.form-control-lg {
   margin: auto;
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
   padding-top: 25px;
   margin-bottom: 15px;
 }
+.control-panel .row-1 {
+  display: flex;
+  justify-content: flex-start;
+  -moz-column-gap: 10px;
+       column-gap: 10px;
+}
+.control-panel .row-1 button {
+  max-width: 300px;
+  border: 1px solid #394959;
+}
+.control-panel .row-2 {
+  z-index: 200;
+  display: flex;
+  justify-content: space-between;
+}
 .control-panel .import-btn img {
   width: 21px;
+}
+.control-panel .table-search {
+  width: 200px;
+}
+.control-panel .table-search input {
+  border: 1px solid #394959;
+  padding-left: 27px;
+  background-image: url("../img/search-icon.png");
+  background-position: 4px 8px;
+  background-size: 20px;
+  background-repeat: no-repeat;
 }
 
 .contact-list {
   width: 85%;
   margin: auto;
   margin-bottom: 25px;
-  text-align: center;
+  text-align: left;
   background-color: rgba(255, 255, 255, 0);
   box-shadow: 1px 3px 8px 5px rgba(130, 130, 130, 0.6705882353);
   border-radius: 10px;
+}
+.contact-list .disapear-OrganizationFilter, .contact-list .disapear-ProjectFilter, .contact-list .disapear-OrganizationTypeFilter {
+  display: none !important;
 }
 .contact-list td {
   border: 0;
   border-bottom: 1px solid white;
   color: #394959;
   vertical-align: middle !important;
+}
+.contact-list thead {
+  z-index: 100;
+}
+.contact-list thead th div {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+.contact-list thead th div img {
+  width: 23px;
 }
 .contact-list thead:first-child th {
   background-color: #394959;

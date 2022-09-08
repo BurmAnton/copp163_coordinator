@@ -30,13 +30,17 @@ def contacts_list(request):
             )
             contact.save()
 
-            email = request.POST["email"]
-            email = PartnerContactEmail(email=email, contact=contact)
-            email.save()
+            emails = request.POST["email"].split(',')
+            for email in emails:
+                email = email.strip()
+                email = PartnerContactEmail(contact=contact, email=email)
+                email.save()
 
-            phone = request.POST["phone"]
-            phone = PartnerContactPhone(phone=phone, contact=contact)
-            phone.save()
+            phones = request.POST["phone"].split(',')
+            for phone in phones:
+                phone = phone.strip()
+                phone = PartnerContactPhone(contact=contact, phone=phone)
+                phone.save()
 
             projects_id = request.POST.getlist("project")
             contact.projects.add(*projects_id)

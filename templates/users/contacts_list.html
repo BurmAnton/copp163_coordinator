@@ -30,11 +30,11 @@
                         <input type="input" class="form-control" name="middle_name" id="MiddleName" placeholder="Отчество">
                     </div>
                     <div class="input-group mb-3">
-                        <input type="email" class="form-control" name="email" placeholder="Email" aria-label="Email" aria-describedby="at">
+                        <input type="input" class="form-control" name="email" placeholder="Email" aria-label="Emails" aria-describedby="at">
                         <span class="input-group-text" id="at">@</span>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номер телефона" maxlength="18"  required>
+                        <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номера телефона" required>
                     </div>
                     <div class="form mb-3">
                         <select class="selectpicker" title="Выберите организацию" data-width="100%" data-live-search="true" name="organization" id="Organization" required>
@@ -243,33 +243,113 @@
         {% endif %}
     </div>
     <div class="control-panel">
-        <div>
-            <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#AddContactModal">
-                Добавить контакт
-            </button>
-            <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#OrgModal">
-                Добавить организацию
+        <div class="row-1">
+            <div class="input-group mb-3 table-search">
+                <input type="text" class="form-control" id="myInput" onkeyup="SearchFunction()" placeholder="Поиск..">
+            </div>
+            <div class="form mb-3">
+                <select class="selectpicker" title="Выберите проекты" multiple data-width="100%" onchange="FilterFunction(6, 'ProjectFilter')" data-live-search="true" name="project" id="ProjectFilter" required>
+                    {% for project in projects %}
+                        <option class="project" value="{{project}}">{{project}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form mb-3">
+                <select class="selectpicker" title="Выберите организацию" multiple data-width="100%" onchange="FilterFunction(4, 'OrganizationFilter')" data-live-search="true" name="organizationfilter" id="OrganizationFilter" required>
+                    {% for organization in organizations %}
+                        <option class="organization" value="{{organization}}">{{organization}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form mb-3">
+                <select class="selectpicker" title="Выберите тип организацию" multiple data-width="100%" onchange="FilterFunction(10, 'OrganizationTypeFilter')" data-live-search="true" name="organizationfilter" id="OrganizationTypeFilter" required>
+                    <option class="organization-type" value="ЦО СПО">ЦО СПО</option>
+                    <option class="organization-type" value="ЦО ВО">ЦО ВО</option>
+                    <option class="organization-type" value="ЦО частные">ЦО частные</option>
+                    <option class="organization-type" value="СОУ">СОУ</option>
+                    <option class="organization-type" value="ЦО СПО">Гос. орган</option>
+                    <option class="organization-type" value="ЦО СПО">Другие</option>
+                </select>
+            </div>
+        </div>
+        <div class="row-2">
+            <div>
+                <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#AddContactModal">
+                    Добавить контакт
+                </button>
+                <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#OrgModal">
+                    Добавить организацию
+                </button>
+            </div>
+            <button class="btn btn-dark import-btn" data-bs-toggle="modal" data-bs-target="#ImportContactsModal">
+                <img src="{%static 'users/img/icon-xls-import.png' %}" alt="">
+                Импортировать контакты
             </button>
         </div>
-        <button class="btn btn-dark import-btn" data-bs-toggle="modal" data-bs-target="#ImportContactsModal">
-            <img src="{%static 'users/img/icon-xls-import.png' %}" alt="">
-            Импортировать контакты
-        </button>
     </div>
-    <table class="contact-list table table-light table-striped table-hover">
+    
+    <table class="contact-list table table-light table-striped table-hover sortable">
         <thead class="thead-dark sticky-top">
-            <th>Фамилия</th>
-            <th>Имя</th>
-            <th>Отчество</th>
-            <th>Организация</th>
-            <th>Должность</th>
-            <th>Проекты</th>
-            <th>Emails</th>
-            <th>Телефоны</th>
+            <th onclick="sortTable(1)">
+                <div>
+                    <div class="th-text">Фамилия</div> 
+                    <div class="th-sort disappear"><img src="{%static 'users/img/sort-icon.png' %}" alt=""></div> 
+                    <div class="th-sort-backward disappear"><img src="{%static 'users/img/sort-backward-icon.png' %}" alt=""></div> 
+                </div>
+            </th>
+            <th onclick="sortTable(2)">
+                <div>
+                    <div class="th-text">Имя</div> 
+                    <div class="th-sort disappear"><img src="{%static 'users/img/sort-icon.png' %}" alt=""></div> 
+                    <div class="th-sort-backward disappear"><img src="{%static 'users/img/sort-backward-icon.png' %}" alt=""></div> 
+                </div>
+            </th>
+            <th onclick="sortTable(3)">
+                <div>
+                    <div class="th-text">Отчество</div> 
+                    <div class="th-sort disappear"><img src="{%static 'users/img/sort-icon.png' %}" alt=""></div> 
+                    <div class="th-sort-backward disappear"><img src="{%static 'users/img/sort-backward-icon.png' %}" alt=""></div> 
+                </div>
+            </th>
+            <th onclick="sortTable(4)">
+                <div>
+                    <div class="th-text">Организация</div> 
+                    <div class="th-sort disappear"><img src="{%static 'users/img/sort-icon.png' %}" alt=""></div> 
+                    <div class="th-sort-backward disappear"><img src="{%static 'users/img/sort-backward-icon.png' %}" alt=""></div> 
+                </div>
+            </th>
+            <th onclick="sortTable(5)">
+                <div>
+                    <div class="th-text">Должность</div> 
+                    <div class="th-sort disappear"><img src="{%static 'users/img/sort-icon.png' %}" alt=""></div> 
+                    <div class="th-sort-backward disappear"><img src="{%static 'users/img/sort-backward-icon.png' %}" alt=""></div> 
+                </div>
+            </th>
+            <th onclick="sortTable(6)">
+                <div>
+                    <div class="th-text">Проекты</div> 
+                    <div class="th-sort disappear"><img src="{%static 'users/img/sort-icon.png' %}" alt=""></div> 
+                    <div class="th-sort-backward disappear"><img src="{%static 'users/img/sort-backward-icon.png' %}" alt=""></div> 
+                </div>
+            </th>
+            <th onclick="sortTable(7)">
+                <div>
+                    <div class="th-text">Emails</div> 
+                    <div class="th-sort disappear"><img src="{%static 'users/img/sort-icon.png' %}" alt=""></div> 
+                    <div class="th-sort-backward disappear"><img src="{%static 'users/img/sort-backward-icon.png' %}" alt=""></div> 
+                </div>
+            </th>
+            <th onclick="sortTable(8)">
+                <div>
+                    <div class="th-text">Телефоны</div> 
+                    <div class="th-sort disappear"><img src="{%static 'users/img/sort-icon.png' %}" alt=""></div> 
+                    <div class="th-sort-backward disappear"><img src="{%static 'users/img/sort-backward-icon.png' %}" alt=""></div> 
+                </div>
+            </th>
         </thead>
         {% for contact in contacts %}
             <tr class="contact-row">
-                <td style="display: none;" class="id">{{contact.id}}</td>
+                <td style="display: none !important;" class="id">{{contact.id}}</td>
                 <td class="last_name">{{contact.last_name}}</td> 
                 <td class="first_name">{{contact.first_name}}</td>
                 <td class="middle_name">{{contact.middle_name}}</td>
@@ -291,6 +371,7 @@
                     {% endfor %}
                 </td>
                 <td style="display: none;" class="commentary">{{contact.commentary}}</td>
+                <td style="display: none;" class="organization_type">{{contact.organization.get_organization_type_display}}</td>
             </tr>
         {% endfor %}
         <thead class="thead-dark">
