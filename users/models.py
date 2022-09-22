@@ -143,19 +143,3 @@ class MailAttachFile(models.Model):
             return self.attached_file
         return self.name
 
-class MailingList(models.Model):
-    email = models.ForeignKey(DistributionEmail, verbose_name="Email для рассылки", on_delete=CASCADE)
-    
-    subject = models.CharField("Тема письма", max_length=50, blank=False, null=False)
-    text = models.TextField("Текст письма", blank=False, null=False)
-    attached_files = models.ManyToManyField(MailAttachFile, related_name="maling_lists", verbose_name="Прикреплённые файлы", blank=True)
-    
-    send_date_time = models.DateTimeField("Дата и время отправки", default=datetime.now(), blank=False, null=False) 
-    recipients = models.ManyToManyField(PartnerContactEmail, related_name="maling_lists", verbose_name="Список рассылки", blank=True)
-
-    def __str__(self):
-        return f'{self.subject} ({self.send_date_time})' 
-
-    class Meta:
-        verbose_name = "Email рассылка"
-        verbose_name_plural = "Email рассылкы"

@@ -2,10 +2,12 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 
 from federal_empl_program.forms import ImportDataForm
 from .models import PartnerContact, Project, PartnerOrganization, PartnerContactEmail, PartnerContactPhone, PartnerOrganization
 from . import imports
+from . import sendpulse
 # Create your views here.
 @csrf_exempt
 def contacts_list(request):
@@ -93,15 +95,47 @@ def contacts_list(request):
             else:
                 data = form.errors
                 message = "IndexError"
+        elif 'send_emails' in request.POST:
+            from_email = request.POST["from_email"]
+            name = request.POST["name"]
+            subject = request.POST["subject"]
+            text = request.POST["text"]
+
+            organizationtype = request.POST.getlist("organizationtype")
+            projects = request.POST.getlist("projects")
+            organizations = request.POST.getlist("organizations")
+            emails = request.POST.getlist("emails")
+            mailing_list = emails
+            partners = PartnerContact.objects.all()
+            projects = Project.objects.filter(project_name__in=projects)
+            if len(projects) != 0:
+                partners = partners.filter(projects__in=projects)
+            if len(organizationtype) != 0 and len(organizations) != 0:
+                organizations = PartnerOrganization.objects.filter(name__in=organizations, organization_type__in=organizationtype)
+                partners = partners.filter(organization__in=organizations)
+            elif len(organizations) != 0:
+                organizations = PartnerOrganization.objects.filter(name__in=organizations)
+                partners = partners.filter(organization__in=organizations)
+            elif len(organizationtype) != 0:
+                organizations = PartnerOrganization.objects.filter(organization_type__in=organizationtype)
+                partners = partners.filter(organization__in=organizations)
+            mailing_list += list(PartnerContactEmail.objects.filter(contact__in=partners).values_list('email', flat=True))
+            message = sendpulse.send_campaign(from_email, name, subject, text, mailing_list)
+            if message == "BisyError":
+                data = ""
+            else:
+                data = message
+                message = "SendMails"
     contacts = PartnerContact.objects.all()
     projects = Project.objects.all()
     organizations = PartnerOrganization.objects.all()
-
+    
     return render(request, "users/contacts_list.html",{
         'contacts': contacts,
         'organizations': organizations,
         'projects': projects,
         'contacts_count': len(contacts),
+        'from_emails': sendpulse.get_emails(),
         'form': ImportDataForm(request.POST, request.FILES),
         'message': message,
         'data': data
@@ -120,7 +154,3 @@ def add_organization(request):
         )
         organization.save()
     return HttpResponseRedirect(reverse("contacts_list"))
-
-
-def send_mailing_list(request):
-    pass
