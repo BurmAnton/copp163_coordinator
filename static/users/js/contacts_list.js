@@ -2,10 +2,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if ( window.history.replaceState ) {
         window.history.replaceState( null, null, window.location.href );
       }
+    document.querySelector('#textMail').addEventListener("click", () => {
+        console.log(document.querySelector('#textMail').value)
+        document.querySelector('#textMail').value.replace(/(?:\r|\n|\r\n)/g, '<br>');
+    })
 
-      
     const input = document.querySelector('#id_import_file').classList;
-    console.log(input);
     input.add('form-control');
 
     document.querySelector('.change_contact_btn').addEventListener("click", () => {
@@ -241,3 +243,10 @@ function sortTable(col) {
     }
     column.classList.toggle('sorted');
   }
+
+  $('#some-field').keyup(function(e){
+    if (e.keyCode == '13') {
+       e.preventDefault();
+       $(this).append("<br />\n");
+    }
+  });

@@ -43,7 +43,12 @@ def send_campaign(from_email, from_name, subject, body, emails, attachments=None
         #Добавляем новые контакты в книгу
         SPApiProxy.add_emails_to_addressbook(addressbook['id'], emails)
 
+        body=body.replace('\r\n', '<br>')
+        body=body.replace('\r', '<br>')
+        body=body.replace('\n', '<br>')
         body = bytes(body, 'utf-8')
+
+        print(body)
         campaign = SPApiProxy.add_campaign(
             from_email=from_email,
             from_name=from_name,

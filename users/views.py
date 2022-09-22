@@ -1,3 +1,4 @@
+from ast import Not
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -108,18 +109,24 @@ def contacts_list(request):
             mailing_list = emails
             partners = PartnerContact.objects.all()
             projects = Project.objects.filter(project_name__in=projects)
+            is_filtered = False
             if len(projects) != 0:
                 partners = partners.filter(projects__in=projects)
+                is_filtered = True
             if len(organizationtype) != 0 and len(organizations) != 0:
                 organizations = PartnerOrganization.objects.filter(name__in=organizations, organization_type__in=organizationtype)
                 partners = partners.filter(organization__in=organizations)
+                is_filtered = True
             elif len(organizations) != 0:
                 organizations = PartnerOrganization.objects.filter(name__in=organizations)
                 partners = partners.filter(organization__in=organizations)
+                is_filtered = True
             elif len(organizationtype) != 0:
                 organizations = PartnerOrganization.objects.filter(organization_type__in=organizationtype)
                 partners = partners.filter(organization__in=organizations)
-            mailing_list += list(PartnerContactEmail.objects.filter(contact__in=partners).values_list('email', flat=True))
+                is_filtered = True
+            if is_filtered:
+                mailing_list += list(PartnerContactEmail.objects.filter(contact__in=partners).values_list('email', flat=True))
             message = sendpulse.send_campaign(from_email, name, subject, text, mailing_list)
             if message == "BisyError":
                 data = ""
