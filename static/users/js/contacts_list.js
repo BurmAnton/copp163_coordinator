@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+      }
+
+      
     const input = document.querySelector('#id_import_file').classList;
     console.log(input);
     input.add('form-control');

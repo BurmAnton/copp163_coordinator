@@ -185,6 +185,74 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="SendModal" tabindex="-1" aria-labelledby="SendModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="SendModalLabel">Создание рассылки</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'contacts_list' %}"  method="post">
+                    <div class="modal-body">
+                        <div class="form mb-3">
+                            <select class="selectpicker" title="Выберите почту для отправки" data-width="100%" data-live-search="true" name="from_email" id="FormEmailSend" required>
+                                {% for from_email in from_emails %}
+                                    <option class="from_email" value="{{from_email}}">{{from_email}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="input" class="form-control" name="name" id="Name" placeholder="Имя отправителя" required>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="input" class="form-control" name="subject" id="Subject" placeholder="Тема письма" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="commentary" class="form-label">Текст письма</label>
+                            <textarea class="form-control" name='text' id="textMail" rows="3"></textarea>
+                        </div>
+                        <p><b>Настройки списка отправки</b></p>
+                        <div class="form mb-3">
+                            <select class="selectpicker" title="Выберите тип организацию" multiple data-width="100%" data-live-search="true" name="organizationtype" id="OrganizationTypeMail">
+                                <option class="organization-type" value="ECSPO">ЦО СПО</option>
+                                <option class="organization-type" value="ECVO">ЦО ВО</option>
+                                <option class="organization-type" value="ECP">ЦО частные</option>
+                                <option class="organization-type" value="SCHL">СОУ</option>
+                                <option class="organization-type" value="GOV">Гос. орган</option>
+                                <option class="organization-type" value="OTH">Другие</option>
+                            </select>
+                        </div>
+                        <div class="form mb-3">
+                            <select class="selectpicker" title="Выберите проекты" multiple data-width="100%" data-live-search="true" name="projects" id="ProjectSend">
+                                {% for project in projects %}
+                                    <option class="project" value="{{project}}">{{project}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form mb-3">
+                            <select class="selectpicker" title="Выберите организации" multiple data-width="100%" data-live-search="true" name="organizations" id="OrganizationsSend">
+                                {% for organization in organizations %}
+                                    <option class="organization" value="{{organization}}">{{organization}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form mb-3 organization_input">
+                            <select class="selectpicker" title="Выберите адреса для отправки" multiple data-width="100%" data-live-search="true" name="emails" id="EmailsSend">
+                                {% for contact in contacts %}
+                                    {% for email in contact.emails.all %}
+                                        <option class="organization" value="{{email.email}}">{{contact}} ({{email.email}})</option>
+                                    {% endfor %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-dark" name="send_emails">Отправить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <div class="messages-board">
         {% if message == 'IndexError' %}
             <div class="alert alert-danger" role="alert">
@@ -215,7 +283,21 @@
             <div class="alert alert-warning" role="alert">
                 Контакт '{{data.last_name}} {{data.first_name}} {{data.middle_name}}' изменён!
             </div>
-        {% elif message %}
+        {% elif message == "BisyError" %}
+            <div class="alert alert-danger" role="alert">
+                Все адресные книги заняты, попробуйте повторить рассылку позже!
+            </div> 
+        {% elif message == "SendMails" %}
+            {% if data == 1 or data == 13 %}
+                <div class="alert alert-success" role="alert"> 
+                    Рассылка отправлена успешно!
+                </div>
+            {% else %}
+                <div class="alert alert-danger" role="alert">
+                    Не удалось отправить рассылку, попробуйте повторить рассылку позже.
+                </div> 
+            {% endif %}
+        {% elif message == True %}
             {% if data.1 != 0 %}
                 <div class="alert alert-success" role="alert">
                     Контактов добавлено: {{data.1}}
@@ -274,6 +356,10 @@
         </div>
         <div class="row-2">
             <div>
+                <button class="btn btn-dark import-btn" data-bs-toggle="modal" data-bs-target="#ImportContactsModal">
+                    <img src="{%static 'users/img/icon-xls-import.png' %}" alt="">
+                    Импортировать контакты
+                </button>
                 <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#AddContactModal">
                     Добавить контакт
                 </button>
@@ -281,9 +367,10 @@
                     Добавить организацию
                 </button>
             </div>
-            <button class="btn btn-dark import-btn" data-bs-toggle="modal" data-bs-target="#ImportContactsModal">
-                <img src="{%static 'users/img/icon-xls-import.png' %}" alt="">
-                Импортировать контакты
+            
+            <button class="btn btn-dark import-btn" data-bs-toggle="modal" data-bs-target="#SendModal">
+                <img src="{%static 'users/img/upload-mail-icon.png' %}" alt="">
+                Создать рассылку
             </button>
         </div>
     </div>
