@@ -21,13 +21,13 @@ def get_graphic():
     approved_appl = []
     started_appl = []
     
-    end_date = datetime.now()
+    end_date = datetime.now() - timedelta(7)
     if end_date.weekday() < 4:
         delta = timedelta(4 - end_date.weekday())
         end_date = end_date + delta
     elif end_date.weekday() > 4:
-        delta = timedelta(end_date.weekday() - 4)
-        end_date = end_date - delta
+        delta = timedelta(6 - end_date.weekday() + 5)
+        end_date = end_date + delta
     start_date = end_date - timedelta(7*7)
     start_week_date = start_date
     end_week_date = start_date + timedelta(7)
@@ -201,7 +201,7 @@ def ed_centers_empl(request, **kwargs):
     quota_fby_fact_p = round(qouta_fby_fact / qouta_fby_goal * 100)
     quota_fby = f'{qouta_fby_fact}/{qouta_fby_goal} ({quota_fby_fact_p}%)'
 
-    qouta_rf_goal = 915
+    qouta_rf_goal = 311
     categories = CitizenCategory.objects.filter(short_name__in=['Безработные зарег. в ЦЗН', 'Безработные незарег. в ЦЗН', 'Под риском увольнения'])
     qouta_rf_ADM = Application.objects.filter(appl_status='ADM', citizen_category__in=categories).count()
     qouta_rf_SED = Application.objects.filter(appl_status='SED', citizen_category__in=categories).count()

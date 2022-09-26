@@ -32,49 +32,52 @@
             <div id="content-wrap">
                 <nav class="navbar navbar-expand-lg navbar-dark">
                     {% if request.user.is_authenticated %}
-                    <div class="container-fluid">
-                        <a class="navbar-brand" href="#">
-                            <img src="{% static 'layout/img/logo_compact.svg' %}" alt="Logo_compact" class="d-inline-block align-text-top">
-                        </a>
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                {% if request.user.is_superuser %}
-                                <ul class="navbar-nav">
-                                    <li class="nav-item dropdown nav-link-fp">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        ФП «Содействие занятости»
-                                    </a>
-                                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                            <li><a class="dropdown-item" href="{% url 'group_list' %}">Ближайшие группы</a></li>
-                                            <li><a class="dropdown-item" href="{% url 'ed_centers_empl' %}">Статистика по заявкам</a></li>
-                                            {% if request.user.is_superuser %}
-                                                <li><a class="dropdown-item" href="{% url 'import_express' %}">Импорт с экспресса</a></li>
-                                            {% endif %}
-                                        </ul>
-                                    </li>
+                        <div class="container-fluid">
+                            <a class="navbar-brand" href="#">
+                                <img src="{% static 'layout/img/logo_compact.svg' %}" alt="Logo_compact" class="d-inline-block align-text-top">
+                            </a>
+                            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+                            <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+                                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    {% if request.user.is_superuser %}
+                                    <ul class="navbar-nav">
+                                        <li class="nav-item dropdown nav-link-fp">
+                                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            ФП «Содействие занятости»
+                                        </a>
+                                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                                <li><a class="dropdown-item" href="{% url 'group_list' %}">Ближайшие группы</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'ed_centers_empl' %}">Статистика по заявкам</a></li>
+                                                {% if request.user.is_superuser %}
+                                                    <li><a class="dropdown-item" href="{% url 'import_express' %}">Импорт с экспресса</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{% url 'contacts_list' %}">Партнёры</a>
+                                        </li>
+                                    </ul>
+                                    {% endif %}
                                 </ul>
-                                {% endif %}
-                            </ul>
-                            <div class="d-flex">
-                                <a href="{% url 'admin:index' %}">
-                                    <button type="submit" class="btn btn-dark admin-button">Админ-панель</button> 
-                                </a>
-                                <div>
-                                    <a class="logout" href="{% url 'logout' %}">
-                                        <div class="logout-img">
-                                            <img src="{% static 'layout/img/logout-icon.png' %}" alt="logout-icon">
-                                        </div>
-                                        <div>
-                                            <p>Выйти</p>
-                                        </div>
+                                <div class="d-flex">
+                                    <a href="{% url 'admin:index' %}">
+                                        <button type="submit" class="btn btn-dark admin-button">Админ-панель</button> 
                                     </a>
+                                    <div>
+                                        <a class="logout" href="{% url 'logout' %}">
+                                            <div class="logout-img">
+                                                <img src="{% static 'layout/img/logout-icon.png' %}" alt="logout-icon">
+                                            </div>
+                                            <div>
+                                                <p>Выйти</p>
+                                            </div>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                     {% else %}
                         <div class="container container-fluid">
                             <div class="navbar-nav">
