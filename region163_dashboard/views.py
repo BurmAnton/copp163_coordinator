@@ -180,6 +180,9 @@ def ed_centers_empl(request, **kwargs):
     qouta_fb_ADM = Application.objects.filter(appl_status='ADM', citizen_category__in=categories).count()
     qouta_fb_SED = Application.objects.filter(appl_status='SED', citizen_category__in=categories).count()
     qouta_fb_COMP = Application.objects.filter(appl_status__in=['COMP','EXAM'], citizen_category__in=categories).count()
+    qouta_fb_72 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=72).count()
+    qouta_fb_144 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=144).count()
+    qouta_fb_256 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=256).count()
     quota_fb_fact = Application.objects.filter(appl_status__in=quote_stages, citizen_category__in=categories).count()
     quota_fb_fact_p = round(quota_fb_fact / quote_fb_goal * 100)
     quota_fb = f'{quota_fb_fact}/{quote_fb_goal} ({quota_fb_fact_p}%)'
@@ -197,6 +200,9 @@ def ed_centers_empl(request, **kwargs):
     qouta_fby_ADM = Application.objects.filter(appl_status='ADM', citizen_category__in=categories).count()
     qouta_fby_SED = Application.objects.filter(appl_status='SED', citizen_category__in=categories).count()
     qouta_fby_COMP = Application.objects.filter(appl_status__in=['COMP','EXAM'], citizen_category__in=categories).count()
+    qouta_fby_72 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=72).count()
+    qouta_fby_144 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=144).count()
+    qouta_fby_256 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=256).count()
     qouta_fby_fact = Application.objects.filter(appl_status__in=quote_stages, citizen_category__in=categories).count()
     quota_fby_fact_p = round(qouta_fby_fact / qouta_fby_goal * 100)
     quota_fby = f'{qouta_fby_fact}/{qouta_fby_goal} ({quota_fby_fact_p}%)'
@@ -206,12 +212,18 @@ def ed_centers_empl(request, **kwargs):
     qouta_rf_ADM = Application.objects.filter(appl_status='ADM', citizen_category__in=categories).count()
     qouta_rf_SED = Application.objects.filter(appl_status='SED', citizen_category__in=categories).count()
     qouta_rf_COMP = Application.objects.filter(appl_status__in=['COMP','EXAM'], citizen_category__in=categories).count()
+    qouta_rf_72 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=72).count()
+    qouta_rf_144 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=144).count()
+    qouta_rf_256 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=256).count()
     qouta_rf_fact = Application.objects.filter(appl_status__in=quote_stages, citizen_category__in=categories).count()
     quota_rf_fact_p = round(qouta_rf_fact / qouta_rf_goal * 100)
     quota_rf = f'{qouta_rf_fact}/{qouta_rf_goal} ({quota_rf_fact_p}%)'
 
     all_quotas_p = round(appl_count / (quote_fb_goal+qouta_rf_goal) * 100)
     all_quotas = f'{appl_count}/{quote_fb_goal+qouta_rf_goal} ({all_quotas_p}%)'
+    qouta_all_72 = qouta_fby_72 + qouta_fb_72 + qouta_rf_72
+    qouta_all_144 = qouta_fby_144 + qouta_fb_144 + qouta_rf_144
+    qouta_all_256 = qouta_fby_256 + qouta_fb_256 + qouta_rf_256
 
     return render(request, 'region163_dashboard/ed_centers_empl.html', {
         'stat': stat,
@@ -229,15 +241,27 @@ def ed_centers_empl(request, **kwargs):
         'qouta_fb_ADM': qouta_fb_ADM,
         'qouta_fb_SED': qouta_fb_SED,
         'qouta_fb_COMP': qouta_fb_COMP,
+        'qouta_fb_72': qouta_fb_72,
+        'qouta_fb_144': qouta_fb_144,
+        'qouta_fb_256': qouta_fb_256,
         'qouta_fby': quota_fby,
         'qouta_fby_ADM': qouta_fby_ADM,
         'qouta_fby_SED': qouta_fby_SED,
         'qouta_fby_COMP': qouta_fby_COMP,
+        'qouta_fby_72': qouta_fby_72,
+        'qouta_fby_144': qouta_fby_144,
+        'qouta_fby_256': qouta_fby_256,
         'quota_rf': quota_rf,
         'qouta_rf_ADM': qouta_rf_ADM,
         'qouta_rf_SED': qouta_rf_SED,
         'qouta_rf_COMP': qouta_rf_COMP,
-        'all_quotas': all_quotas
+        'qouta_rf_72': qouta_rf_72,
+        'qouta_rf_144': qouta_rf_144,
+        'qouta_rf_256': qouta_rf_256,
+        'all_quotas': all_quotas,
+        'qouta_all_72': qouta_all_72,
+        'qouta_all_144': qouta_all_144,
+        'qouta_all_256': qouta_all_256,
     })
 
 
