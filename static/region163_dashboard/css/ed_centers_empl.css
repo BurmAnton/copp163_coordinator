@@ -15,8 +15,10 @@
   width: 90%;
   margin: auto;
 }
-.stat .qouta_table .table-dark td {
+.stat .table-darkblue td {
   background-color: #394959 !important;
+  color: white;
+  font-weight: bold;
 }
 .stat .graphic {
   display: flex;
