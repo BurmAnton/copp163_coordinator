@@ -143,9 +143,6 @@ class GroupAdmin(admin.ModelAdmin):
         return queryset
 
 
-    fields = ('applicant', 'phone_')
-
-
 CitizenForm = select2_modelform(Application, attrs={'width': '400px'})
 
 class CitizensInline(admin.TabularInline):

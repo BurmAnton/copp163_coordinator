@@ -1,3 +1,5 @@
+import pytz
+
 from users.models import User
 from openpyxl import load_workbook
 
@@ -170,6 +172,7 @@ def load_application(sheet_dict, row, applicant):
     application_date = sheet_dict["Дата создания заявки на обучение"][row]
     application_date = datetime.strptime(application_date, "%Y-%m-%d %H:%M:%S")
     application_date = timezone.make_aware(application_date)
+    application_date.astimezone(pytz.timezone('Europe/Samara'))
     applications = Application.objects.filter(applicant=applicant)
     if sheet_dict["Статус заявки на обучение"][row] == 'Заявка отменена':
         applications_by_date = applications.filter(creation_date=application_date)
@@ -205,13 +208,15 @@ def load_application(sheet_dict, row, applicant):
 def add_application(sheet_dict, row, applicant):
     creation_date = datetime.strptime(sheet_dict["Дата создания заявки на обучение"][row], "%Y-%m-%d %H:%M:%S")
     creation_date = timezone.make_aware(creation_date)
+    creation_date.astimezone(pytz.timezone('Europe/Samara'))
     contract_type = set_contract_type(sheet_dict["Тип договора"][row])
     express_status = sheet_dict["Статус заявки на обучение"][row]
     appl_status, admit_status = set_application_status(express_status)
-    change_status_date = sheet_dict["Дата последней смены статуса"][row]
+    change_status_date = datetime.strptime(sheet_dict["Дата последней смены статуса"][row], "%Y-%m-%d %H:%M:%S")
+    change_status_date = timezone.make_aware(change_status_date)
     category = sheet_dict["Категория слушателя"][row]
     category = CitizenCategory.objects.filter(official_name=category)
-    print(category)
+
     if len(category) != 0:
         category = category[0]
     else:
@@ -245,6 +250,7 @@ def update_application(sheet_dict, row, applicant, application_date):
     application = Application.objects.get(applicant=applicant, creation_date=application_date)
     creation_date = datetime.strptime(sheet_dict["Дата создания заявки на обучение"][row], "%Y-%m-%d %H:%M:%S")
     creation_date = timezone.make_aware(creation_date)
+    creation_date.astimezone(pytz.timezone('Europe/Samara'))
     if application.creation_date != creation_date:
         application.creation_date = creation_date
     contract_type = set_contract_type(sheet_dict["Тип договора"][row])
@@ -254,15 +260,15 @@ def update_application(sheet_dict, row, applicant, application_date):
     aplication_status = update_application_status(express_status, application)
     appl_status = aplication_status[0]
     admit_status = aplication_status[1]
-    application.change_status_date = sheet_dict["Дата последней смены статуса"][row]
+    change_status_date = datetime.strptime(sheet_dict["Дата последней смены статуса"][row], "%Y-%m-%d %H:%M:%S")
+    change_status_date = timezone.make_aware(change_status_date)
+    application.change_status_date = change_status_date
     if application.appl_status != appl_status:
         application.appl_status = appl_status
     if application.admit_status != admit_status:
         application.admit_status = admit_status
     category = sheet_dict["Категория слушателя"][row]
-    print(category)
     category = CitizenCategory.objects.filter(official_name=category)
-    print(category)
     if len(category) != 0:
         category = category[0]
     else:
