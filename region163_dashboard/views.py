@@ -187,7 +187,7 @@ def ed_centers_empl(request, **kwargs):
     quota_fb_fact_p = round(quota_fb_fact / quote_fb_goal * 100)
     quota_fb = f'{quota_fb_fact}/{quote_fb_goal} ({quota_fb_fact_p}%)'
 
-    qouta_fby_goal = 166
+    qouta_fby_goal = 125
     categories = CitizenCategory.objects.filter(short_name__in=[
             'Граждане до 35 лет обратившиеся в СЗН',
             'Граждане до 35 лет находящиеся под риском увольнения', 
@@ -221,9 +221,9 @@ def ed_centers_empl(request, **kwargs):
 
     all_quotas_p = round(appl_count / (quote_fb_goal+qouta_rf_goal) * 100)
     all_quotas = f'{appl_count}/{quote_fb_goal+qouta_rf_goal} ({all_quotas_p}%)'
-    qouta_all_72 = qouta_fby_72 + qouta_fb_72 + qouta_rf_72
-    qouta_all_144 = qouta_fby_144 + qouta_fb_144 + qouta_rf_144
-    qouta_all_256 = qouta_fby_256 + qouta_fb_256 + qouta_rf_256
+    qouta_all_72 = qouta_fb_72 + qouta_rf_72
+    qouta_all_144 = qouta_fb_144 + qouta_rf_144
+    qouta_all_256 = qouta_fb_256 + qouta_rf_256
 
     return render(request, 'region163_dashboard/ed_centers_empl.html', {
         'stat': stat,
