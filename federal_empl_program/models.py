@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 from users.models import User
 from django.db.models.deletion import DO_NOTHING, CASCADE
@@ -121,7 +122,14 @@ class Application(models.Model):
     ib_course = models.BooleanField("Курсы ИП", default=False)
     is_enrolled = models.BooleanField("Приказ о зачисл.", default=False)
     is_deducted = models.BooleanField("Приказ об отчисл.", default=False)
-    is_working = models.BooleanField("Трудоустроен до начала обучения", default=False)
+    is_working = models.BooleanField("Трудоустроен", default=False)
+    PAYMENT_OPTIONS = [
+        ('DP', 'Не оплачен'),
+        ('PF', 'Оплачен (100%)'),
+        ('PP', 'Оплачен (70%)'),
+    ]
+    payment = models.CharField("Статус оплаты", max_length=2, choices=PAYMENT_OPTIONS, blank=True, null=True, default="DP")
+    payment_amount = models.IntegerField("Оплата", default=0)
     WORK_SEARCH_STAGES = [
         ('CONT', 'Заключил договор'),
         ('CERT', 'Предоставил справку о самозанятости'),
