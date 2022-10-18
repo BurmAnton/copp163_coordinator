@@ -1,3 +1,4 @@
+from pickle import TRUE
 from django.contrib.admin.filters import SimpleListFilter
 from users.models import User
 from django.contrib import admin
@@ -6,8 +7,14 @@ from django.urls import reverse
 from django.forms import TextInput
 from django.db import models
 
+from admin_totals.admin import ModelAdminTotals
+from django.db.models import Sum, Avg
+from django.db.models.functions import Coalesce
+from djaa_list_filter.admin import (
+    AjaxAutocompleteListFilterModelAdmin,
+)
 from easy_select2 import select2_modelform
-from django_admin_listfilter_dropdown.filters import  RelatedDropdownFilter, ChoiceDropdownFilter, RelatedOnlyDropdownFilter
+from django_admin_listfilter_dropdown.filters import  RelatedDropdownFilter, ChoiceDropdownFilter, RelatedOnlyDropdownFilter, DropdownFilter
 from field_history.models import FieldHistory
 
 from .models import Application, Questionnaire, InteractionHistory, CitizenCategory, CategoryInstruction
@@ -47,10 +54,10 @@ class CitizenCategoryAdmin(admin.ModelAdmin):
 ApplicationForm = select2_modelform(Application, attrs={'width': '400px'})
 
 @admin.register(Application)
-class ApplicationAdmin(admin.ModelAdmin):
+class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
     form = ApplicationForm
     inlines = [InteractionHistoryInLine, QuestionnaireInline]
-
+    
     readonly_fields = ['get_applicant', 'get_history', 'id', 'get_phone', 'get_email', 'get_city']
 
     fieldsets = (
@@ -108,20 +115,16 @@ class ApplicationAdmin(admin.ModelAdmin):
 
     search_fields = ['applicant__phone_number','applicant__email','applicant__snils_number',
     'applicant__first_name','applicant__middle_name','applicant__last_name', 'id']
-    actions = ['allow_applications']
+    
 
-    list_display = (
-        'id',
+    list_display = [
         'applicant', 
-        'appl_status', 
-        'citizen_category',
-        'creation_date',
-        'change_status_date',
-        'competence',
-        'get_phone',
-        'get_comment',
-        'get_comment_date'
-    )
+        'is_working',
+        'payment',
+        'payment_amount',
+        'education_program'
+    ]
+    list_totals = ['payment_amount',]
     def get_form(self, request, obj=None, **kwargs):
         form = super(ApplicationAdmin, self).get_form(request, obj, **kwargs)
         cl_group = Group.objects.filter(name='Представитель ЦО')
@@ -132,26 +135,52 @@ class ApplicationAdmin(admin.ModelAdmin):
                 form.base_fields['education_program'].widget.attrs['style'] = 'width: 75em;'
                 form.base_fields['education_center'].widget.attrs['style'] = 'width: 75em;'
         return form
-
+    autocomplete_list_filter = ('education_center', 'education_program', 'group', 'competence')
     list_filter = (
+        ('group__start_date', DropdownFilter),
+        ('group__end_date', DropdownFilter),
         ('citizen_consultant', RelatedOnlyDropdownFilter),
-        ('admit_status', ChoiceDropdownFilter), 
         ('appl_status', ChoiceDropdownFilter),
-        ('competence', RelatedOnlyDropdownFilter),
-        ('education_program', RelatedOnlyDropdownFilter),
-        ('education_center', RelatedOnlyDropdownFilter),
-        ('citizen_category', RelatedOnlyDropdownFilter),
-        ('ed_ready_time',ChoiceDropdownFilter),
-        ('group', RelatedOnlyDropdownFilter),
-        ('contract_type', ChoiceDropdownFilter),
-        ('ed_center_group', ChoiceDropdownFilter),
-        'change_status_date'
+        ('citizen_category', RelatedOnlyDropdownFilter)
     )
-
+    
+    actions = ['allow_applications', 'get_job', 'get_jobless', 'get_paid', 'get_paid_part', 'cancel_payment']
     def allow_applications(self, request, queryset):
         queryset.update(appl_status='ADM')
         queryset.update(admit_status='ADM')
     allow_applications.short_description='Изменить статус на допущен к обучению'
+
+    def get_job(self, request, queryset):
+        queryset.update(is_working=True)
+    get_job.short_description='Трудоустроить'
+
+    def get_jobless(self, request, queryset):
+        queryset.update(is_working=False)
+    get_jobless.short_description='Уволить'
+
+    def get_paid(self, request, queryset):
+        full_payment = queryset.filter(is_working=True)
+        full_payment.update(payment="PF")
+        full_payment_72 = full_payment.filter(education_program__duration=72)
+        full_payment_72.update(payment_amount=23000)
+        full_payment_144 = full_payment.filter(education_program__duration=144)
+        full_payment_144.update(payment_amount=46000)
+        full_payment_256 = full_payment.filter(education_program__duration=256)
+        full_payment_256.update(payment_amount=92000)
+        part_payment = queryset.filter(is_working=False)
+        part_payment.update(payment="PP")
+        part_payment_72 = part_payment.filter(education_program__duration=72)
+        part_payment_72.update(payment_amount=16100)
+        part_payment_144 = part_payment.filter(education_program__duration=144)
+        part_payment_144.update(payment_amount=32200)
+        part_payment_256 = part_payment.filter(education_program__duration=256)
+        part_payment_256.update(payment_amount=64400)
+    get_paid.short_description='Оплатить'
+
+    def cancel_payment(self, request, queryset):
+        queryset.update(payment="DP")
+        queryset.update(payment_amount=0)
+    cancel_payment.short_description='Отменить оплату'
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -161,7 +190,7 @@ class ApplicationAdmin(admin.ModelAdmin):
             if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
                 education_centers = EducationCenter.objects.filter(contact_person=request.user)
                 return queryset.filter(education_center__in=education_centers)
-        return queryset
+        return queryset.exclude(appl_status='NCOM')
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         group = Group.objects.filter(name='Специалист по работе с клиентами')
@@ -185,6 +214,20 @@ class ApplicationAdmin(admin.ModelAdmin):
                 ]
         return self.readonly_fields
 
+    def changelist_view(self, request, extra_context=None):
+        request_get = request.GET
+        total = Application.objects.all()
+        for query in request_get.dict():
+            try:
+                query = f'{query}={request_get[query]}'
+                total = total.filter(query)
+            except:
+                print(query)
+        total = total.aggregate(total=Sum('payment_amount'))['total']
+        context = {
+            'total': total,
+        }
+        return super(ApplicationAdmin, self).changelist_view(request, extra_context=context)
 
 
 @admin.register(CategoryInstruction)
