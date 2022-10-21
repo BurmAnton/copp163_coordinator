@@ -21,7 +21,7 @@ from pysendpulse.pysendpulse import PySendPulse
 
 from users.models import User
 from citizens.models import Citizen
-from federal_empl_program.models import Application, CitizenCategory, Questionnaire, CategoryInstruction
+from federal_empl_program.models import Application, CitizenCategory, Grant, Questionnaire, CategoryInstruction
 from education_centers.models import Competence, EducationCenterGroup, EducationCenter
 from vocational_guidance.models import VocGuidTest
 
@@ -462,7 +462,25 @@ def group_select(request):
     return HttpResponseRedirect(reverse("group_list"))
 
 
+@csrf_exempt
 def quote_dashboard(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        ed_center_id = data.get("ed_center_id", "")
+        value = data.get("value", "")
+        qoute = data.get("qoute", "")
+        lenght = data.get("lenght", "")
+        ed_center = EducationCenter.objects.get(id=ed_center_id)
+        if qoute == 1:
+            if lenght == 72: ed_center.quota_1_72 = value
+            elif lenght == 144: ed_center.quota_1_144 = value
+            else: ed_center.quota_1_256 = value
+        else:
+            if lenght == 72: ed_center.quota_2_72 = value
+            elif lenght == 144: ed_center.quota_2_144 = value
+            else: ed_center.quota_2_256 = value
+        ed_center.save()
+        return JsonResponse({"message": "Quote change successfully."}, status=201)
     ed_centers = EducationCenter.objects.all().annotate(
         quote_all_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'])),
         quote_1_72_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=72)),
@@ -473,14 +491,28 @@ def quote_dashboard(request):
         quote_2_256_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=2, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=256))
     ).order_by('-quote_all_count')
     quotes = dict()
+
     for i in range(1,3):
-        quote_all = Application.objects.filter(grant=f'{i}', appl_status__in=['SED', 'COMP', 'EXAM'])
+        quote_all = Application.objects.filter(grant=f'{i}', appl_status__in=['SED', 'COMP'])
         quotes[f'quote_{i}_all'] = len(quote_all)
         quotes[f'quote_{i}_72'] = len(quote_all.filter(education_program__duration=72))
         quotes[f'quote_{i}_144'] = len(quote_all.filter(education_program__duration=144))
         quotes[f'quote_{i}_256'] = len(quote_all.filter(education_program__duration=256))
+        quotes[f'quote_{i}_72_remains'] = Grant.objects.get(grant_name=f'Грант {i}').qoute_72 - len(quote_all.filter(education_program__duration=72))
+        quotes[f'quote_{i}_144_remains'] = Grant.objects.get(grant_name=f'Грант {i}').qoute_144 - len(quote_all.filter(education_program__duration=144))
+        quotes[f'quote_{i}_256_remains'] = Grant.objects.get(grant_name=f'Грант {i}').qoute_256 - len(quote_all.filter(education_program__duration=256))
+        quote_all_sed = Application.objects.filter(grant=f'{i}', appl_status='SED')
+        quotes[f'quote_{i}_72_sed'] = len(quote_all_sed.filter(education_program__duration=72))
+        quotes[f'quote_{i}_144_sed'] = len(quote_all_sed.filter(education_program__duration=144))
+        quotes[f'quote_{i}_256_sed'] = len(quote_all_sed.filter(education_program__duration=256))
+        quote_all_comp = Application.objects.filter(grant=f'{i}', appl_status='COMP')
+        quotes[f'quote_{i}_72_comp'] = len(quote_all_comp.filter(education_program__duration=72))
+        quotes[f'quote_{i}_144_comp'] = len(quote_all_comp.filter(education_program__duration=144))
+        quotes[f'quote_{i}_256_comp'] = len(quote_all_comp.filter(education_program__duration=256))
 
     return render(request, 'federal_empl_program/quote_dashboard.html', {
         'ed_centers': ed_centers,
-        'quotes': quotes
+        'quotes': quotes,
+        'grant_1': Grant.objects.get(grant_name='Грант 1'),
+        'grant_2': Grant.objects.get(grant_name='Грант 2')
     })

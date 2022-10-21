@@ -16,7 +16,7 @@ from easy_select2 import select2_modelform
 from django_admin_listfilter_dropdown.filters import  RelatedDropdownFilter, ChoiceDropdownFilter, RelatedOnlyDropdownFilter, DropdownFilter
 from field_history.models import FieldHistory
 
-from .models import Application, Questionnaire, InteractionHistory, CitizenCategory, CategoryInstruction
+from .models import Application, Questionnaire, InteractionHistory, CitizenCategory, CategoryInstruction, Grant
 from education_centers.models import EducationCenter, EducationProgram
 from users.models import Group
 
@@ -51,6 +51,11 @@ class CitizenCategoryAdmin(admin.ModelAdmin):
     )
 
 ApplicationForm = select2_modelform(Application, attrs={'width': '400px'})
+
+
+@admin.register(Grant)
+class GrantAdmin(admin.ModelAdmin):
+    list_display = ['grant_name', 'qoute_72', 'qoute_144', 'qoute_256']
 
 @admin.register(Application)
 class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
