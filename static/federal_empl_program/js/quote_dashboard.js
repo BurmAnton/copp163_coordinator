@@ -41,3 +41,26 @@ function CountQuotes(qoute, lenght){
         cell.innerHTML = quote - fact
     })
 }
+
+function SearchFunction() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase().trim();
+    table = document.querySelector(".table-centers");
+    tr = table.getElementsByTagName("tr");
+    
+    for (i = 3; i < tr.length; i++) {
+        let display = "none"
+        let fields = [0,]
+        fields.forEach(col => {
+            td = tr[i].getElementsByTagName("td")[col];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    display = "";
+                }
+            }    
+        })
+        tr[i].style.display = display;
+    }
+}
