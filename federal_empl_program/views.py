@@ -5,6 +5,7 @@ import string
 import random
 import json
 
+from django.db.models import Q, Count
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
@@ -460,3 +461,26 @@ def group_select(request):
                 application.save()
     return HttpResponseRedirect(reverse("group_list"))
 
+
+def quote_dashboard(request):
+    ed_centers = EducationCenter.objects.all().annotate(
+        quote_all_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'])),
+        quote_1_72_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=72)),
+        quote_1_144_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=144)),
+        quote_1_256_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=256)),
+        quote_2_72_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=2, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=72)),
+        quote_2_144_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=2, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=144)),
+        quote_2_256_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=2, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=256))
+    ).order_by('-quote_all_count')
+    quotes = dict()
+    for i in range(1,3):
+        quote_all = Application.objects.filter(grant=f'{i}', appl_status__in=['SED', 'COMP', 'EXAM'])
+        quotes[f'quote_{i}_all'] = len(quote_all)
+        quotes[f'quote_{i}_72'] = len(quote_all.filter(education_program__duration=72))
+        quotes[f'quote_{i}_144'] = len(quote_all.filter(education_program__duration=144))
+        quotes[f'quote_{i}_256'] = len(quote_all.filter(education_program__duration=256))
+
+    return render(request, 'federal_empl_program/quote_dashboard.html', {
+        'ed_centers': ed_centers,
+        'quotes': quotes
+    })

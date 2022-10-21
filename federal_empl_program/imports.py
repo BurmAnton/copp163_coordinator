@@ -212,6 +212,7 @@ def add_application(sheet_dict, row, applicant):
     contract_type = set_contract_type(sheet_dict["Тип договора"][row])
     express_status = sheet_dict["Статус заявки на обучение"][row]
     appl_status, admit_status = set_application_status(express_status)
+
     change_status_date = datetime.strptime(sheet_dict["Дата последней смены статуса"][row], "%Y-%m-%d %H:%M:%S")
     change_status_date = timezone.make_aware(change_status_date)
     category = sheet_dict["Категория слушателя"][row]
@@ -219,8 +220,14 @@ def add_application(sheet_dict, row, applicant):
 
     if len(category) != 0:
         category = category[0]
-    else:
-        category = None
+        if category.official_name == "Работники, находящиеся под риском увольнения, включая введение режима неполного рабочего времени, простой, временную приостановку работ, предоставление отпусков без сохранения заработной платы, проведение мероприятий по высвобождению работников":
+            grant = '2'
+        elif category.official_name == "Безработные граждане, зарегистрированные в органах службы занятости":
+            grant = '2'
+        else: 
+            grant = '1'
+            grant = None
+    else: category = None
     if len(Group.objects.filter(name=sheet_dict["Группа"][row])) == 0:
         group = None
         ed_ready_time = None
@@ -238,6 +245,7 @@ def add_application(sheet_dict, row, applicant):
         change_status_date=change_status_date,
         citizen_category=category,
         group=group,
+        grant=grant,
         contract_type=contract_type,
         ed_ready_time=ed_ready_time
     )
@@ -271,9 +279,16 @@ def update_application(sheet_dict, row, applicant, application_date):
     category = CitizenCategory.objects.filter(official_name=category)
     if len(category) != 0:
         category = category[0]
-    else:
+        if category.official_name == "Работники, находящиеся под риском увольнения, включая введение режима неполного рабочего времени, простой, временную приостановку работ, предоставление отпусков без сохранения заработной платы, проведение мероприятий по высвобождению работников":
+            grant = '2'
+        elif category.official_name == "Безработные граждане, зарегистрированные в органах службы занятости":
+            grant = '2'
+        else: grant = '1'
+    else: 
         category = None
+        grant = None
     application.citizen_category = category
+    application.grant = grant
     application.save()
     if len(Group.objects.filter(name=sheet_dict["Группа"][row])) == 0:
         group = None

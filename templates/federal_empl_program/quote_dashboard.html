@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load  mathfilters %}
+{% block title %}Import data{% endblock %}
+{% block style %}
+    <link href="{% static 'federal_empl_program/css/quote_dashboard.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+{% endblock %}
+
+{% block body %}
+    <table class="table table-striped">
+        <thead class="sticky-top">
+            <tr> 
+                <th scope="col" class='ed_center-head' rowspan="3">Центр обучения</th>
+                <th scope="col" class="stage" colspan="9">Квота 1</th>
+                <th scope="col" class="stage" colspan="9">Квота 2</th>
+            </tr>
+            <tr>
+                <th scope="col" class="stage" colspan="3">72ч</th>
+                <th scope="col" class="stage" colspan="3">144ч</th>
+                <th scope="col" class="stage" colspan="3">256ч</th>
+                <th scope="col" class="stage" colspan="3">72ч</th>
+                <th scope="col" class="stage" colspan="3">144ч</th>
+                <th scope="col" class="stage" colspan="3">256ч</th>
+            </tr>
+            <tr>
+                <th scope="col" class="stage">квота</th>
+                <th scope="col" class="stage">выполнено</th>
+                <th scope="col" class="stage">осталось</th>
+                <th scope="col" class="stage">квота</th>
+                <th scope="col" class="stage">выполнено</th>
+                <th scope="col" class="stage">осталось</th>
+                <th scope="col" class="stage">квота</th>
+                <th scope="col" class="stage">выполнено</th>
+                <th scope="col" class="stage">осталось</th>
+                <th scope="col" class="stage">квота</th>
+                <th scope="col" class="stage">выполнено</th>
+                <th scope="col" class="stage">осталось</th>
+                <th scope="col" class="stage">квота</th>
+                <th scope="col" class="stage">выполнено</th>
+                <th scope="col" class="stage">осталось</th>
+                <th scope="col" class="stage">квота</th>
+                <th scope="col" class="stage">выполнено</th>
+                <th scope="col" class="stage">осталось</th>
+            </tr>
+        </thead>
+        {% for ed_center in ed_centers %}
+            <tr>
+                <td class='ed_center'>{{ed_center.name}}</td>
+                <td>{{ed_center.quota_1_72}}</td>
+                <td>{{ed_center.quote_1_72_count}}</td>
+                <td>{{ ed_center.quota_1_72|sub:ed_center.quote_1_72_count}}</td>
+                <td>{{ed_center.quota_1_144}}</td>
+                <td>{{ed_center.quote_1_144_count}}</td>
+                <td>{{ ed_center.quota_1_144|sub:ed_center.quote_1_144_count}}</td>
+                <td>{{ed_center.quota_1_256}}</td>
+                <td>{{ed_center.quote_1_256_count}}</td>
+                <td>{{ ed_center.quota_1_256|sub:ed_center.quote_1_256_count}}</td>
+                <td>{{ed_center.quota_2_72}}</td>
+                <td>{{ed_center.quote_2_72_count}}</td>
+                <td>{{ ed_center.quota_2_72|sub:ed_center.quote_2_72_count}}</td>
+                <td>{{ed_center.quota_2_144}}</td>
+                <td>{{ed_center.quote_2_144_count}}</td>
+                <td>{{ ed_center.quota_2_144|sub:ed_center.quote_2_144_count}}</td>
+                <td>{{ed_center.quota_2_256}}</td>
+                <td>{{ed_center.quote_2_256_count}}</td>
+                <td>{{ ed_center.quota_2_256|sub:ed_center.quote_2_256_count}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

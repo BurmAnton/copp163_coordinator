@@ -7,7 +7,6 @@ from django.urls import reverse
 from django.forms import TextInput
 from django.db import models
 
-from admin_totals.admin import ModelAdminTotals
 from django.db.models import Sum, Avg
 from django.db.models.functions import Coalesce
 from djaa_list_filter.admin import (
@@ -118,11 +117,12 @@ class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
     
 
     list_display = [
-        'applicant', 
+        'applicant',
         'is_working',
         'payment',
         'payment_amount',
-        'education_program'
+        'education_program',
+        'grant'
     ]
     list_totals = ['payment_amount',]
     def get_form(self, request, obj=None, **kwargs):

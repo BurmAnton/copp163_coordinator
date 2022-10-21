@@ -130,6 +130,11 @@ class Application(models.Model):
     ]
     payment = models.CharField("Статус оплаты", max_length=2, choices=PAYMENT_OPTIONS, blank=True, null=True, default="DP")
     payment_amount = models.IntegerField("Оплата", default=0)
+    GRANTS = [
+        ('1', 'Грант 1'),
+        ('2', 'Грант 2')
+    ]
+    grant = models.CharField("Грант", max_length=2, choices=GRANTS, blank=True, null=True, default="1")
     WORK_SEARCH_STAGES = [
         ('CONT', 'Заключил договор'),
         ('CERT', 'Предоставил справку о самозанятости'),

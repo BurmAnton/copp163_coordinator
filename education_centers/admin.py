@@ -11,7 +11,6 @@ from .models import Workshop, EducationCenter, EducationProgram, Competence, Gro
 from federal_empl_program.models import Application
 from citizens.models import Citizen, School, SchoolClass
 from users.models import User
-from vocational_guidance.models import VocGuidTest
 import users
 
 WorkshopForm = select2_modelform(Workshop, attrs={'width': '400px'})
@@ -19,10 +18,6 @@ class WorkshopInline(admin.TabularInline):
     model = Workshop
     form = WorkshopForm
 
-VocGuidTestForm = select2_modelform(VocGuidTest, attrs={'width': '400px'})
-class VocGuidTestInline(admin.TabularInline):
-    model = VocGuidTest
-    form = VocGuidTestForm
 
 EducationCentersForm = select2_modelform(EducationCenter, attrs={'width': '400px'})
 

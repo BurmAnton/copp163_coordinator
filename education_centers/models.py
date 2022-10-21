@@ -1,3 +1,5 @@
+from email.policy import default
+from email.quoprimime import quote
 from django.db import models
 from django.db.models.deletion import DO_NOTHING, CASCADE
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -72,7 +74,13 @@ class EducationCenter(models.Model):
     name = models.CharField("Название организации", max_length=500)
     contact_person = models.ForeignKey(User, verbose_name="Контактное лицо", related_name="education_centers", on_delete=DO_NOTHING, blank=True, null=True)
     competences = models.ManyToManyField(Competence, related_name="educationCenters", verbose_name="Компетенции", blank=True)
-    
+    quota_1_72 = models.IntegerField("Квота 72ч (Грант 1)", default=0)
+    quota_1_144 = models.IntegerField("Квота 144ч (Грант 1)", default=0)
+    quota_1_256 = models.IntegerField("Квота 256ч (Грант 1)", default=0)
+    quota_2_72 = models.IntegerField("Квота 72ч (Грант 2)", default=0)
+    quota_2_144 = models.IntegerField("Квота 144ч (Грант 2)", default=0)
+    quota_2_256 = models.IntegerField("Квота 256ч (Грант 2)", default=0)
+
     def serialize(self):
         return {
             "contact_person": self.contact_person
