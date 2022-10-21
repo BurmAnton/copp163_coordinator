@@ -22,7 +22,8 @@ urlpatterns = [
     
     #applicants
     path('applicant/profile/<int:user_id>/', views.applicant_profile, name="applicant_profile"),
-
+    #Quotes
+    path('quotes/dashboard/', views.quote_dashboard, name="quote_dashboard"),
     #Groups
     re_path(r'^groups/$', views.group_list, name='group_list'),
     path('groups/?c=<ed_cenret_id>/', views.group_list, name='group_list'),

@@ -1,0 +1,14 @@
+table th, table td {
+  text-align: center;
+}
+table .ed_center {
+  text-align: left;
+}
+table th {
+  background-color: white !important;
+}
+table .ed_center-head {
+  vertical-align: middle !important;
+  border-bottom: 2px solid #212529 !important;
+  border-right: 2px solid #dee2e6;
+}/*# sourceMappingURL=quote_dashboard.css.map */
