@@ -23,6 +23,20 @@ class CitizenCategory(models.Model):
         verbose_name_plural = "Категории граждан"
         
 
+class Grant(models.Model):
+    grant_name = models.CharField("Название", max_length=100, blank=False)
+    qoute_72 = models.IntegerField('Квота 72', default=0)
+    qoute_144 = models.IntegerField('Квота 144', default=0)
+    qoute_256 = models.IntegerField('Квота 256', default=0)
+    
+    def __str__(self):
+        return  self.grant_name
+
+    class Meta:
+        verbose_name = "Грант"
+        verbose_name_plural = "Гранты"
+
+
 class Application(models.Model):
     legacy_id = models.IntegerField('ID', blank=True, null=True)
     applicant = models.ForeignKey(Citizen, verbose_name="Заявитель", on_delete=CASCADE, related_name='POE_applications')

@@ -5,10 +5,30 @@ table .ed_center {
   text-align: left;
 }
 table th {
-  background-color: white !important;
+  background-color: #394959 !important;
+  color: white;
 }
 table .ed_center-head {
   vertical-align: middle !important;
-  border-bottom: 2px solid #212529 !important;
   border-right: 2px solid #dee2e6;
+}
+
+.table-stat {
+  width: 50%;
+  margin: auto;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  border: 2px solid #dee2e6;
+}
+.table-stat th, .table-stat td {
+  border-right: 2px solid #dee2e6 !important;
+}
+
+.table-centers {
+  width: 90%;
+  margin: auto;
+}
+.table-centers input {
+  width: 40px;
+  text-align: center;
 }/*# sourceMappingURL=quote_dashboard.css.map */
