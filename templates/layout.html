@@ -50,6 +50,7 @@
                                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                                 <li><a class="dropdown-item" href="{% url 'group_list' %}">Ближайшие группы</a></li>
                                                 <li><a class="dropdown-item" href="{% url 'ed_centers_empl' %}">Статистика по заявкам</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'quote_dashboard' %}">Распределение квоты</a></li>
                                                 {% if request.user.is_superuser %}
                                                     <li><a class="dropdown-item" href="{% url 'import_express' %}">Импорт с экспресса</a></li>
                                                 {% endif %}
