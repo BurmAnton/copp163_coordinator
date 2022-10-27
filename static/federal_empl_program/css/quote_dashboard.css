@@ -1,3 +1,7 @@
+.body {
+  flex-direction: column;
+}
+
 table th, table td {
   text-align: center;
 }
@@ -32,6 +36,7 @@ table .ed_center-head {
 .table-centers {
   width: 90%;
   margin: auto;
+  margin-bottom: 30px;
 }
 .table-centers input {
   width: 40px;
