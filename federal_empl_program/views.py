@@ -5,7 +5,7 @@ import string
 import random
 import json
 
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Sum
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
@@ -490,8 +490,16 @@ def quote_dashboard(request):
         quote_2_144_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=2, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=144)),
         quote_2_256_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=2, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=256))
     ).order_by('-quote_all_count')
+    distributed_quotes = ed_centers.aggregate(
+        Sum('quota_1_72'),
+        Sum('quota_1_144'),
+        Sum('quota_1_256'),
+        Sum('quota_2_72'),
+        Sum('quota_2_144'),
+        Sum('quota_2_256')
+    )
     quotes = dict()
-
+    undistributed_quotes = dict()
     for i in range(1,3):
         quote_all = Application.objects.filter(grant=f'{i}', appl_status__in=['SED', 'COMP'])
         quotes[f'quote_{i}_all'] = len(quote_all)
@@ -501,6 +509,9 @@ def quote_dashboard(request):
         quotes[f'quote_{i}_72_remains'] = Grant.objects.get(grant_name=f'Грант {i}').qoute_72 - len(quote_all.filter(education_program__duration=72))
         quotes[f'quote_{i}_144_remains'] = Grant.objects.get(grant_name=f'Грант {i}').qoute_144 - len(quote_all.filter(education_program__duration=144))
         quotes[f'quote_{i}_256_remains'] = Grant.objects.get(grant_name=f'Грант {i}').qoute_256 - len(quote_all.filter(education_program__duration=256))
+        undistributed_quotes[f'quote_{i}_72'] = quotes[f'quote_{i}_72_remains'] - distributed_quotes[f'quota_{i}_72__sum']
+        undistributed_quotes[f'quote_{i}_144'] = quotes[f'quote_{i}_144_remains'] - distributed_quotes[f'quota_{i}_144__sum']
+        undistributed_quotes[f'quote_{i}_256'] = quotes[f'quote_{i}_256_remains'] - distributed_quotes[f'quota_{i}_256__sum']
         quote_all_sed = Application.objects.filter(grant=f'{i}', appl_status='SED')
         quotes[f'quote_{i}_72_sed'] = len(quote_all_sed.filter(education_program__duration=72))
         quotes[f'quote_{i}_144_sed'] = len(quote_all_sed.filter(education_program__duration=144))
@@ -513,6 +524,8 @@ def quote_dashboard(request):
     return render(request, 'federal_empl_program/quote_dashboard.html', {
         'ed_centers': ed_centers,
         'quotes': quotes,
+        'distributed_quotes': distributed_quotes,
+        'undistributed_quotes': undistributed_quotes,
         'grant_1': Grant.objects.get(grant_name='Грант 1'),
         'grant_2': Grant.objects.get(grant_name='Грант 2')
     })
