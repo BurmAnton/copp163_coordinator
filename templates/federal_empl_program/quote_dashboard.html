@@ -136,27 +136,46 @@
             <tr>
                 <td class='ed_center'>{{ed_center.name}}</td>
 
-                <td><input class="quote_1_72_quote quote_1_72_quote_{{ed_center.id}}" data-id="{{ed_center.id}}" type="text" value="{{ed_center.quota_1_72}}"></td>
+                {% if request.user.is_superuser %}
+                    <td><input class="quote_1_72_quote quote_1_72_quote_{{ed_center.id}}" data-id="{{ed_center.id}}" type="text" value="{{ed_center.quota_1_72}}"></td>
+                {% else %}
+                    <td><input disabled class="quote_1_72_quote quote_1_72_quote_{{ed_center.id}}" data-id="{{ed_center.id}}" type="text" value="{{ed_center.quota_1_72}}"></td>
+                {% endif %}
                 <td class="quote_1_72_fact_{{ed_center.id}}">{{ed_center.quote_1_72_count}}</td>
                 <td class="quote_1_72_remains" data-id="{{ed_center.id}}"></td>
-
-                <td><input class="quote_1_144_quote quote_1_144_quote_{{ed_center.id}}" data-id="{{ed_center.id}}" type="text" value="{{ed_center.quota_1_144}}"></td>
+                {% if request.user.is_superuser %}
+                    <td><input class="quote_1_144_quote quote_1_144_quote_{{ed_center.id}}" data-id="{{ed_center.id}}" type="text" value="{{ed_center.quota_1_144}}"></td>
+                {% else %}
+                    <td><input disabled class="quote_1_144_quote quote_1_144_quote_{{ed_center.id}}" data-id="{{ed_center.id}}" type="text" value="{{ed_center.quota_1_144}}"></td>
+                {% endif %}
                 <td class="quote_1_144_fact_{{ed_center.id}}">{{ed_center.quote_1_144_count}}</td>
                 <td class="quote_1_144_remains" data-id="{{ed_center.id}}"></td>
-
-                <td><input class="quote_1_256_quote quote_1_256_quote_{{ed_center.id}}" type="text" data-id="{{ed_center.id}}" value="{{ed_center.quota_1_256}}"></td>
+                {% if request.user.is_superuser %}
+                    <td><input class="quote_1_256_quote quote_1_256_quote_{{ed_center.id}}" type="text" data-id="{{ed_center.id}}" value="{{ed_center.quota_1_256}}"></td>
+                {% else %}
+                    <td><input disabled class="quote_1_256_quote quote_1_256_quote_{{ed_center.id}}" type="text" data-id="{{ed_center.id}}" value="{{ed_center.quota_1_256}}"></td>
+                {% endif %}
                 <td class="quote_1_256_fact_{{ed_center.id}}">{{ed_center.quote_1_256_count}}</td>
                 <td class="quote_1_256_remains" data-id="{{ed_center.id}}"></td>
-
+                {% if request.user.is_superuser %}
                 <td><input class="quote_2_72_quote quote_2_72_quote_{{ed_center.id}}" type="text" data-id="{{ed_center.id}}" value="{{ed_center.quota_2_72}}"></td>
+                {% else %}
+                    <td><input disabled class="quote_2_72_quote quote_2_72_quote_{{ed_center.id}}" type="text" data-id="{{ed_center.id}}" value="{{ed_center.quota_2_72}}"></td>
+                {% endif %}
                 <td class="quote_2_72_fact_{{ed_center.id}}">{{ed_center.quote_2_72_count}}</td>
                 <td class="quote_2_72_remains" data-id="{{ed_center.id}}"></td>
-
-                <td><input class="quote_2_144_quote quote_2_144_quote_{{ed_center.id}}" type="text" data-id="{{ed_center.id}}" value="{{ed_center.quota_2_144}}"></td>
+                {% if request.user.is_superuser %}
+                    <td><input class="quote_2_144_quote quote_2_144_quote_{{ed_center.id}}" type="text" data-id="{{ed_center.id}}" value="{{ed_center.quota_2_144}}"></td>
+                {% else %}
+                    <td><input disabled class="quote_2_144_quote quote_2_144_quote_{{ed_center.id}}" type="text" data-id="{{ed_center.id}}" value="{{ed_center.quota_2_144}}"></td>
+                {% endif %}
                 <td class="quote_2_144_fact_{{ed_center.id}}">{{ed_center.quote_2_144_count}}</td>
                 <td class="quote_2_144_remains" data-id="{{ed_center.id}}"></td>
-
-                <td><input class="quote_2_256_quote quote_2_256_quote_{{ed_center.id}}" type="text" data-id="{{ed_center.id}}" value="{{ed_center.quota_2_256}}"></td>
+                {% if request.user.is_superuser %}
+                    <td><input class="quote_2_256_quote quote_2_256_quote_{{ed_center.id}}" type="text" data-id="{{ed_center.id}}" value="{{ed_center.quota_2_256}}"></td>
+                {% else %}
+                    <td><input disabled class="quote_2_256_quote quote_2_256_quote_{{ed_center.id}}" type="text" data-id="{{ed_center.id}}" value="{{ed_center.quota_2_256}}"></td>
+                {% endif %}
                 <td class="quote_2_256_fact_{{ed_center.id}}">{{ed_center.quote_2_256_count}}</td>
                 <td class="quote_2_256_remains" data-id="{{ed_center.id}}"></td>
             </tr>
