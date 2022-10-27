@@ -14,6 +14,7 @@ from django.shortcuts import render
 from education_centers.models import Competence, EducationCenter, EducationProgram, EducationCenterGroup
 from federal_empl_program.models import  Application, CitizenCategory
 from django.template.defaulttags import register
+from federal_empl_program.models import Grant
 
 
 def get_graphic():
@@ -175,7 +176,8 @@ def ed_centers_empl(request, **kwargs):
     appl_count = Application.objects.filter(appl_status__in=quote_stages).distinct().count()
 
     #Quotes
-    quote_fb_goal = 1206
+    grant_1 = Grant.objects.get(grant_name='Грант 1')
+    quote_fb_goal = grant_1.qoute_256 + grant_1.qoute_144 + grant_1.qoute_72
     categories = CitizenCategory.objects.exclude(short_name__in=['Безработные зарег. в ЦЗН', 'Безработные незарег. в ЦЗН', 'Под риском увольнения'])
     qouta_fb_ADM = Application.objects.filter(appl_status='ADM', citizen_category__in=categories).count()
     qouta_fb_SED = Application.objects.filter(appl_status='SED', citizen_category__in=categories).count()
@@ -186,8 +188,9 @@ def ed_centers_empl(request, **kwargs):
     quota_fb_fact = Application.objects.filter(appl_status__in=quote_stages, citizen_category__in=categories).count()
     quota_fb_fact_p = round(quota_fb_fact / quote_fb_goal * 100)
     quota_fb = f'{quota_fb_fact}/{quote_fb_goal} ({quota_fb_fact_p}%)'
-
-    qouta_fby_goal = 125
+    
+    grant_fby = Grant.objects.get(grant_name='Молодёжь')
+    qouta_fby_goal = grant_fby.qoute_256 + grant_fby.qoute_144 + grant_fby.qoute_72
     categories = CitizenCategory.objects.filter(short_name__in=[
             'Граждане до 35 лет обратившиеся в СЗН',
             'Граждане до 35 лет находящиеся под риском увольнения', 
@@ -206,8 +209,9 @@ def ed_centers_empl(request, **kwargs):
     qouta_fby_fact = Application.objects.filter(appl_status__in=quote_stages, citizen_category__in=categories).count()
     quota_fby_fact_p = round(qouta_fby_fact / qouta_fby_goal * 100)
     quota_fby = f'{qouta_fby_fact}/{qouta_fby_goal} ({quota_fby_fact_p}%)'
-
-    qouta_rf_goal = 311
+    
+    grant_2 = Grant.objects.get(grant_name='Грант 2')
+    qouta_rf_goal = grant_2.qoute_256 + grant_2.qoute_144 + grant_2.qoute_72
     categories = CitizenCategory.objects.filter(short_name__in=['Безработные зарег. в ЦЗН', 'Безработные незарег. в ЦЗН', 'Под риском увольнения'])
     qouta_rf_ADM = Application.objects.filter(appl_status='ADM', citizen_category__in=categories).count()
     qouta_rf_SED = Application.objects.filter(appl_status='SED', citizen_category__in=categories).count()
@@ -262,6 +266,8 @@ def ed_centers_empl(request, **kwargs):
         'qouta_all_72': qouta_all_72,
         'qouta_all_144': qouta_all_144,
         'qouta_all_256': qouta_all_256,
+        'grant_1': Grant.objects.get(grant_name='Грант 1'),
+        'grant_2': Grant.objects.get(grant_name='Грант 2')
     })
 
 
