@@ -411,9 +411,8 @@ def load_EducationProgram(sheet_dict, row, competence, application):
     else:
         education_program = education_program[0]
 
-    if application is not None and application.education_program != education_program:
-        application.education_program = education_program
-        application.save()
+    application.education_program = education_program
+    application.save()
     return education_program
 
 def add_EducationProgram(program_name, competence):
