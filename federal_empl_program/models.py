@@ -113,7 +113,7 @@ class Application(models.Model):
     consent_pers_data = models.BooleanField("Согласие на обработку перс. данных", default=False)
     pasport = models.BooleanField("Копия паспорт", default=False)
     education_document = models.BooleanField("Копия документа об образ./справка об обучении", default=False)
-    resume = models.BooleanField("Резюме", default=False)
+    resume = models.BooleanField("Не считать", default=False)
 
     #Граждане, ищущие работу
     worksearcher_certificate = models.BooleanField("Справка о регистрации в качестве лица, ищущего работу", default=False)
