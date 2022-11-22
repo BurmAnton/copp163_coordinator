@@ -179,13 +179,13 @@ def ed_centers_empl(request, **kwargs):
     grant_1 = Grant.objects.get(grant_name='Грант 1')
     quote_fb_goal = grant_1.qoute_256 + grant_1.qoute_144 + grant_1.qoute_72
     categories = CitizenCategory.objects.exclude(short_name__in=['Безработные зарег. в ЦЗН', 'Безработные незарег. в ЦЗН', 'Под риском увольнения'])
-    qouta_fb_ADM = Application.objects.filter(appl_status='ADM', citizen_category__in=categories).count()
-    qouta_fb_SED = Application.objects.filter(appl_status='SED', citizen_category__in=categories).count()
-    qouta_fb_COMP = Application.objects.filter(appl_status__in=['COMP','EXAM'], citizen_category__in=categories).count()
-    qouta_fb_72 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=72).count()
-    qouta_fb_144 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=144).count()
-    qouta_fb_256 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=256).count()
-    quota_fb_fact = Application.objects.filter(appl_status__in=quote_stages, citizen_category__in=categories).count()
+    qouta_fb_ADM = Application.objects.filter(appl_status='ADM', resume=False, citizen_category__in=categories).count()
+    qouta_fb_SED = Application.objects.filter(appl_status='SED', resume=False, citizen_category__in=categories).count()
+    qouta_fb_COMP = Application.objects.filter(appl_status__in=['COMP','EXAM'], resume=False, citizen_category__in=categories).count()
+    qouta_fb_72 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], resume=False, citizen_category__in=categories, education_program__duration=72).count()
+    qouta_fb_144 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], resume=False, citizen_category__in=categories, education_program__duration=144).count()
+    qouta_fb_256 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], resume=False, citizen_category__in=categories, education_program__duration=256).count()
+    quota_fb_fact = Application.objects.filter(appl_status__in=quote_stages, resume=False, citizen_category__in=categories).count()
     quota_fb_fact_p = round(quota_fb_fact / quote_fb_goal * 100)
     quota_fb = f'{quota_fb_fact}/{quote_fb_goal} ({quota_fb_fact_p}%)'
     
@@ -200,26 +200,26 @@ def ed_centers_empl(request, **kwargs):
             '16-35 без ВО/СПО',
             '16-35 студенты 2022'
         ])
-    qouta_fby_ADM = Application.objects.filter(appl_status='ADM', citizen_category__in=categories).count()
-    qouta_fby_SED = Application.objects.filter(appl_status='SED', citizen_category__in=categories).count()
-    qouta_fby_COMP = Application.objects.filter(appl_status__in=['COMP','EXAM'], citizen_category__in=categories).count()
-    qouta_fby_72 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=72).count()
-    qouta_fby_144 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=144).count()
-    qouta_fby_256 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=256).count()
-    qouta_fby_fact = Application.objects.filter(appl_status__in=quote_stages, citizen_category__in=categories).count()
+    qouta_fby_ADM = Application.objects.filter(appl_status='ADM', resume=False, citizen_category__in=categories).count()
+    qouta_fby_SED = Application.objects.filter(appl_status='SED', resume=False, citizen_category__in=categories).count()
+    qouta_fby_COMP = Application.objects.filter(appl_status__in=['COMP','EXAM'], resume=False, citizen_category__in=categories).count()
+    qouta_fby_72 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], resume=False, citizen_category__in=categories, education_program__duration=72).count()
+    qouta_fby_144 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], resume=False, citizen_category__in=categories, education_program__duration=144).count()
+    qouta_fby_256 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], resume=False, citizen_category__in=categories, education_program__duration=256).count()
+    qouta_fby_fact = Application.objects.filter(appl_status__in=quote_stages, resume=False, citizen_category__in=categories).count()
     quota_fby_fact_p = round(qouta_fby_fact / qouta_fby_goal * 100)
     quota_fby = f'{qouta_fby_fact}/{qouta_fby_goal} ({quota_fby_fact_p}%)'
     
     grant_2 = Grant.objects.get(grant_name='Грант 2')
     qouta_rf_goal = grant_2.qoute_256 + grant_2.qoute_144 + grant_2.qoute_72
     categories = CitizenCategory.objects.filter(short_name__in=['Безработные зарег. в ЦЗН', 'Безработные незарег. в ЦЗН', 'Под риском увольнения'])
-    qouta_rf_ADM = Application.objects.filter(appl_status='ADM', citizen_category__in=categories).count()
-    qouta_rf_SED = Application.objects.filter(appl_status='SED', citizen_category__in=categories).count()
-    qouta_rf_COMP = Application.objects.filter(appl_status__in=['COMP','EXAM'], citizen_category__in=categories).count()
-    qouta_rf_72 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=72).count()
-    qouta_rf_144 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=144).count()
-    qouta_rf_256 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], citizen_category__in=categories, education_program__duration=256).count()
-    qouta_rf_fact = Application.objects.filter(appl_status__in=quote_stages, citizen_category__in=categories).count()
+    qouta_rf_ADM = Application.objects.filter(appl_status='ADM', resume=False, citizen_category__in=categories).count()
+    qouta_rf_SED = Application.objects.filter(appl_status='SED', resume=False, citizen_category__in=categories).count()
+    qouta_rf_COMP = Application.objects.filter(appl_status__in=['COMP','EXAM'], resume=False, citizen_category__in=categories).count()
+    qouta_rf_72 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], resume=False, citizen_category__in=categories, education_program__duration=72).count()
+    qouta_rf_144 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], resume=False, citizen_category__in=categories, education_program__duration=144).count()
+    qouta_rf_256 = Application.objects.filter(appl_status__in=['COMP','EXAM', 'SED'], resume=False, citizen_category__in=categories, education_program__duration=256).count()
+    qouta_rf_fact = Application.objects.filter(appl_status__in=quote_stages, resume=False, citizen_category__in=categories).count()
     quota_rf_fact_p = round(qouta_rf_fact / qouta_rf_goal * 100)
     quota_rf = f'{qouta_rf_fact}/{qouta_rf_goal} ({quota_rf_fact_p}%)'
 
