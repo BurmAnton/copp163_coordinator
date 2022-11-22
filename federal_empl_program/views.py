@@ -482,13 +482,13 @@ def quote_dashboard(request):
         ed_center.save()
         return JsonResponse({"message": "Quote change successfully."}, status=201)
     ed_centers = EducationCenter.objects.all().annotate(
-        quote_all_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'])),
-        quote_1_72_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, resume=False,  edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=72)),
-        quote_1_144_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=144)),
-        quote_1_256_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=256)),
-        quote_2_72_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=2, resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=72)),
-        quote_2_144_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=2, resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=144)),
-        quote_2_256_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=2, resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=256))
+        quote_all_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, edcenter_applicants__resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'])),
+        quote_1_72_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, edcenter_applicants__resume=False,  edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=72)),
+        quote_1_144_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, edcenter_applicants__resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=144)),
+        quote_1_256_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, edcenter_applicants__resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=256)),
+        quote_2_72_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=2, edcenter_applicants__resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=72)),
+        quote_2_144_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=2, edcenter_applicants__resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=144)),
+        quote_2_256_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=2, edcenter_applicants__resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=256))
     ).order_by('-quote_all_count')
     distributed_quotes = ed_centers.aggregate(
         Sum('quota_1_72'),
