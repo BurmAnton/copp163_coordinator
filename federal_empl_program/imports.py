@@ -175,18 +175,7 @@ def load_application(sheet_dict, row, applicant):
     application_date.astimezone(pytz.timezone('Europe/Samara'))
     applications = Application.objects.filter(applicant=applicant)
     if sheet_dict["Статус заявки на обучение"][row] == 'Заявка отменена':
-        program_name=sheet_dict["Программа обучения в заявке"][row]
-        program_name=sheet_dict["Программа обучения в заявке"][row]
-        duration = set_program_duration(program_name)
-        program_name = set_program_name(program_name)
-        education_program = EducationProgram.objects.filter(program_name=program_name,duration=duration)
-        name = sheet_dict["Выбранное место обучения"][row]
-        education_center = EducationCenter.objects.filter(name=name)
         applications_by_date = applications.filter(creation_date=application_date)
-        if len(education_program) != 0:
-            applications_by_date = applications_by_date.filter(education_program=education_program[0])
-        if len(education_center) != 0:
-            applications_by_date = applications_by_date.filter(education_center=education_center[0])
         dublicate_applications = applications.filter(appl_status = 'DUPL')
         if len(dublicate_applications) > 0:
             if dublicate_applications[0].creation_date < application_date:
@@ -266,18 +255,7 @@ def add_application(sheet_dict, row, applicant):
     return application
 
 def update_application(sheet_dict, row, applicant, application_date):
-    program_name=sheet_dict["Программа обучения в заявке"][row]
-    duration = set_program_duration(program_name)
-    program_name = set_program_name(program_name)
-    education_program = EducationProgram.objects.filter(program_name=program_name, duration=duration)
-    name = sheet_dict["Выбранное место обучения"][row]
-    education_center = EducationCenter.objects.filter(name=name)
-    applications = Application.objects.all()
-    if len(education_program) != 0:
-        applications = Application.objects.filter(education_program=education_program[0])
-    if len(education_center) != 0:
-        applications = applications.filter(education_center=education_center[0])
-    application = applications.exclude(appl_status='DUPL').get(applicant=applicant, creation_date=application_date)
+    application = Application.objects.exclude(appl_status='DUPL').get(applicant=applicant, creation_date=application_date)
     creation_date = datetime.strptime(sheet_dict["Дата создания заявки на обучение"][row], "%Y-%m-%d %H:%M:%S")
     creation_date = timezone.make_aware(creation_date)
     creation_date.astimezone(pytz.timezone('Europe/Samara'))
