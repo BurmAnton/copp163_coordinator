@@ -177,10 +177,9 @@ def load_application(sheet_dict, row, applicant):
     if sheet_dict["Статус заявки на обучение"][row] == 'Заявка отменена':
         program_name=sheet_dict["Программа обучения в заявке"][row]
         program_name=sheet_dict["Программа обучения в заявке"][row]
-        program_type = set_program_type(program_name)
         duration = set_program_duration(program_name)
         program_name = set_program_name(program_name)
-        education_program = EducationProgram.objects.filter(program_name=program_name,duration=duration,program_type=program_type)
+        education_program = EducationProgram.objects.filter(program_name=program_name,duration=duration)
         name = sheet_dict["Выбранное место обучения"][row]
         education_center = EducationCenter.objects.filter(name=name)
         applications_by_date = applications.filter(creation_date=application_date)
@@ -268,10 +267,9 @@ def add_application(sheet_dict, row, applicant):
 
 def update_application(sheet_dict, row, applicant, application_date):
     program_name=sheet_dict["Программа обучения в заявке"][row]
-    program_type = set_program_type(program_name)
     duration = set_program_duration(program_name)
     program_name = set_program_name(program_name)
-    education_program = EducationProgram.objects.filter(program_name=program_name, duration=duration,program_type=program_type)
+    education_program = EducationProgram.objects.filter(program_name=program_name, duration=duration)
     name = sheet_dict["Выбранное место обучения"][row]
     education_center = EducationCenter.objects.filter(name=name)
     applications = Application.objects.all()
