@@ -189,16 +189,16 @@ def load_application(sheet_dict, row, applicant):
         if len(education_center) != 0:
             applications_by_date = applications_by_date.filter(education_center=education_center[0])
         dublicate_applications = applications.filter(appl_status = 'NCOM')
-        if len(applications_by_date) > 0:
-            application = update_application(sheet_dict, row, applicant, application_date)
-            return [applications[0], "Updated"]
-        elif len(dublicate_applications) > 0:
+        if len(dublicate_applications) > 0:
             if dublicate_applications[0].creation_date < application_date:
                 dublicate_applications[0].delete()
                 application = add_application(sheet_dict, row, applicant)
                 return [application, 'Added']
             else:
                 return [dublicate_applications[0], "Updated"]
+        elif len(applications_by_date) > 0:
+            application = update_application(sheet_dict, row, applicant, application_date)
+            return [applications[0], "Updated"]
         else:
             application = add_application(sheet_dict, row, applicant)
             return [application, 'Added']
