@@ -187,7 +187,7 @@ def load_application(sheet_dict, row, applicant):
             applications_by_date = applications_by_date.filter(education_program=education_program[0])
         if len(education_center) != 0:
             applications_by_date = applications_by_date.filter(education_center=education_center[0])
-        dublicate_applications = applications.filter(appl_status = 'NCOM')
+        dublicate_applications = applications.filter(appl_status = 'DUPL')
         if len(dublicate_applications) > 0:
             if dublicate_applications[0].creation_date < application_date:
                 dublicate_applications[0].delete()
