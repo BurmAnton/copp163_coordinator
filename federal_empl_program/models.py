@@ -141,6 +141,8 @@ class Application(models.Model):
         ('DP', 'Не оплачен'),
         ('PF', 'Оплачен (100%)'),
         ('PP', 'Оплачен (70%)'),
+        ('PFN', 'Оплачен (100%), НЦ'),
+        ('PPN', 'Оплачен (70%), НЦ'),
     ]
     payment = models.CharField("Статус оплаты", max_length=2, choices=PAYMENT_OPTIONS, blank=True, null=True, default="DP")
     payment_amount = models.IntegerField("Оплата", default=0)

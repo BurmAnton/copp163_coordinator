@@ -99,10 +99,11 @@ class GroupAdmin(admin.ModelAdmin):
         ('education_program__competence', RelatedOnlyDropdownFilter),
         ('education_program', RelatedOnlyDropdownFilter),
         ('workshop__education_center', RelatedOnlyDropdownFilter),
-        ('workshop', RelatedOnlyDropdownFilter)
+        ('workshop', RelatedOnlyDropdownFilter),
+        'is_new_price'
     )
     search_fields = ['name', 'start_date', 'end_date']
-    list_display = ('name', 'education_period', 'workshop_link', 'competence')
+    list_display = ('name', 'education_period', 'is_new_price', 'workshop_link', 'competence')
     
     def competence(self, group):
         url = reverse("admin:education_centers_competence_change", args=[group.education_program.competence.id])
@@ -123,6 +124,16 @@ class GroupAdmin(admin.ModelAdmin):
         return period
     education_period.short_description = 'Период обучения'
     education_period.admin_order_field = 'start_date'
+
+    actions = ['set_new_price', 'set_old_price']
+
+    def set_new_price(self, request, queryset):
+        queryset.update(is_new_price=True)
+    set_new_price.short_description='Установить новую цену'
+
+    def set_old_price(self, request, queryset):
+        queryset.update(is_new_price=False)
+    set_new_price.short_description='Вернуть старую цену'
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)

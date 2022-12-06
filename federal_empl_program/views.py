@@ -86,22 +86,6 @@ def import_st(request):
             'form': form
         })
 
-@login_required
-@csrf_exempt
-def import_sch(request):
-    if request.method == "POST":
-        form = ImportDataForm(request.POST, request.FILES)
-        if form.is_valid():
-            message = import_schools(form)
-        else:
-            data = form.errors
-        form = ImportDataForm()
-        return HttpResponseRedirect(reverse('admin:citizens_school_changelist'))
-    else:
-        form = ImportDataForm()
-        return render(request, "federal_empl_program/import_schools.html",{
-            'form': form
-        })
 
 @csrf_exempt
 def login(request):

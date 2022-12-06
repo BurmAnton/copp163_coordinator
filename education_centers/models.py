@@ -120,6 +120,8 @@ class Group(models.Model):
     )
     education_project = models.CharField(max_length=4, choices=EDUCATION_PROJECTS, verbose_name='Федеральная программа', blank=True, null=True)
 
+    is_new_price = models.BooleanField("Новая цена", default=False)
+
     class Meta:
         verbose_name = "Группа"
         verbose_name_plural = "Группы"

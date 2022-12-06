@@ -69,7 +69,7 @@ class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
             'fields': ('get_applicant', 'id', 'get_phone', 'get_email', 'get_city')
         }),
         ('Работа с заявкой', {
-            'fields': ('resume', 'citizen_consultant', 'admit_status', 'appl_status', 'change_status_date', 
+            'fields': ('resume', 'resume', 'admit_status', 'appl_status', 'change_status_date', 
             'citizen_category', 'competence', 'education_program', 'education_center', 'ed_ready_time',
             'ed_center_group', 'group', 'is_enrolled', 'is_deducted'),
         }),
@@ -164,7 +164,7 @@ class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
     get_jobless.short_description='Уволить'
 
     def get_paid(self, request, queryset):
-        full_payment = queryset.filter(is_working=True)
+        full_payment = queryset.filter(is_working=True, is_new_price=False)
         full_payment.update(payment="PF")
         full_payment_72 = full_payment.filter(education_program__duration=72)
         full_payment_72.update(payment_amount=23000)
@@ -172,7 +172,15 @@ class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
         full_payment_144.update(payment_amount=46000)
         full_payment_256 = full_payment.filter(education_program__duration=256)
         full_payment_256.update(payment_amount=92000)
-        part_payment = queryset.filter(is_working=False)
+        full_payment_new = queryset.filter(is_working=True, is_new_price=True)
+        full_payment_new.update(payment="PFN")
+        full_payment_new_72 = full_payment.filter(education_program__duration=72)
+        full_payment_new_72.update(payment_amount=16100)
+        full_payment_new_144 = full_payment.filter(education_program__duration=144)
+        full_payment_new_144.update(payment_amount=32200)
+        full_payment_new_256 = full_payment.filter(education_program__duration=256)
+        full_payment_new_256.update(payment_amount=64400)
+        part_payment = queryset.filter(is_working=False, is_new_price=False)
         part_payment.update(payment="PP")
         part_payment_72 = part_payment.filter(education_program__duration=72)
         part_payment_72.update(payment_amount=16100)
@@ -180,6 +188,14 @@ class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
         part_payment_144.update(payment_amount=32200)
         part_payment_256 = part_payment.filter(education_program__duration=256)
         part_payment_256.update(payment_amount=64400)
+        part_payment_new = queryset.filter(is_working=False, is_new_price=True)
+        part_payment_new.update(payment="PPN")
+        part_payment_new_72 = part_payment.filter(education_program__duration=72)
+        part_payment_new_72.update(payment_amount=11270)
+        part_payment_new_144 = part_payment.filter(education_program__duration=144)
+        part_payment_new_144.update(payment_amount=22540)
+        part_payment_new_256 = part_payment.filter(education_program__duration=256)
+        part_payment_new_256.update(payment_amount=45080)
     get_paid.short_description='Оплатить'
 
     def cancel_payment(self, request, queryset):
