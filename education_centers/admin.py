@@ -133,7 +133,7 @@ class GroupAdmin(admin.ModelAdmin):
 
     def set_old_price(self, request, queryset):
         queryset.update(is_new_price=False)
-    set_new_price.short_description='Вернуть старую цену'
+    set_old_price.short_description='Вернуть старую цену'
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
