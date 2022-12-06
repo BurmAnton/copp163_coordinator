@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
 
 from .forms import ImportDataForm
-from .imports import express_import, import_in_db_gd, import_statuses, import_schools
+from .imports import express_import, import_in_db_gd, import_statuses
 
 from pysendpulse.pysendpulse import PySendPulse
 

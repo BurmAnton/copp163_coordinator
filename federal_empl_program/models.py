@@ -144,7 +144,7 @@ class Application(models.Model):
         ('PFN', 'Оплачен (100%), НЦ'),
         ('PPN', 'Оплачен (70%), НЦ'),
     ]
-    payment = models.CharField("Статус оплаты", max_length=2, choices=PAYMENT_OPTIONS, blank=True, null=True, default="DP")
+    payment = models.CharField("Статус оплаты", max_length=3, choices=PAYMENT_OPTIONS, blank=True, null=True, default="DP")
     payment_amount = models.IntegerField("Оплата", default=0)
     GRANTS = [
         ('1', 'Грант 1'),
