@@ -53,12 +53,12 @@ def express_import(form):
                 program_name = sheet_dict["Программа обучения в заявке"][row]
                 if program_name is not None and program_name != 'Не указана заявка у Группы':
                     education_program = load_EducationProgram(sheet_dict, row, competence, application)
-                if sheet_dict["Выбранное место обучения"][row] is not None:
-                    education_center = load_EducationCenter(sheet_dict, row, competence, application)
-                    if sheet_dict["Адрес выбранного место обучения"][row] is not None:
-                        workshop = load_Workshop(sheet_dict, row, competence, education_center)
-                        if sheet_dict["Группа"][row] is not None:
-                            load_Group(sheet_dict, row, workshop, education_program, application)
+            if sheet_dict["Выбранное место обучения"][row] is not None:
+                education_center = load_EducationCenter(sheet_dict, row, competence, application)
+                if sheet_dict["Адрес выбранного место обучения"][row] is not None:
+                    workshop = load_Workshop(sheet_dict, row, competence, education_center)
+            if sheet_dict["Группа"][row] is not None:
+                load_Group(sheet_dict, row, workshop, education_program, application)
     
     return [True, citizens, applications]
 
@@ -176,33 +176,35 @@ def load_application(sheet_dict, row, applicant):
     applications = Application.objects.filter(applicant=applicant)
     if sheet_dict["Статус заявки на обучение"][row] == 'Заявка отменена':
         applications_by_date = applications.filter(creation_date=application_date)
-        dublicate_applications = applications.filter(appl_status = 'DUPL')
+        dublicate_applications = applications.filter(creation_date=application_date, appl_status = 'DUPL')
         if len(dublicate_applications) > 0:
             if dublicate_applications[0].creation_date < application_date:
                 dublicate_applications[0].delete()
                 application = add_application(sheet_dict, row, applicant)
+                
                 return [application, 'Added']
             else:
                 return [dublicate_applications[0], "Updated"]
         elif len(applications_by_date) > 0:
-            application = update_application(sheet_dict, row, applicant, application_date)
-            return [applications[0], "Updated"]
+            application = update_application(sheet_dict, row, applicant, application_date, applications_by_date[0])
+            return [application, "Updated"]
         else:
             application = add_application(sheet_dict, row, applicant)
             return [application, 'Added']
     else:
         applications = Application.objects.filter(applicant=applicant)
+        applications_by_date = applications.filter(creation_date=application_date)
         if len(applications) == 0:
             application = add_application(sheet_dict, row, applicant)
             return [application, 'Added']
-        elif len(applications.filter(creation_date=application_date)) == 0:
+        elif len(applications_by_date) == 0:
             for application in applications.exclude(creation_date=application_date):
                 application.appl_status = 'DUPL'
                 application.save()
             application = add_application(sheet_dict, row, applicant)
             return [application, 'Added']
         else:
-            application = update_application(sheet_dict, row, applicant, application_date)
+            application = update_application(sheet_dict, row, applicant, application_date, applications_by_date[0])
             return [application, "Updated"]
 
 def add_application(sheet_dict, row, applicant):
@@ -212,7 +214,7 @@ def add_application(sheet_dict, row, applicant):
     contract_type = set_contract_type(sheet_dict["Тип договора"][row])
     express_status = sheet_dict["Статус заявки на обучение"][row]
     appl_status, admit_status = set_application_status(express_status)
-
+    
     change_status_date = datetime.strptime(sheet_dict["Дата последней смены статуса"][row], "%Y-%m-%d %H:%M:%S")
     change_status_date = timezone.make_aware(change_status_date)
     category = sheet_dict["Категория слушателя"][row]
@@ -226,8 +228,9 @@ def add_application(sheet_dict, row, applicant):
             grant = '2'
         else: 
             grant = '1'
-            grant = None
-    else: category = None
+    else: 
+        category = None
+        grant = None
     if len(Group.objects.filter(name=sheet_dict["Группа"][row])) == 0:
         group = None
         ed_ready_time = None
@@ -254,13 +257,13 @@ def add_application(sheet_dict, row, applicant):
     application.save()
     return application
 
-def update_application(sheet_dict, row, applicant, application_date):
-    application = Application.objects.exclude(appl_status='DUPL').get(applicant=applicant, creation_date=application_date)
+def update_application(sheet_dict, row, applicant, application_date, application):
     creation_date = datetime.strptime(sheet_dict["Дата создания заявки на обучение"][row], "%Y-%m-%d %H:%M:%S")
     creation_date = timezone.make_aware(creation_date)
     creation_date.astimezone(pytz.timezone('Europe/Samara'))
     if application.creation_date != creation_date:
         application.creation_date = creation_date
+    
     contract_type = set_contract_type(sheet_dict["Тип договора"][row])
     if application.contract_type != contract_type:
         application.contract_type = contract_type
@@ -441,18 +444,12 @@ def set_program_name(program_name):
 
 def load_EducationCenter(sheet_dict, row, competence, application):
     name = sheet_dict["Выбранное место обучения"][row]
-    if len(EducationCenter.objects.filter(name=name)) == 0:
-        education_center = EducationCenter(
-            name=name,
-        )
-        education_center.save()
-        education_center.competences.add(competence)
-    else:
-        education_center = EducationCenter.objects.get(name=name)
-        education_center.competences.add(competence)
+    education_center, is_new = EducationCenter.objects.get_or_create(name=name)
+    education_center.competences.add(competence)
     if application is not None:
         application.education_center = education_center
         application.save()
+    education_center.competences.add(competence)
     return education_center
 
 def load_Workshop(sheet_dict, row, competence, education_center):
@@ -688,51 +685,3 @@ def set_application_status_gd(gd_status, application):
     application.admit_status = admit_status
     application.save()
     return application
-
-def get_education(education):
-    education_variants = Citizen.EDUCATION_CHOICES
-    for variant in education_variants:
-        if variant[1] == education:
-            return variant[0]
-    return ""
-
-def load_worksheet_school_dict(sheet, fields_names_set):
-    row_count = sheet.max_row
-    sheet_dict = {}
-    for col in fields_names_set:
-        sheet_dict[fields_names_set[col]] = []
-        for row in range(2, row_count+1): 
-            school = sheet[f"A{row}"].value
-            if school != None:
-                sheet_dict[fields_names_set[col]].append(sheet.cell(row=row,column=col).value)
-    return sheet_dict
-
-def import_schools(form):
-    try:
-        sheet = get_sheet(form)
-    except IndexError:
-        return [False, 'IndexError']
-
-    fields_names_set = {
-        'Школа', 
-        'Населенный пункт', 
-        'Муниципалитет', 
-        'ИНН'
-    }
-
-    cheak = cheak_col_match(sheet, fields_names_set)
-    if cheak[0] == False:
-        return cheak
-    
-    sheet_dict = load_worksheet_school_dict(sheet, cheak[1])
-    for row in range(len(sheet_dict['Школа'])):
-        if sheet_dict["Школа"][row] is not None:
-            school = School(
-                name=sheet_dict["Школа"][row],
-                city=sheet_dict["Населенный пункт"][row]
-            )
-            if sheet_dict['Муниципалитет'][row] is not None:
-                school.municipality = sheet_dict['Муниципалитет'][row]
-                school.inn = sheet_dict['ИНН'][row]
-                school.is_bilet = True
-            school.save()

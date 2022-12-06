@@ -8,7 +8,6 @@ urlpatterns = [
     path('import/express/', views.import_express, name='import_express'),
     path('import/gd/', views.import_gd, name='import_gd'),
     path('import/statuses/', views.import_st, name='import_st'),
-    path('import/schools/',views.import_sch, name='import_sch'),
 
     #Auth
     re_path(r'^login/$', views.login, name="login"),
