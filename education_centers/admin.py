@@ -13,6 +13,11 @@ from citizens.models import Citizen, School, SchoolClass
 from users.models import User
 import users
 
+
+@admin.register(Workshop)
+class WorkshopAdmin(admin.ModelAdmin):
+    pass
+
 WorkshopForm = select2_modelform(Workshop, attrs={'width': '400px'})
 class WorkshopInline(admin.TabularInline):
     model = Workshop
@@ -25,11 +30,10 @@ EducationCentersForm = select2_modelform(EducationCenter, attrs={'width': '400px
 class EducationCentersAdmin(admin.ModelAdmin):
     form = EducationCentersForm
     
-    list_display = ['name', 'reg_link']
+    list_display = ['name', 'contact_person', 'reg_link']
     filter_horizontal = ('competences',)
     inlines = [
-        WorkshopInline,
-       #VocGuidTestInline
+        WorkshopInline
     ]
     search_fields = ['name',]
 

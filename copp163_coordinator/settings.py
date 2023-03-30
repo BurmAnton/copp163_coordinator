@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'education_centers',
     'region163_dashboard',
     'federal_empl_program',
-    'vocational_guidance',
     'easy_select2',
     'copp163_coordinator.apps.MyAdminConfig',
     'django.contrib.auth',
@@ -154,6 +153,6 @@ STATICFILES_DIRS = [
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 FIELD_HISTORY_OBJECT_ID_TYPE = (models.CharField, {'max_length': 100})

@@ -81,10 +81,6 @@ class EducationCenter(models.Model):
     quota_2_144 = models.IntegerField("Квота 144ч (Грант 2)", default=0)
     quota_2_256 = models.IntegerField("Квота 256ч (Грант 2)", default=0)
 
-    def serialize(self):
-        return {
-            "contact_person": self.contact_person
-        }
 
     class Meta:
         verbose_name = "Центр обучения"
@@ -107,7 +103,7 @@ class Workshop(models.Model):
 
 class Group(models.Model):
     name = models.CharField("Номер группы", max_length=50)
-    workshop = models.ForeignKey(Workshop, verbose_name="мастерская", on_delete=DO_NOTHING, related_name='groups', blank=True, null=True)
+    workshop = models.ForeignKey(Workshop, verbose_name="мастерская", on_delete=CASCADE, related_name='groups', blank=True, null=True)
     education_program = models.ForeignKey(EducationProgram, verbose_name="Программа обучения", on_delete=CASCADE, related_name='groups', blank=True, null=True)
     start_date = models.DateField("Дата начала обучения", blank=True, null=True)
     end_date = models.DateField("Дата окончания обучения", blank=True, null=True)
@@ -130,7 +126,7 @@ class Group(models.Model):
         return  f"{self.name}"
 
 class EducationCenterGroup(models.Model):
-    education_center = models.ForeignKey(EducationCenter, verbose_name='Центр обучения', on_delete=CASCADE, related_name='ed_center_groups')
+    education_center = models.ForeignKey(EducationCenter, verbose_name='Центр обучения', on_delete=CASCADE, related_name='ed_center_groups', null=True, blank=True)
     competence = models.ForeignKey(Competence, verbose_name='Компетенция', on_delete=CASCADE, related_name='ed_center_groups')
     program = models.CharField("Название программы", max_length=500, null=True, blank=False)
     program_link = models.CharField("Ссылка на программу", max_length=200, null=True, blank=False)

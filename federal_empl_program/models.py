@@ -78,13 +78,13 @@ class Application(models.Model):
     ]
     category = models.CharField("Категория слушателя", max_length=50, choices=CATEGORY_CHOICES, default="EMPS")
     
-    citizen_category = models.ForeignKey(CitizenCategory, verbose_name="категория", related_name="application", on_delete=DO_NOTHING, blank=True, null=True)
+    citizen_category = models.ForeignKey(CitizenCategory, verbose_name="категория", related_name="application", on_delete=CASCADE, blank=True, null=True)
     distance_education = models.BooleanField("Дистанционное обучение", default=False)
-    competence = models.ForeignKey(Competence, verbose_name="Компетенция", on_delete=DO_NOTHING, related_name='competence_applicants', blank=True, null=True)
-    education_program = models.ForeignKey(EducationProgram, verbose_name="Програма обучения", on_delete=DO_NOTHING, related_name='programm_applicants', blank=True, null=True)
-    education_center = models.ForeignKey(EducationCenter, verbose_name="Центр обучения", on_delete=DO_NOTHING, related_name='edcenter_applicants', blank=True, null=True)
+    competence = models.ForeignKey(Competence, verbose_name="Компетенция", on_delete=CASCADE, related_name='competence_applicants', blank=True, null=True)
+    education_program = models.ForeignKey(EducationProgram, verbose_name="Програма обучения", on_delete=CASCADE, related_name='programm_applicants', blank=True, null=True)
+    education_center = models.ForeignKey(EducationCenter, verbose_name="Центр обучения", on_delete=CASCADE, related_name='edcenter_applicants', blank=True, null=True)
     ed_center_group = models.ForeignKey(EducationCenterGroup, verbose_name="Предварительная заявка", on_delete=DO_NOTHING, related_name="applications", blank=True, null=True)
-    group = models.ForeignKey(Group, verbose_name="Группа", on_delete=DO_NOTHING, related_name='students', blank=True, null=True)
+    group = models.ForeignKey(Group, verbose_name="Группа", on_delete=CASCADE, related_name='students', blank=True, null=True)
     CONTR_TYPE_CHOICES = [
         ('OLD', "Трехсторонний договор со старым работодателем"),
         ('NEW', "Трехсторонний договор с новым работодателем"),
@@ -231,7 +231,7 @@ class Questionnaire(models.Model):
 
 
 class CategoryInstruction(models.Model):
-    category = models.ForeignKey(CitizenCategory, verbose_name="категория", related_name="instructions", on_delete=DO_NOTHING, blank=True, null=True)
+    category = models.ForeignKey(CitizenCategory, verbose_name="категория", related_name="instructions", on_delete=CASCADE, blank=True, null=True)
     subject = models.CharField("Тема письма", max_length=150)
     text = models.TextField("Текст")
     html = models.TextField("HTML")

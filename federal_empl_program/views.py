@@ -23,7 +23,6 @@ from users.models import User
 from citizens.models import Citizen
 from federal_empl_program.models import Application, CitizenCategory, Grant, Questionnaire, CategoryInstruction
 from education_centers.models import Competence, EducationCenterGroup, EducationCenter
-from vocational_guidance.models import VocGuidTest
 
 @login_required
 def index(request):
