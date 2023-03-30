@@ -79,7 +79,7 @@ class Project(models.Model):
 
 
 class PartnerContact(models.Model):
-    user = models.ForeignKey(User, related_name="пользователь", on_delete=DO_NOTHING, blank=True, null=True)
+    user = models.ForeignKey(User, related_name="пользователь", on_delete=CASCADE, blank=True, null=True)
 
     first_name = models.CharField("Имя", max_length=30, blank=False, null=False)
     middle_name = models.CharField("Отчество", max_length=30, blank=True, null=True)

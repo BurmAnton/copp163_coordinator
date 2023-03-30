@@ -211,7 +211,7 @@ class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
             if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
                 education_centers = EducationCenter.objects.filter(contact_person=request.user)
                 return queryset.filter(education_center__in=education_centers)
-        return queryset.exclude(appl_status='NCOM')
+        return queryset
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         group = Group.objects.filter(name='Специалист по работе с клиентами')

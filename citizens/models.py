@@ -101,7 +101,7 @@ class Citizen(models.Model):
     res_city = models.CharField("Населённый пункт", max_length=250, blank=True, null=True)
     res_disctrict = models.CharField("Населённый пункт", max_length=50, blank=True, null=True)
 
-    ed_center_group = models.ForeignKey(EducationCenterGroup, verbose_name="Предварительная заявка", on_delete=DO_NOTHING, related_name="citizens", blank=True, null=True)
+    ed_center_group = models.ForeignKey(EducationCenterGroup, verbose_name="Предварительная заявка", on_delete=CASCADE, related_name="citizens", blank=True, null=True)
 
 
     STATUS_CHOICES = [
@@ -146,7 +146,7 @@ class Citizen(models.Model):
 class Job(models.Model):
     worker = models.ForeignKey(Citizen, on_delete=CASCADE, related_name='jobs')
 
-    place_of_work = models.ForeignKey(Company, verbose_name="Место работы", on_delete=DO_NOTHING, related_name='employees')
+    place_of_work = models.ForeignKey(Company, verbose_name="Место работы", on_delete=CASCADE, related_name='employees')
     position = models.CharField("Должность", max_length=50)
 
     start_date = models.DateField("Дата начала работы")
