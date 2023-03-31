@@ -174,3 +174,41 @@ class EducationCenterGroup(models.Model):
             return  f"{self.education_center} {self.program} (с {self.start_date})"            
         else:
             return  f"{self.education_center} {self.program} ({self.start_date}–{self.end_date})"    
+
+
+class ContractorsDocument(models.Model):
+    contractor = models.ForeignKey(
+        EducationCenter, 
+        verbose_name='подрядчик', 
+        related_name='ed_center_documents',
+        null=False,
+        blank=False,
+        on_delete=CASCADE
+    )
+    FORMATS = [
+        ("GRMNT", "Договор и приложения"),
+        ("SSGMNT", "Задание на оказание услуг"),
+        ("NVC", "Счёт на оплату"),
+        ("CT", "Акт выполненных работ")
+    ]
+    doc_type = models.CharField(
+        "Тип документа", 
+        max_length=6, 
+        choices=FORMATS,
+        null=False,
+        blank=False
+    )
+
+    def doc_directory_path(instance, filename):
+        return 'documents/{0}/{1}'.format(
+            instance.contractor.id, filename
+        )
+    
+    doc_file = models.FileField("Документ", upload_to=doc_directory_path)
+
+    class Meta:
+        verbose_name = "Документ с подрядчиком"
+        verbose_name_plural = "Документы с подрядчиками"
+
+    def __str__(self):
+        return f'{self.get_doc_type_display()} ({self.contractor.name})'

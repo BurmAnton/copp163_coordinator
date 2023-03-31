@@ -7,12 +7,16 @@ from django import forms
 from easy_select2 import select2_modelform
 from django_admin_listfilter_dropdown.filters import  RelatedOnlyDropdownFilter, DropdownFilter
 
-from .models import Workshop, EducationCenter, EducationProgram, Competence, Group, EducationCenterGroup
+from .models import Workshop, EducationCenter, EducationProgram, Competence, \
+      Group, EducationCenterGroup, ContractorsDocument
 from federal_empl_program.models import Application
 from citizens.models import Citizen, School, SchoolClass
 from users.models import User
 import users
 
+@admin.register(ContractorsDocument)
+class ContractorsDocumentAdmin(admin.ModelAdmin):
+    pass
 
 @admin.register(Workshop)
 class WorkshopAdmin(admin.ModelAdmin):
