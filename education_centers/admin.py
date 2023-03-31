@@ -5,7 +5,8 @@ from django.urls import reverse
 from django import forms
 
 from easy_select2 import select2_modelform
-from django_admin_listfilter_dropdown.filters import  RelatedOnlyDropdownFilter, DropdownFilter, ChoiceDropdownFilter
+from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter,\
+      DropdownFilter, ChoiceDropdownFilter
 
 from .models import Workshop, EducationCenter, EducationProgram, Competence, \
       Group, EducationCenterGroup, ContractorsDocument
@@ -16,9 +17,12 @@ import users
 
 @admin.register(ContractorsDocument)
 class ContractorsDocumentAdmin(admin.ModelAdmin):
+    search_fields = ['contractor__name',]
     list_display = ['contractor', 'doc_type']
     list_filter = (
         ('doc_type', ChoiceDropdownFilter),
+        ('contractor', RelatedOnlyDropdownFilter),
+        ('group', RelatedOnlyDropdownFilter)
     )
 
 @admin.register(Workshop)
