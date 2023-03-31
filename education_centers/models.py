@@ -185,6 +185,14 @@ class ContractorsDocument(models.Model):
         blank=False,
         on_delete=CASCADE
     )
+    group = models.ForeignKey(
+        Group,
+        verbose_name='группа', 
+        related_name='group_documents',
+        null=False,
+        blank=False,
+        on_delete=CASCADE
+    )
     FORMATS = [
         ("GRMNT", "Договор и приложения"),
         ("SSGMNT", "Задание на оказание услуг"),
