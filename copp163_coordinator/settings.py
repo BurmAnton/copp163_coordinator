@@ -151,6 +151,9 @@ STATICFILES_DIRS = [
     '/var/www/copp163_coordinator/static/',
 ]
 
+MEDIA_URL = 'http://127.0.0.1:8000/media/'
+MEDIA_ROOT = BASE_DIR / "media"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
