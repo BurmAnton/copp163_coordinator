@@ -204,6 +204,19 @@ class ContractorsDocument(models.Model):
         null=False,
         blank=False
     )
+    STAGES = [
+        ("CRTD", "Создан"),
+        ("CHCKD", "Проверен"),
+        ("SGND", "Подписан"),
+    ]
+    doc_stage = models.CharField(
+        "Стадия", 
+        max_length=6, 
+        choices=STAGES,
+        null=False,
+        blank=False,
+        default="CRTD"
+    )
 
     def doc_directory_path(instance, filename):
         return 'documents/{0}/{1}'.format(

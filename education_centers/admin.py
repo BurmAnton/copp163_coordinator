@@ -18,12 +18,14 @@ import users
 @admin.register(ContractorsDocument)
 class ContractorsDocumentAdmin(admin.ModelAdmin):
     search_fields = ['contractor__name',]
-    list_display = ['contractor', 'doc_type']
+    list_display = ['contractor', 'doc_type', 'doc_stage']
     list_filter = (
         ('doc_type', ChoiceDropdownFilter),
         ('contractor', RelatedOnlyDropdownFilter),
-        ('group', RelatedOnlyDropdownFilter)
+        ('doc_stage', ChoiceDropdownFilter)
     )
+
+    filter_horizontal = ('groups',)
 
 @admin.register(Workshop)
 class WorkshopAdmin(admin.ModelAdmin):
