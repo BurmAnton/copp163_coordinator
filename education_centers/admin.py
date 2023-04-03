@@ -9,16 +9,20 @@ from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter,\
       DropdownFilter, ChoiceDropdownFilter
 
 from .models import Workshop, EducationCenter, EducationProgram, Competence, \
-      Group, EducationCenterGroup, ContractorsDocument
+      Group, EducationCenterGroup, ContractorsDocument, DocumentType
 from federal_empl_program.models import Application
 from citizens.models import Citizen, School, SchoolClass
 from users.models import User
 import users
 
+@admin.register(DocumentType)
+class DocumentTypeAdmin(admin.ModelAdmin):
+    list_display = ['name', 'stage']
+
 @admin.register(ContractorsDocument)
 class ContractorsDocumentAdmin(admin.ModelAdmin):
     search_fields = ['contractor__name',]
-    list_display = ['contractor', 'doc_type', 'doc_stage']
+    list_display = ['contractor', 'doc_stage']
     list_filter = (
         ('doc_type', ChoiceDropdownFilter),
         ('contractor', RelatedOnlyDropdownFilter),

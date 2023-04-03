@@ -175,6 +175,36 @@ class EducationCenterGroup(models.Model):
         else:
             return  f"{self.education_center} {self.program} ({self.start_date}–{self.end_date})"    
 
+class DocumentType(models.Model):
+    name = models.CharField(
+        "Тип документа", 
+        max_length=150, 
+        null=True, 
+        blank=True
+    )
+    STAGES = [
+        ("GRMNT", "Договорные"),
+        ("CLS", "Закрывающие"),
+        ("PRV", "Подтверждающие"),
+    ]
+    stage = models.CharField(
+        "Этап", 
+        max_length=6, 
+        choices=STAGES,
+        null=False,
+        blank=False
+    )
+    def template_directory_path(instance, filename):
+        return 'documents/{0}'.format(filename)
+    
+    template = models.FileField("Документ", upload_to=template_directory_path)
+
+    class Meta:
+        verbose_name = "Шаблон документов"
+        verbose_name_plural = "Шаблоны документов"
+
+    def __str__(self):
+        return f'{self.name}'
 
 class ContractorsDocument(models.Model):
     contractor = models.ForeignKey(
@@ -191,19 +221,6 @@ class ContractorsDocument(models.Model):
         related_name='group_documents',
         blank=False
     )
-    FORMATS = [
-        ("GRMNT", "Договор и приложения"),
-        ("SSGMNT", "Задание на оказание услуг"),
-        ("NVC", "Счёт на оплату"),
-        ("CT", "Акт выполненных работ")
-    ]
-    doc_type = models.CharField(
-        "Тип документа", 
-        max_length=6, 
-        choices=FORMATS,
-        null=False,
-        blank=False
-    )
     STAGES = [
         ("CRTD", "Создан"),
         ("CHCKD", "Проверен"),
@@ -216,6 +233,13 @@ class ContractorsDocument(models.Model):
         null=False,
         blank=False,
         default="CRTD"
+    )
+    doc_type = models.ForeignKey(
+        DocumentType, 
+        verbose_name="Тип документа",
+        null=True,
+        blank=False,
+        on_delete=CASCADE
     )
 
     def doc_directory_path(instance, filename):
