@@ -185,13 +185,11 @@ class ContractorsDocument(models.Model):
         blank=False,
         on_delete=CASCADE
     )
-    group = models.ForeignKey(
+    groups = models.ManyToManyField(
         Group,
-        verbose_name='группа', 
+        verbose_name='группы', 
         related_name='group_documents',
-        null=False,
-        blank=False,
-        on_delete=CASCADE
+        blank=False
     )
     FORMATS = [
         ("GRMNT", "Договор и приложения"),
