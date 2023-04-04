@@ -3,6 +3,7 @@ from email.quoprimime import quote
 from django.db import models
 from django.db.models.deletion import DO_NOTHING, CASCADE
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils.translation import gettext_lazy as _
 
 from users.models import User
 
@@ -69,6 +70,7 @@ class EducationProgram(models.Model):
                 program_type = prog_type[1]
                 break
         return f"{self.program_name} ({program_type}, {self.duration} ч.)"
+    
 
 class EducationCenter(models.Model):
     name = models.CharField("Название организации", max_length=500)
@@ -99,6 +101,60 @@ class EducationCenter(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+class EducationCenterHead(models.Model):
+    organization = models.OneToOneField(
+        EducationCenter,
+        verbose_name="Организация",
+        related_name="head",
+        null=False,
+        blank=False,
+        on_delete=CASCADE
+    )
+    first_name = models.CharField("Имя", max_length=30, blank=False, null=False)
+    middle_name = models.CharField("Отчество", max_length=30, blank=True, null=True)
+    last_name = models.CharField("Фамилия", max_length=30, blank=False, null=False)
+    position = models.CharField("Должность", max_length=50, blank=False, null=False)
+    
+    first_name_r= models.CharField("Имя (род)", max_length=30, blank=False, null=False)
+    middle_name_r = models.CharField("Отчество (род)", max_length=30, blank=True, null=True)
+    last_name_r = models.CharField("Фамилия (род)", max_length=30, blank=False, null=False)
+    position_r = models.CharField("Должность (род)", max_length=50, blank=False, null=False)
+
+    class Meta:
+        verbose_name = "Представитель организации"
+        verbose_name_plural = "Представители организаций"
+
+    def __str__(self):
+        return f'{self.last_name} ({self.position})'
+
+
+class BankDetails(models.Model):
+    organization = models.OneToOneField(
+        EducationCenter,
+        verbose_name="Организация",
+        related_name="bank_details",
+        null=False,
+        blank=False,
+        on_delete=CASCADE
+    )
+    inn_kpp = models.CharField("ИНН/КПП", max_length=25, null=False, blank=False)
+    ogrn = models.CharField("ОГРН", max_length=25, null=False, blank=False) 
+    receiver = models.TextField("Получатель", null=False, blank=False)
+    account_number = models.CharField("Расчётный счёт", max_length=25, null=False, blank=False) 
+    biс = models.CharField("БИК", max_length=25, null=False, blank=False) 
+    corr_account = models.CharField("К/сч", max_length=25, null=False, blank=False)
+    phone = models.CharField("Номер телефона", max_length=20, blank=False, null=False)
+    email = models.EmailField(_('email address'), unique=True)
+    
+    class Meta:
+        verbose_name = "Реквизиты организации"
+        verbose_name_plural = "Реквизиты организаций"
+
+    def __str__(self):
+        return self.name
+
 
 class Workshop(models.Model):
     education_center = models.ForeignKey(EducationCenter, verbose_name="Центр обучения", on_delete=CASCADE, related_name='workshops')
