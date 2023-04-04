@@ -139,7 +139,8 @@ class BankDetails(models.Model):
         blank=False,
         on_delete=CASCADE
     )
-    inn_kpp = models.CharField("ИНН/КПП", max_length=25, null=False, blank=False)
+    inn = models.CharField("ИНН", max_length=25, null=False, blank=False)
+    kpp = models.CharField("КПП", max_length=25, null=False, blank=False)
     ogrn = models.CharField("ОГРН", max_length=25, null=False, blank=False) 
     receiver = models.TextField("Получатель", null=False, blank=False)
     account_number = models.CharField("Расчётный счёт", max_length=25, null=False, blank=False) 
