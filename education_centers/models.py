@@ -74,6 +74,17 @@ class EducationCenter(models.Model):
     name = models.CharField("Название организации", max_length=500)
     contact_person = models.ForeignKey(User, verbose_name="Контактное лицо", related_name="education_centers", on_delete=DO_NOTHING, blank=True, null=True)
     competences = models.ManyToManyField(Competence, related_name="educationCenters", verbose_name="Компетенции", blank=True)
+    
+    org_document = models.TextField(
+        "Действует на основаннии:", null=True, blank=True
+    )
+    ed_license = models.TextField(
+        "Образовательная лизенция", null=True, blank=True
+    )
+    legal_address = models.TextField(
+        "Адрес места нахождения", null=True, blank=True
+    )
+
     quota_1_72 = models.IntegerField("Квота 72ч (Грант 1)", default=0)
     quota_1_144 = models.IntegerField("Квота 144ч (Грант 1)", default=0)
     quota_1_256 = models.IntegerField("Квота 256ч (Грант 1)", default=0)
