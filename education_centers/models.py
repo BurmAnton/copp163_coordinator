@@ -80,12 +80,10 @@ class EducationCenter(models.Model):
     org_document = models.TextField(
         "Действует на основаннии:", null=True, blank=True
     )
-    ed_license = models.TextField(
-        "Образовательная лизенция", null=True, blank=True
-    )
     legal_address = models.TextField(
         "Адрес места нахождения", null=True, blank=True
     )
+    ed_license = models.BooleanField("Образовательная лизенция", default=False)
 
     quota_1_72 = models.IntegerField("Квота 72ч (Грант 1)", default=0)
     quota_1_144 = models.IntegerField("Квота 144ч (Грант 1)", default=0)
