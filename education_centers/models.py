@@ -83,7 +83,8 @@ class EducationCenter(models.Model):
     legal_address = models.TextField(
         "Адрес места нахождения", null=True, blank=True
     )
-    ed_license = models.BooleanField("Образовательная лизенция", default=False)
+    is_license = models.BooleanField("Есть обр. лизенция?", default=False)
+    ed_license = models.TextField("Образовательная лизенция", null=True, blank=True)
 
     quota_1_72 = models.IntegerField("Квота 72ч (Грант 1)", default=0)
     quota_1_144 = models.IntegerField("Квота 144ч (Грант 1)", default=0)
@@ -124,6 +125,16 @@ class EducationCenterHead(models.Model):
         verbose_name = "Представитель организации"
         verbose_name_plural = "Представители организаций"
 
+    def get_name(self, is_r=False):
+        if is_r:
+            return f'{self.last_name_r} {self.first_name_r} {self.middle_name_r}'
+        return f'{self.last_name} {self.first_name} {self.middle_name}'
+
+    def get_short_name(self, is_r=False):
+        if is_r:
+            return f'{self.last_name_r} {self.first_name_r[0]}.{self.middle_name_r[0]}.'
+        return f'{self.last_name} {self.first_name[0]}.{self.middle_name[0]}.'
+    
     def __str__(self):
         return f'{self.last_name} ({self.position})'
 
@@ -152,7 +163,7 @@ class BankDetails(models.Model):
         verbose_name_plural = "Реквизиты организаций"
 
     def __str__(self):
-        return self.name
+        return self.organization.name
 
 
 class Workshop(models.Model):
@@ -261,7 +272,7 @@ class DocumentType(models.Model):
         blank=False
     )
     def template_directory_path(instance, filename):
-        return 'documents/{0}'.format(filename)
+        return 'media/doc_templates/{0}'.format(filename)
     
     template = models.FileField("Документ", upload_to=template_directory_path)
 
@@ -279,6 +290,18 @@ class ContractorsDocument(models.Model):
         related_name='ed_center_documents',
         null=False,
         blank=False,
+        on_delete=CASCADE
+    )
+    register_number = models.IntegerField(
+        'Номер в реестре',
+        null=False,
+        blank=False
+        )
+    parent_doc = models.ForeignKey(
+        "self", 
+        verbose_name="Родительский документ",
+        null=True, 
+        blank=True,
         on_delete=CASCADE
     )
     groups = models.ManyToManyField(
@@ -309,7 +332,7 @@ class ContractorsDocument(models.Model):
     )
 
     def doc_directory_path(instance, filename):
-        return 'documents/{0}/{1}'.format(
+        return 'media/documents/{0}/{1}'.format(
             instance.contractor.id, filename
         )
     
@@ -320,4 +343,4 @@ class ContractorsDocument(models.Model):
         verbose_name_plural = "Документы с подрядчиками"
 
     def __str__(self):
-        return f'{self.get_doc_type_display()} ({self.contractor.name})'
+        return f'{self.doc_type} ({self.contractor.name})'
