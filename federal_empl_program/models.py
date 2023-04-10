@@ -1,4 +1,5 @@
 from email.policy import default
+import math
 from django.db import models
 from users.models import User
 from django.db.models.deletion import DO_NOTHING, CASCADE
@@ -172,6 +173,28 @@ class Application(models.Model):
     class Meta:
         verbose_name = "Заявка (Содействие занятости)"
         verbose_name_plural = "Заявки (Содействие занятости)"
+
+    def get_ed_price(self):
+        if self.education_program.duration == 72: full_price = 23000
+        if self.education_program.duration == 144: full_price = 46000
+        if self.education_program.duration == 256: full_price = 92000
+        return math.ceil(full_price * 0.7)
+
+    def get_empl_price(self):
+        if self.education_program.duration == 72: full_price = 23000
+        if self.education_program.duration == 144: full_price = 46000
+        if self.education_program.duration == 256: full_price = 92000
+        if self.is_working:
+            return math.ceil(full_price * 0.3)
+        return 0
+
+    def get_full_price(self):
+        if self.education_program.duration == 72: full_price = 23000
+        if self.education_program.duration == 144: full_price = 46000
+        if self.education_program.duration == 256: full_price = 92000
+        if self.is_working:
+            return full_price
+        return math.ceil(full_price * 0.7)
     
     def __str__(self):
         appl_status = ""

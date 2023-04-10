@@ -17,11 +17,9 @@
 }
 .body .profile-block .profile {
   min-width: 400px;
-  max-width: -webkit-fit-content;
   max-width: -moz-fit-content;
   max-width: fit-content;
   min-height: 200px;
-  max-height: -webkit-fit-content;
   max-height: -moz-fit-content;
   max-height: fit-content;
   padding: 20px;
@@ -226,10 +224,8 @@
   display: none;
 }
 .body .stages-block .stage-1-card .filter, .body .stages-block .stage-2-card .filter, .body .stages-block .stage-3-card .filter, .body .stages-block .stage-4-card .filter, .body .stages-block .stage-5-card .filter {
-  width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
-  height: -webkit-fit-content;
   height: -moz-fit-content;
   height: fit-content;
   background-color: #F2F2F2;
@@ -301,11 +297,9 @@
   row-gap: 24px;
 }
 .body .stages-block .vg-slots .vg-slot-card {
-  width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
   max-width: 250px;
-  height: -webkit-fit-content;
   height: -moz-fit-content;
   height: fit-content;
   border-radius: 8px;
