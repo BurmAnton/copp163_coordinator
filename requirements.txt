@@ -13,3 +13,4 @@ matplotlib==3.7.1
 pandas==1.5.3
 django-select2==8.1.1
 docxtpl==0.16.6
+django-cleanup==7.0.0
