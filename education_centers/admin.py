@@ -40,7 +40,7 @@ class ContractorsDocumentAdmin(admin.ModelAdmin):
 
     ]
     list_filter = (
-        ('doc_type', ChoiceDropdownFilter),
+        ('doc_type', RelatedOnlyDropdownFilter),
         ('contractor', RelatedOnlyDropdownFilter),
         ('doc_stage', ChoiceDropdownFilter)
     )

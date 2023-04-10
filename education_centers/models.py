@@ -198,6 +198,12 @@ class Group(models.Model):
     class Meta:
         verbose_name = "Группа"
         verbose_name_plural = "Группы"
+    
+    def get_price(self):
+        group_price = 0
+        for student in self.students.all():
+            group_price += student.get_full_price()
+        return group_price
 
     def __str__(self):
         return  f"{self.name}"
@@ -343,4 +349,4 @@ class ContractorsDocument(models.Model):
         verbose_name_plural = "Документы с подрядчиками"
 
     def __str__(self):
-        return f'{self.doc_type} ({self.contractor.name})'
+        return f'{self.doc_type} №{self.register_number} ({self.contractor.name})'
