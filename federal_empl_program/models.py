@@ -64,6 +64,7 @@ class Application(models.Model):
         ('DUPL', "Дубликат")
     ]
     appl_status = models.CharField("Статус заявки", max_length=4, default='NEW', choices=APPL_STATUS_CHOICES)
+    qual_doc = models.TextField("Документ о квалификации", null=True, blank=True, default="")
     change_status_date = models.DateTimeField("Дата последней смены статуса",null=True, blank=False)
 
     #Устарело (2021 год), использовать CitizenCategory
