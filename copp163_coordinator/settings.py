@@ -56,7 +56,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'djaa_list_filter',
-    'mathfilters'
+    'mathfilters',
+    'django_cleanup.apps.CleanupConfig'
 ]
 
 AUTH_USER_MODEL = 'users.User'
