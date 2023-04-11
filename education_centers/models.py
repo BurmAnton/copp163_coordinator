@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models.deletion import DO_NOTHING, CASCADE
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext_lazy as _
+from django.utils.timezone import now
 
 from users.models import User
 
@@ -290,6 +291,7 @@ class DocumentType(models.Model):
         return f'{self.name}'
 
 class ContractorsDocument(models.Model):
+    creation_date = models.DateTimeField("Дата создания", blank=True, null=True, default=now)
     contractor = models.ForeignKey(
         EducationCenter, 
         verbose_name='подрядчик', 
