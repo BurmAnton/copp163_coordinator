@@ -70,7 +70,7 @@ class EducationProgram(models.Model):
             if prog_type[0] == self.program_type:
                 program_type = prog_type[1]
                 break
-        return f"{self.program_name} ({program_type}, {self.duration} ч.)"
+        return f"{self.program_name} ({program_type}, {self.duration}ч.)"
     
 
 class EducationCenter(models.Model):
