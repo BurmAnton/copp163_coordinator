@@ -76,12 +76,12 @@
                                     <tr class="colored-row">
                                 {% endif %}
                                     {% if forloop.first and forloop.parentloop.first %}
-                                        <td scope="row" rowspan="{{ assigment.groups.all|length }}">Задание №{{ assigment.register_number }} от 25.04.2023</td>
+                                        <td scope="row" rowspan="{{ assigment.groups.all|length }}">Задание №{{ assigment.register_number }} от {{ assigment.creation_date|date:"d.m.y" }}</td>
                                     {% endif %}
                                     <td scope="row">Группа №{{ group.name }}</td>
                                     <td scope="row">Cформировать список</td>
                                     {% if forloop.first %}
-                                        <td scope="row" rowspan="{{ act.groups.all|length }}">Акт №{{ act.register_number }} от 25.04.2023</td>
+                                        <td scope="row" rowspan="{{ act.groups.all|length }}">Акт №{{ act.register_number }} от {{ act.creation_date|date:"d.m.y" }}</td>
                                         <td scope="row" rowspan="{{ act.groups.all|length }}">Загрузить счёт</td>
                                     {% endif %}
                                 </tr>
@@ -95,7 +95,7 @@
                                     <tr class="colored-row">
                                 {% endif %}
                                     {% if forloop.first %}
-                                        <td scope="row" rowspan="{{ assigment.groups.all|length }}">Задание №{{ assigment.register_number }} от 25.04.2023</td>
+                                        <td scope="row" rowspan="{{ assigment.groups.all|length }}">Задание №{{ assigment.register_number }} от {{ assigment.creation_date|date:"d.m.y" }}</td>
                                     {% endif %}
                                     <td scope="row">Группа №{{ group.name }}</td>
                                     <td scope="row">Cформировать список</td>
