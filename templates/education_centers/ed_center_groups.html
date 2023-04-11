@@ -60,11 +60,11 @@
             <h2>Документы по группам</h2>
             <table class="table">
                 <tr class="sticky-top"> 
-                    <th scope="col">Задание на оказание услуг</th>
+                    <th scope="col" style="max-width: 250px;">Задание на оказание услуг</th>
                     <th scope="col">Учебные группы</th>
-                    <th scope="col">Список лиц, завершивших обучение</th>
-                    <th scope="col">Акт выполненных работ</th>
-                    <th scope="col">Счет на оплату</th>
+                    <th scope="col" style="max-width: 250px;">Список лиц, завершивших обучение</th>
+                    <th scope="col" style="max-width: 250px;">Акт выполненных работ</th>
+                    <th scope="col" style="max-width: 250px;">Счет на оплату</th>
                 </tr>
                 {% for contract in contracts %}
                     {% for assigment in contract.children_docs.all %}
@@ -78,7 +78,9 @@
                                     {% if forloop.first and forloop.parentloop.first %}
                                         <td scope="row" rowspan="{{ assigment.groups.all|length }}">Задание №{{ assigment.register_number }} от {{ assigment.creation_date|date:"d.m.y" }}</td>
                                     {% endif %}
-                                    <td scope="row">Группа №{{ group.name }}</td>
+                                    <td scope="row" style="max-width: 300px;">
+                                        <p><b>Группа №{{ group.name }}</b> ({{ group.start_date|date:"d.m" }}-{{ group.end_date|date:"d.m" }}) - {{ group.education_program }}</p>
+                                    </td>
                                     <td scope="row">Cформировать список</td>
                                     {% if forloop.first %}
                                         <td scope="row" rowspan="{{ act.groups.all|length }}">Акт №{{ act.register_number }} от {{ act.creation_date|date:"d.m.y" }}</td>
@@ -97,7 +99,9 @@
                                     {% if forloop.first %}
                                         <td scope="row" rowspan="{{ assigment.groups.all|length }}">Задание №{{ assigment.register_number }} от {{ assigment.creation_date|date:"d.m.y" }}</td>
                                     {% endif %}
-                                    <td scope="row">Группа №{{ group.name }}</td>
+                                    <td scope="row" style="max-width: 300px;">
+                                        <p><b>Группа №{{ group.name }}</b> ({{ group.start_date|date:"d.m" }}-{{ group.end_date|date:"d.m" }}) - {{ group.education_program }}</p>
+                                    </td>
                                     <td scope="row">Cформировать список</td>
                                     {% if forloop.first %}
                                         <td scope="row" rowspan="{{ assigment.groups.all|length }}">Сформировать акт</td>
