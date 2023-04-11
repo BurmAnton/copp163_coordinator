@@ -1,18 +1,65 @@
+.body
+    background-color: #F2F2F2
 .edcenter-profile
-    background-color: #e9ecf7
-    padding: 50px 0
     display: flex
-    justify-content: center
-.groups
+    flex-direction: column
+    align-content: center
+    flex-wrap: wrap
+    padding: 20px 20px 20px 25px
+    .edcenter-card
+        width: 85%
+        background-color: white
+        border-radius: 12px
+        box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078)
+        padding: 25px 50px 10px 50px
+        .test-forms
+            display: flex
+            justify-content: center
+            gap: 25px
+        h1
+            text-align: center
+.documents
     display: flex
     flex-wrap: wrap
     justify-content: center
     gap: 15px
-    padding: 50px 0
-    .group-card
-        width: 400px
-.test-forms
-    display: flex
-    justify-content: center
-    gap: 25px
-    
+    padding: 0px 20px 50px 25px
+    margin: auto
+    .doc-table
+        h2
+            text-align: center
+            font-style: normal
+            font-weight: 400
+            font-size: 20px
+            line-height: 24px
+        width: 85%
+        background-color: white
+        border-radius: 12px
+        box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078)
+        padding: 25px 50px 10px 50px
+        table
+            th
+                color: #394959
+                font-weight: 400 !important
+                font-size: 16px
+                line-height: 20px
+                text-align: center
+                border: 0
+                border-bottom: 2px solid #394959
+                background-color: white
+            .colored-row
+                background-color: #f2f2f28a
+            tr
+                td
+                    color: #394959
+                    font-weight: 300 !important
+                    font-size: 14px
+                    line-height: 20px
+                    text-align: center
+                    border: 1px solid #dee2e6
+                    border-bottom: 0
+                td:last-child
+                    border-right: 0
+                td:first-child
+                    border-left: 0
+            
