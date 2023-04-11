@@ -306,6 +306,7 @@ class ContractorsDocument(models.Model):
     parent_doc = models.ForeignKey(
         "self", 
         verbose_name="Родительский документ",
+        related_name="children_docs",
         null=True, 
         blank=True,
         on_delete=CASCADE
