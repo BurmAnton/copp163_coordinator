@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% load static %}
+{% load ed_centers_extras %}
 
 {% block title %}Личный кабинет ЦО{% endblock %}
 {% block style %}
@@ -10,49 +11,42 @@
 
 {% block body %}
     <div class="edcenter-profile">
-        <div class="edcenter-card">
+        <div class="edcenter-name">
             <h1>{{ed_center}}</h1>
-            <div class="test-forms">
-                <form action="{% url 'ed_center_groups' ed_center.id %}" method="POST">
-                    <input class="btn btn-primary" type="submit" name="create_contract" value="Договор">
-                </form>
-                <div>
-                    <form action="{% url 'ed_center_groups' ed_center.id %}" method="post">
-                        <div class="form mb-3">
-                            <select class="selectpicker" title="Выберите группы" multiple data-live-search="true" name="groups" required>
-                                {% for group in groups %}
-                                    <option value="{{group.id}}">{{group.id}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <input type="submit" class="btn btn-primary" name="create_assignment" value="Задание">
-                    </form>
-                </div>
-                <div>
-                    <form action="{% url 'ed_center_groups' ed_center.id %}" method="post">
-                        <div class="form mb-3">
-                            <select class="selectpicker" title="Выберите задание" data-live-search="true" name="assignment" required>
-                                {% for assigment in assigments %}
-                                    <option value="{{assigment.id}}">{{assigment}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <input type="submit" class="btn btn-primary" name="create_act" value="Акт">
-                    </form>
-                </div>
-                <div>
-                    <form action="{% url 'ed_center_groups' ed_center.id %}" method="post">
-                        <div class="form mb-3">
-                            <select class="selectpicker" title="Выберите акт" data-live-search="true" name="act" required>
-                                {% for act in acts %}
-                                    <option value="{{act.id}}">{{act}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <input type="submit" class="btn btn-primary" name="create_students_list" value="Список">
-                    </form>
-                </div>
+        </div>
+        <div class="edcenter-bank-details">
+            <h2 class="director-h2">Руководитель</h2>
+            <div class="director">
+                <p><b>ФИО:</b> {{ed_center.head.get_name}}</p>
+                <p><b>ФИО (род. падеж):</b> {{ ed_center.head|get_name_r }}</p>
+                <p><b>Должность:</b> {{ed_center.head.position}}</p>
+                <p><b>Должность (род. падеж):</b> {{ed_center.head.position_r}}</p>
             </div>
+            <h2 class="bank-h2">Платёжная информация</h2>
+            <div class="inn">
+                <p><b>ИНН/КПП:</b> {{ed_center.bank_details.inn}}/{{ed_center.bank_details.kpp}}</p>
+                <p><b>ОКТМО:</b> {{ed_center.bank_details.oktmo}}</p>
+                <p><b>ОГРН:</b> {{ed_center.bank_details.ogrn}}</p>
+                <p><b>ОКПО/ОКВЭД:</b> {{ed_center.bank_details.okpo}}/{{ed_center.bank_details.okved}}</p>
+            </div>
+            <div class="bank">
+                <p><b>{{ed_center.bank_details.bank}}</b></p>
+                <p><b>БИК:</b> {{ed_center.bank_details.biс}}</p>
+                <p><b>р/с:</b> {{ed_center.bank_details.account_number}}</p>
+                <p><b>К/сч:</b> {{ed_center.bank_details.corr_account}}</p>
+            </div>
+            <div class="contacts">
+                <p><b>Главный бухгалтер:</b> {{ed_center.bank_details.accountant}}</p>
+                <p><b>Телефон(-ы):</b> {{ed_center.bank_details.phone}}</p>
+                <p><b>Email:</b> {{ed_center.bank_details.email}}</p>
+            </div>
+            <div class="address">
+                <p><b>Юридический адрес:</b> {{ed_center.bank_details.legal_address}}</p>
+                <p><b>Почтовый адрес:</b> {{ed_center.bank_details.mail_address}}</p>
+            </div>
+        </div>
+        <div class="edcenter-director">
+            
         </div>
     </div>
     <div class="documents">
@@ -116,3 +110,44 @@
         </div>
     </div>
 {% endblock %}
+<!--<div class="test-forms">
+                <form action="{% url 'ed_center_groups' ed_center.id %}" method="POST">
+                    <input class="btn btn-primary" type="submit" name="create_contract" value="Договор">
+                </form>
+                <div>
+                    <form action="{% url 'ed_center_groups' ed_center.id %}" method="post">
+                        <div class="form mb-3">
+                            <select class="selectpicker" title="Выберите группы" multiple data-live-search="true" name="groups" required>
+                                {% for group in groups %}
+                                    <option value="{{group.id}}">{{group.id}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <input type="submit" class="btn btn-primary" name="create_assignment" value="Задание">
+                    </form>
+                </div>
+                <div>
+                    <form action="{% url 'ed_center_groups' ed_center.id %}" method="post">
+                        <div class="form mb-3">
+                            <select class="selectpicker" title="Выберите задание" data-live-search="true" name="assignment" required>
+                                {% for assigment in assigments %}
+                                    <option value="{{assigment.id}}">{{assigment}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <input type="submit" class="btn btn-primary" name="create_act" value="Акт">
+                    </form>
+                </div>
+                <div>
+                    <form action="{% url 'ed_center_groups' ed_center.id %}" method="post">
+                        <div class="form mb-3">
+                            <select class="selectpicker" title="Выберите акт" data-live-search="true" name="act" required>
+                                {% for act in acts %}
+                                    <option value="{{act.id}}">{{act}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <input type="submit" class="btn btn-primary" name="create_students_list" value="Список">
+                    </form>
+                </div>
+            </div>-->
