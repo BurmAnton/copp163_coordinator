@@ -151,13 +151,24 @@ class BankDetails(models.Model):
     )
     inn = models.CharField("ИНН", max_length=25, null=False, blank=False)
     kpp = models.CharField("КПП", max_length=25, null=False, blank=False)
-    ogrn = models.CharField("ОГРН", max_length=25, null=False, blank=False) 
-    receiver = models.TextField("Получатель", null=False, blank=False)
-    account_number = models.CharField("Расчётный счёт", max_length=25, null=False, blank=False) 
+    ogrn = models.CharField("ОГРН", max_length=25, null=False, blank=False)
+    okpo = models.CharField("ОКПО", max_length=25, null=False, blank=False)
+    okved = models.CharField("ОКВЭД", max_length=25, null=False, blank=False)
+    oktmo = models.CharField("ОКТМО", max_length=25, null=False, blank=False) 
+
+    bank = models.CharField("Банк", max_length=250, null=False, blank=False)
     biс = models.CharField("БИК", max_length=25, null=False, blank=False) 
+    account_number = models.CharField("Расчётный счёт", max_length=25, null=False, blank=False) 
     corr_account = models.CharField("К/сч", max_length=25, null=False, blank=False)
-    phone = models.CharField("Номер телефона", max_length=20, blank=False, null=False)
+
+    legal_address = models.CharField("Юридический адрес", max_length=500, null=False, blank=False)
+    mail_address = models.CharField("Почтовый адрес", max_length=500, null=False, blank=False)
+    bank = models.CharField("Банк", max_length=250, null=False, blank=False)
+    accountant = models.CharField("Главный бухгалтер", max_length=250, null=True, blank=True)
+    phone = models.CharField("Телефон(-ы)", max_length=120, blank=False, null=False)
     email = models.EmailField(_('email address'), unique=True)
+
+    other = models.TextField("Другие реквизиты", null=True, blank=True)
     
     class Meta:
         verbose_name = "Реквизиты организации"
@@ -188,7 +199,7 @@ class Group(models.Model):
     distance_education = models.BooleanField("Дистанционное обучение", default=False)
     mixed_education = models.BooleanField("Смешанное обучение", default=False)
     EDUCATION_PROJECTS = (
-        ('COMM', 'Комерция'),
+        ('COMM', 'Коммерция'),
         ('PoE', 'Содействие занятости'),
         ('OTHR', 'Другое')
     )
