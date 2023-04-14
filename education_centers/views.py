@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files import File
 
+from .forms import ImportDataForm
 from .models import ContractorsDocument, DocumentType, EducationCenter, Group
 from .contracts import create_document
 
@@ -22,6 +23,7 @@ def ed_center_groups(request, ed_center):
     assig_doc_type = get_object_or_404(DocumentType, name="Задание на оказание услуг")
     act_doc_type = get_object_or_404(DocumentType, name="Акт выполненных работ")
     list_doc_type = get_object_or_404(DocumentType, name="Список лиц, завершивших обучение")
+    bill_doc_type = get_object_or_404(DocumentType, name="Счет на оплату")
 
     if request.method == "POST":
         if 'create_contract' in request.POST:
@@ -33,35 +35,38 @@ def ed_center_groups(request, ed_center):
             doc_parent = ContractorsDocument.objects.filter(doc_type=parent_doc_type, contractor=ed_center)
             create_document(assig_doc_type, ed_center, date.today(), doc_parent[0], groups)
         elif 'create_act' in request.POST:
-            doc_parent = request.POST['assignment']
+            doc_parent = request.POST['doc_parent']
+            groups = request.POST.getlist("groups")
+            groups = Group.objects.filter(id__in=groups)
             doc_parent = get_object_or_404(ContractorsDocument, id=doc_parent)
-            create_document(act_doc_type, ed_center, date.today(), doc_parent, doc_parent.groups.all())
+            create_document(act_doc_type, ed_center, date.today(), doc_parent, groups)
         elif 'create_students_list' in request.POST:
-            doc_parent = request.POST['act']
+            doc_parent = request.POST['act_id']
             doc_parent = get_object_or_404(ContractorsDocument, id=doc_parent)
-            for group in doc_parent.groups.all():
-                create_document(list_doc_type, ed_center, date.today(), doc_parent, group)
-
+            group_id = request.POST['group_id']
+            group = get_object_or_404(Group, id=group_id)
+            for student in group.students.all():
+                qual_doc = request.POST[f'student_doc{student.id}']
+                student.qual_doc = qual_doc
+                student.save()
+            create_document(list_doc_type, ed_center, date.today(), doc_parent, group)
+        elif 'create_bill' in request.POST:
+            doc_parent = request.POST['act_id']
+            doc_parent = get_object_or_404(ContractorsDocument, id=doc_parent)
+            form = ImportDataForm(request.POST, request.FILES)
+            if form.is_valid():
+                bill = create_document(bill_doc_type, ed_center, date.today(), doc_parent, doc_parent.groups.all())
+                bill.doc_file = request.FILES['import_file']
+                bill.save()
     groups = Group.objects.filter(
         workshop__education_center=ed_center
     )
     return render(request, "education_centers/ed_center_groups.html", {
+        'form': ImportDataForm(),
+        'free_groups': Group.objects.filter(workshop__education_center=ed_center, group_documents=None),
         "ed_center": ed_center,
-        "groups": groups,
         'contracts': ContractorsDocument.objects.filter(
                 doc_type=contract_doc_type, 
-                contractor=ed_center
-            ),
-        'assigments': ContractorsDocument.objects.filter(
-                doc_type=assig_doc_type, 
-                contractor=ed_center
-            ),
-        'acts': ContractorsDocument.objects.filter(
-                doc_type=act_doc_type, 
-                contractor=ed_center
-            ),
-        'students_lists': ContractorsDocument.objects.filter(
-                doc_type=list_doc_type, 
                 contractor=ed_center
             ),
     })

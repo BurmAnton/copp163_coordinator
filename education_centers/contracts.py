@@ -66,4 +66,4 @@ def create_document(doc_type, contractor, doc_date, parent_doc, groups):
     if isinstance(groups, QuerySet): contract.groups.add(*groups)
     else: contract.groups.add(groups)
 
-    return path_to_contract
+    return contract
