@@ -198,6 +198,13 @@ class Group(models.Model):
     end_date = models.DateField("Дата окончания обучения", blank=True, null=True)
     distance_education = models.BooleanField("Дистанционное обучение", default=False)
     mixed_education = models.BooleanField("Смешанное обучение", default=False)
+    GROUP_STATUS_CHOICES = [
+        ('NEW', "Создана"),
+        ('SED',"В процессе обучения"),
+        ('COMP', "Завершила обучение"),
+        ('NCOM', "Отменена"),
+    ]
+    group_status = models.CharField("Статус заявки", max_length=4, default='NEW', choices=GROUP_STATUS_CHOICES)
     EDUCATION_PROJECTS = (
         ('COMM', 'Коммерция'),
         ('PoE', 'Содействие занятости'),

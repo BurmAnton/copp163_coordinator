@@ -107,7 +107,7 @@
                                     {% endif %}
                                     <td scope="row" style="max-width: 300px;">
                                         <p><b>Группа №{{ group.name }}</b> ({{ group.start_date|date:"d.m" }}-{{ group.end_date|date:"d.m" }}) - {{ group.education_program }}</p>
-                                        <p><b>Статус:</b> {{ group.students.all.0.get_appl_status_display }}</p>
+                                        <p><b>Статус группы:</b> {{ group.get_group_status_display }}</p>
                                     </td>
                                     <div class="modal fade ListModal" id="ListModal{{group.id}}" tabindex="-1" aria-labelledby="TestModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">
@@ -191,7 +191,7 @@
                                     {% endif %}
                                     <td scope="row" style="max-width: 300px;">
                                         <p><b>Группа №{{ group.name }}</b> ({{ group.start_date|date:"d.m" }}-{{ group.end_date|date:"d.m" }}) - {{ group.education_program }}</p>
-                                        <p><b>Статус:</b> {{ group.students.all.0.get_appl_status_display }}</p>
+                                        <p><b>Статус группы:</b> {{ group.get_group_status_display }}</p>
                                     </td>
                                     <td scope="row">Список отсутствует</td>
                                     {% if forloop.first %}
