@@ -100,10 +100,14 @@
                                     <tr class="colored-row">
                                 {% endif %}
                                     {% if forloop.first and forloop.parentloop.first %}
-                                        <td scope="row" rowspan="{{ assigment.groups.all|length }}">Задание №{{ assigment.register_number }} от {{ assigment.creation_date|date:"d.m.y" }}</td>
+                                        <td scope="row" rowspan="{{ assigment.groups.all|length }}">
+                                            <p><a href="{{ assigment.doc_file.url }}">Задание №{{ assigment.register_number }} от {{ assigment.creation_date|date:"d.m.y" }}</a></p>
+                                            <p><b>Статус:</b> {{ assigment.get_doc_stage_display }}</p>
+                                        </td>
                                     {% endif %}
                                     <td scope="row" style="max-width: 300px;">
                                         <p><b>Группа №{{ group.name }}</b> ({{ group.start_date|date:"d.m" }}-{{ group.end_date|date:"d.m" }}) - {{ group.education_program }}</p>
+                                        <p><b>Статус:</b> {{ group.students.all.0.get_appl_status_display }}</p>
                                     </td>
                                     <div class="modal fade ListModal" id="ListModal{{group.id}}" tabindex="-1" aria-labelledby="TestModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">
@@ -132,10 +136,28 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <td scope="row" data-bs-toggle="modal" data-bs-target="#ListModal{{group.id}}">Cформировать список</td>
+                                    <td scope="row">
+                                        {% if group|get_list == None %}
+                                            <p data-bs-toggle="modal" data-bs-target="#ListModal{{group.id}}">Cформировать список</p>
+                                        {% else %} 
+                                            {% with group|get_list as students_list %}
+                                                <p><a href="{{ students_list.doc_file.url }}">Список лиц, завершивших обучение</a></p>
+                                            {% endwith %}
+                                            <p><b>Статус:</b> {{ act.get_doc_stage_display }}</p>
+                                        {% endif %}
+                                    </td>
                                     {% if forloop.first %}
-                                        <td scope="row" rowspan="{{ act.groups.all|length }}">Акт №{{ act.register_number }} от {{ act.creation_date|date:"d.m.y" }}</td>
                                         <td scope="row" rowspan="{{ act.groups.all|length }}">
+                                            <p><a href="{{act.doc_file.url}}">Акт №{{ act.register_number }} от {{ act.creation_date|date:"d.m.y" }}</a></p>
+                                            <p><b>Статус:</b> {{ act.get_doc_stage_display }}</p>
+                                        </td>
+                                        <td scope="row" rowspan="{{ act.groups.all|length }}">
+                                            {% if act|get_bill != None %}
+                                                {% with act|get_bill as bill %}
+                                                    <p><a href="{{ bill.doc_file.url }}" target="_blank">Счёт на оплату</a></p>
+                                                {% endwith %}
+                                            {% endif %}
+                                            <p><b>Статус:</b> {{ act.get_doc_stage_display }}</p>
                                             <form action="{% url 'ed_center_groups' ed_center.id %}" method="post" enctype="multipart/form-data">
                                                 {% csrf_token %}
                                                 <div class="form mb-3">
@@ -162,10 +184,14 @@
                                     <tr class="colored-row">
                                 {% endif %}
                                     {% if forloop.first and assigment.children_docs.all.count == 0 %}
-                                        <td scope="row" rowspan="{{ assigment.groups.all|length }}">Задание №{{ assigment.register_number }} от {{ assigment.creation_date|date:"d.m.y" }}</td>
+                                        <td scope="row" rowspan="{{ assigment.groups.all|length }}">
+                                            <p><a href="{{ assigment.doc_file.url }}">Задание №{{ assigment.register_number }} от {{ assigment.creation_date|date:"d.m.y" }}</a></p>
+                                            <p><b>Статус:</b> {{ assigment.get_doc_stage_display }}</p>
+                                        </td>
                                     {% endif %}
                                     <td scope="row" style="max-width: 300px;">
                                         <p><b>Группа №{{ group.name }}</b> ({{ group.start_date|date:"d.m" }}-{{ group.end_date|date:"d.m" }}) - {{ group.education_program }}</p>
+                                        <p><b>Статус:</b> {{ group.students.all.0.get_appl_status_display }}</p>
                                     </td>
                                     <td scope="row">Список отсутствует</td>
                                     {% if forloop.first %}

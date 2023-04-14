@@ -27,3 +27,19 @@ def is_group_wo_act(group):
     if len(acts) == 0:
         return True
     return False
+
+@register.filter
+def get_list(group):
+    list_doc_type = get_object_or_404(DocumentType, name="Список лиц, завершивших обучение")
+    students_list = group.group_documents.filter(doc_type=list_doc_type)
+    if len(students_list) == 0:
+        return None
+    return students_list[0]
+
+@register.filter
+def get_bill(act):
+    bill_doc_type = get_object_or_404(DocumentType, name="Счет на оплату")
+    bill = act.children_docs.filter(doc_type=bill_doc_type)
+    if len(bill) == 0:
+        return None
+    return bill[0]

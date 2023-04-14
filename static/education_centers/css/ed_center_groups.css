@@ -125,13 +125,19 @@ h2 {
   background-color: rgba(242, 242, 242, 0.5411764706);
 }
 .documents .doc-table table tr td {
+  text-align: left;
   color: #394959;
   font-weight: 300 !important;
   font-size: 14px;
   line-height: 20px;
-  text-align: center;
   border: 1px solid #dee2e6;
   border-bottom: 0;
+}
+.documents .doc-table table tr td p {
+  margin-bottom: 10px;
+}
+.documents .doc-table table tr td p:last-child {
+  margin-bottom: 0;
 }
 .documents .doc-table table tr td:last-child {
   border-right: 0;
