@@ -1,14 +1,5 @@
-from dal import autocomplete
-
 from django import forms
 
-from .models import TModel
-
-
-class TForm(forms.ModelForm):
-    class Meta:
-        model = TModel
-        fields = ('name', 'test')
-        widgets = {
-            'test': autocomplete.ModelSelect2(url='select2_fk')
-        }
+class ImportDataForm(forms.Form):
+    import_file = forms.FileField(label="Счёт на оплату", max_length=100,
+    widget=forms.ClearableFileInput)

@@ -7,6 +7,7 @@
         <link href="{% static 'education_centers/css/ed_center_groups.css' %}" rel="stylesheet">
 {% endblock %}
 {% block script %}
+    <script src="{% static 'education_centers/js/ed_center_groups.js' %}" rel="stylesheet"></script>
 {% endblock %}
 
 {% block body %}
@@ -49,9 +50,38 @@
             
         </div>
     </div>
+    <div class="modal fade AddAssModal" id="AddAssModal" tabindex="-1" aria-labelledby="AddAssModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddAssModalLabel">Добавить задание</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'ed_center_groups' ed_center.id %}" method="post">
+                    <div class="modal-body">
+                        <div class="form mb-3">
+                            <select class="selectpicker w-100" title="Выберите группы" multiple data-live-search="true" name="groups" required>
+                                {% for group in free_groups %}
+                                    <option value="{{group.id}}">№{{group.name}} - {{group.education_program}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <input type="submit" class="btn btn-primary" name="create_assignment" value="Сформировать задание">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <div class="documents">
         <div class="doc-table">
-            <h2>Документы по группам</h2>
+            <div class="doc-table-hdr">
+                <h2>Документы по группам</h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddAssModal">Создать задание</button>
+            </div>
             <table class="table">
                 <tr class="sticky-top"> 
                     <th scope="col" style="max-width: 250px;">Задание на оказание услуг</th>
@@ -75,35 +105,88 @@
                                     <td scope="row" style="max-width: 300px;">
                                         <p><b>Группа №{{ group.name }}</b> ({{ group.start_date|date:"d.m" }}-{{ group.end_date|date:"d.m" }}) - {{ group.education_program }}</p>
                                     </td>
-                                    <td scope="row">Cформировать список</td>
+                                    <div class="modal fade ListModal" id="ListModal{{group.id}}" tabindex="-1" aria-labelledby="TestModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="TestLabel">Список лиц, заверш. обучение (Группа №{{group.name}})</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <form action="{% url 'ed_center_groups' ed_center.id %}" method="post">
+                                                    <div class="modal-body">
+                                                        <input style="display:none;" type="input" class="form-control" name="group_id"  value={{group.id}} required>
+                                                        <input style="display:none;" type="input" class="form-control" name="act_id"  value={{act.id}} required>
+                                                        {% for student in group.students.all %}
+                                                            <div class="mb-3">
+                                                                <label for="student_doc{{student.id}}">{{student.applicant}}</label>
+                                                                <input type="input" class="form-control" name="student_doc{{student.id}}" placeholder="Документ о квалификации" required>
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <div class="d-grid gap-2">
+                                                            <input type="submit" class="btn btn-primary" name="create_students_list" value="Сформировать список">
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <td scope="row" data-bs-toggle="modal" data-bs-target="#ListModal{{group.id}}">Cформировать список</td>
                                     {% if forloop.first %}
                                         <td scope="row" rowspan="{{ act.groups.all|length }}">Акт №{{ act.register_number }} от {{ act.creation_date|date:"d.m.y" }}</td>
-                                        <td scope="row" rowspan="{{ act.groups.all|length }}">Загрузить счёт</td>
+                                        <td scope="row" rowspan="{{ act.groups.all|length }}">
+                                            <form action="{% url 'ed_center_groups' ed_center.id %}" method="post" enctype="multipart/form-data">
+                                                {% csrf_token %}
+                                                <div class="form mb-3">
+                                                    <input style="display:none;" type="input" class="form-control" name="act_id"  value={{act.id}} required>
+                                                </div>
+                                                <p>{{ form.non_field_errors }}</p>
+                                                <p>{{ form.import_file.label_tag }} {{ form.import_file.help_text }}</p>
+                                                <p>
+                                                    {{ form.import_file.errors }}
+                                                    {{ form.import_file }}
+                                                </p>
+                                                <input style="width: 250px;" type="submit" class="btn btn-primary" name="create_bill" value="Загрузить счёт">
+                                            </form>
+                                        </td>
                                     {% endif %}
                                 </tr>
                             {% endfor %}
                         {% endfor %}
-                        {% if assigment.children_docs.all.count == 0 %}
-                            {% for group in assigment.groups.all %}
+                        {% for group in assigment.groups.all|get_groups_wo_act %}
+                            {% if group|is_group_wo_act %}
                                 {% if forloop.parentloop.counter|divisibleby:2 %}
                                     <tr>
                                 {% else %}
                                     <tr class="colored-row">
                                 {% endif %}
-                                    {% if forloop.first %}
+                                    {% if forloop.first and assigment.children_docs.all.count == 0 %}
                                         <td scope="row" rowspan="{{ assigment.groups.all|length }}">Задание №{{ assigment.register_number }} от {{ assigment.creation_date|date:"d.m.y" }}</td>
                                     {% endif %}
                                     <td scope="row" style="max-width: 300px;">
                                         <p><b>Группа №{{ group.name }}</b> ({{ group.start_date|date:"d.m" }}-{{ group.end_date|date:"d.m" }}) - {{ group.education_program }}</p>
                                     </td>
-                                    <td scope="row">Cформировать список</td>
+                                    <td scope="row">Список отсутствует</td>
                                     {% if forloop.first %}
-                                        <td scope="row" rowspan="{{ assigment.groups.all|length }}">Сформировать акт</td>
-                                        <td scope="row" rowspan="{{ assigment.groups.all|length }}">Загрузить счёт</td>
+                                        <td scope="row" rowspan="{{ assigment.groups.all|get_groups_wo_act|length }}">
+                                            <form action="{% url 'ed_center_groups' ed_center.id %}" method="post">
+                                                <div class="form mb-3">
+                                                    <input style="display: none;" type="number" name="doc_parent" value={{assigment.id}}>
+                                                    <select class="selectpicker" title="Группы" data-live-search="true" name="groups" multiple required>
+                                                        {% for group in assigment.groups.all|get_groups_wo_act %}
+                                                            <option value="{{group.id}}">№{{group}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <input type="submit" class="btn btn-primary" name="create_act" value="Сформировать акт">
+                                            </form>
+                                        </td>
+                                        <td scope="row" rowspan="{{ assigment.groups.all|get_groups_wo_act|length }}">Загрузить счёт</td>
                                     {% endif %}
                                 </tr>
-                            {% endfor %}
-                        {% endif %}
+                            {% endif %}
+                        {% endfor %}
                     {% endfor %}
                 {% endfor %}
             </table>    
@@ -115,28 +198,10 @@
                     <input class="btn btn-primary" type="submit" name="create_contract" value="Договор">
                 </form>
                 <div>
-                    <form action="{% url 'ed_center_groups' ed_center.id %}" method="post">
-                        <div class="form mb-3">
-                            <select class="selectpicker" title="Выберите группы" multiple data-live-search="true" name="groups" required>
-                                {% for group in groups %}
-                                    <option value="{{group.id}}">{{group.id}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <input type="submit" class="btn btn-primary" name="create_assignment" value="Задание">
-                    </form>
+                    
                 </div>
                 <div>
-                    <form action="{% url 'ed_center_groups' ed_center.id %}" method="post">
-                        <div class="form mb-3">
-                            <select class="selectpicker" title="Выберите задание" data-live-search="true" name="assignment" required>
-                                {% for assigment in assigments %}
-                                    <option value="{{assigment.id}}">{{assigment}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <input type="submit" class="btn btn-primary" name="create_act" value="Акт">
-                    </form>
+                    
                 </div>
                 <div>
                     <form action="{% url 'ed_center_groups' ed_center.id %}" method="post">

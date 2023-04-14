@@ -65,8 +65,21 @@ h2
     gap: 15px
     padding: 0px 20px 50px 25px
     margin: auto
-    h2
-        text-align: center
+    .doc-table-hdr
+        width: 100%
+        display: grid
+        justify-content: space-around
+        align-content: center
+        grid-template-columns: 30% 30% 30%
+        button
+            grid-row: 1
+            grid-column: 3
+            width: 200px
+            justify-self: right
+        h2
+            grid-row: 1
+            grid-column: 2
+            text-align: center
     .doc-table
         width: 85%
         background-color: white
@@ -83,6 +96,7 @@ h2
                 border: 0
                 border-bottom: 2px solid #394959
                 background-color: white
+                vertical-align: middle
             .colored-row
                 background-color: #f2f2f28a
             tr

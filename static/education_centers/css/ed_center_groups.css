@@ -85,7 +85,22 @@ h2 {
   padding: 0px 20px 50px 25px;
   margin: auto;
 }
-.documents h2 {
+.documents .doc-table-hdr {
+  width: 100%;
+  display: grid;
+  justify-content: space-around;
+  align-content: center;
+  grid-template-columns: 30% 30% 30%;
+}
+.documents .doc-table-hdr button {
+  grid-row: 1;
+  grid-column: 3;
+  width: 200px;
+  justify-self: right;
+}
+.documents .doc-table-hdr h2 {
+  grid-row: 1;
+  grid-column: 2;
   text-align: center;
 }
 .documents .doc-table {
@@ -104,6 +119,7 @@ h2 {
   border: 0;
   border-bottom: 2px solid #394959;
   background-color: white;
+  vertical-align: middle;
 }
 .documents .doc-table table .colored-row {
   background-color: rgba(242, 242, 242, 0.5411764706);
