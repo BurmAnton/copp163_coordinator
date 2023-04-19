@@ -1,0 +1,70 @@
+.body
+    background-color: #F2F2F2
+.documents
+    display: flex
+    flex-direction: column
+    flex-wrap: wrap
+    justify-content: center
+    row-gap: 15px
+    padding: 20px 20px 50px 25px
+    margin: auto
+    width: 85%
+    .doc-filter
+        background-color: white
+        border-radius: 12px
+        box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078)
+        padding: 25px 50px 25px 50px
+        form
+            display: flex
+            flex-wrap: wrap
+            justify-content: center
+            row-gap: 15px
+            >div
+                display: flex
+                justify-content: center
+                gap: 15px
+            .bootstrap-select .dropdown-menu
+                max-width: 700px
+        h2
+            width: 100%
+            text-align: center
+            color: #394959
+            font-style: normal
+            font-weight: 400
+            font-size: 20px
+            line-height: 24px
+    .doc-table
+        background-color: white
+        border-radius: 12px
+        box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078)
+        padding: 25px 35px 10px 35px
+        table
+            th
+                color: #394959
+                font-weight: 400 !important
+                font-size: 16px
+                line-height: 20px
+                text-align: center
+                border: 0
+                border-bottom: 2px solid #394959
+                background-color: white
+                vertical-align: middle
+            .colored-row
+                background-color: #f2f2f28a
+            tr
+                td
+                    text-align: left
+                    color: #394959
+                    font-weight: 300 !important
+                    font-size: 14px
+                    line-height: 20px
+                    border: 1px solid #dee2e6
+                    border-bottom: 0
+                    p
+                        margin-bottom: 10px
+                    p:last-child
+                        margin-bottom: 0
+                td:last-child
+                    border-right: 0
+                td:first-child
+                    border-left: 0

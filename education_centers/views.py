@@ -3,9 +3,10 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files import File
+from django.db.models import Case, When, Value
 
 from .forms import ImportDataForm
-from .models import ContractorsDocument, DocumentType, EducationCenter, Group
+from .models import ContractorsDocument, DocumentType, EducationCenter, EducationProgram, Group
 from .contracts import create_document, combine_all_docx
 
 # Create your views here.
@@ -70,4 +71,28 @@ def ed_center_groups(request, ed_center):
                 doc_type=contract_doc_type, 
                 contractor=ed_center
             ),
+    })
+
+@csrf_exempt
+def documents_fed(request):
+    doc_filter = None
+    if request.method == "POST":
+        doc_filter = dict()
+        doc_filter['ed_centers'] = request.POST.getlist("ed_centers")
+        doc_filter['ed_centers'] = EducationCenter.objects.filter(
+            id__in=doc_filter['ed_centers']
+        )
+        doc_filter['programs'] = request.POST.getlist("programs")
+        doc_filter['programs'] = EducationProgram.objects.filter(
+            id__in=doc_filter['programs']
+        )
+        doc_filter['start_date'] = request.POST['start_date']
+        doc_filter['end_date'] = request.POST['end_date']
+    ed_centers = EducationCenter.objects.exclude(ed_center_documents=None)
+    programs = EducationProgram.objects.all()
+
+    return render(request, "education_centers/fed-empl.html", {
+        "ed_centers": ed_centers,
+        "programs": programs,
+        "doc_filter": doc_filter
     })

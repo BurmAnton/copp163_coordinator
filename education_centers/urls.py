@@ -9,4 +9,5 @@ urlpatterns = [
         views.ed_center_groups, 
         name='ed_center_groups'
     ),
+    path('documents/fed-empl/', views.documents_fed, name='documents_fed')
 ]

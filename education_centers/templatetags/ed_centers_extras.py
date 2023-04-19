@@ -45,3 +45,26 @@ def get_bill(act):
     if len(bill) == 0:
         return None
     return bill[0]
+
+@register.filter
+def get_contracts(docs):
+    contract_doc_type = get_object_or_404(DocumentType, name="Договор")
+    contracts = docs.filter(doc_type=contract_doc_type)
+    return contracts
+
+@register.filter
+def filter_centers(ed_centers, filter):
+    if filter == None or len(filter['ed_centers']) == 0:
+        return ed_centers
+    return ed_centers.filter(id__in=filter['ed_centers'])
+
+@register.filter
+def filter_groups(groups, filter):
+    if filter != None:
+        if filter['programs'] != 0 and len(filter['programs']) != 0:
+            groups = groups.filter(education_program__in=filter['programs'])
+        if filter['start_date'] != "":
+            groups = groups.filter(start_date__gte=filter['start_date'])
+        if filter['end_date'] != "":
+            groups = groups.filter(start_date__lte=filter['end_date'])
+    return groups
