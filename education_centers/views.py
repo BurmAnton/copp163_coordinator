@@ -6,7 +6,7 @@ from django.core.files import File
 
 from .forms import ImportDataForm
 from .models import ContractorsDocument, DocumentType, EducationCenter, Group
-from .contracts import create_document
+from .contracts import create_document, combine_all_docx
 
 # Create your views here.
 def index(request):
@@ -36,20 +36,20 @@ def ed_center_groups(request, ed_center):
             create_document(assig_doc_type, ed_center, date.today(), doc_parent[0], groups)
         elif 'create_act' in request.POST:
             doc_parent = request.POST['doc_parent']
-            groups = request.POST.getlist("groups")
-            groups = Group.objects.filter(id__in=groups)
+            groups_id = request.POST.getlist("act_groups")
+            groups = Group.objects.filter(id__in=groups_id)
             doc_parent = get_object_or_404(ContractorsDocument, id=doc_parent)
-            create_document(act_doc_type, ed_center, date.today(), doc_parent, groups)
-        elif 'create_students_list' in request.POST:
-            doc_parent = request.POST['act_id']
-            doc_parent = get_object_or_404(ContractorsDocument, id=doc_parent)
-            group_id = request.POST['group_id']
-            group = get_object_or_404(Group, id=group_id)
-            for student in group.students.all():
-                qual_doc = request.POST[f'student_doc{student.id}']
-                student.qual_doc = qual_doc
-                student.save()
-            create_document(list_doc_type, ed_center, date.today(), doc_parent, group)
+            act = create_document(act_doc_type, ed_center, date.today(), doc_parent, groups)
+            students_lists = []
+            for group in groups:
+                for student in group.students.all():
+                    qual_doc = request.POST[f'student_doc{student.id}']
+                    student.qual_doc = qual_doc
+                    student.save()
+                students_lists.append(
+                    create_document(list_doc_type, ed_center, date.today(), act, group)
+                    )
+            combine_all_docx(act.doc_file,students_lists, act.doc_file.name)
         elif 'create_bill' in request.POST:
             doc_parent = request.POST['act_id']
             doc_parent = get_object_or_404(ContractorsDocument, id=doc_parent)
@@ -63,6 +63,7 @@ def ed_center_groups(request, ed_center):
     )
     return render(request, "education_centers/ed_center_groups.html", {
         'form': ImportDataForm(),
+        'groups': Group.objects.filter(workshop__education_center=ed_center),
         'free_groups': Group.objects.filter(workshop__education_center=ed_center, group_documents=None),
         "ed_center": ed_center,
         'contracts': ContractorsDocument.objects.filter(

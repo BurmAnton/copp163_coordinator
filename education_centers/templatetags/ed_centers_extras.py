@@ -11,9 +11,11 @@ def get_name_r(head):
     return head.get_name(is_r=True)
 
 @register.filter
-def get_groups_wo_act(groups):
+def get_groups_wo_act(groups, group_status=None):
     act_doc_type = get_object_or_404(DocumentType, name="Акт выполненных работ")
     groups_wo_act = []
+    if group_status != None:
+        groups = groups.filter(group_status='COMP')
     for group in groups:
         acts = group.group_documents.filter(doc_type=act_doc_type)
         if len(acts) == 0:

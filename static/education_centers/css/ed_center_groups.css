@@ -14,6 +14,23 @@ h2 {
   background-color: #F2F2F2;
 }
 
+.group-modal p {
+  font-weight: 300 !important;
+  font-size: 16px;
+  line-height: 20px;
+  color: #394959;
+}
+.group-modal p b {
+  font-weight: 500 !important;
+}
+.group-modal .list-title {
+  margin: 0;
+}
+.group-modal li {
+  font-weight: 400;
+  color: #394959;
+}
+
 .edcenter-profile {
   display: flex;
   flex-direction: column;
