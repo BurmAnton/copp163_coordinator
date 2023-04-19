@@ -2,8 +2,13 @@ from datetime import date
 from django.utils.formats import date_format
 from django.db.models.query import QuerySet
 import os
+
+from docxcompose.composer import Composer
+from docx import Document as Document_compose
 from docxtpl import DocxTemplate
 from .models import ContractorsDocument
+
+from docxcompose.composer import Composer
 
 def get_document_number(doc_type, contractor, parent_doc=None):
     previous_docs = ContractorsDocument.objects.filter(
@@ -67,3 +72,12 @@ def create_document(doc_type, contractor, doc_date, parent_doc, groups):
     else: contract.groups.add(groups)
 
     return contract
+
+def combine_all_docx(filename_master,files_list, file_name):
+    number_of_sections=len(files_list)
+    master = Document_compose(filename_master)
+    composer = Composer(master)
+    for i in range(0, number_of_sections):
+        doc_temp = Document_compose(files_list[i].doc_file)
+        composer.append(doc_temp)
+    composer.save(file_name)

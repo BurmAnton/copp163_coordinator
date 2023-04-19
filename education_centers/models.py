@@ -341,6 +341,7 @@ class ContractorsDocument(models.Model):
         ("CRTD", "Создан"),
         ("CHCKD", "Проверен"),
         ("SGND", "Подписан"),
+        ("SGNDAP", "Подписан и проверен"),
     ]
     doc_stage = models.CharField(
         "Стадия", 
