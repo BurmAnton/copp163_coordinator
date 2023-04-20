@@ -87,6 +87,7 @@ def load_organization(sheet, row):
     organization_type = sheet["Тип организации"][row].strip()
     ORG_TYPES = {
         'ЦО СПО': 'ECSPO',
+        'ЦО ВО': 'ECVO', 
         'ЦО частные': 'ECP',
         'Гос. орган': 'GOV',
         'СОУ': 'SCHL',
@@ -104,7 +105,9 @@ def load_contact(organization, sheet, row):
     #Проверяем есть ли такой контакт
     last_name = sheet["Фамилия"][row].replace(" ", "").capitalize()
     first_name = sheet["Имя"][row].replace(" ", "").capitalize()
-    middle_name = sheet["Отчество"][row].replace(" ", "").capitalize()
+    middle_name = ""
+    if sheet["Отчество"][row] != None:
+        middle_name = sheet["Отчество"][row].replace(" ", "").capitalize()
     cheak_contact = PartnerContact.objects.filter(
         last_name=last_name, 
         first_name=first_name,
@@ -123,7 +126,7 @@ def load_contact(organization, sheet, row):
             projects_list.append(project[0])
         #Добавляем контакт
         job_title = sheet["Должность"][row].strip()
-        commentary = sheet["Комментарий"][row].strip()
+        commentary = sheet["Комментарий"][row]
         contact = PartnerContact(
             last_name=last_name, 
             first_name=first_name,
@@ -135,7 +138,7 @@ def load_contact(organization, sheet, row):
         contact.save()
         contact.projects.add(*projects_list)
         #Добавляем номера из списка
-        phones = sheet["Телефоны"][row].strip().split(',')
+        phones = str(sheet["Телефоны"][row]).strip().split(',')
         for phone in phones:
             phone = phone.strip()
             phone = PartnerContactPhone(contact=contact, phone=phone)
