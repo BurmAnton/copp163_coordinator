@@ -83,7 +83,7 @@
                                     {% endif %}
                                         {% if forloop.first and forloop.parentloop.first %}
                                             <td scope="row" rowspan="{{ assigment.groups|filter_groups:doc_filter|length }}">
-                                                <p><a href="{{ assigment.doc_file.url }}">Задание №{{ assigment.register_number }} от {{ assigment.creation_date|date:"d.m.y" }}</a></p>
+                                                <p><a href="{{ assigment.doc_file.url }}" target="_blank">Задание №{{ assigment.register_number }} от {{ assigment.creation_date|date:"d.m.y" }}</a></p>
                                                 <p><b>Статус:</b> {{ assigment.get_doc_stage_display }}</p>
                                             </td>
                                             <td scope="row" style="max-width: 300px;" rowspan="{{ assigment.groups|filter_groups:doc_filter|length }}">{{ ed_center }}</td>
@@ -97,14 +97,14 @@
                                                 <p>Cписок отсутствует</p>
                                             {% else %} 
                                                 {% with group|get_list as students_list %}
-                                                    <p><a href="{{ students_list.doc_file.url }}">Список лиц, завершивших обучение</a></p>
+                                                    <p><a href="{{ students_list.doc_file.url }}" target="_blank">Список лиц, завершивших обучение</a></p>
                                                 {% endwith %}
                                                 <p><b>Статус:</b> {{ act.get_doc_stage_display }}</p>
                                             {% endif %}
                                         </td>
                                         {% if forloop.first %}
                                             <td scope="row" rowspan="{{ groups|length }}">
-                                                <p><a href="{{act.doc_file.url}}">Акт №{{ act.register_number }} от {{ act.creation_date|date:"d.m.y" }} ({{act.doc_type}})</a></p>
+                                                <p><a href="{{act.doc_file.url}}" target="_blank">Акт №{{ act.register_number }} от {{ act.creation_date|date:"d.m.y" }} ({{act.doc_type}})</a></p>
                                                 <p><b>Статус:</b> {{ act.get_doc_stage_display }}</p>
                                             </td>
                                             <td scope="row" rowspan="{{ groups|length }}">
@@ -132,7 +132,7 @@
                                     {% endif %}
                                         {% if forloop.first and assigment.children_docs.all.count == 0 %}
                                             <td scope="row" rowspan="{{ groups|length }}">
-                                                <p><a href="{{ assigment.doc_file.url }}">Задание №{{ assigment.register_number }} от {{ assigment.creation_date|date:"d.m.y" }}</a></p>
+                                                <p><a href="{{ assigment.doc_file.url }}" target="_blank">Задание №{{ assigment.register_number }} от {{ assigment.creation_date|date:"d.m.y" }}</a></p>
                                                 <p><b>Статус:</b> {{ assigment.get_doc_stage_display }}</p>
                                             </td>
                                             <td scope="row" rowspan="{{ groups|length }}">{{ ed_center }}</td>
