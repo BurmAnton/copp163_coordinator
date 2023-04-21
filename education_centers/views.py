@@ -6,7 +6,7 @@ from django.core.files import File
 from django.db.models import Case, When, Value
 
 from .forms import ImportDataForm
-from .models import ContractorsDocument, DocumentType, EducationCenter, EducationProgram, Group
+from .models import ContractorsDocument, DocumentType, EducationCenter, EducationCenterHead, EducationProgram, Group
 from .contracts import create_document, combine_all_docx
 
 # Create your views here.
@@ -59,6 +59,47 @@ def ed_center_groups(request, ed_center):
                 bill = create_document(bill_doc_type, ed_center, date.today(), doc_parent, doc_parent.groups.all())
                 bill.doc_file = request.FILES['import_file']
                 bill.save()
+        elif 'head' in request.POST:
+            if ed_center.head is None:
+                head = EducationCenterHead()
+                head.organization = ed_center
+            else: head = ed_center.head
+            head.last_name = request.POST['last_name'].strip().capitalize()
+            head.first_name = request.POST['first_name'].strip().capitalize()
+            if request.POST['middle_name'] != None:
+               head.middle_name = request.POST['middle_name'].strip(
+                                                            ).capitalize()
+            head.position = request.POST['position'].strip().lower()
+            head.last_name_r = request.POST['last_name_r'].strip().capitalize()
+            head.first_name_r = request.POST['first_name_r'].strip(
+                                                           ).capitalize()
+            if request.POST['middle_name_r'] != None:
+                head.middle_name_r = request.POST['middle_name_r'].strip(
+                                                                 ).capitalize()
+            head.position_r = request.POST['position_r'].strip().lower()
+            head.save()
+        elif 'bank-details' in request.POST:
+            if ed_center.bank_details is None:
+                bank_details = EducationCenterHead()
+                bank_details.organization = ed_center
+            else: bank_details = ed_center.bank_details
+            bank_details.inn = request.POST['inn'].strip()
+            bank_details.kpp = request.POST['kpp'].strip()
+            bank_details.oktmo = request.POST['oktmo'].strip()
+            bank_details.ogrn = request.POST['ogrn'].strip()
+            bank_details.okpo = request.POST['okpo'].strip()
+            bank_details.okved = request.POST['okved'].strip()
+            bank_details.bank = request.POST['bank'].strip()
+            bank_details.biс = request.POST['biс'].strip()
+            bank_details.account_number = request.POST['account_number'].strip()
+            bank_details.corr_account = request.POST['corr_account'].strip()
+            bank_details.accountant = request.POST['accountant'].strip()
+            bank_details.phone = request.POST['phone'].strip()
+            bank_details.email = request.POST['email'].strip()
+            bank_details.legal_address = request.POST['legal_address'].strip()
+            bank_details.mail_address = request.POST['mail_address'].strip()
+            bank_details.save()
+
     groups = Group.objects.filter(
         workshop__education_center=ed_center
     )

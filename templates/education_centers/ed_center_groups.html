@@ -11,6 +11,140 @@
 {% endblock %}
 
 {% block body %}
+<div class="modal fade bank-details-modal" id="HeadModal" tabindex="-1" aria-labelledby="HeadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="HeadModalLabel">Руководитель</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'ed_center_groups' ed_center.id %}" method="post">
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <input type="input" class="form-control" name="last_name" placeholder="Фамииля" value="{{ed_center.head.last_name}}" required>
+                        <label for="last_name">Фамилия</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="input" class="form-control" name="first_name" placeholder="Имя" value="{{ed_center.head.first_name}}" required>
+                        <label for="last_name">Имя</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="input" class="form-control" name="middle_name" placeholder="Отчество" value="{{ed_center.head.middle_name}}">
+                        <label for="last_name">Отчество</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="input" class="form-control" name="position" placeholder="Должность" value="{{ed_center.head.position}}" required>
+                        <label for="last_name">Должность</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="input" class="form-control" name="last_name_r" placeholder="Фамииля (родительный падеж)" value="{{ed_center.head.last_name_r}}" required>
+                        <label for="last_name">Фамилия (родительный падеж)</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="input" class="form-control" name="first_name_r" placeholder="Имя (родительный падеж)" value="{{ed_center.head.first_name_r}}" required>
+                        <label for="last_name">Имя (родительный падеж)</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="input" class="form-control" name="middle_name_r" placeholder="Отчество (родительный падеж)" value="{{ed_center.head.middle_name_r}}">
+                        <label for="last_name">Отчество (родительный падеж)</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="input" class="form-control" name="position_r" placeholder="Должность (родительный падеж)" value="{{ed_center.head.position_r}}" required>
+                        <label for="last_name">Должность (родительный падеж)</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-grid gap-2">
+                        <input type="submit" class="btn btn-primary" name="head" value="Сохранить">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade bank-details-modal" id="BankDetailsModal" tabindex="-1" aria-labelledby="BankDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="BankDetailsLabel">Платёжная информация</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'ed_center_groups' ed_center.id %}" method="post">
+                <div class="modal-body">
+                    <div class="bank-details-1">
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="inn" placeholder="ИНН" value="{{ed_center.bank_details.inn}}" required>
+                            <label for="inn">ИНН</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="kpp" placeholder="КПП" value="{{ed_center.bank_details.kpp}}" required>
+                            <label for="kpp">КПП</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="oktmo" placeholder="ОКТМО" value="{{ed_center.bank_details.oktmo}}" required>
+                            <label for="oktmo">ОКТМО</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="ogrn" placeholder="ОГРН" value="{{ed_center.bank_details.ogrn}}" required>
+                            <label for="ogrn">ОГРН</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="okpo" placeholder="ОКПО" value="{{ed_center.bank_details.okpo}}" required>
+                            <label for="okpo">ОКПО</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="okved" placeholder="ОКВЭД" value="{{ed_center.bank_details.okved}}" required>
+                            <label for="okved">ОКВЭД</label>
+                        </div>
+                    </div>
+                    <div class="bank-details-2">
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="bank" placeholder="Банк" value="{{ed_center.bank_details.bank}}" required>
+                            <label for="bank">Банк</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="biс" placeholder="БИК" value="{{ed_center.bank_details.biс}}" required>
+                            <label for="biс">БИК</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="account_number" placeholder="р/с" value="{{ed_center.bank_details.account_number}}" required>
+                            <label for="account_number">р/с</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="corr_account" placeholder="К/сч" value="{{ed_center.bank_details.corr_account}}" required>
+                            <label for="corr_account">К/сч</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="accountant" placeholder="Главный бухгалтер" value="{{ed_center.bank_details.accountant}}" required>
+                            <label for="accountant">Главный бухгалтер</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="phone" placeholder="Телефон(-ы)" value="{{ed_center.bank_details.phone}}" required>
+                            <label for="phone">Телефон(-ы)</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="email" placeholder="Email" value="{{ed_center.bank_details.email}}" required>
+                            <label for="email">Email</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="legal_address" placeholder="Юридический адрес" value="{{ed_center.bank_details.legal_address}}" required>
+                            <label for="legal_address">Юридический адрес</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="mail_address" placeholder="Почтовый адрес" value="{{ed_center.bank_details.mail_address}}" required>
+                            <label for="mail_address">Почтовый адрес</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-grid gap-2">
+                        <input type="submit" class="btn btn-primary" name="bank-details" value="Сохранить">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% for group in groups %}
     <div class="modal fade group-modal" id="GroupModal{{group.id}}" tabindex="-1" aria-labelledby="GroupModal{{group.id}}Label" aria-hidden="true">
         <div class="modal-dialog">
@@ -19,20 +153,20 @@
                     <h5 class="modal-title" id="GroupModal{{group.id}}Label">Группа №{{group.name}}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                    <div class="modal-body">
-                        <p class="card-text"><b>Программа:</b> {{group.education_program}}</p>
-                        <p class="card-text">
-                            <b>Начало обучения:</b> {{group.start_date}} <br>
-                            <b>Окончание обучения:</b> {{group.end_date}}
-                        </p>
-                        <p class="card-text"><b>Статус:</b> {{group.get_group_status_display}}</p>
-                        <p class="card-text list-title"><b>Список обучающихся:</b></p>
-                        <ul class="list-group list-group-flush">
-                            {% for student in group.students.all %}
-                                <li class="list-group-item">{{student}}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+                <div class="modal-body">
+                    <p class="card-text"><b>Программа:</b> {{group.education_program}}</p>
+                    <p class="card-text">
+                        <b>Начало обучения:</b> {{group.start_date}} <br>
+                        <b>Окончание обучения:</b> {{group.end_date}}
+                    </p>
+                    <p class="card-text"><b>Статус:</b> {{group.get_group_status_display}}</p>
+                    <p class="card-text list-title"><b>Список обучающихся:</b></p>
+                    <ul class="list-group list-group-flush">
+                        {% for student in group.students.all %}
+                            <li class="list-group-item">{{student}}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -88,14 +222,14 @@
             <h1>{{ed_center}}</h1>
         </div>
         <div class="edcenter-bank-details">
-            <h2 class="director-h2">Руководитель</h2>
+            <h2 class="director-h2 data-bs-target" data-bs-toggle="modal" data-bs-target="#HeadModal">Руководитель</h2>
             <div class="director">
                 <p><b>ФИО:</b> {{ed_center.head.get_name}}</p>
                 <p><b>ФИО (род. падеж):</b> {{ ed_center.head|get_name_r }}</p>
                 <p><b>Должность:</b> {{ed_center.head.position}}</p>
                 <p><b>Должность (род. падеж):</b> {{ed_center.head.position_r}}</p>
             </div>
-            <h2 class="bank-h2">Платёжная информация</h2>
+            <h2 class="bank-h2 data-bs-target" data-bs-toggle="modal" data-bs-target="#BankDetailsModal">Платёжная информация</h2>
             <div class="inn">
                 <p><b>ИНН/КПП:</b> {{ed_center.bank_details.inn}}/{{ed_center.bank_details.kpp}}</p>
                 <p><b>ОКТМО:</b> {{ed_center.bank_details.oktmo}}</p>
@@ -117,9 +251,6 @@
                 <p><b>Юридический адрес:</b> {{ed_center.bank_details.legal_address}}</p>
                 <p><b>Почтовый адрес:</b> {{ed_center.bank_details.mail_address}}</p>
             </div>
-        </div>
-        <div class="edcenter-director">
-            
         </div>
     </div>
     <div class="modal fade AddAssModal" id="AddAssModal" tabindex="-1" aria-labelledby="AddAssModalLabel" aria-hidden="true">
@@ -245,7 +376,7 @@
                                     {% if forloop.first %}
                                         <td scope="row" rowspan="{{ assigment.groups.all|get_groups_wo_act|length }}">
                                             {% if assigment.doc_stage == 'SGNDAP' %}
-                                                <p data-bs-toggle="modal" data-bs-target="#ActModal{{assigment.id}}">Сформировать акт</p>
+                                                <p class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ActModal{{assigment.id}}">Сформировать акт</p>
                                             {% else %}
                                                 <p>Акт отсутствует</p>
                                             {% endif %}
