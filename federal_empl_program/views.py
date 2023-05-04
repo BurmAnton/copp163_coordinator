@@ -93,6 +93,8 @@ def login(request):
         #Переадресация авторизованных пользователей
         if request.user.role == 'CTZ':
             return HttpResponseRedirect(reverse("applicant_profile", kwargs={'user_id': request.user.id}))
+        if request.user.rolo == 'CO':
+            return HttpResponseRedirect(reverse("ed_center_application", kwargs={'ed_center_id': ed_center_id}))
         return HttpResponseRedirect(reverse("admin:index"))
         
     elif request.method == "POST":
@@ -101,11 +103,8 @@ def login(request):
         user = auth.authenticate(email=email, password=password)
         if user is not None:
             auth.login(request, user)
-            ed_center_id = request.POST["c"]
-            if ed_center_id is None:
-                return HttpResponseRedirect(reverse("group_list"))
-            else:
-                return HttpResponseRedirect(reverse("group_list") + f"?c={ed_center_id}")
+            ed_center_id = user.education_centers.first().id
+            return HttpResponseRedirect(reverse("ed_center_application", kwargs={'ed_center_id': ed_center_id}))
         else:
             message = "Неверный логин и/или пароль."
 
