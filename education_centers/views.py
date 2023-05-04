@@ -8,7 +8,7 @@ from django.db.models import Case, When, Value
 
 from .forms import ImportDataForm
 from .contracts import create_document, combine_all_docx
-from .models import Competence, ContractorsDocument, DocumentType, EducationCenter, \
+from .models import BankDetails, Competence, ContractorsDocument, DocumentType, EducationCenter, \
                     EducationCenterHead, EducationProgram, Employee, Group, Teacher, Workshop
 from federal_empl_program.models import EdCenterEmployeePosition, ProjectPosition, ProjectYear
 
@@ -56,7 +56,7 @@ def ed_center_application(request, ed_center_id):
             email=request.POST['email']
         )
         employee.save()
-    if request.method == "POST" and 'add-position' in request.POST:
+    elif request.method == "POST" and 'add-position' in request.POST:
         position_id = request.POST['position_id']
         position = get_object_or_404(ProjectPosition, id=position_id)
         employee_id = request.POST['employee_id']
@@ -70,10 +70,10 @@ def ed_center_application(request, ed_center_id):
             employee_position.acts_basis = request.POST['acts_basis']
         employee_position.save()
     elif request.method == "POST" and 'add-org' in request.POST:
-            if ed_center.bank_details is None:
-                bank_details = EducationCenterHead()
+            try: bank_details = BankDetails.objects.get(organization=ed_center)
+            except: 
+                bank_details = BankDetails()
                 bank_details.organization = ed_center
-            else: bank_details = ed_center.bank_details
             bank_details.inn = request.POST['inn'].strip()
             bank_details.kpp = request.POST['kpp'].strip()
             bank_details.oktmo = request.POST['oktmo'].strip()

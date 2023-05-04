@@ -92,8 +92,9 @@ def login(request):
     if request.user.is_authenticated:
         #Переадресация авторизованных пользователей
         if request.user.role == 'CTZ':
+            ed_center_id = request.user.education_centers.first().id
             return HttpResponseRedirect(reverse("applicant_profile", kwargs={'user_id': request.user.id}))
-        if request.user.rolo == 'CO':
+        if request.user.role == 'CO':
             return HttpResponseRedirect(reverse("ed_center_application", kwargs={'ed_center_id': ed_center_id}))
         return HttpResponseRedirect(reverse("admin:index"))
         

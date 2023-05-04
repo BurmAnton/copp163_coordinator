@@ -280,12 +280,12 @@
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="is_ndc" {% if ed_center.is_ndc %} checked {% endif %}>
                             <label class="form-check-label" for="flexCheckDefault">
-                            Является ли организация плательщиком НДС (при реализации услуг в сфере образования)
+                                Является ли организация плательщиком НДС (при реализации образовательных услуг)
                             </label>
                         </div>
                         <div class="form-floating w-90 mb-3">
-                            <input type="input" class="form-control" name="none_ndc_reason" value="{{ed_center.none_ndc_reason}}" required>
-                            <label for="none_ndc_reason">На основании какой статьи Налогового кодекса РФ</label>
+                            <input type="input" class="form-control" name="none_ndc_reason" value="{{ed_center.none_ndc_reason}}">
+                            <label for="none_ndc_reason">Если не является на основании какой статьи Налогового кодекса РФ</label>
                         </div>
                     </div>
                 <h3>1.2 Образовательная лицензия</h3>
@@ -389,7 +389,7 @@
                     </tr>
                 {% empty %}
                 <tr>
-                    <td scope="row" class="none-alert" colspan="4">Не добавленно ни одного сотрудника</td>
+                    <td scope="row" class="none-alert" colspan="4">Не добавлено ни одного сотрудника</td>
                 </tr>
                 {% endfor %}
             </table>
@@ -462,7 +462,7 @@
                     </tr>
                 {% empty %}
                     <tr>
-                        <td scope="row" class="none-alert" colspan="9">Не добавленно ни одной программы</td>
+                        <td scope="row" class="none-alert" colspan="9">Не добавлено ни одной программы</td>
                     </tr>
                 {% endfor %}
             </table>
@@ -490,7 +490,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td scope="row" class="none-alert" colspan="5">Не добавленно ни одного педагога</td>
+                        <td scope="row" class="none-alert" colspan="5">Не добавлено ни одного педагога</td>
                     </tr>
                 {% endfor %}
             </table>
@@ -514,7 +514,7 @@
                     </tr>
                 {% empty %}
                     <tr>
-                        <td scope="row" class="none-alert" colspan="9">Не добавленно ни одной мастерской</td>
+                        <td scope="row" class="none-alert" colspan="9">Не добавлено ни одной мастерской</td>
                     </tr>
                 {% endfor %}
             </table>
