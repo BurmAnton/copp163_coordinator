@@ -6,6 +6,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
 
+#from federal_empl_program.models import ProjectYear
 from users.models import User
 
 class Competence(models.Model):
@@ -32,6 +33,7 @@ class Competence(models.Model):
         ('WSE', 'WorldSkills Eurasia')
     )
     competence_type = models.CharField(max_length=3, choices=СOMPETENCE_TYPES, verbose_name='Тип', blank=True, null=True)
+    is_irpo = models.BooleanField("ИРПО?", default=False)
 
     class Meta:
         verbose_name = "Компетенция"
@@ -39,43 +41,21 @@ class Competence(models.Model):
 
     def __str__(self):
         return self.title
-
-
-class EducationProgram(models.Model):
-    program_name = models.CharField("Название программы", max_length=500)
-    competence = models.ForeignKey(Competence, verbose_name="Компетенция", on_delete=CASCADE, related_name='programs')
-    PROGRAM_TYPES = (
-        ('DPOPK', 'ДПО ПК'),
-        ('DPOPP', 'ДПО ПП'),
-        ('POP', 'ПО П'),
-        ('POPP', 'ПО ПП'),
-        ('POPK', 'ПО ПК'),
-    )
-    program_type = models.CharField(max_length=5, choices=PROGRAM_TYPES, verbose_name='Тип программы', blank=True, null=True)
-    PROGRAM_DURATIONS = (
-        (72, '72 ч.'),
-        (144, '144 ч.'),
-        (256, '256 ч.')
-    )
-    duration = models.IntegerField("Длительность (ак. часов)", choices=PROGRAM_DURATIONS, blank=True)
-    program_link =  models.CharField("Ссылка на программу", max_length=200, blank=True, null=True)
-
-    class Meta:
-        verbose_name = "Программа"
-        verbose_name_plural = "Программы"
-
-    def __str__(self):
-        program_type = 'ДПО ПК'
-        for prog_type in self.PROGRAM_TYPES:
-            if prog_type[0] == self.program_type:
-                program_type = prog_type[1]
-                break
-        return f"{self.program_name} ({program_type}, {self.duration}ч.)"
     
 
 class EducationCenter(models.Model):
     name = models.CharField("Название организации", max_length=500)
+    short_name = models.CharField("Краткое название организации", max_length=500, null=True, blank=True, default="")
+    short_name_r = models.CharField("Краткое название организации (род.)", max_length=500, null=True, blank=True, default="")
+
     contact_person = models.ForeignKey(User, verbose_name="Контактное лицо", related_name="education_centers", on_delete=DO_NOTHING, blank=True, null=True)
+    home_city = models.CharField("Город", max_length=150, null=True, blank=True, default="")
+    ENTITY_SEXES = (
+        ('M', 'Женский'),
+        ('N', 'Средний')
+    )
+    entity_sex = models.CharField(max_length=4, choices=ENTITY_SEXES, verbose_name='Род для юр. лица', blank=True, null=True)
+
     competences = models.ManyToManyField(Competence, related_name="educationCenters", verbose_name="Компетенции", blank=True)
     
     org_document = models.TextField(
@@ -85,7 +65,17 @@ class EducationCenter(models.Model):
         "Адрес места нахождения", null=True, blank=True
     )
     is_license = models.BooleanField("Есть обр. лизенция?", default=False)
-    ed_license = models.TextField("Образовательная лизенция", null=True, blank=True)
+    ed_license = models.TextField(
+        "Образовательная лизенция (серия, номер, дата, срок действия)", 
+        null=True, blank=True, default=""
+    )
+    license_issued_by = models.TextField(
+        "Кем выдана обр. лизенция (творический падеж)", null=True, blank=True, default=""
+    )
+    is_ndc = models.BooleanField("Платит НДС?", default=False)
+    none_ndc_reason = models.CharField(
+        "Основание работы без НДС", max_length=500, null=True, blank=True, default=""
+    )
 
     quota_1_72 = models.IntegerField("Квота 72ч (Грант 1)", default=0)
     quota_1_144 = models.IntegerField("Квота 144ч (Грант 1)", default=0)
@@ -102,6 +92,173 @@ class EducationCenter(models.Model):
     def __str__(self):
         return self.name
     
+
+class EducationProgram(models.Model):
+    ed_center = models.ForeignKey(
+        EducationCenter, 
+        verbose_name="Центр обучения", 
+        related_name='programs',
+        on_delete=CASCADE, 
+        null=True,
+        blank=True
+    )
+    program_name = models.CharField("Название программы", max_length=500)
+    competence = models.ForeignKey(Competence, verbose_name="Компетенция", on_delete=CASCADE, related_name='programs')
+    PROGRAM_TYPES = (
+        ('DPOPK', 'ДПО ПК'),
+        ('DPOPP', 'ДПО ПП'),
+        ('POP', 'ПО П'),
+        ('POPP', 'ПО ПП'),
+        ('POPK', 'ПО ПК'),
+    )
+    program_type = models.CharField(max_length=5, choices=PROGRAM_TYPES, verbose_name='Тип программы', blank=True, null=True)
+    PROGRAM_DURATIONS = (
+        (72, '72 ч.'),
+        (144, '144 ч.'),
+        (256, '256 ч.')
+    )
+    duration = models.IntegerField("Длительность (ак. часов)", blank=True)
+    EDUCATION_FORMS = (
+        ('PRTLN', 'Очно-заочная с применением ДОТ'),
+        ('FLLLN', 'Очная с применением ДОТ '),
+        ('PRT', 'Очно-заочная'),
+        ('FLL', 'Очная'),
+    )
+    education_form = models.CharField(max_length=5, choices=EDUCATION_FORMS, verbose_name='Форма обучения', blank=True, null=True)
+    EDUCATION_CHOICES = [
+        ('NDC', "Без образования"),
+        ('SPO', "Cреднее профессиональное образование"),
+    ]
+    entry_requirements = models.CharField("Входные требования", max_length=4, choices=EDUCATION_CHOICES, blank=True, null=True)
+    program_link =  models.CharField("Ссылка на программу", max_length=200, blank=True, null=True)
+
+    profession = models.CharField(
+        "Ссылка на программу", max_length=200, blank=True, null=True
+    )
+    description = models.TextField(
+        "Описание компетенции", null=True, blank=True
+    )
+    notes = models.TextField("Примечания", null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Программа"
+        verbose_name_plural = "Программы"
+
+    def __str__(self):
+        program_type = 'ДПО ПК'
+        for prog_type in self.PROGRAM_TYPES:
+            if prog_type[0] == self.program_type:
+                program_type = prog_type[1]
+                break
+        return f"{self.program_name} ({program_type}, {self.duration}ч.)"
+
+
+class Teacher(models.Model):
+    organization = models.ForeignKey(
+        EducationCenter,
+        verbose_name="Организация",
+        related_name="teachers",
+        null=False,
+        blank=False,
+        on_delete=CASCADE
+    )
+    programs = models.ManyToManyField(
+        EducationProgram,
+        verbose_name='программы', 
+        related_name='teachers',
+        blank=False
+    )
+    first_name = models.CharField("Имя", max_length=30, blank=False, 
+                                  null=False)
+    middle_name = models.CharField("Отчество", max_length=30, blank=True, 
+                                   null=True)
+    last_name = models.CharField("Фамилия", max_length=30, blank=False, 
+                                 null=False)
+    EMPLOYMENT_TYPES = (
+        ('STFF', 'Штатный педагогический сотрудник'),
+        ('TTRC', 'Привлеченный педагогический работник')
+    )
+    employment_type = models.CharField(
+        max_length=4, choices=EMPLOYMENT_TYPES, 
+        verbose_name='Тип трудоустройства', blank=True, null=True
+    )
+    EDUCATION_LEVELS = (
+        ('VO', 'Высшее образование'),
+        ('SPO', 'Среднее профессиональное образование')
+    )
+    education_level = models.CharField(
+        max_length=4, choices=EDUCATION_LEVELS, 
+        verbose_name='Уровень образования', blank=True, null=True
+    )
+    experience = models.TextField("Наличие опыта", null=True, blank=True)
+    additional_education = models.TextField(
+        "Наличие доп. проф. образования по профилю программы за последние 3 года", 
+        null=True, blank=True
+    )
+
+    class Meta:
+        verbose_name = "Педагог"
+        verbose_name_plural = "Педагоги"
+
+    def get_name(self):
+        if self.middle_name == None or self.middle_name == "":
+            return f'{self.first_name[0]}. {self.last_name}'
+        return f'{self.first_name[0]}.{self.middle_name[0]}. {self.last_name}'
+
+    def __str__(self):
+        return f'{self.last_name} ({self.organization})'
+
+
+class Employee(models.Model):
+    organization = models.ForeignKey(
+        EducationCenter,
+        verbose_name="Организация",
+        related_name="employees",
+        null=False,
+        blank=False,
+        on_delete=CASCADE
+    )
+    first_name = models.CharField("Имя", max_length=30, blank=False, 
+                                  null=False)
+    middle_name = models.CharField("Отчество", max_length=30, blank=True, 
+                                   null=True)
+    last_name = models.CharField("Фамилия", max_length=30, blank=False, 
+                                 null=False)
+    position = models.CharField("Должность", max_length=50, blank=False, 
+                                null=False)
+    is_head = models.BooleanField("Руководитель организации?", default=False)
+    first_name_r= models.CharField("Имя (род)", max_length=30, blank=False, 
+                                   null=False)
+    middle_name_r = models.CharField("Отчество (род)", max_length=30, 
+                                     blank=True, null=True)
+    last_name_r = models.CharField("Фамилия (род)", max_length=30, 
+                                   blank=False, null=False)
+    position_r = models.CharField("Должность (род)", max_length=50, 
+                                  blank=False, null=False)
+
+    phone = models.CharField("Телефон(-ы)", max_length=120, blank=False, 
+                             null=False)
+    email = models.EmailField(_('email address'), blank=False, null=False)
+
+    class Meta:
+        verbose_name = "Сотрудник (контрагента)"
+        verbose_name_plural = "Сотрудники (контрагента)"
+
+    def get_name(self, is_r=False):
+        if is_r:
+            return f'{self.last_name_r} {self.first_name_r} \
+                {self.middle_name_r}'
+        return f'{self.last_name} {self.first_name} {self.middle_name}'
+
+    def get_short_name(self, is_r=False):
+        if is_r:
+            return f'{self.last_name_r} {self.first_name_r[0]}.\
+        {self.middle_name_r[0]}.'
+        return f'{self.last_name} {self.first_name[0]}.{self.middle_name[0]}.'
+    
+    def __str__(self):
+        return f'{self.last_name} ({self.position})'
+
 
 class EducationCenterHead(models.Model):
     organization = models.OneToOneField(
@@ -121,6 +278,9 @@ class EducationCenterHead(models.Model):
     middle_name_r = models.CharField("Отчество (род)", max_length=30, blank=True, null=True)
     last_name_r = models.CharField("Фамилия (род)", max_length=30, blank=False, null=False)
     position_r = models.CharField("Должность (род)", max_length=50, blank=False, null=False)
+
+    phone = models.CharField("Телефон(-ы)", max_length=120, blank=False, null=False)
+    email = models.EmailField(_('email address'))
 
     class Meta:
         verbose_name = "Представитель организации"
@@ -179,9 +339,23 @@ class BankDetails(models.Model):
 
 
 class Workshop(models.Model):
+    name = models.CharField("Название мастерской", max_length=500, null=True, blank=True)
     education_center = models.ForeignKey(EducationCenter, verbose_name="Центр обучения", on_delete=CASCADE, related_name='workshops')
-    competence = models.ForeignKey(Competence, verbose_name="Компетенция",  on_delete=CASCADE, related_name='workshops')
+    competence = models.ForeignKey(Competence, verbose_name="Компетенция", on_delete=CASCADE, null=True, blank=True, related_name='workshops')
     adress = models.CharField("Адрес", max_length=200)
+    CLASSES_TYPES = (
+        ('T', 'Теоритические занятия'),
+        ('P', 'Практические занятия'),
+        ('TP', 'Практические и теоритические занятия'),
+    )
+    programs = models.ManyToManyField(
+        EducationProgram,
+        verbose_name='программы', 
+        related_name='workshops',
+        blank=False
+    )
+    classes_type = models.CharField(max_length=4, choices=CLASSES_TYPES, verbose_name='Вид занятий', blank=True, null=True)
+    equipment = models.TextField("Оборудование", null=True, blank=True)
 
     class Meta:
         verbose_name = "Мастерская"

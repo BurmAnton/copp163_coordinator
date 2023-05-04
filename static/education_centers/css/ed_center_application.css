@@ -1,0 +1,129 @@
+body {
+  background-color: rgba(242, 242, 242, 0.5411764706);
+}
+body h2 {
+  font-size: 24px;
+}
+body h3 {
+  font-size: 20px;
+  padding-left: 10px;
+  margin: 0;
+}
+body .data-bs-target {
+  text-decoration: underline;
+  cursor: pointer;
+}
+body .filter-selectpicker {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+body .filter-selectpicker .dropdown-toggle {
+  height: 37px !important;
+  background-color: white !important;
+}
+body .filter-selectpicker label {
+  padding-top: 11px !important;
+  opacity: 0.65;
+  #transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 25px;
+  margin-top: 25px;
+  padding-bottom: 50px;
+}
+.steps .step {
+  width: 85%;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
+  padding: 25px 50px 10px 50px;
+}
+.steps .step table th {
+  color: #394959;
+  font-weight: 400 !important;
+  font-size: 16px;
+  line-height: 20px;
+  border-top: 0;
+  border-bottom: 2px solid #394959;
+}
+.steps .step table td {
+  color: #394959;
+  font-weight: 300 !important;
+  max-width: 250px;
+  word-wrap: break-word;
+}
+.steps .step table .none-alert {
+  text-align: center;
+  font-weight: 300;
+  font-size: 20px;
+}
+.steps .organization-step h3 {
+  margin-bottom: 10px;
+}
+.steps .organization-step .bank-details, .steps .organization-step .about, .steps .organization-step .license-details {
+  width: 95%;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: flex-start;
+  margin-bottom: 15px;
+}
+.steps .organization-step .bank-details .form-check, .steps .organization-step .about .form-check, .steps .organization-step .license-details .form-check {
+  margin-left: 5px;
+}
+.steps .organization-step .bank-details .w-90, .steps .organization-step .about .w-90, .steps .organization-step .license-details .w-90 {
+  width: 70% !important;
+}
+.steps .organization-step .bank-details .mb-3, .steps .organization-step .about .mb-3, .steps .organization-step .license-details .mb-3 {
+  width: 31%;
+  margin-bottom: 0 !important;
+}
+.steps .organization-step .license-details .mb-3 {
+  width: 90%;
+}
+.steps .organization-step .submit {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+}
+.steps .organization-step .submit input {
+  width: 250px;
+  margin-right: 10%;
+}
+.steps .table-hdr {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  align-items: center;
+}
+.steps .table-hdr h2 {
+  vertical-align: middle;
+  margin: 0;
+}
+.steps .positions-step .table {
+  margin-left: 10px;
+}
+.steps .positions-step .positions {
+  display: flex;
+  justify-content: left;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  padding: 15px 15px 15px 15px;
+  gap: 25px;
+}
+.steps .positions-step .positions .position-form {
+  background-color: rgba(242, 242, 242, 0.5411764706);
+  border-radius: 12px;
+}
+.steps .positions-step .positions .position-form .card-body {
+  min-height: 150px;
+}
+.steps .positions-step .positions .position-form .card-footer {
+  display: flex;
+  justify-content: flex-end;
+}/*# sourceMappingURL=ed_center_application.css.map */

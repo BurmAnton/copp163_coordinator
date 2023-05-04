@@ -3,18 +3,177 @@ import math
 from django.db import models
 from users.models import User
 from django.db.models.deletion import DO_NOTHING, CASCADE
+from django.utils.translation import gettext_lazy as _
 from field_history.tracker import FieldHistoryTracker
-
-from django.db.models.fields.related import OneToOneField
 from django.utils.timezone import now
 
 from citizens.models import Citizen
 from organizations.models import Company
-from education_centers.models import Competence, EducationCenterGroup, EducationProgram, EducationCenter, Group
+from education_centers.models import Competence, EducationCenterGroup,\
+                                     EducationProgram, EducationCenter,\
+                                     Group, Employee
+
+
+class ProjectYear(models.Model):
+    year = models.IntegerField(_('year'), null=False, blank=False)
+    programs = models.ManyToManyField(
+        EducationProgram,
+        verbose_name="Годы проекта",
+        related_name="project_years",
+        blank=True
+    )
+
+    def __str__(self):
+        return  str(self.year)
+
+    class Meta:
+        verbose_name = "Год проекта"
+        verbose_name_plural = "Годы проекта"
+
+
+class EducationCenterProjectYear(models.Model):
+    ed_center = models.ForeignKey(
+        EducationCenter, 
+        verbose_name="Центр обучения",
+        related_name="project_years",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    project_year = models.ForeignKey(
+        ProjectYear, 
+        verbose_name="Год проекта",
+        related_name="ed_centers",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    is_federal = models.BooleanField("Федеральный центр", default=False)
+
+
+    def __str__(self):
+        return  f'{self.ed_center} ({self.year} г.)'
+
+    class Meta:
+        verbose_name = "Данные колледжа на год"
+        verbose_name_plural = "Данные колледжей на годы"
+
+
+class Indicator(models.Model):
+    project_year = models.ForeignKey(
+        ProjectYear, 
+        verbose_name="Год проекта",
+        related_name="indicators",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    name = models.CharField("Показатель эффективности", max_length=500, 
+                            blank=False,null=False)
+    year = models.IntegerField('Показатель за (год)', null=False, blank=False)
+    
+    def __str__(self):
+        return  f'{self.name} ({self.year} г.)'
+
+    class Meta:
+        verbose_name = "Показатель эффективности"
+        verbose_name_plural = "Показатели эффективности"
+
+
+class EdCenterIndicator(models.Model):
+    indicator = models.ForeignKey(
+        Indicator, 
+        verbose_name="Показатель",
+        related_name="ed_centers",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    ed_center = models.ForeignKey(
+        EducationCenter, 
+        verbose_name="Центр обучения",
+        related_name="indicators",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    value_2021 = models.CharField("Значение показателя (2021)", max_length=25, 
+                            blank=False,null=False)
+    value_2022 = models.CharField("Значение показателя (2022)", max_length=25, 
+                            blank=False,null=False)
+    
+    def __str__(self):
+        return  f'{self.indicator} ({self.ed_center})'
+    
+    class Meta:
+        verbose_name = "Показатель эффективности (ЦО)"
+        verbose_name_plural = "Показатели эффективности (ЦО)"
+
+
+class ProjectPosition(models.Model):
+    project_year = models.ForeignKey(
+        ProjectYear, 
+        verbose_name="Год проекта",
+        related_name="positions",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    position = models.CharField("Название позиции", max_length=50, blank=False, 
+                                null=False)
+    is_basis_needed = models.BooleanField("Нужно основание?", default=False)
+
+    def __str__(self):
+        return  f'{self.position} ({self.project_year.year} г.)'
+
+    class Meta:
+        verbose_name = "Позиция в проекте"
+        verbose_name_plural = "Позиции в проекте"
+
+
+class EdCenterEmployeePosition(models.Model):
+    position = models.ForeignKey(
+        ProjectPosition, 
+        verbose_name="Позиция",
+        related_name="positions_employees",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    ed_center = models.ForeignKey(
+        EducationCenter, 
+        verbose_name="Центр обучения",
+        related_name="positions_employees",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    employee = models.ForeignKey(
+        Employee, 
+        verbose_name="Сотрудник",
+        related_name="positions",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    acts_basis = models.CharField(
+        "Действует на основании", max_length=500, null=True, blank=True
+    )
+
+    def __str__(self):
+        return  f'{self.employee}\
+                 ({self.position})'
+
+    class Meta:
+        verbose_name = "Данные колледжа на год"
+        verbose_name_plural = "Данные колледжей на годы"
+
+
 
 class CitizenCategory(models.Model):
     short_name = models.CharField("Название", max_length=100, blank=False)
-    official_name = models.CharField("Офицальное наименованние", max_length=500, blank=True)
+    official_name = models.CharField("Офицальное наименованние", 
+                                     max_length=500, blank=True)
     
     def __str__(self):
         return  self.short_name
@@ -221,7 +380,7 @@ class InteractionHistory(models.Model):
         get_latest_by = "interaction_date"
 
 class Questionnaire(models.Model):
-    applicant = OneToOneField(Application, on_delete=CASCADE, primary_key=True, related_name='anketa')
+    applicant = models.OneToOneField(Application, on_delete=CASCADE, primary_key=True, related_name='anketa')
     TIME_SLOTS = [
         ('MRNG', "09.00-13.00"),
         ('DAYT', "13.00-17.00"),
