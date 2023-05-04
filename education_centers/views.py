@@ -5,9 +5,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.files import File
 from django.db.models import Case, When, Value
 
+
 from .forms import ImportDataForm
-from .models import ContractorsDocument, DocumentType, EducationCenter, EducationCenterHead, EducationProgram, Group
 from .contracts import create_document, combine_all_docx
+from .models import Competence, ContractorsDocument, DocumentType, EducationCenter, \
+                    EducationCenterHead, EducationProgram, Employee, Group, Teacher, Workshop
+from federal_empl_program.models import EdCenterEmployeePosition, ProjectPosition, ProjectYear
 
 # Create your views here.
 def index(request):
@@ -16,6 +19,152 @@ def index(request):
         center = center[0].name
         return JsonResponse(center, safe=False)
     return JsonResponse(False, safe=False)
+
+@csrf_exempt
+def ed_center_application(request, ed_center_id):
+    ed_center = get_object_or_404(EducationCenter, id=ed_center_id)
+    project_year = get_object_or_404(ProjectYear, year=2023)
+    if request.method == "POST" and 'add-employee' in request.POST:
+        last_name = request.POST['last_name'].strip().capitalize()
+        first_name = request.POST['first_name'].strip().capitalize()
+        if request.POST['middle_name'] != None:
+            middle_name = request.POST['middle_name'].strip().capitalize()
+        else: middle_name = None
+        position = request.POST['position'].strip().lower()
+        last_name_r = request.POST['last_name_r'].strip().capitalize()
+        first_name_r = request.POST['first_name_r'].strip().capitalize()
+        if request.POST['middle_name_r'] != None:
+            middle_name_r = request.POST['middle_name_r'].strip().capitalize()
+        else: middle_name = None
+        position_r = request.POST['position_r'].strip().lower()
+        try:
+            if request.POST['is_head'] == 'on': is_head = True
+        except: is_head = False
+
+        employee = Employee(
+            organization=ed_center,
+            last_name=last_name,
+            first_name=first_name,
+            middle_name=middle_name,
+            position=position,
+            last_name_r=last_name_r,
+            first_name_r=first_name_r,
+            middle_name_r=middle_name_r,
+            position_r=position_r,
+            is_head=is_head,
+            phone=request.POST['phone'],
+            email=request.POST['email']
+        )
+        employee.save()
+    if request.method == "POST" and 'add-position' in request.POST:
+        position_id = request.POST['position_id']
+        position = get_object_or_404(ProjectPosition, id=position_id)
+        employee_id = request.POST['employee_id']
+        employee = get_object_or_404(Employee, id=employee_id)
+        employee_position = EdCenterEmployeePosition(
+            position=position,
+            ed_center=ed_center,
+            employee=employee
+        )
+        if position.is_basis_needed:
+            employee_position.acts_basis = request.POST['acts_basis']
+        employee_position.save()
+    elif request.method == "POST" and 'add-org' in request.POST:
+            if ed_center.bank_details is None:
+                bank_details = EducationCenterHead()
+                bank_details.organization = ed_center
+            else: bank_details = ed_center.bank_details
+            bank_details.inn = request.POST['inn'].strip()
+            bank_details.kpp = request.POST['kpp'].strip()
+            bank_details.oktmo = request.POST['oktmo'].strip()
+            bank_details.ogrn = request.POST['ogrn'].strip()
+            bank_details.okpo = request.POST['okpo'].strip()
+            bank_details.okved = request.POST['okved'].strip()
+            bank_details.bank = request.POST['bank'].strip()
+            bank_details.biс = request.POST['biс'].strip()
+            bank_details.account_number = request.POST['account_number'].strip()
+            bank_details.corr_account = request.POST['corr_account'].strip()
+            bank_details.accountant = request.POST['accountant'].strip()
+            bank_details.phone = request.POST['phone'].strip()
+            bank_details.email = request.POST['email'].strip()
+            bank_details.legal_address = request.POST['legal_address'].strip()
+            bank_details.mail_address = request.POST['mail_address'].strip()
+            bank_details.save()
+            ed_center.ed_license = request.POST['ed_license'].strip()
+            ed_center.license_issued_by = request.POST['license_issued_by'].strip()
+            try:
+                if request.POST['is_ndc'] == 'on': is_ndc = True
+            except: is_ndc = False
+            if is_ndc:
+                ed_center.is_ndc = True
+                ed_center.none_ndc_reason = request.POST['none_ndc_reason'].strip()
+            ed_center.name = request.POST['name'].strip()
+            ed_center.short_name = request.POST['short_name'].strip()
+            ed_center.short_name_r = request.POST['short_name_r'].strip()
+            ed_center.home_city = request.POST['home_city'].strip()
+            ed_center.entity_sex = request.POST['entity_sex']
+            ed_center.save()
+    elif request.method == "POST" and 'add-program' in request.POST:
+        competence_id = request.POST['competence_id']
+        competence = get_object_or_404(Competence, id=competence_id)
+        program_name = request.POST['program_name']
+        profession = request.POST['profession']
+        description = request.POST['description']
+        entry_requirements = request.POST['entry_requirements']
+        program_type = request.POST['program_type']
+        education_form = request.POST['education_form']
+        duration = int(request.POST['duration'])
+        notes = request.POST['notes']
+        program = EducationProgram(
+            competence=competence,
+            program_name=program_name,
+            ed_center=ed_center,
+            profession=profession,
+            description=description,
+            entry_requirements=entry_requirements,
+            program_type=program_type,
+            education_form=education_form,
+            duration=duration,
+            notes=notes
+        )
+        program.save()
+    elif request.method == "POST" and 'add-teacher' in request.POST:
+        last_name = request.POST['last_name'].strip().capitalize()
+        first_name = request.POST['first_name'].strip().capitalize()
+        if request.POST['middle_name'] != None:
+            middle_name = request.POST['middle_name'].strip().capitalize()
+        else: middle_name = None
+        teacher = Teacher(
+            organization=ed_center,
+            last_name=last_name,
+            first_name=first_name,
+            middle_name=middle_name,
+            employment_type = request.POST['employment_type'],
+            education_level = request.POST['education_level'],
+            experience = request.POST['experience'],
+            additional_education = request.POST['additional_education']
+        )
+        teacher.save()
+        teacher.programs.add(*request.POST.getlist('programs'))
+        teacher.save()
+    elif request.method == "POST" and 'add-workshop' in request.POST:
+        name = request.POST['name'].strip().capitalize()
+        workshop = Workshop(
+            name=name,
+            education_center=ed_center,
+            classes_type = request.POST['classes_type'],
+            equipment = request.POST['equipment'],
+        )
+        workshop.save()
+        workshop.programs.add(*request.POST.getlist('programs'))
+        workshop.save()
+
+    return render(request, "education_centers/ed_center_application.html", {
+        'ed_center': ed_center,
+        'project_year': project_year,
+        'workshops': Workshop.objects.filter(education_center=ed_center).exclude(name=None),
+        'competencies': Competence.objects.filter(is_irpo=True)
+    })
 
 @csrf_exempt
 def ed_center_groups(request, ed_center):

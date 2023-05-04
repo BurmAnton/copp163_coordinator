@@ -63,7 +63,7 @@ EducationCentersForm = select2_modelform(EducationCenter, attrs={'width': '400px
 class EducationCentersAdmin(admin.ModelAdmin):
     form = EducationCentersForm
     
-    list_display = ['name', 'contact_person', 'reg_link']
+    list_display = ['name', 'short_name', 'contact_person', 'reg_link']
     filter_horizontal = ('competences',)
     inlines = [
         WorkshopInline
@@ -203,7 +203,7 @@ class CitizensInline(admin.TabularInline):
 
 EducationCenterForm = select2_modelform(EducationCenterGroup, attrs={'width': '400px'})
 
-@admin.register(EducationCenterGroup)
+#@admin.register(EducationCenterGroup)
 class EducationCenterGroupAdmin(admin.ModelAdmin):
     form = EducationCenterForm
     inlines = [
@@ -224,7 +224,7 @@ class EducationCenterGroupAdmin(admin.ModelAdmin):
             'fields': ('education_center', 'competence', 'program', 'program_link', 'educational_requirements', 'duration', 'description', 'is_visible')
         }),
         ('Формат и место проведения', {
-            'fields': ('is_online', 'city')
+            'fields': ('is_online', 'ed_city')
         }),
         ('Размер группы', {
             'fields': ('min_group_size', 'max_group_size')

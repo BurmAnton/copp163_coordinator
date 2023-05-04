@@ -3,8 +3,19 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import stringfilter
 
 from education_centers.models import ContractorsDocument, DocumentType
+from federal_empl_program.models import EdCenterEmployeePosition
 
 register = template.Library()
+
+@register.filter
+def get_position(position, ed_center):
+    ed_center_positions = EdCenterEmployeePosition.objects.filter(
+        ed_center=ed_center,
+        position=position
+    )
+    if len(ed_center_positions) != 0:
+        return ed_center_positions[0]
+    return None
 
 @register.filter
 def get_name_r(head):

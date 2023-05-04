@@ -9,5 +9,10 @@ urlpatterns = [
         views.ed_center_groups, 
         name='ed_center_groups'
     ),
-    path('documents/fed-empl/', views.documents_fed, name='documents_fed')
+    path(
+        '<int:ed_center_id>/application', 
+        views.ed_center_application, 
+        name='ed_center_application'
+    ),
+    path('documents/fed-empl/', views.documents_fed, name='documents_fed'),
 ]
