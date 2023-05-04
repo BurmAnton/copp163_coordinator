@@ -342,7 +342,7 @@ class Workshop(models.Model):
     name = models.CharField("Название мастерской", max_length=500, null=True, blank=True)
     education_center = models.ForeignKey(EducationCenter, verbose_name="Центр обучения", on_delete=CASCADE, related_name='workshops')
     competence = models.ForeignKey(Competence, verbose_name="Компетенция", on_delete=CASCADE, null=True, blank=True, related_name='workshops')
-    adress = models.CharField("Адрес", max_length=200)
+    adress = models.CharField("Адрес", max_length=200, null=True, blank=True)
     CLASSES_TYPES = (
         ('T', 'Теоритические занятия'),
         ('P', 'Практические занятия'),
@@ -352,7 +352,7 @@ class Workshop(models.Model):
         EducationProgram,
         verbose_name='программы', 
         related_name='workshops',
-        blank=False
+        blank=True
     )
     classes_type = models.CharField(max_length=4, choices=CLASSES_TYPES, verbose_name='Вид занятий', blank=True, null=True)
     equipment = models.TextField("Оборудование", null=True, blank=True)
