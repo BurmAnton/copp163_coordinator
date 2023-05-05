@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load ed_centers_extras %}
+
+{% block title %}Документооборот{% endblock %}
+{% block style %}
+        <link href="{% static 'education_centers/css/fed-empl.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'education_centers/js/fed-empl.js' %}" rel="stylesheet"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="modal-body">
+        <form enctype="multipart/form-data" action="{% url 'import_programs' %}" method="post">
+            <div class="mb-3">
+                {{ form }}
+            </div>
+            <button type="submit" class="btn btn-primary" name="import-participants">Импортировать</button>
+            <p style="margin: 0;"><a href="https://docs.google.com/spreadsheets/d/1mg_lWECAnsFC80Pr6tz1mqsX8q-HPx7dKp6ywSAN3Sg/edit?usp=sharing" target="_blank">Шаблон</a></p>
+        </form>
+        {{message}}
+    </div>
+{% endblock %}

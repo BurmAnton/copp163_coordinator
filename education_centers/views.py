@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.files import File
 from django.db.models import Case, When, Value
 
-
+from . import imports
 from .forms import ImportDataForm
 from .contracts import create_document, combine_all_docx
 from .models import BankDetails, Competence, ContractorsDocument, DocumentType, EducationCenter, \
@@ -285,4 +285,18 @@ def documents_fed(request):
         "ed_centers": ed_centers,
         "programs": programs,
         "doc_filter": doc_filter
+    })
+
+@csrf_exempt
+def import_programs(request):
+    form = ImportDataForm()
+    if request.method == 'POST':
+        form = ImportDataForm(request.POST, request.FILES)
+        if form.is_valid():
+            data = imports.programs(form)
+            message = data
+    
+    return render(request, "education_centers/import_programs.html", {
+        'message': message,
+        'form' : ImportDataForm(),
     })
