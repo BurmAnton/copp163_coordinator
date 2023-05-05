@@ -104,8 +104,10 @@ def login(request):
         user = auth.authenticate(email=email, password=password)
         if user is not None:
             auth.login(request, user)
-            ed_center_id = user.education_centers.first().id
-            return HttpResponseRedirect(reverse("ed_center_application", kwargs={'ed_center_id': ed_center_id}))
+            if request.user.role == 'CO':
+                ed_center_id = user.education_centers.first().id
+                return HttpResponseRedirect(reverse("ed_center_application", kwargs={'ed_center_id': ed_center_id}))
+            return HttpResponseRedirect(reverse("admin:index"))
         else:
             message = "Неверный логин и/или пароль."
 
