@@ -10,7 +10,7 @@ from django.utils.timezone import now
 from users.models import User
 
 class Competence(models.Model):
-    title = models.CharField("Название компетенции", max_length=200)
+    title = models.CharField("Название компетенции", max_length=500)
     
     СOMPETENCE_BLOCKS = (
         ('IT', 'Информационные и коммуникационные технологии'),
@@ -33,7 +33,7 @@ class Competence(models.Model):
         ('WSE', 'WorldSkills Eurasia')
     )
     competence_type = models.CharField(max_length=3, choices=СOMPETENCE_TYPES, verbose_name='Тип', blank=True, null=True)
-    is_irpo = models.BooleanField("ИРПО?", default=False)
+    is_irpo = models.BooleanField("ИРПО?", default=True)
 
     class Meta:
         verbose_name = "Компетенция"
@@ -133,7 +133,7 @@ class EducationProgram(models.Model):
     program_link =  models.CharField("Ссылка на программу", max_length=200, blank=True, null=True)
 
     profession = models.CharField(
-        "Ссылка на программу", max_length=200, blank=True, null=True
+        "Профессия", max_length=200, blank=True, null=True
     )
     description = models.TextField(
         "Описание компетенции", null=True, blank=True
