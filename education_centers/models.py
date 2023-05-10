@@ -127,7 +127,7 @@ class EducationProgram(models.Model):
     education_form = models.CharField(max_length=5, choices=EDUCATION_FORMS, verbose_name='Форма обучения', blank=True, null=True)
     EDUCATION_CHOICES = [
         ('NDC', "Без образования"),
-        ('SPO', "Cреднее профессиональное образование"),
+        ('SPO', "Среднее профессиональное образование"),
     ]
     entry_requirements = models.CharField("Входные требования", max_length=4, choices=EDUCATION_CHOICES, blank=True, null=True)
     program_link =  models.CharField("Ссылка на программу", max_length=200, blank=True, null=True)
