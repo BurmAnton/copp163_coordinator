@@ -158,6 +158,83 @@ def ed_center_application(request, ed_center_id):
         workshop.save()
         workshop.programs.add(*request.POST.getlist('programs'))
         workshop.save()
+    elif request.method == "POST" and 'change-employee' in request.POST:
+        employee_id = request.POST['employee_id']
+        employee = get_object_or_404(Employee, id=employee_id)
+        employee.last_name = request.POST['last_name'].strip().capitalize()
+        employee.first_name = request.POST['first_name'].strip().capitalize()
+        if request.POST['middle_name'] != None:
+           employee. middle_name = request.POST['middle_name'].strip().capitalize()
+        else: employee.middle_name = None
+        employee.position = request.POST['position'].strip().lower()
+        employee.last_name_r = request.POST['last_name_r'].strip().capitalize()
+        employee.first_name_r = request.POST['first_name_r'].strip().capitalize()
+        if request.POST['middle_name_r'] != None:
+            employee.middle_name_r = request.POST['middle_name_r'].strip().capitalize()
+        else: employee.middle_name = None
+        employee.position_r = request.POST['position_r'].strip().lower()
+        try:
+            if request.POST['is_head'] == 'on': employee.is_head = True
+        except: employee.is_head = False
+        employee.save()
+    elif request.method == "POST" and 'change-program' in request.POST:
+        program_id = request.POST['program_id']
+        program = get_object_or_404(EducationProgram, id=program_id)
+        competence_id = request.POST['competence_id']
+        program.competence = get_object_or_404(Competence, id=competence_id)
+        program.program_name = request.POST['program_name']
+        program.profession = request.POST['profession']
+        program.description = request.POST['description']
+        program.entry_requirements = request.POST['entry_requirements']
+        program.program_type = request.POST['program_type']
+        program.education_form = request.POST['education_form']
+        program.duration = int(request.POST['duration'])
+        program.notes = request.POST['notes']
+        program.save()
+    elif request.method == "POST" and 'change-teacher' in request.POST:
+        teacher_id = request.POST['teacher_id']
+        teacher = get_object_or_404(Teacher, id=teacher_id)
+        teacher.last_name = request.POST['last_name'].strip().capitalize()
+        teacher.first_name = request.POST['first_name'].strip().capitalize()
+        if request.POST['middle_name'] != None:
+            teacher.middle_name = request.POST['middle_name'].strip().capitalize()
+        else: teacher.middle_name = None
+        teacher.organization=ed_center
+        teacher.employment_type = request.POST['employment_type']
+        teacher.education_level = request.POST['education_level']
+        teacher.experience = request.POST['experience']
+        teacher.additional_education = request.POST['additional_education']
+        teacher.save()
+        teacher.programs.clear()
+        teacher.programs.add(*request.POST.getlist('programs'))
+        teacher.save()
+    elif request.method == "POST" and 'change-workshop' in request.POST:
+        workshop_id = request.POST['workshop_id']
+        workshop = get_object_or_404(Workshop, id=workshop_id)
+        workshop.name = request.POST['name'].strip().capitalize()
+        workshop.education_center=ed_center
+        workshop.classes_type = request.POST['classes_type']
+        workshop.equipment = request.POST['equipment']
+        workshop.save()
+        workshop.programs.clear()
+        workshop.programs.add(*request.POST.getlist('programs'))
+        workshop.save()
+    elif request.method == "POST" and 'delete-employee' in request.POST:
+        employee_id = request.POST['employee_id']
+        employee = get_object_or_404(Employee, id=employee_id)
+        employee.delete()
+    elif request.method == "POST" and 'delete-program' in request.POST:
+        program_id = request.POST['program_id']
+        program = get_object_or_404(EducationProgram, id=program_id)
+        program.delete()
+    elif request.method == "POST" and 'delete-teacher' in request.POST:
+        teacher_id = request.POST['teacher_id']
+        teacher = get_object_or_404(Teacher, id=teacher_id)
+        teacher.delete()
+    elif request.method == "POST" and 'delete-workshop' in request.POST:
+        workshop_id = request.POST['workshop_id']
+        workshop = get_object_or_404(Workshop, id=workshop_id)
+        workshop.delete()
 
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
@@ -290,6 +367,7 @@ def documents_fed(request):
 @csrf_exempt
 def import_programs(request):
     form = ImportDataForm()
+    message = None
     if request.method == 'POST':
         form = ImportDataForm(request.POST, request.FILES)
         if form.is_valid():

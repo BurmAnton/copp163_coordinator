@@ -95,6 +95,7 @@ def login(request):
             ed_center_id = request.user.education_centers.first().id
             return HttpResponseRedirect(reverse("applicant_profile", kwargs={'user_id': request.user.id}))
         if request.user.role == 'CO':
+            ed_center_id = request.user.education_centers.first().id
             return HttpResponseRedirect(reverse("ed_center_application", kwargs={'ed_center_id': ed_center_id}))
         return HttpResponseRedirect(reverse("admin:index"))
         
