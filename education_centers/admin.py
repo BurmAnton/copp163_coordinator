@@ -63,7 +63,7 @@ EducationCentersForm = select2_modelform(EducationCenter, attrs={'width': '400px
 class EducationCentersAdmin(admin.ModelAdmin):
     form = EducationCentersForm
     
-    list_display = ['name', 'short_name', 'contact_person', 'reg_link']
+    list_display = ['name', 'get_short_name', 'contact_person']
     filter_horizontal = ('competences',)
     inlines = [
         WorkshopInline
@@ -74,6 +74,14 @@ class EducationCentersAdmin(admin.ModelAdmin):
         reg_link = f"https://copp63-coordinator.ru/registration/1?c={group.id}"
         return reg_link
     reg_link.short_description = 'Ссылка на рег.'
+
+    def get_short_name(self, center):
+        application_url = reverse("ed_center_application", args=[center.id])
+        short_name = center.short_name
+        application_link = f'<a href="{application_url}" target="_blank">{short_name}</a>'
+        return mark_safe(application_link)
+    get_short_name.short_description='Краткое название организации'
+    get_short_name.admin_order_field = 'short_name'
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
