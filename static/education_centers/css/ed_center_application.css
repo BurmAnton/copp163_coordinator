@@ -74,6 +74,12 @@ body .filter-selectpicker label {
 .steps .organization-step h3 {
   margin-bottom: 10px;
 }
+.steps .organization-step .dropdown-toggle {
+  height: 57px !important;
+}
+.steps .organization-step .dropdown-toggle .filter-option-inner-inner {
+  padding-top: 10px;
+}
 .steps .organization-step .bank-details, .steps .organization-step .about, .steps .organization-step .license-details {
   width: 95%;
   margin: auto;
