@@ -32,253 +32,254 @@ def ed_center_application(request, ed_center_id):
         project_year=project_year, 
         is_free_form=True
     )
-    if request.method == "POST" and 'add-employee' in request.POST:
-        last_name = request.POST['last_name'].strip().capitalize()
-        first_name = request.POST['first_name'].strip().capitalize()
-        if request.POST['middle_name'] != None:
-            middle_name = request.POST['middle_name'].strip().capitalize()
-        else: middle_name = None
-        position = request.POST['position'].strip().lower()
-        last_name_r = request.POST['last_name_r'].strip().capitalize()
-        first_name_r = request.POST['first_name_r'].strip().capitalize()
-        if request.POST['middle_name_r'] != None:
-            middle_name_r = request.POST['middle_name_r'].strip().capitalize()
-        else: middle_name = None
-        position_r = request.POST['position_r'].strip().lower()
-        try:
-            if request.POST['is_head'] == 'on': is_head = True
-        except: is_head = False
-
-        employee = Employee(
-            organization=ed_center,
-            last_name=last_name,
-            first_name=first_name,
-            middle_name=middle_name,
-            position=position,
-            last_name_r=last_name_r,
-            first_name_r=first_name_r,
-            middle_name_r=middle_name_r,
-            position_r=position_r,
-            is_head=is_head,
-            phone=request.POST['phone'],
-            email=request.POST['email']
-        )
-        employee.save()
-    elif request.method == "POST" and 'add-position' in request.POST:
-        position_id = request.POST['position_id']
-        position = get_object_or_404(ProjectPosition, id=position_id)
-        employee_id = request.POST['employee_id']
-        employee = get_object_or_404(Employee, id=employee_id)
-        employee_position = EdCenterEmployeePosition(
-            position=position,
-            ed_center=ed_center,
-            employee=employee
-        )
-        if position.is_basis_needed:
-            employee_position.acts_basis = request.POST['acts_basis']
-        employee_position.save()
-    elif request.method == "POST" and 'add-org' in request.POST:
-            try: bank_details = BankDetails.objects.get(organization=ed_center)
-            except: 
-                bank_details = BankDetails()
-                bank_details.organization = ed_center
-            bank_details.inn = request.POST['inn'].strip()
-            bank_details.kpp = request.POST['kpp'].strip()
-            bank_details.oktmo = request.POST['oktmo'].strip()
-            bank_details.ogrn = request.POST['ogrn'].strip()
-            bank_details.okpo = request.POST['okpo'].strip()
-            bank_details.okved = request.POST['okved'].strip()
-            bank_details.bank = request.POST['bank'].strip()
-            bank_details.biс = request.POST['biс'].strip()
-            bank_details.account_number = request.POST['account_number'].strip()
-            bank_details.corr_account = request.POST['corr_account'].strip()
-            bank_details.accountant = request.POST['accountant'].strip()
-            bank_details.phone = request.POST['phone'].strip()
-            bank_details.email = request.POST['email'].strip()
-            bank_details.legal_address = request.POST['legal_address'].strip()
-            bank_details.mail_address = request.POST['mail_address'].strip()
-            bank_details.save()
-            ed_center.ed_license = request.POST['ed_license'].strip()
-            ed_center.license_issued_by = request.POST['license_issued_by'].strip()
+    if request.method == "POST":
+        if 'add-employee' in request.POST:
+            last_name = request.POST['last_name'].strip().capitalize()
+            first_name = request.POST['first_name'].strip().capitalize()
+            if request.POST['middle_name'] != None:
+                middle_name = request.POST['middle_name'].strip().capitalize()
+            else: middle_name = None
+            position = request.POST['position'].strip().lower()
+            last_name_r = request.POST['last_name_r'].strip().capitalize()
+            first_name_r = request.POST['first_name_r'].strip().capitalize()
+            if request.POST['middle_name_r'] != None:
+                middle_name_r = request.POST['middle_name_r'].strip().capitalize()
+            else: middle_name = None
+            position_r = request.POST['position_r'].strip().lower()
             try:
-                if request.POST['is_ndc'] == 'on': is_ndc = True
-            except: is_ndc = False
-            if is_ndc == False:
-                ed_center.is_ndc = False
-                ed_center.none_ndc_reason = request.POST['none_ndc_reason'].strip()
-            else:
-                ed_center.is_ndc = True
-                ed_center.none_ndc_reason = ""
-            ed_center.name = request.POST['name'].strip()
-            ed_center.short_name = request.POST['short_name'].strip()
-            ed_center.short_name_r = request.POST['short_name_r'].strip()
-            ed_center.home_city = request.POST['home_city'].strip()
-            ed_center.entity_sex = request.POST['entity_sex']
-            ed_center.save()
-    elif request.method == "POST" and 'add-program' in request.POST:
-        competence_id = request.POST['competence_id']
-        competence = get_object_or_404(Competence, id=competence_id)
-        program_name = request.POST['program_name']
-        profession = request.POST['profession']
-        description = request.POST['description']
-        entry_requirements = request.POST['entry_requirements']
-        program_type = request.POST['program_type']
-        education_form = request.POST['education_form']
-        duration = int(request.POST['duration'])
-        notes = request.POST['notes']
-        program = EducationProgram(
-            competence=competence,
-            program_name=program_name,
-            ed_center=ed_center,
-            profession=profession,
-            description=description,
-            entry_requirements=entry_requirements,
-            program_type=program_type,
-            education_form=education_form,
-            duration=duration,
-            notes=notes
-        )
-        program.save()
-    elif request.method == "POST" and 'add-teacher' in request.POST:
-        last_name = request.POST['last_name'].strip().capitalize()
-        first_name = request.POST['first_name'].strip().capitalize()
-        if request.POST['middle_name'] != None:
-            middle_name = request.POST['middle_name'].strip().capitalize()
-        else: middle_name = None
-        teacher = Teacher(
-            organization=ed_center,
-            last_name=last_name,
-            first_name=first_name,
-            middle_name=middle_name,
-            employment_type = request.POST['employment_type'],
-            education_level = request.POST['education_level'],
-            experience = request.POST['experience'],
-            additional_education = request.POST['additional_education']
-        )
-        teacher.save()
-        teacher.programs.add(*request.POST.getlist('programs'))
-        teacher.save()
-    elif request.method == "POST" and 'add-workshop' in request.POST:
-        name = request.POST['name'].strip().capitalize()
-        workshop = Workshop(
-            name=name,
-            education_center=ed_center,
-            classes_type = request.POST['classes_type'],
-            equipment = request.POST['equipment'],
-        )
-        workshop.save()
-        workshop.programs.add(*request.POST.getlist('programs'))
-        workshop.save()
-    elif request.method == "POST" and 'add-indicators' in request.POST:
-        center_project_year, is_new = EducationCenterProjectYear.objects.get_or_create(
-            project_year=project_year,
-            ed_center=ed_center
-        )
-        for indicator in indicators:
-            center_indicator, is_new = EdCenterIndicator.objects.get_or_create(
-                ed_center=ed_center,
-                indicator=indicator
+                if request.POST['is_head'] == 'on': is_head = True
+            except: is_head = False
+
+            employee = Employee(
+                organization=ed_center,
+                last_name=last_name,
+                first_name=first_name,
+                middle_name=middle_name,
+                position=position,
+                last_name_r=last_name_r,
+                first_name_r=first_name_r,
+                middle_name_r=middle_name_r,
+                position_r=position_r,
+                is_head=is_head,
+                phone=request.POST['phone'],
+                email=request.POST['email']
             )
-            center_indicator.value_2021 = request.POST[f'{indicator.id}_2021'].strip()
-            center_indicator.value_2022 = request.POST[f'{indicator.id}_2022'].strip()
-            center_indicator.save()
-        for indicator in free_indicators:
-            center_indicator, is_new = EdCenterIndicator.objects.get_or_create(
+            employee.save()
+        elif 'add-position' in request.POST:
+            position_id = request.POST['position_id']
+            position = get_object_or_404(ProjectPosition, id=position_id)
+            employee_id = request.POST['employee_id']
+            employee = get_object_or_404(Employee, id=employee_id)
+            employee_position = EdCenterEmployeePosition(
+                position=position,
                 ed_center=ed_center,
-                indicator=indicator
+                employee=employee
             )
-            center_indicator.free_form_value = request.POST[f'{indicator.id}'].strip()
-            center_indicator.save()
-    elif request.method == "POST" and 'change-employee' in request.POST:
-        employee_id = request.POST['employee_id']
-        employee = get_object_or_404(Employee, id=employee_id)
-        employee.last_name = request.POST['last_name'].strip().capitalize()
-        employee.first_name = request.POST['first_name'].strip().capitalize()
-        if request.POST['middle_name'] != None:
-           employee. middle_name = request.POST['middle_name'].strip().capitalize()
-        else: employee.middle_name = None
-        employee.position = request.POST['position'].strip().lower()
-        employee.last_name_r = request.POST['last_name_r'].strip().capitalize()
-        employee.first_name_r = request.POST['first_name_r'].strip().capitalize()
-        if request.POST['middle_name_r'] != None:
-            employee.middle_name_r = request.POST['middle_name_r'].strip().capitalize()
-        else: employee.middle_name = None
-        employee.position_r = request.POST['position_r'].strip().lower()
-        try:
-            if request.POST['is_head'] == 'on': employee.is_head = True
-        except: employee.is_head = False
-        employee.save()
-    elif request.method == "POST" and 'change-position' in request.POST:
-        position_id = request.POST['position_id']
-        position = get_object_or_404(ProjectPosition, id=position_id)
-        employee_id = request.POST['employee_id']
-        employee = get_object_or_404(Employee, id=employee_id)
-        employee_position = EdCenterEmployeePosition.objects.filter(
-            position=position,
-            ed_center=ed_center
-        ).first()
-        employee_position.employee = employee
-        if position.is_basis_needed:
-            employee_position.acts_basis = request.POST['acts_basis']
-        employee_position.save()
-    elif request.method == "POST" and 'change-program' in request.POST:
-        program_id = request.POST['program_id']
-        program = get_object_or_404(EducationProgram, id=program_id)
-        competence_id = request.POST['competence_id']
-        program.competence = get_object_or_404(Competence, id=competence_id)
-        program.program_name = request.POST['program_name']
-        program.profession = request.POST['profession']
-        program.description = request.POST['description']
-        program.entry_requirements = request.POST['entry_requirements']
-        program.program_type = request.POST['program_type']
-        program.education_form = request.POST['education_form']
-        program.duration = int(request.POST['duration'])
-        program.notes = request.POST['notes']
-        program.save()
-    elif request.method == "POST" and 'change-teacher' in request.POST:
-        teacher_id = request.POST['teacher_id']
-        teacher = get_object_or_404(Teacher, id=teacher_id)
-        teacher.last_name = request.POST['last_name'].strip().capitalize()
-        teacher.first_name = request.POST['first_name'].strip().capitalize()
-        if request.POST['middle_name'] != None:
-            teacher.middle_name = request.POST['middle_name'].strip().capitalize()
-        else: teacher.middle_name = None
-        teacher.organization=ed_center
-        teacher.employment_type = request.POST['employment_type']
-        teacher.education_level = request.POST['education_level']
-        teacher.experience = request.POST['experience']
-        teacher.additional_education = request.POST['additional_education']
-        teacher.save()
-        teacher.programs.clear()
-        teacher.programs.add(*request.POST.getlist('programs'))
-        teacher.save()
-    elif request.method == "POST" and 'change-workshop' in request.POST:
-        workshop_id = request.POST['workshop_id']
-        workshop = get_object_or_404(Workshop, id=workshop_id)
-        workshop.name = request.POST['name'].strip().capitalize()
-        workshop.education_center=ed_center
-        workshop.classes_type = request.POST['classes_type']
-        workshop.equipment = request.POST['equipment']
-        workshop.save()
-        workshop.programs.clear()
-        workshop.programs.add(*request.POST.getlist('programs'))
-        workshop.save()
-    elif request.method == "POST" and 'delete-employee' in request.POST:
-        employee_id = request.POST['employee_id']
-        employee = get_object_or_404(Employee, id=employee_id)
-        employee.delete()
-    elif request.method == "POST" and 'delete-program' in request.POST:
-        program_id = request.POST['program_id']
-        program = get_object_or_404(EducationProgram, id=program_id)
-        program.delete()
-    elif request.method == "POST" and 'delete-teacher' in request.POST:
-        teacher_id = request.POST['teacher_id']
-        teacher = get_object_or_404(Teacher, id=teacher_id)
-        teacher.delete()
-    elif request.method == "POST" and 'delete-workshop' in request.POST:
-        workshop_id = request.POST['workshop_id']
-        workshop = get_object_or_404(Workshop, id=workshop_id)
-        workshop.delete()
+            if position.is_basis_needed:
+                employee_position.acts_basis = request.POST['acts_basis']
+            employee_position.save()
+        elif 'add-org' in request.POST:
+                try: bank_details = BankDetails.objects.get(organization=ed_center)
+                except: 
+                    bank_details = BankDetails()
+                    bank_details.organization = ed_center
+                bank_details.inn = request.POST['inn'].strip()
+                bank_details.kpp = request.POST['kpp'].strip()
+                bank_details.oktmo = request.POST['oktmo'].strip()
+                bank_details.ogrn = request.POST['ogrn'].strip()
+                bank_details.okpo = request.POST['okpo'].strip()
+                bank_details.okved = request.POST['okved'].strip()
+                bank_details.bank = request.POST['bank'].strip()
+                bank_details.biс = request.POST['biс'].strip()
+                bank_details.account_number = request.POST['account_number'].strip()
+                bank_details.corr_account = request.POST['corr_account'].strip()
+                bank_details.accountant = request.POST['accountant'].strip()
+                bank_details.phone = request.POST['phone'].strip()
+                bank_details.email = request.POST['email'].strip()
+                bank_details.legal_address = request.POST['legal_address'].strip()
+                bank_details.mail_address = request.POST['mail_address'].strip()
+                bank_details.save()
+                ed_center.ed_license = request.POST['ed_license'].strip()
+                ed_center.license_issued_by = request.POST['license_issued_by'].strip()
+                try:
+                    if request.POST['is_ndc'] == 'on': is_ndc = True
+                except: is_ndc = False
+                if is_ndc == False:
+                    ed_center.is_ndc = False
+                    ed_center.none_ndc_reason = request.POST['none_ndc_reason'].strip()
+                else:
+                    ed_center.is_ndc = True
+                    ed_center.none_ndc_reason = ""
+                ed_center.name = request.POST['name'].strip()
+                ed_center.short_name = request.POST['short_name'].strip()
+                ed_center.short_name_r = request.POST['short_name_r'].strip()
+                ed_center.home_city = request.POST['home_city'].strip()
+                ed_center.entity_sex = request.POST['entity_sex']
+                ed_center.save()
+        elif 'add-program' in request.POST:
+            competence_id = request.POST['competence_id']
+            competence = get_object_or_404(Competence, id=competence_id)
+            program_name = request.POST['program_name']
+            profession = request.POST['profession']
+            description = request.POST['description']
+            entry_requirements = request.POST['entry_requirements']
+            program_type = request.POST['program_type']
+            education_form = request.POST['education_form']
+            duration = int(request.POST['duration'])
+            notes = request.POST['notes']
+            program = EducationProgram(
+                competence=competence,
+                program_name=program_name,
+                ed_center=ed_center,
+                profession=profession,
+                description=description,
+                entry_requirements=entry_requirements,
+                program_type=program_type,
+                education_form=education_form,
+                duration=duration,
+                notes=notes
+            )
+            program.save()
+        elif 'add-teacher' in request.POST:
+            last_name = request.POST['last_name'].strip().capitalize()
+            first_name = request.POST['first_name'].strip().capitalize()
+            if request.POST['middle_name'] != None:
+                middle_name = request.POST['middle_name'].strip().capitalize()
+            else: middle_name = None
+            teacher = Teacher(
+                organization=ed_center,
+                last_name=last_name,
+                first_name=first_name,
+                middle_name=middle_name,
+                employment_type = request.POST['employment_type'],
+                education_level = request.POST['education_level'],
+                experience = request.POST['experience'],
+                additional_education = request.POST['additional_education']
+            )
+            teacher.save()
+            teacher.programs.add(*request.POST.getlist('programs'))
+            teacher.save()
+        elif 'add-workshop' in request.POST:
+            name = request.POST['name'].strip().capitalize()
+            workshop = Workshop(
+                name=name,
+                education_center=ed_center,
+                classes_type = request.POST['classes_type'],
+                equipment = request.POST['equipment'],
+            )
+            workshop.save()
+            workshop.programs.add(*request.POST.getlist('programs'))
+            workshop.save()
+        elif 'add-indicators' in request.POST:
+            center_project_year, is_new = EducationCenterProjectYear.objects.get_or_create(
+                project_year=project_year,
+                ed_center=ed_center
+            )
+            for indicator in indicators:
+                center_indicator, is_new = EdCenterIndicator.objects.get_or_create(
+                    ed_center=ed_center,
+                    indicator=indicator
+                )
+                center_indicator.value_2021 = request.POST[f'{indicator.id}_2021'].strip()
+                center_indicator.value_2022 = request.POST[f'{indicator.id}_2022'].strip()
+                center_indicator.save()
+            for indicator in free_indicators:
+                center_indicator, is_new = EdCenterIndicator.objects.get_or_create(
+                    ed_center=ed_center,
+                    indicator=indicator
+                )
+                center_indicator.free_form_value = request.POST[f'{indicator.id}'].strip()
+                center_indicator.save()
+        elif 'change-employee' in request.POST:
+            employee_id = request.POST['employee_id']
+            employee = get_object_or_404(Employee, id=employee_id)
+            employee.last_name = request.POST['last_name'].strip().capitalize()
+            employee.first_name = request.POST['first_name'].strip().capitalize()
+            if request.POST['middle_name'] != None:
+                employee. middle_name = request.POST['middle_name'].strip().capitalize()
+            else: employee.middle_name = None
+            employee.position = request.POST['position'].strip().lower()
+            employee.last_name_r = request.POST['last_name_r'].strip().capitalize()
+            employee.first_name_r = request.POST['first_name_r'].strip().capitalize()
+            if request.POST['middle_name_r'] != None:
+                employee.middle_name_r = request.POST['middle_name_r'].strip().capitalize()
+            else: employee.middle_name = None
+            employee.position_r = request.POST['position_r'].strip().lower()
+            try:
+                if request.POST['is_head'] == 'on': employee.is_head = True
+            except: employee.is_head = False
+            employee.save()
+        elif 'change-position' in request.POST:
+            position_id = request.POST['position_id']
+            position = get_object_or_404(ProjectPosition, id=position_id)
+            employee_id = request.POST['employee_id']
+            employee = get_object_or_404(Employee, id=employee_id)
+            employee_position = EdCenterEmployeePosition.objects.filter(
+                position=position,
+                ed_center=ed_center
+            ).first()
+            employee_position.employee = employee
+            if position.is_basis_needed:
+                employee_position.acts_basis = request.POST['acts_basis']
+            employee_position.save()
+        elif 'change-program' in request.POST:
+            program_id = request.POST['program_id']
+            program = get_object_or_404(EducationProgram, id=program_id)
+            competence_id = request.POST['competence_id']
+            program.competence = get_object_or_404(Competence, id=competence_id)
+            program.program_name = request.POST['program_name']
+            program.profession = request.POST['profession']
+            program.description = request.POST['description']
+            program.entry_requirements = request.POST['entry_requirements']
+            program.program_type = request.POST['program_type']
+            program.education_form = request.POST['education_form']
+            program.duration = int(request.POST['duration'])
+            program.notes = request.POST['notes']
+            program.save()
+        elif 'change-teacher' in request.POST:
+            teacher_id = request.POST['teacher_id']
+            teacher = get_object_or_404(Teacher, id=teacher_id)
+            teacher.last_name = request.POST['last_name'].strip().capitalize()
+            teacher.first_name = request.POST['first_name'].strip().capitalize()
+            if request.POST['middle_name'] != None:
+                teacher.middle_name = request.POST['middle_name'].strip().capitalize()
+            else: teacher.middle_name = None
+            teacher.organization=ed_center
+            teacher.employment_type = request.POST['employment_type']
+            teacher.education_level = request.POST['education_level']
+            teacher.experience = request.POST['experience']
+            teacher.additional_education = request.POST['additional_education']
+            teacher.save()
+            teacher.programs.clear()
+            teacher.programs.add(*request.POST.getlist('programs'))
+            teacher.save()
+        elif 'change-workshop' in request.POST:
+            workshop_id = request.POST['workshop_id']
+            workshop = get_object_or_404(Workshop, id=workshop_id)
+            workshop.name = request.POST['name'].strip().capitalize()
+            workshop.education_center=ed_center
+            workshop.classes_type = request.POST['classes_type']
+            workshop.equipment = request.POST['equipment']
+            workshop.save()
+            workshop.programs.clear()
+            workshop.programs.add(*request.POST.getlist('programs'))
+            workshop.save()
+        elif 'delete-employee' in request.POST:
+            employee_id = request.POST['employee_id']
+            employee = get_object_or_404(Employee, id=employee_id)
+            employee.delete()
+        elif 'delete-program' in request.POST:
+            program_id = request.POST['program_id']
+            program = get_object_or_404(EducationProgram, id=program_id)
+            program.delete()
+        elif 'delete-teacher' in request.POST:
+            teacher_id = request.POST['teacher_id']
+            teacher = get_object_or_404(Teacher, id=teacher_id)
+            teacher.delete()
+        elif 'delete-workshop' in request.POST:
+            workshop_id = request.POST['workshop_id']
+            workshop = get_object_or_404(Workshop, id=workshop_id)
+            workshop.delete()
 
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
