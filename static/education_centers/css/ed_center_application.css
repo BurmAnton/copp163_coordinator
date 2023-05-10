@@ -67,6 +67,10 @@ body .filter-selectpicker label {
   font-weight: 300;
   font-size: 20px;
 }
+.steps .step .free-indicator {
+  margin-left: 15px;
+  margin-top: 10px;
+}
 .steps .organization-step h3 {
   margin-bottom: 10px;
 }
@@ -92,14 +96,13 @@ body .filter-selectpicker label {
 .steps .organization-step .license-details .mb-3 {
   width: 90%;
 }
-.steps .organization-step .submit {
+.steps .submit {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 15px;
 }
-.steps .organization-step .submit input {
+.steps .submit input {
   width: 250px;
-  margin-right: 10%;
 }
 .steps .table-hdr {
   display: flex;

@@ -547,8 +547,8 @@
                             </select>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="is_ndc" {% if ed_center.is_ndc %} checked {% endif %}>
-                            <label class="form-check-label" for="flexCheckDefault">
+                            <input class="form-check-input" type="checkbox" id="is_ndc" name="is_ndc" {% if ed_center.is_ndc %} checked {% endif %}>
+                            <label class="form-check-label" for="is_ndc">
                                 Является ли организация плательщиком НДС (при реализации образовательных услуг)
                             </label>
                         </div>
@@ -788,5 +788,33 @@
                 {% endfor %}
             </table>
         </div>
-    </div>
+        <div class="indicators-step step" data-step="6">
+            <h2>6. Показатели эффективности участника ПКО</h2>
+            <form action="" method="post">
+                <table class="table">
+                    <tr>
+                        <th scope="col">Показатель эффективности</th>
+                        <th scope="col">2021</th>
+                        <th scope="col">2022</th>
+                    </tr>
+                    {% for indicator in indicators %}
+                        <tr>
+                            <td scope="row">{{indicator.name}}</td>
+                            <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2021" placeholder="" value="{{indicator|get_indicator_2021:ed_center}}" required></td>
+                            <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2022" placeholder="" value="{{indicator|get_indicator_2022:ed_center}}" required></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <h3>6.1 Доп. сведения участника ПКО</h3>
+                {% for indicator in free_indicators %}
+                    <div class="mb-3 free-indicator">
+                        <label for="notes" class="form-label">{{indicator.name}}</label>
+                        <textarea class="form-control" name="{{indicator.id}}" rows="3">{{indicator|get_free_indicator:ed_center}}</textarea>
+                    </div>
+                {% endfor %}
+                <div class="submit">
+                    <input type="submit" class="btn btn-primary" name="add-indicators" value="Сохранить">
+                </div>
+            </form>
+        </div>
 {% endblock %}

@@ -10,7 +10,7 @@ from .forms import ImportDataForm
 from .contracts import create_document, combine_all_docx
 from .models import BankDetails, Competence, ContractorsDocument, DocumentType, EducationCenter, \
                     EducationCenterHead, EducationProgram, Employee, Group, Teacher, Workshop
-from federal_empl_program.models import EdCenterEmployeePosition, ProjectPosition, ProjectYear
+from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndicator, EducationCenterProjectYear, Indicator, ProjectPosition, ProjectYear
 
 # Create your views here.
 def index(request):
@@ -24,6 +24,14 @@ def index(request):
 def ed_center_application(request, ed_center_id):
     ed_center = get_object_or_404(EducationCenter, id=ed_center_id)
     project_year = get_object_or_404(ProjectYear, year=2023)
+    indicators = Indicator.objects.filter(
+        project_year=project_year, 
+        is_free_form=False
+    )
+    free_indicators = Indicator.objects.filter(
+        project_year=project_year, 
+        is_free_form=True
+    )
     if request.method == "POST" and 'add-employee' in request.POST:
         last_name = request.POST['last_name'].strip().capitalize()
         first_name = request.POST['first_name'].strip().capitalize()
@@ -95,9 +103,12 @@ def ed_center_application(request, ed_center_id):
             try:
                 if request.POST['is_ndc'] == 'on': is_ndc = True
             except: is_ndc = False
-            if is_ndc:
-                ed_center.is_ndc = True
+            if is_ndc == False:
+                ed_center.is_ndc = False
                 ed_center.none_ndc_reason = request.POST['none_ndc_reason'].strip()
+            else:
+                ed_center.is_ndc = True
+                ed_center.none_ndc_reason = ""
             ed_center.name = request.POST['name'].strip()
             ed_center.short_name = request.POST['short_name'].strip()
             ed_center.short_name_r = request.POST['short_name_r'].strip()
@@ -158,6 +169,26 @@ def ed_center_application(request, ed_center_id):
         workshop.save()
         workshop.programs.add(*request.POST.getlist('programs'))
         workshop.save()
+    elif request.method == "POST" and 'add-indicators' in request.POST:
+        center_project_year, is_new = EducationCenterProjectYear.objects.get_or_create(
+            project_year=project_year,
+            ed_center=ed_center
+        )
+        for indicator in indicators:
+            center_indicator, is_new = EdCenterIndicator.objects.get_or_create(
+                ed_center=ed_center,
+                indicator=indicator
+            )
+            center_indicator.value_2021 = request.POST[f'{indicator.id}_2021'].strip()
+            center_indicator.value_2022 = request.POST[f'{indicator.id}_2022'].strip()
+            center_indicator.save()
+        for indicator in free_indicators:
+            center_indicator, is_new = EdCenterIndicator.objects.get_or_create(
+                ed_center=ed_center,
+                indicator=indicator
+            )
+            center_indicator.free_form_value = request.POST[f'{indicator.id}'].strip()
+            center_indicator.save()
     elif request.method == "POST" and 'change-employee' in request.POST:
         employee_id = request.POST['employee_id']
         employee = get_object_or_404(Employee, id=employee_id)
@@ -239,7 +270,10 @@ def ed_center_application(request, ed_center_id):
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
         'project_year': project_year,
-        'workshops': Workshop.objects.filter(education_center=ed_center).exclude(name=None),
+        'indicators': indicators,
+        'free_indicators': free_indicators,
+        'workshops': Workshop.objects.filter(education_center=ed_center
+                                             ).exclude(name=None),
         'competencies': Competence.objects.filter(is_irpo=True)
     })
 

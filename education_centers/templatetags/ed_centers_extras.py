@@ -3,9 +3,39 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import stringfilter
 
 from education_centers.models import ContractorsDocument, DocumentType
-from federal_empl_program.models import EdCenterEmployeePosition
+from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndicator
 
 register = template.Library()
+
+@register.filter
+def get_indicator_2021(indicator, ed_center):
+    center_indicator = EdCenterIndicator.objects.filter(
+        indicator=indicator,
+        ed_center=ed_center
+    )
+    if len(center_indicator) == 0:
+        return ""
+    return center_indicator[0].value_2021
+
+@register.filter
+def get_indicator_2022(indicator, ed_center):
+    center_indicator = EdCenterIndicator.objects.filter(
+        indicator=indicator,
+        ed_center=ed_center
+    )
+    if len(center_indicator) == 0:
+        return ""
+    return center_indicator[0].value_2022
+
+@register.filter
+def get_free_indicator(indicator, ed_center):
+    center_indicator = EdCenterIndicator.objects.filter(
+        indicator=indicator,
+        ed_center=ed_center
+    )
+    if len(center_indicator) == 0:
+        return ""
+    return center_indicator[0].free_form_value
 
 @register.filter
 def get_position(position, ed_center):
