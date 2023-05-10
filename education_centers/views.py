@@ -208,6 +208,19 @@ def ed_center_application(request, ed_center_id):
             if request.POST['is_head'] == 'on': employee.is_head = True
         except: employee.is_head = False
         employee.save()
+    elif request.method == "POST" and 'change-position' in request.POST:
+        position_id = request.POST['position_id']
+        position = get_object_or_404(ProjectPosition, id=position_id)
+        employee_id = request.POST['employee_id']
+        employee = get_object_or_404(Employee, id=employee_id)
+        employee_position = EdCenterEmployeePosition.objects.filter(
+            position=position,
+            ed_center=ed_center
+        ).first()
+        employee_position.employee = employee
+        if position.is_basis_needed:
+            employee_position.acts_basis = request.POST['acts_basis']
+        employee_position.save()
     elif request.method == "POST" and 'change-program' in request.POST:
         program_id = request.POST['program_id']
         program = get_object_or_404(EducationProgram, id=program_id)
