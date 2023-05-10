@@ -70,6 +70,7 @@ class Indicator(models.Model):
     )
     name = models.CharField("Показатель эффективности", max_length=500, 
                             blank=False,null=False)
+    is_free_form = models.BooleanField("Свободная форма?", default=False)
     year = models.IntegerField('Показатель за (год)', null=False, blank=False)
     
     def __str__(self):
@@ -101,7 +102,9 @@ class EdCenterIndicator(models.Model):
                             blank=False,null=False)
     value_2022 = models.CharField("Значение показателя (2022)", max_length=25, 
                             blank=False,null=False)
-    
+    free_form_value = models.TextField("Значение (свободная форма)", 
+                                       null=True, blank=True, default="")
+
     def __str__(self):
         return  f'{self.indicator} ({self.ed_center})'
     
