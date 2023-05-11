@@ -517,8 +517,13 @@
     <div class="steps">
         <div><h1>Формирование заявки на ПКО</h1></div>
         <div class="organization-step step" data-step="1">
-            <h2>1. Данные организации</h2>
-            <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+            <div class="step-hdr">
+                <h2>1. Данные организации</h2>
+                <a class="collapse-btn" data-toggle="collapse" href="#collapseOrgForm" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
+                    <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
+                </a>
+            </div>
+            <form action="{% url 'ed_center_application' ed_center.id %}" method="post" class="collapse show" id="collapseOrgForm">
                 <h3>1.1 Об организации</h3>
                     <div class="about">
                         <div class="form-floating ed-name mb-3">
@@ -559,11 +564,11 @@
                     </div>
                 <h3>1.2 Образовательная лицензия</h3>
                     <div class="license-details">
-                        <div class="form-floating mb-3">
+                        <div class="form-floating mb-3 w-90">
                             <input type="input" class="form-control" name="ed_license" {% if ed_center.ed_license != "0" %}  value="{{ed_center.ed_license}}" {% endif %} required>
                             <label for="ed_license">Cерия, номер, дата, срок действия</label>
                         </div>
-                        <div class="form-floating mb-3">
+                        <div class="form-floating mb-3 w-90">
                             <input type="input" class="form-control" name="license_issued_by" {% if ed_center.license_issued_by != None %} value="{{ed_center.license_issued_by}}" {% endif %} required>
                             <label for="home_city">Кем выдана лизенция на осуществление обр. деятельности (в твор. падеже)</label>
                         </div>
@@ -637,184 +642,222 @@
             </form>
         </div>
         <div class="positions-step step" data-step="2">
-            <h2>2. Контактные данные</h2>
-            <div class="table-hdr">
-                <h3>2.2 Добавление сотрудников</h3>
-                <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddEmployeeModal">Добавить сотрудника</button>
+            <div class="step-hdr">
+                <h2>2. Контактные данные</h2>
+                <a class="collapse-btn" data-toggle="collapse" href="#collapseContactsForm" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
+                    <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
+                </a>
             </div>
-            <table class="table">
-                <tr class=""> 
-                    <th scope="col">ФИО</th>
-                    <th scope="col">Должность</th>
-                    <th scope="col">email</th>
-                    <th scope="col">Телефон</th>
-                </tr>
-                {% for employee in ed_center.employees.all %}
-                    <tr>
-                        <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeEmployeeModal{{employee.id}}">{{employee.get_name}}</td>
-                        <td scope="row">{{employee.position}}</td>
-                        <td scope="row">{{employee.email}}</td>
-                        <td scope="row">{{employee.phone}}</td>
+            <div class="collapse show" id="collapseContactsForm">
+                <div class="table-hdr">
+                    <h3>2.2 Добавление сотрудников</h3>
+                    <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddEmployeeModal">Добавить сотрудника</button>
+                </div>
+                <table class="table">
+                    <tr class=""> 
+                        <th scope="col">ФИО</th>
+                        <th scope="col">Должность</th>
+                        <th scope="col">email</th>
+                        <th scope="col">Телефон</th>
                     </tr>
-                {% empty %}
-                <tr>
-                    <td scope="row" class="none-alert" colspan="4">Не добавлено ни одного сотрудника</td>
-                </tr>
-                {% endfor %}
-            </table>
-            <h3>2.2. Распределение сотрудников по ролям</h3>
-            <div class="positions">
-                {% for position in project_year.positions.all %} 
-                    <div class="card position-form">
-                        <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
-                            <input style="display: none;" type="number" name="position_id" value={{position.id}}>
-                            <div class="card-header">{{position.position}}</div>
-                            {% with position|get_position:ed_center as current_position %}
-                                <div class="card-body">
-                                        <div class="form mb-3 filter-selectpicker">
-                                            <select class="selectpicker w-100" title="Ответственное контактное лицо" data-live-search="true" name="employee_id" required>
-                                                {% if current_position != None %}
-                                                    <option selected value="{{current_position.employee.id}}">{{current_position.employee.get_name}}</option>
-                                                {% endif %}
-                                                {% for employee in ed_center.employees.all %}
-                                                    <option value="{{employee.id}}">{{employee.get_name}} ({{employee.position}})</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        {% if position.is_basis_needed %}
-                                            <div class="mb-3">
-                                                <input type="input" class="form-control" name="acts_basis" value="{{current_position.acts_basis}}" placeholder="Основание" required>
+                    {% for employee in ed_center.employees.all %}
+                        <tr>
+                            <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeEmployeeModal{{employee.id}}">{{employee.get_name}}</td>
+                            <td scope="row">{{employee.position}}</td>
+                            <td scope="row">{{employee.email}}</td>
+                            <td scope="row">{{employee.phone}}</td>
+                        </tr>
+                    {% empty %}
+                    <tr>
+                        <td scope="row" class="none-alert" colspan="4">Не добавлено ни одного сотрудника</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <h3>2.2. Распределение сотрудников по ролям</h3>
+                <div class="positions">
+                    {% for position in project_year.positions.all %} 
+                        <div class="card position-form">
+                            <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                                <input style="display: none;" type="number" name="position_id" value={{position.id}}>
+                                <div class="card-header">{{position.position}}</div>
+                                {% with position|get_position:ed_center as current_position %}
+                                    <div class="card-body">
+                                            <div class="form mb-3 filter-selectpicker">
+                                                <select class="selectpicker w-100" title="Ответственное контактное лицо" data-live-search="true" name="employee_id" required>
+                                                    {% if current_position != None %}
+                                                        <option selected value="{{current_position.employee.id}}">{{current_position.employee.get_name}}</option>
+                                                    {% endif %}
+                                                    {% for employee in ed_center.employees.all %}
+                                                        <option value="{{employee.id}}">{{employee.get_name}} ({{employee.position}})</option>
+                                                    {% endfor %}
+                                                </select>
                                             </div>
+                                            {% if position.is_basis_needed %}
+                                                <div class="mb-3">
+                                                    <input type="input" class="form-control" name="acts_basis" value="{{current_position.acts_basis}}" placeholder="Основание" required>
+                                                </div>
+                                            {% endif %}
+                                    </div>
+                                    <div class="card-footer">
+                                        {% if current_position != None %}
+                                            <input type="submit" class="btn btn-outline-primary" name="change-position" value="Изменить">
+                                        {% else %}
+                                            <input type="submit" class="btn btn-primary" name="add-position" value="Сохранить">
                                         {% endif %}
-                                </div>
-                                <div class="card-footer">
-                                    {% if current_position != None %}
-                                        <input type="submit" class="btn btn-outline-primary" name="change-position" value="Изменить">
-                                    {% else %}
-                                        <input type="submit" class="btn btn-primary" name="add-position" value="Сохранить">
-                                    {% endif %}
-                                </div>
-                            {% endwith %}
-                        </form>
-                    </div>
-                {% endfor %}
+                                    </div>
+                                {% endwith %}
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
         <div class="programs-step step" data-step="3">
-            <div class="table-hdr">
+            <div class="step-hdr">
                 <h2>3. Данные о программах, планируемых к реализации</h2>
-                <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить программу</button>
+                <a class="collapse-btn" data-toggle="collapse" href="#collapsePrograms" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
+                    <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
+                </a>
             </div>
-            <table class="table">
-                <tr class=""> 
-                    <th scope="col">Название</th>
-                    <th scope="col">Направление программы</th>
-                    <th scope="col">Профессия</th>
-                   <!-- <th scope="col">Описание компетенции</th>-->
-                    <th scope="col">Вид программы</th>
-                    <th scope="col">Колво часов</th>
-                    <th scope="col">Форма обучения</th>
-                    <th scope="col">Входные требования</th>
-                    <!-- <th scope="col">Примечание</th> -->
-                </tr>
-                {% for program in ed_center.programs.all %}
-                    <tr>
-                        <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeProgramModal{{program.id}}">{{program.program_name}}</td>
-                        <td scope="row">{{program.competence}}</td>
-                        <td scope="row">{{program.profession}}</td>
-                        <!--<td scope="row">{{program.description}}</td>-->
-                        <td scope="row">{{program.get_program_type_display}}</td>
-                        <td scope="row">{{program.duration}}</td>
-                        <td scope="row">{{program.get_education_form_display}}</td>
-                        <td scope="row">{{program.get_entry_requirements_display}}</td>
-                       <!--  <td scope="row">{% if program.notes != None %} {{program.notes}} {% endif %}</td> -->
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td scope="row" class="none-alert" colspan="9">Не добавлено ни одной программы</td>
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
-        <div class="teachers-step step" data-step="4">
-            <div class="table-hdr">
-                <h2>4. Данные о кадровом обеспечении образовательного процесса</h2>
-                <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddTeacherModal">Добавить педагога</button>
-            </div>
-            <table class="table">
-                <tr class=""> 
-                    <th scope="col">ФИО</th>
-                    <th scope="col">Тип трудоустройства</th>
-                    <th scope="col">Уровень образования</th>
-                    <th scope="col">Наличие опыта педагогической и/или производственной деятельности</th>
-                    <th scope="col">Наличие доп. проф. образования по профилю программы за последние 3 года и (или) опыт по профилю программы.</th>
-                </tr>
-                {% for teacher in ed_center.teachers.all %}
-                    <tr>
-                        <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeTeacherModal{{teacher.id}}">{{teacher.get_name}}</td>
-                        <td scope="row">{{teacher.get_employment_type_display}}</td>
-                        <td scope="row">{{teacher.get_education_level_display}}</td>
-                        <td scope="row">{{teacher.experience}}</td>
-                        <td scope="row">{{teacher.additional_education}}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td scope="row" class="none-alert" colspan="5">Не добавлено ни одного педагога</td>
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
-        <div class="workshops-step step" data-step="5">
-            <div class="table-hdr">
-                <h2>5. Данные о материально-техническом обеспечении</h2>
-                <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddWorkshopModal">Добавить помещение</button>
-            </div>
-            <table class="table">
-                <tr class=""> 
-                    <th scope="col">Наименование аудитории</th>
-                    <th scope="col">Вид занятий</th>
-                    <th scope="col">Оборудование, программное обеспечение</th>
-                </tr>
-                {% for workshop in workshops %}
-                    <tr>
-                        <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeWorkshopModal{{workshop.id}}">{{workshop.name}}</td>
-                        <td scope="row">{{workshop.get_classes_type_display}}</td>
-                        <td scope="row">{{workshop.equipment}}</td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td scope="row" class="none-alert" colspan="9">Не добавлено ни одной мастерской</td>
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
-        <div class="indicators-step step" data-step="6">
-            <h2>6. Показатели эффективности участника ПКО</h2>
-            <form action="" method="post">
+            <div class="collapse show" id="collapsePrograms">
+                <div class="table-hdr">
+                    <h3>Список программ</h3>
+                    <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить программу</button>
+                </div>
                 <table class="table">
-                    <tr>
-                        <th scope="col">Показатель эффективности</th>
-                        <th scope="col">2021</th>
-                        <th scope="col">2022</th>
+                    <tr class=""> 
+                        <th scope="col">Название</th>
+                        <th scope="col">Направление программы</th>
+                        <th scope="col">Профессия</th>
+                    <!-- <th scope="col">Описание компетенции</th>-->
+                        <th scope="col">Вид программы</th>
+                        <th scope="col">Колво часов</th>
+                        <th scope="col">Форма обучения</th>
+                        <th scope="col">Входные требования</th>
+                        <!-- <th scope="col">Примечание</th> -->
                     </tr>
-                    {% for indicator in indicators %}
+                    {% for program in ed_center.programs.all %}
                         <tr>
-                            <td scope="row">{{indicator.name}}</td>
-                            <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2021" placeholder="" value="{{indicator|get_indicator_2021:ed_center}}" required></td>
-                            <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2022" placeholder="" value="{{indicator|get_indicator_2022:ed_center}}" required></td>
+                            <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeProgramModal{{program.id}}">{{program.program_name}}</td>
+                            <td scope="row">{{program.competence}}</td>
+                            <td scope="row">{{program.profession}}</td>
+                            <!--<td scope="row">{{program.description}}</td>-->
+                            <td scope="row">{{program.get_program_type_display}}</td>
+                            <td scope="row">{{program.duration}}</td>
+                            <td scope="row">{{program.get_education_form_display}}</td>
+                            <td scope="row">{{program.get_entry_requirements_display}}</td>
+                        <!--  <td scope="row">{% if program.notes != None %} {{program.notes}} {% endif %}</td> -->
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td scope="row" class="none-alert" colspan="9">Не добавлено ни одной программы</td>
                         </tr>
                     {% endfor %}
                 </table>
-                <h3>6.1 Доп. сведения участника ПКО</h3>
-                {% for indicator in free_indicators %}
-                    <div class="mb-3 free-indicator">
-                        <label for="notes" class="form-label">{{indicator.name}}</label>
-                        <textarea class="form-control" name="{{indicator.id}}" rows="3">{{indicator|get_free_indicator:ed_center}}</textarea>
-                    </div>
-                {% endfor %}
-                <div class="submit">
-                    <input type="submit" class="btn btn-primary" name="add-indicators" value="Сохранить">
+            </div>
+        </div>
+        <div class="teachers-step step" data-step="4">
+            <div class="step-hdr">
+                <h2>4. Данные о кадровом обеспечении образовательного процесса</h2>
+                <a class="collapse-btn" data-toggle="collapse" href="#collapseTeachers" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
+                    <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
+                </a>
+            </div>
+            <div class="collapse show" id="collapseTeachers">
+                <div class="table-hdr">
+                    <h3>Список педагогов</h3>
+                    <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddTeacherModal">Добавить педагога</button>
                 </div>
-            </form>
+                <table class="table">
+                    <tr class=""> 
+                        <th scope="col">ФИО</th>
+                        <th scope="col">Тип трудоустройства</th>
+                        <th scope="col">Уровень образования</th>
+                        <th scope="col">Наличие опыта педагогической и/или производственной деятельности</th>
+                        <th scope="col">Наличие доп. проф. образования по профилю программы за последние 3 года и (или) опыт по профилю программы.</th>
+                    </tr>
+                    {% for teacher in ed_center.teachers.all %}
+                        <tr>
+                            <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeTeacherModal{{teacher.id}}">{{teacher.get_name}}</td>
+                            <td scope="row">{{teacher.get_employment_type_display}}</td>
+                            <td scope="row">{{teacher.get_education_level_display}}</td>
+                            <td scope="row">{{teacher.experience}}</td>
+                            <td scope="row">{{teacher.additional_education}}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td scope="row" class="none-alert" colspan="5">Не добавлено ни одного педагога</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <div class="workshops-step step" data-step="5">
+            <div class="step-hdr">
+                <h2>5. Данные о материально-техническом обеспечении</h2>
+                <a class="collapse-btn" data-toggle="collapse" href="#collapseWorkshop" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
+                    <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
+                </a>
+            </div>
+            <div class="collapse show" id="collapseWorkshop">
+                <div class="table-hdr">
+                    <h3>Список материально-технического обеспечения</h3>
+                    <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddWorkshopModal">Добавить помещение</button>
+                </div>
+                <table class="table">
+                    <tr class=""> 
+                        <th scope="col">Наименование аудитории</th>
+                        <th scope="col">Вид занятий</th>
+                        <th scope="col">Оборудование, программное обеспечение</th>
+                    </tr>
+                    {% for workshop in workshops %}
+                        <tr>
+                            <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeWorkshopModal{{workshop.id}}">{{workshop.name}}</td>
+                            <td scope="row">{{workshop.get_classes_type_display}}</td>
+                            <td scope="row">{{workshop.equipment}}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td scope="row" class="none-alert" colspan="9">Не добавлено ни одной мастерской</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <div class="indicators-step step" data-step="6">
+            <div class="step-hdr">
+                <h2>6. Показатели эффективности участника ПКО</h2>
+                <a class="collapse-btn" data-toggle="collapse" href="#collapseIndicators" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
+                    <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
+                </a>
+            </div>
+            <div class="collapse show" id="collapseIndicators">
+                <form action="" method="post">
+                    <table class="table">
+                        <tr>
+                            <th scope="col">Показатель эффективности</th>
+                            <th scope="col">2021</th>
+                            <th scope="col">2022</th>
+                        </tr>
+                        {% for indicator in indicators %}
+                            <tr>
+                                <td scope="row">{{indicator.name}}</td>
+                                <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2021" placeholder="" value="{{indicator|get_indicator_2021:ed_center}}" required></td>
+                                <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2022" placeholder="" value="{{indicator|get_indicator_2022:ed_center}}" required></td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <h3>6.1 Доп. сведения участника ПКО</h3>
+                    {% for indicator in free_indicators %}
+                        <div class="mb-3 free-indicator">
+                            <label for="notes" class="form-label">{{indicator.name}}</label>
+                            <textarea class="form-control" name="{{indicator.id}}" rows="3">{{indicator|get_free_indicator:ed_center}}</textarea>
+                        </div>
+                    {% endfor %}
+                    <div class="submit">
+                        <input type="submit" class="btn btn-primary" name="add-indicators" value="Сохранить">
+                    </div>
+                </form>
+            </div>
         </div>
 {% endblock %}
