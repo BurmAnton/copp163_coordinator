@@ -52,6 +52,10 @@ body .filter-selectpicker label {
   display: flex;
   justify-content: space-between;
 }
+.steps .step .step-hdr .check-img {
+  width: 35px;
+  margin-bottom: 4px;
+}
 .steps .step .step-hdr .collapse-btn {
   display: flex;
   background-color: rgba(57, 73, 89, 0.1019607843);

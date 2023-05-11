@@ -16,13 +16,18 @@ from easy_select2 import select2_modelform
 from django_admin_listfilter_dropdown.filters import  RelatedDropdownFilter, ChoiceDropdownFilter, RelatedOnlyDropdownFilter, DropdownFilter
 from field_history.models import FieldHistory
 
-from .models import Application, Questionnaire, InteractionHistory, \
+from .models import Application, EdCenterEmployeePosition, Questionnaire, InteractionHistory, \
                     CitizenCategory, CategoryInstruction, Grant, ProjectYear, \
                     Indicator, ProjectPosition
 from education_centers.models import EducationCenter, EducationProgram
 from users.models import Group
 
 from datetime import datetime, timedelta
+
+
+@admin.register(EdCenterEmployeePosition)
+class EdCenterEmployeePositionnAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(ProjectPosition)
