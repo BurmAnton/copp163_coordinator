@@ -208,6 +208,8 @@ def ed_center_application(request, ed_center_id):
             try:
                 if request.POST['is_head'] == 'on': employee.is_head = True
             except: employee.is_head = False
+            employee.phone=request.POST['phone']
+            employee.email=request.POST['email']
             employee.save()
         elif 'change-position' in request.POST:
             position_id = request.POST['position_id']
