@@ -518,7 +518,13 @@
         <div><h1>Формирование заявки на ПКО</h1></div>
         <div class="organization-step step" data-step="1">
             <div class="step-hdr">
-                <h2>1. Данные организации</h2>
+                <h2>
+                    {% if ed_center.license_issued_by != None %}
+                        <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon"> Данные организации
+                    {% else %}
+                        1. Данные организации
+                    {% endif %}
+                </h2>
                 <a class="collapse-btn" data-toggle="collapse" href="#collapseOrgForm" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
                     <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
                 </a>
@@ -643,7 +649,13 @@
         </div>
         <div class="positions-step step" data-step="2">
             <div class="step-hdr">
-                <h2>2. Контактные данные</h2>
+                <h2>
+                    {% if ed_center.positions_employees.all.count >=  project_year.positions.all.count %}
+                        <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon"> Контактные данные
+                    {% else %}
+                        2. Контактные данные
+                    {% endif %}
+                </h2>
                 <a class="collapse-btn" data-toggle="collapse" href="#collapseContactsForm" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
                     <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
                 </a>
@@ -714,7 +726,13 @@
         </div>
         <div class="programs-step step" data-step="3">
             <div class="step-hdr">
-                <h2>3. Данные о программах, планируемых к реализации</h2>
+                <h2>
+                    {% if ed_center.programs.all.count > 0 %}
+                        <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon"> Данные о программах, планируемых к реализации
+                    {% else %}
+                        3. Данные о программах, планируемых к реализации
+                    {% endif %}
+                </h2>
                 <a class="collapse-btn" data-toggle="collapse" href="#collapsePrograms" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
                     <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
                 </a>
@@ -758,7 +776,13 @@
         </div>
         <div class="teachers-step step" data-step="4">
             <div class="step-hdr">
-                <h2>4. Данные о кадровом обеспечении образовательного процесса</h2>
+                <h2>
+                    {% if ed_center.teachers.all.count > 0 %}
+                        <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon"> Данные о кадровом обеспечении образовательного процесса
+                    {% else %}
+                        4. Данные о кадровом обеспечении образовательного процесса
+                    {% endif %}
+                </h2>
                 <a class="collapse-btn" data-toggle="collapse" href="#collapseTeachers" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
                     <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
                 </a>
@@ -794,7 +818,13 @@
         </div>
         <div class="workshops-step step" data-step="5">
             <div class="step-hdr">
-                <h2>5. Данные о материально-техническом обеспечении</h2>
+                <h2>
+                    {% if workshops.count > 0 %}
+                        <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon"> Данные о материально-техническом обеспечении
+                    {% else %}
+                        5. Данные о материально-техническом обеспечении
+                    {% endif %}
+                </h2>
                 <a class="collapse-btn" data-toggle="collapse" href="#collapseWorkshop" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
                     <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
                 </a>
@@ -826,7 +856,13 @@
         </div>
         <div class="indicators-step step" data-step="6">
             <div class="step-hdr">
-                <h2>6. Показатели эффективности участника ПКО</h2>
+                <h2>
+                    {% if ed_center.indicators.all.count > 0 %}
+                        <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon"> Показатели эффективности участника ПКО
+                    {% else %}
+                        6. Показатели эффективности участника ПКО
+                    {% endif %}
+                </h2>
                 <a class="collapse-btn" data-toggle="collapse" href="#collapseIndicators" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
                     <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
                 </a>
