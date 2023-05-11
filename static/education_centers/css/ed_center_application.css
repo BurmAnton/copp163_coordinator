@@ -46,7 +46,27 @@ body .filter-selectpicker label {
   border-radius: 12px;
   background-color: white;
   box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
-  padding: 25px 50px 10px 50px;
+  padding: 25px 50px 25px 50px;
+}
+.steps .step .step-hdr {
+  display: flex;
+  justify-content: space-between;
+}
+.steps .step .step-hdr .collapse-btn {
+  display: flex;
+  background-color: rgba(57, 73, 89, 0.1019607843);
+  width: 36px;
+  height: 35px;
+  border-radius: 30px;
+  align-items: center;
+  justify-content: center;
+}
+.steps .step .step-hdr .collapse-btn img {
+  width: 26px;
+}
+.steps .step .step-hdr .collapse-btn .rot {
+  transform: rotate(180deg);
+  margin-bottom: -2px;
 }
 .steps .step table th {
   color: #394959;
@@ -93,11 +113,21 @@ body .filter-selectpicker label {
   margin-left: 5px;
 }
 .steps .organization-step .bank-details .w-90, .steps .organization-step .about .w-90, .steps .organization-step .license-details .w-90 {
-  width: 70% !important;
+  width: 1000px !important;
+}
+@media (max-width: 1370px) {
+  .steps .organization-step .bank-details .w-90, .steps .organization-step .about .w-90, .steps .organization-step .license-details .w-90 {
+    width: 100% !important;
+  }
 }
 .steps .organization-step .bank-details .mb-3, .steps .organization-step .about .mb-3, .steps .organization-step .license-details .mb-3 {
-  width: 31%;
+  width: 450px;
   margin-bottom: 0 !important;
+}
+@media (max-width: 1370px) {
+  .steps .organization-step .bank-details .mb-3, .steps .organization-step .about .mb-3, .steps .organization-step .license-details .mb-3 {
+    width: 100%;
+  }
 }
 .steps .organization-step .license-details .mb-3 {
   width: 90%;
@@ -113,6 +143,7 @@ body .filter-selectpicker label {
 .steps .table-hdr {
   display: flex;
   justify-content: space-between;
+  margin-top: 15px;
   margin-bottom: 10px;
   align-items: center;
 }

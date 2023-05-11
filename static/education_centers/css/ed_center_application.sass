@@ -35,7 +35,23 @@ body
         border-radius: 12px
         background-color: white
         box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078)
-        padding: 25px 50px 10px 50px
+        padding: 25px 50px 25px 50px
+        .step-hdr
+            display: flex
+            justify-content: space-between
+            .collapse-btn
+                display: flex
+                background-color: #3949591a
+                width: 36px
+                height: 35px
+                border-radius: 30px
+                align-items: center
+                justify-content: center
+                img
+                    width: 26px
+                .rot
+                    transform: rotate(180deg)
+                    margin-bottom: -2px
         table
             th
                 color: #394959
@@ -74,10 +90,14 @@ body
             .form-check
                 margin-left: 5px
             .w-90
-                width: 70% !important
+                width: 1000px !important
+                @media (max-width: 1370px)
+                    width: 100% !important
             .mb-3
-                width: 31%
+                width: 450px
                 margin-bottom: 0 !important
+                @media (max-width: 1370px)
+                    width: 100%
         .license-details .mb-3
                 width: 90%
     .submit
@@ -89,6 +109,7 @@ body
     .table-hdr
         display: flex
         justify-content: space-between
+        margin-top: 15px
         margin-bottom: 10px
         align-items: center
         h2
