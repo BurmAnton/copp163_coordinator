@@ -68,7 +68,7 @@ class EducationCentersAdmin(admin.ModelAdmin):
     inlines = [
         WorkshopInline
     ]
-    search_fields = ['name',]
+    search_fields = ['name', 'short_name', 'contact_person__last_name']
 
     def reg_link(self, group):
         reg_link = f"https://copp63-coordinator.ru/registration/1?c={group.id}"
