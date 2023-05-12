@@ -48,8 +48,15 @@ class EducationCenterProjectYear(models.Model):
         blank=False,
         on_delete=models.CASCADE
     )
+    STAGES = [
+        ('FLLNG', "заполнение заявки"),
+        ('VRFD', "заявка проверена"),
+        ('FRMD', "документы сформированы"),
+        ('PRVD', "заявка принята"),
+    ]
+    stage = models.CharField("Работа с заявкой", max_length=5, 
+                             default='FLLNG', choices=STAGES)
     is_federal = models.BooleanField("Федеральный центр", default=False)
-
 
     def __str__(self):
         return  f'{self.ed_center} ({self.year} г.)'

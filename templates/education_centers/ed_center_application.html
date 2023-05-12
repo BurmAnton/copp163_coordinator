@@ -516,6 +516,15 @@
     {% endfor %}
     <div class="steps">
         <div><h1>Формирование заявки на ПКО</h1></div>
+        {% if user.is_superuser %}
+            <h3> <b>Статус заявки:</b> {{center_project_year.get_stage_display }}</h3>
+                {% if center_project_year.stage == 'FLLNG' %}
+                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                        <button class="btn btn-primary" name="approve-application">Подтвердить заявку</button>
+                    </form>
+                {% endif %}
+
+        {% endif %}
         <div class="organization-step step" data-step="1">
             <div class="step-hdr">
                 <h2>
