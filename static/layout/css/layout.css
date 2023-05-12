@@ -26,6 +26,20 @@ body {
   min-height: 100%;
 }
 
+.btn-primary {
+  background-color: #394959 !important;
+  border-color: #394959 !important;
+}
+
+.btn-outline-primary {
+  color: #394959 !important;
+  border-color: #394959 !important;
+}
+.btn-outline-primary:hover {
+  background-color: #394959 !important;
+  color: white !important;
+}
+
 .navbar {
   min-height: 77px;
   background-color: #394959 !important;
