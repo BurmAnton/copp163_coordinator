@@ -17,7 +17,8 @@ def programs(project_years=None, ed_centers=None):
     ws = wb.active
     ws.title = "Программы"
     col_titles = [
-        "№ п/п", "Название программы", "Направление программы", "Профессия", 
+        "№ п/п", "Центр обучения", "Субъект РФ", 
+        "Название программы", "Направление программы", "Профессия", 
         "Описание", "Вид программы", "Колво часов", "Форма обучения", 
         "Входные требования","Примечания"
     ]
@@ -27,18 +28,20 @@ def programs(project_years=None, ed_centers=None):
 
     for row_number, program in enumerate(programs, start=3):
         ws.cell(row=row_number, column=1, value=row_number-2)
-        ws.cell(row=row_number, column=2, value=program.program_name)
-        ws.cell(row=row_number, column=3, value=program.competence.title)
-        ws.cell(row=row_number, column=4, value=program.profession)
-        ws.cell(row=row_number, column=5, value=program.description)
-        ws.cell(row=row_number, column=6, 
-                value=program.get_program_type_display())
-        ws.cell(row=row_number, column=7, value=program.duration)
+        ws.cell(row=row_number, column=2, value=program.ed_center.name)
+        ws.cell(row=row_number, column=3, value="Самарская область")
+        ws.cell(row=row_number, column=4, value=program.program_name)
+        ws.cell(row=row_number, column=5, value=program.competence.title)
+        ws.cell(row=row_number, column=6, value=program.profession)
+        ws.cell(row=row_number, column=7, value=program.description)
         ws.cell(row=row_number, column=8, 
+                value=program.get_program_type_display())
+        ws.cell(row=row_number, column=9, value=program.duration)
+        ws.cell(row=row_number, column=10, 
                 value=program.get_education_form_display())
-        ws.cell(row=row_number, column=9, 
+        ws.cell(row=row_number, column=11, 
                 value=program.get_entry_requirements_display())
-        ws.cell(row=row_number, column=10, value=program.notes)
+        ws.cell(row=row_number, column=12, value=program.notes)
     
     wb.template = False
     response = HttpResponse(
