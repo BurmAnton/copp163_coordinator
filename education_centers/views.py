@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
@@ -6,6 +6,7 @@ from django.core.files import File
 from django.db.models import Case, When, Value
 
 from . import imports
+from . import exports
 from .forms import ImportDataForm
 from .contracts import create_document, combine_all_docx
 from .models import BankDetails, Competence, ContractorsDocument, DocumentType, EducationCenter, \
@@ -282,6 +283,8 @@ def ed_center_application(request, ed_center_id):
             workshop_id = request.POST['workshop_id']
             workshop = get_object_or_404(Workshop, id=workshop_id)
             workshop.delete()
+        elif 'export-programs' in request.POST:
+            return exports.programs(ed_centers=[ed_center,])
 
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,

@@ -740,7 +740,12 @@
             <div class="collapse show" id="collapsePrograms">
                 <div class="table-hdr">
                     <h3>Список программ</h3>
-                    <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить программу</button>
+                    <div style="display: flex; gap: 15px;">
+                        <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                            <button class="btn btn-outline-primary" name="export-programs">Скачать список программ в эксель</button>
+                        </form>
+                        <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить программу</button>
+                    </div>
                 </div>
                 <table class="table">
                     <tr class=""> 
