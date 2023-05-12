@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin.filters import SimpleListFilter
+from django.shortcuts import get_object_or_404
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django import forms
@@ -11,7 +12,7 @@ from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter,\
 from .models import Workshop, EducationCenter, EducationProgram, Competence, \
       Group, EducationCenterGroup, ContractorsDocument, DocumentType, \
       BankDetails, EducationCenterHead
-from federal_empl_program.models import Application
+from federal_empl_program.models import Application, EducationCenterProjectYear, ProjectYear
 from citizens.models import Citizen, School, SchoolClass
 from users.models import User
 import users
@@ -63,7 +64,7 @@ EducationCentersForm = select2_modelform(EducationCenter, attrs={'width': '400px
 class EducationCentersAdmin(admin.ModelAdmin):
     form = EducationCentersForm
     
-    list_display = ['name', 'get_short_name', 'contact_person']
+    list_display = ['name', 'short_name', 'get_status', 'contact_person']
     filter_horizontal = ('competences',)
     inlines = [
         WorkshopInline
@@ -75,13 +76,17 @@ class EducationCentersAdmin(admin.ModelAdmin):
         return reg_link
     reg_link.short_description = 'Ссылка на рег.'
 
-    def get_short_name(self, center):
+
+    def get_status(self, center):
         application_url = reverse("ed_center_application", args=[center.id])
-        short_name = center.short_name
-        application_link = f'<a href="{application_url}" target="_blank">{short_name}</a>'
+        project_year = get_object_or_404(ProjectYear, year=2023)
+        center_project_year, is_new = EducationCenterProjectYear.objects.get_or_create(
+            project_year=project_year,
+            ed_center=center
+        )
+        application_link = f'<a href="{application_url}" target="_blank">{center_project_year.get_stage_display()}</a>'
         return mark_safe(application_link)
-    get_short_name.short_description='Краткое название организации'
-    get_short_name.admin_order_field = 'short_name'
+    get_status.short_description='Статус заявки'
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
