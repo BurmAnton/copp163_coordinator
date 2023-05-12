@@ -25,6 +25,10 @@ def index(request):
 def ed_center_application(request, ed_center_id):
     ed_center = get_object_or_404(EducationCenter, id=ed_center_id)
     project_year = get_object_or_404(ProjectYear, year=2023)
+    center_project_year, is_new = EducationCenterProjectYear.objects.get_or_create(
+        project_year=project_year,
+        ed_center=ed_center
+    )
     indicators = Indicator.objects.filter(
         project_year=project_year, 
         is_free_form=False
@@ -285,10 +289,14 @@ def ed_center_application(request, ed_center_id):
             workshop.delete()
         elif 'export-programs' in request.POST:
             return exports.programs(ed_centers=[ed_center,])
+        elif 'approve-application' in request.POST:
+            center_project_year.stage = 'VRFD'
+            center_project_year.save()
 
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
         'project_year': project_year,
+        'center_project_year': center_project_year,
         'indicators': indicators,
         'free_indicators': free_indicators,
         'workshops': Workshop.objects.filter(education_center=ed_center
