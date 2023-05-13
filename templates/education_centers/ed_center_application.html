@@ -514,17 +514,24 @@
             </div>
         </div>
     {% endfor %}
+    <div class="page-hdr"><h1>Формирование заявки на ПКО</h1></div>
     <div class="steps">
-        <div><h1>Формирование заявки на ПКО</h1></div>
         {% if user.is_superuser %}
             <h3> <b>Статус заявки:</b> {{center_project_year.get_stage_display }}</h3>
-                {% if center_project_year.stage == 'FLLNG' %}
-                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
-                        <button class="btn btn-primary" name="approve-application">Подтвердить заявку</button>
-                    </form>
-                {% endif %}
-
+            {% if center_project_year.stage == 'FLLNG' %}
+                <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                    <button class="btn btn-primary" name="approve-application">Подтвердить заявку</button>
+                </form>
+            {% endif %}
         {% endif %}
+        <div class="tabs-panel">
+            <a class="step-btn btn btn-primary" data-step="1">Организация</a>
+            <a class="step-btn btn btn-outline-primary" data-step="2">Контакты</a>
+            <a class="step-btn btn btn-outline-primary" data-step="3">Программы</a>
+            <a class="step-btn btn btn-outline-primary" data-step="4">Кадры</a>
+            <a class="step-btn btn btn-outline-primary" data-step="5">МТБ</a>
+            <a class="step-btn btn btn-outline-primary" data-step="6">Показатели</a>
+        </div>
         <div class="organization-step step" data-step="1">
             <div class="step-hdr">
                 <h2>
@@ -534,9 +541,6 @@
                         1. Данные организации
                     {% endif %}
                 </h2>
-                <a class="collapse-btn" data-toggle="collapse" href="#collapseOrgForm" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
-                    <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
-                </a>
             </div>
             <form action="{% url 'ed_center_application' ed_center.id %}" method="post" class="collapse show" id="collapseOrgForm">
                 <h3>1.1 Об организации</h3>
@@ -665,9 +669,6 @@
                         2. Контактные данные
                     {% endif %}
                 </h2>
-                <a class="collapse-btn" data-toggle="collapse" href="#collapseContactsForm" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
-                    <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
-                </a>
             </div>
             <div class="collapse show" id="collapseContactsForm">
                 <div class="table-hdr">
@@ -742,9 +743,6 @@
                         3. Данные о программах, планируемых к реализации
                     {% endif %}
                 </h2>
-                <a class="collapse-btn" data-toggle="collapse" href="#collapsePrograms" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
-                    <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
-                </a>
             </div>
             <div class="collapse show" id="collapsePrograms">
                 <div class="table-hdr">
@@ -797,9 +795,6 @@
                         4. Данные о кадровом обеспечении образовательного процесса
                     {% endif %}
                 </h2>
-                <a class="collapse-btn" data-toggle="collapse" href="#collapseTeachers" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
-                    <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
-                </a>
             </div>
             <div class="collapse show" id="collapseTeachers">
                 <div class="table-hdr">
@@ -839,9 +834,6 @@
                         5. Данные о материально-техническом обеспечении
                     {% endif %}
                 </h2>
-                <a class="collapse-btn" data-toggle="collapse" href="#collapseWorkshop" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
-                    <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
-                </a>
             </div>
             <div class="collapse show" id="collapseWorkshop">
                 <div class="table-hdr">
@@ -877,9 +869,6 @@
                         6. Показатели эффективности участника ПКО
                     {% endif %}
                 </h2>
-                <a class="collapse-btn" data-toggle="collapse" href="#collapseIndicators" role="button" aria-expanded="true" aria-controls="collapseOrgForm">
-                    <img class="collapse-img" src="{% static 'education_centers/img/collapse-arrow.png' %}" alt="collapse-arrow">
-                </a>
             </div>
             <div class="collapse show" id="collapseIndicators">
                 <form action="" method="post">
@@ -910,4 +899,5 @@
                 </form>
             </div>
         </div>
+    </div>
 {% endblock %}
