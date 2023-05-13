@@ -52,10 +52,23 @@ body .filter-selectpicker label {
   width: 100%;
   display: flex;
   justify-content: flex-start;
-  gap: 10px;
+  gap: 12px;
 }
 .steps .tabs-panel .step-btn {
   width: 150px;
+  font-size: 18px;
+}
+.steps .tabs-panel .btn-primary {
+  font-weight: 500;
+}
+.steps .tabs-panel .btn-outline-primary {
+  border: 0;
+  background-color: white;
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
+}
+.steps .tabs-panel .btn-outline-primary:hover {
+  background-color: #394959 !important;
+  color: white !important;
 }
 .steps .step {
   width: 100%;
