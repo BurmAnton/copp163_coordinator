@@ -541,12 +541,12 @@
                     </form>
                 {% endif %}
             </div>
-            {% if user.is_superuser or center_project_year.step_1_commentary != None %}
+            {% if user.is_superuser or center_project_year.step_1_commentary != "" %}
                 <h3>Комментарий</h3>
                 <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
                     <input style="display: none;" type="input" name="step" value="1" required>
                     <div class="mb-3">
-                        <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_1_commentary != None %}{{center_project_year.step_1_commentary}}{% endif %}</textarea>
+                        <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_1_commentary != "" %}{{center_project_year.step_1_commentary}}{% endif %}</textarea>
                     </div>
                     {% if user.is_superuser %}
                         <div class="submit"><button class="btn btn-primary" name="step-comment">Сохранить</button></div>
@@ -687,12 +687,12 @@
                     </form>
                 {% endif %}
             </div>
-            {% if user.is_superuser or center_project_year.step_2_commentary != None %}
+            {% if user.is_superuser or center_project_year.step_2_commentary != "" %}
                 <h3>Комментарий</h3>
                 <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
                     <input style="display: none;" type="input" name="step" value="2" required>
                     <div class="mb-3">
-                        <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_2_commentary != None %}{{center_project_year.step_2_commentary}}{% endif %}</textarea>
+                        <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_2_commentary != "" %}{{center_project_year.step_2_commentary}}{% endif %}</textarea>
                     </div>
                     {% if user.is_superuser %}
                         <div class="submit"><button class="btn btn-primary" name="step-comment">Сохранить</button></div>
@@ -779,12 +779,12 @@
                     </form>
                 {% endif %}
             </div>
-            {% if user.is_superuser or center_project_year.step_3_commentary != None %}
+            {% if user.is_superuser or center_project_year.step_3_commentary != "" %}
                 <h3>Комментарий</h3>
                 <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
                     <input style="display: none;" type="input" name="step" value="3" required>
                     <div class="mb-3">
-                        <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_3_commentary != None %}{{center_project_year.step_3_commentary}}{% endif %}</textarea>
+                        <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_3_commentary != "" %}{{center_project_year.step_3_commentary}}{% endif %}</textarea>
                     </div>
                     {% if user.is_superuser %}
                         <div class="submit"><button class="btn btn-primary" name="step-comment">Сохранить</button></div>
@@ -849,12 +849,12 @@
                     </form>
                 {% endif %}
             </div>
-            {% if user.is_superuser or center_project_year.step_4_commentary != None %}
+            {% if user.is_superuser or center_project_year.step_4_commentary != "" %}
                 <h3>Комментарий</h3>
                 <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
                     <input style="display: none;" type="input" name="step" value="4" required>
                     <div class="mb-3">
-                        <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_4_commentary != None %}{{center_project_year.step_4_commentary}}{% endif %}</textarea>
+                        <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_4_commentary != "" %}{{center_project_year.step_4_commentary}}{% endif %}</textarea>
                     </div>
                     {% if user.is_superuser %}
                         <div class="submit"><button class="btn btn-primary" name="step-comment">Сохранить</button></div>
@@ -907,12 +907,12 @@
                     </form>
                 {% endif %}
             </div>
-            {% if user.is_superuser or center_project_year.step_5_commentary != None %}
+            {% if user.is_superuser or center_project_year.step_5_commentary != "" %}
                 <h3>Комментарий</h3>
                 <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
                     <input style="display: none;" type="input" name="step" value="5" required>
                     <div class="mb-3">
-                        <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_5_commentary != None %}{{center_project_year.step_5_commentary}}{% endif %}</textarea>
+                        <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_5_commentary != "" %}{{center_project_year.step_5_commentary}}{% endif %}</textarea>
                     </div>
                     {% if user.is_superuser %}
                         <div class="submit"><button class="btn btn-primary" name="step-comment">Сохранить</button></div>
@@ -960,12 +960,12 @@
                     </form>
                 {% endif %}
             </div>
-            {% if user.is_superuser or center_project_year.step_6_commentary != None %}
+            {% if user.is_superuser or center_project_year.step_6_commentary != "" %}
                 <h3>Комментарий</h3>
                 <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
                     <input style="display: none;" type="input" name="step" value="6" required>
                     <div class="mb-3">
-                        <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_6_commentary != None %}{{center_project_year.step_6_commentary}}{% endif %}</textarea>
+                        <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_6_commentary != "" %}{{center_project_year.step_6_commentary}}{% endif %}</textarea>
                     </div>
                     {% if user.is_superuser %}
                         <div class="submit"><button class="btn btn-primary" name="step-comment">Сохранить</button></div>
