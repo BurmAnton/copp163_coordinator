@@ -289,10 +289,33 @@ def ed_center_application(request, ed_center_id):
             workshop.delete()
         elif 'export-programs' in request.POST:
             return exports.programs(ed_centers=[ed_center,])
-        elif 'approve-application' in request.POST:
-            center_project_year.stage = 'VRFD'
+        elif 'approve-step' in request.POST:
+            step = request.POST['step']
+            if   step == "1": center_project_year.step_1_check = True
+            elif step == "2": center_project_year.step_2_check = True
+            elif step == "3": center_project_year.step_3_check = True
+            elif step == "4": center_project_year.step_4_check = True
+            elif step == "5": center_project_year.step_5_check = True
+            elif step == "6": center_project_year.step_6_check = True
+            if center_project_year.step_1_check and \
+               center_project_year.step_2_check and \
+               center_project_year.step_3_check and \
+               center_project_year.step_4_check and \
+               center_project_year.step_5_check and \
+               center_project_year.step_6_check:
+                center_project_year.stage = 'VRFD'
             center_project_year.save()
-
+        elif 'step-comment' in request.POST:
+            step = request.POST['step']
+            comment = request.POST['step_commentary']
+            if   step == "1": center_project_year.step_1_commentary = comment
+            elif step == "2": center_project_year.step_2_commentary = comment
+            elif step == "3": center_project_year.step_3_commentary = comment
+            elif step == "4": center_project_year.step_4_commentary = comment
+            elif step == "5": center_project_year.step_5_commentary = comment
+            elif step == "6": center_project_year.step_6_commentary = comment
+            center_project_year.save()
+        
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
         'project_year': project_year,
