@@ -23,6 +23,9 @@ body
     display: flex
     flex-direction: row-reverse
     justify-content: space-between
+.page-hdr
+    text-align: center
+    margin-top: 15px
 .steps
     display: flex
     flex-direction: column
@@ -30,8 +33,18 @@ body
     row-gap: 25px
     margin-top: 25px
     padding-bottom: 50px
+    width: 85%
+    margin: auto
+    .tabs-panel
+        width: 100%
+        display: flex
+        justify-content: flex-start
+        gap: 10px
+        .step-btn
+            width: 150px
     .step
-        width: 85%
+        width: 100%
+        display: none
         border-radius: 12px
         background-color: white
         box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078)
@@ -76,6 +89,7 @@ body
             margin-left: 15px
             margin-top: 10px
     .organization-step
+        display: block
         h3
             margin-bottom: 10px
         .dropdown-toggle
