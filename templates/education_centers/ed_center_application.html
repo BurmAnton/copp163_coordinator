@@ -811,7 +811,7 @@
                     </tr>
                     {% for teacher in ed_center.teachers.all %}
                         <tr>
-                            <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeTeacherModal{{teacher.id}}">{{teacher.get_name}}</td>
+                            <td scope="row" style="white-space: nowrap;" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeTeacherModal{{teacher.id}}">{{teacher.get_name}}</td>
                             <td scope="row">{{teacher.get_employment_type_display}}</td>
                             <td scope="row">{{teacher.get_education_level_display}}</td>
                             <td scope="row">{{teacher.experience}}</td>
