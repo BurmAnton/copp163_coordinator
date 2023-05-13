@@ -56,6 +56,30 @@ class EducationCenterProjectYear(models.Model):
     ]
     stage = models.CharField("Работа с заявкой", max_length=5, 
                              default='FLLNG', choices=STAGES)
+    step_1_check = models.BooleanField("Шаг 1. Проверка", default=False)
+    step_1_commentary = models.TextField(
+        "Шаг 1. Комментарий", null=True, blank=True, default=""
+    )
+    step_2_check = models.BooleanField("Шаг 2. Проверка", default=False)
+    step_2_commentary = models.TextField(
+        "Шаг 2. Комментарий", null=True, blank=True, default=""
+    )
+    step_3_check = models.BooleanField("Шаг 3. Проверка", default=False)
+    step_3_commentary = models.TextField(
+        "Шаг 3. Комментарий", null=True, blank=True, default=""
+    )
+    step_4_check = models.BooleanField("Шаг 4. Проверка", default=False)
+    step_4_commentary = models.TextField(
+        "Шаг 4. Комментарий", null=True, blank=True, default=""
+    )
+    step_5_check = models.BooleanField("Шаг 5. Проверка", default=False)
+    step_5_commentary = models.TextField(
+        "Шаг 5. Комментарий", null=True, blank=True, default=""
+    )
+    step_6_check = models.BooleanField("Шаг 6. Проверка", default=False)
+    step_6_commentary = models.TextField(
+        "Шаг 6. Комментарий", null=True, blank=True, default=""
+    )
     is_federal = models.BooleanField("Федеральный центр", default=False)
 
     def __str__(self):

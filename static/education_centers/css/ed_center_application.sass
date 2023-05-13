@@ -59,6 +59,22 @@ body
         background-color: white
         box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078)
         padding: 25px 50px 25px 50px
+        .comment-form
+            width: 95%
+            margin: auto
+            display: flex
+            flex-wrap: wrap
+            gap: 15px
+            justify-content: flex-start
+            margin-bottom: 15px
+            .mb-3, .submit
+                width: 95% !important
+                @media (max-width: 1370px)
+                    width: 100% !important
+        .w-90
+            width: 1000px !important
+            @media (max-width: 1370px)
+                width: 100% !important
         .step-hdr
             display: flex
             justify-content: space-between
@@ -116,10 +132,6 @@ body
             margin-bottom: 15px
             .form-check
                 margin-left: 5px
-            .w-90
-                width: 1000px !important
-                @media (max-width: 1370px)
-                    width: 100% !important
             .mb-3
                 width: 450px
                 margin-bottom: 0 !important

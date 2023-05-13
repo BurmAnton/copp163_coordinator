@@ -78,6 +78,31 @@ body .filter-selectpicker label {
   box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
   padding: 25px 50px 25px 50px;
 }
+.steps .step .comment-form {
+  width: 95%;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: flex-start;
+  margin-bottom: 15px;
+}
+.steps .step .comment-form .mb-3, .steps .step .comment-form .submit {
+  width: 95% !important;
+}
+@media (max-width: 1370px) {
+  .steps .step .comment-form .mb-3, .steps .step .comment-form .submit {
+    width: 100% !important;
+  }
+}
+.steps .step .w-90 {
+  width: 1000px !important;
+}
+@media (max-width: 1370px) {
+  .steps .step .w-90 {
+    width: 100% !important;
+  }
+}
 .steps .step .step-hdr {
   display: flex;
   justify-content: space-between;
@@ -148,14 +173,6 @@ body .filter-selectpicker label {
 }
 .steps .organization-step .bank-details .form-check, .steps .organization-step .about .form-check, .steps .organization-step .license-details .form-check {
   margin-left: 5px;
-}
-.steps .organization-step .bank-details .w-90, .steps .organization-step .about .w-90, .steps .organization-step .license-details .w-90 {
-  width: 1000px !important;
-}
-@media (max-width: 1370px) {
-  .steps .organization-step .bank-details .w-90, .steps .organization-step .about .w-90, .steps .organization-step .license-details .w-90 {
-    width: 100% !important;
-  }
 }
 .steps .organization-step .bank-details .mb-3, .steps .organization-step .about .mb-3, .steps .organization-step .license-details .mb-3 {
   width: 450px;

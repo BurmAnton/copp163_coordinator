@@ -516,14 +516,7 @@
     {% endfor %}
     <div class="page-hdr"><h1>Формирование заявки на ПКО</h1></div>
     <div class="steps">
-        {% if user.is_superuser %}
-            <h3> <b>Статус заявки:</b> {{center_project_year.get_stage_display }}</h3>
-            {% if center_project_year.stage == 'FLLNG' %}
-                <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
-                    <button class="btn btn-primary" name="approve-application">Подтвердить заявку</button>
-                </form>
-            {% endif %}
-        {% endif %}
+        <h3> <b>Статус заявки:</b> {{center_project_year.get_stage_display }}</h3>
         <div class="tabs-panel">
             <a class="step-btn btn btn-primary" data-step="1">Организация</a>
             <a class="step-btn btn btn-outline-primary" data-step="2">Контакты</a>
@@ -535,13 +528,29 @@
         <div class="organization-step step" data-step="1">
             <div class="step-hdr">
                 <h2>
-                    {% if ed_center.license_issued_by != None %}
+                    {% if center_project_year.step_1_check %}
                         <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon"> Данные организации
                     {% else %}
                         1. Данные организации
                     {% endif %}
                 </h2>
+                {% if user.is_superuser and center_project_year.step_1_check == False %}
+                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                        <input style="display: none;" type="input" name="step" value="1" required>
+                        <button class="btn btn-success" name="approve-step">Подтвердить</button>
+                    </form>
+                {% endif %}
             </div>
+            <h3>Комментарий</h3>
+                <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                    <input style="display: none;" type="input" name="step" value="1" required>
+                    <div class="mb-3">
+                        <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_1_commentary != None %}{{center_project_year.step_1_commentary}}{% endif %}</textarea>
+                    </div>
+                    {% if user.is_superuser %}
+                        <div class="submit"><button class="btn btn-primary" name="step-comment">Сохранить</button></div>
+                    {% endif %}
+                </form>
             <form action="{% url 'ed_center_application' ed_center.id %}" method="post" class="collapse show" id="collapseOrgForm">
                 <h3>1.1 Об организации</h3>
                     <div class="about">
@@ -663,13 +672,29 @@
         <div class="positions-step step" data-step="2">
             <div class="step-hdr">
                 <h2>
-                    {% if ed_center.positions_employees.all.count >=  project_year.positions.all.count %}
+                    {% if center_project_year.step_2_check %}
                         <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon"> Контактные данные
                     {% else %}
                         2. Контактные данные
                     {% endif %}
                 </h2>
+                {% if user.is_superuser and center_project_year.step_2_check == False %}
+                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                        <input style="display: none;" type="input" name="step" value="2" required>
+                        <button class="btn btn-success" name="approve-step">Подтвердить</button>
+                    </form>
+                {% endif %}
             </div>
+            <h3>Комментарий</h3>
+            <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                <input style="display: none;" type="input" name="step" value="2" required>
+                <div class="mb-3">
+                    <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_2_commentary != None %}{{center_project_year.step_2_commentary}}{% endif %}</textarea>
+                </div>
+                {% if user.is_superuser %}
+                    <div class="submit"><button class="btn btn-primary" name="step-comment">Сохранить</button></div>
+                {% endif %}
+            </form>
             <div class="collapse show" id="collapseContactsForm">
                 <div class="table-hdr">
                     <h3>2.2 Добавление сотрудников</h3>
@@ -737,13 +762,29 @@
         <div class="programs-step step" data-step="3">
             <div class="step-hdr">
                 <h2>
-                    {% if ed_center.programs.all.count > 0 %}
+                    {% if center_project_year.step_3_check %}
                         <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon"> Данные о программах, планируемых к реализации
                     {% else %}
                         3. Данные о программах, планируемых к реализации
                     {% endif %}
                 </h2>
+                {% if user.is_superuser and center_project_year.step_3_check == False %}
+                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                        <input style="display: none;" type="input" name="step" value="3" required>
+                        <button class="btn btn-success" name="approve-step">Подтвердить</button>
+                    </form>
+                {% endif %}
             </div>
+            <h3>Комментарий</h3>
+            <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                <input style="display: none;" type="input" name="step" value="3" required>
+                <div class="mb-3">
+                    <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_3_commentary != None %}{{center_project_year.step_3_commentary}}{% endif %}</textarea>
+                </div>
+                {% if user.is_superuser %}
+                    <div class="submit"><button class="btn btn-primary" name="step-comment">Сохранить</button></div>
+                {% endif %}
+            </form>
             <div class="collapse show" id="collapsePrograms">
                 <div class="table-hdr">
                     <h3>Список программ</h3>
@@ -789,13 +830,29 @@
         <div class="teachers-step step" data-step="4">
             <div class="step-hdr">
                 <h2>
-                    {% if ed_center.teachers.all.count > 0 %}
+                    {% if center_project_year.step_4_check %}
                         <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon"> Данные о кадровом обеспечении образовательного процесса
                     {% else %}
                         4. Данные о кадровом обеспечении образовательного процесса
                     {% endif %}
                 </h2>
+                {% if user.is_superuser and center_project_year.step_4_check == False %}
+                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                        <input style="display: none;" type="input" name="step" value="4" required>
+                        <button class="btn btn-success" name="approve-step">Подтвердить</button>
+                    </form>
+                {% endif %}
             </div>
+            <h3>Комментарий</h3>
+            <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                <input style="display: none;" type="input" name="step" value="4" required>
+                <div class="mb-3">
+                    <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_4_commentary != None %}{{center_project_year.step_4_commentary}}{% endif %}</textarea>
+                </div>
+                {% if user.is_superuser %}
+                    <div class="submit"><button class="btn btn-primary" name="step-comment">Сохранить</button></div>
+                {% endif %}
+            </form>
             <div class="collapse show" id="collapseTeachers">
                 <div class="table-hdr">
                     <h3>Список педагогов</h3>
@@ -828,13 +885,29 @@
         <div class="workshops-step step" data-step="5">
             <div class="step-hdr">
                 <h2>
-                    {% if workshops.count > 0 %}
+                    {% if center_project_year.step_5_check %}
                         <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon"> Данные о материально-техническом обеспечении
                     {% else %}
                         5. Данные о материально-техническом обеспечении
                     {% endif %}
                 </h2>
+                {% if user.is_superuser and center_project_year.step_5_check == False %}
+                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                        <input style="display: none;" type="input" name="step" value="5" required>
+                        <button class="btn btn-success" name="approve-step">Подтвердить</button>
+                    </form>
+                {% endif %}
             </div>
+            <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                <input style="display: none;" type="input" name="step" value="5" required>
+                <div class="mb-3">
+                    <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_5_commentary != None %}{{center_project_year.step_5_commentary}}{% endif %}</textarea>
+                </div>
+                {% if user.is_superuser %}
+                    <div class="submit"><button class="btn btn-primary" name="step-comment">Сохранить</button></div>
+                {% endif %}
+            </form>
+            <h3>Комментарий</h3>
             <div class="collapse show" id="collapseWorkshop">
                 <div class="table-hdr">
                     <h3>Список материально-технического обеспечения</h3>
@@ -863,13 +936,29 @@
         <div class="indicators-step step" data-step="6">
             <div class="step-hdr">
                 <h2>
-                    {% if ed_center.indicators.all.count > 0 %}
+                    {% if center_project_year.step_6_check %}
                         <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon"> Показатели эффективности участника ПКО
                     {% else %}
                         6. Показатели эффективности участника ПКО
                     {% endif %}
                 </h2>
+                {% if user.is_superuser and center_project_year.step_6_check == False %}
+                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                        <input style="display: none;" type="input" name="step" value="6" required>
+                        <button class="btn btn-success" name="approve-step">Подтвердить</button>
+                    </form>
+                {% endif %}
             </div>
+            <h3>Комментарий</h3>
+            <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                <input style="display: none;" type="input" name="step" value="6" required>
+                <div class="mb-3">
+                    <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_6_commentary != None %}{{center_project_year.step_6_commentary}}{% endif %}</textarea>
+                </div>
+                {% if user.is_superuser %}
+                    <div class="submit"><button class="btn btn-primary" name="step-comment">Сохранить</button></div>
+                {% endif %}
+            </form>
             <div class="collapse show" id="collapseIndicators">
                 <form action="" method="post">
                     <table class="table">
