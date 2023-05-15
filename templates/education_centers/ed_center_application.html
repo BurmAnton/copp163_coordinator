@@ -535,7 +535,11 @@
                 <a class="step-btn btn btn-outline-primary" data-step="6">Показатели</a>
             </div>
             {% if user.is_superuser or center_project_year.get_stage_display == 'заявка проверена' %}
-s
+                <div class="generate-form">
+                    <form action="{% url 'ed_center_application' ed_center.id %}" method="POST">
+                        <input style="height: 100%;" type="submit" class="btn btn-primary" name="generate-application" value="Сгенерировать заявку">
+                    </form>
+                </div>
             {% endif %}
         </div>
         <div class="organization-step step" data-step="1">
