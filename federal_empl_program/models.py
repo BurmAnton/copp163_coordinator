@@ -193,7 +193,7 @@ class EdCenterEmployeePosition(models.Model):
     acts_basis = models.CharField(
         "Действует на основании", max_length=500, null=True, blank=True
     )
-
+    
     def __str__(self):
         return  f'{self.employee}\
                  ({self.position})'
