@@ -186,6 +186,10 @@
                                 <option value="SPO">Cреднее профессиональное образование</option>
                             </select>
                         </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" id="positionTeacherInput" name="position" placeholder="Ученая степень/должность">
+                            <label for="positionTeacherInput">Ученая степень/должность</label>
+                        </div>
                         <div class="mb-3">
                             <label for="ExperienceInput" class="form-label">Наличие опыта педагогической и/или производственной деятельности</label>
                             <textarea class="form-control" id="ExperienceInput" name="experience" rows="2"></textarea>
@@ -440,6 +444,10 @@
                                     <option value="SPO">Cреднее профессиональное образование</option>
                                 </select>
                             </div>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" id="positionTeacherInput{{teacher.id}}" name="position" {%if teacher.position != None %}value="{{teacher.position}}"{% endif %} placeholder="Ученая степень/должность">
+                                <label for="positionTeacherInput{{teacher.id}}">Ученая степень/должность</label>
+                            </div>
                             <div class="mb-3">
                                 <label for="ExperienceInput{{teacher.id}}"  class="form-label">Наличие опыта педагогической и/или производственной деятельности</label>
                                 <textarea class="form-control" id="ExperienceInput{{teacher.id}}" name="experience" rows="2">{%if teacher.experience != None %}{{teacher.experience}} {% endif %}</textarea>
@@ -518,12 +526,17 @@
     <div class="steps">
         <h3> <b>Статус заявки:</b> {{center_project_year.get_stage_display }}</h3>
         <div class="tabs-panel">
-            <a class="step-btn btn btn-primary" data-step="1">Организация</a>
-            <a class="step-btn btn btn-outline-primary" data-step="2">Контакты</a>
-            <a class="step-btn btn btn-outline-primary" data-step="3">Программы</a>
-            <a class="step-btn btn btn-outline-primary" data-step="4">Кадры</a>
-            <a class="step-btn btn btn-outline-primary" data-step="5">МТБ</a>
-            <a class="step-btn btn btn-outline-primary" data-step="6">Показатели</a>
+            <div class="tabs">
+                <a class="step-btn btn btn-primary" data-step="1">Организация</a>
+                <a class="step-btn btn btn-outline-primary" data-step="2">Контакты</a>
+                <a class="step-btn btn btn-outline-primary" data-step="3">Программы</a>
+                <a class="step-btn btn btn-outline-primary" data-step="4">Кадры</a>
+                <a class="step-btn btn btn-outline-primary" data-step="5">МТБ</a>
+                <a class="step-btn btn btn-outline-primary" data-step="6">Показатели</a>
+            </div>
+            {% if user.is_superuser or center_project_year.get_stage_display == 'заявка проверена' %}
+s
+            {% endif %}
         </div>
         <div class="organization-step step" data-step="1">
             <div class="step-hdr">
@@ -582,6 +595,12 @@
                             </select>
                         </div>
                         <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="is_federal" name="is_federal" {% if center_project_year.is_federal %} checked {% endif %}>
+                            <label class="form-check-label" for="is_federal">
+                                Организация планирует стать федеральным центром обучения
+                            </label>
+                        </div>
+                        <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="is_ndc" name="is_ndc" {% if ed_center.is_ndc %} checked {% endif %}>
                             <label class="form-check-label" for="is_ndc">
                                 Является ли организация плательщиком НДС (при реализации образовательных услуг)
@@ -634,12 +653,24 @@
                         <label for="BankOrgInput">Банк</label>
                     </div>
                     <div class="form-floating mb-3">
+                        <input type="input" class="form-control" id="InnBankOrgInput" name="bank_inn" placeholder="ИНН банк" {% if ed_center.bank_details.bank_inn != None %} value="{{ed_center.bank_details.bank_inn}}" {% endif %} required>
+                        <label for="InnBankOrgInput">ИНН банк</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="input" class="form-control" id="KppBankOrgInput" name="bank_kpp" placeholder="КПП банк" {% if ed_center.bank_details.bank_kpp != None %} value="{{ed_center.bank_details.bank_kpp}}" {% endif %} required>
+                        <label for="KppBankOrgInput">КПП банк</label>
+                    </div>
+                    <div class="form-floating mb-3">
                         <input type="input" class="form-control" id="BiсOrgInput" name="biс" placeholder="БИК" value="{{ed_center.bank_details.biс}}" required>
                         <label for="BiсOrgInput">БИК</label>
                     </div>
                     <div class="form-floating mb-3">
                         <input type="input" class="form-control" id="AccountNumberOrgInput" name="account_number" placeholder="р/с" value="{{ed_center.bank_details.account_number}}" required>
                         <label for="AccountNumberOrgInput">р/с</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="input" class="form-control" id="personalAccountNumberOrgInput" name="personal_account_number" placeholder="Лицевой счёт" {% if ed_center.bank_details.personal_account_number != None %} value="{{ed_center.bank_details.personal_account_number}}" {% endif %} required>
+                        <label for="personalAccountNumberOrgInput">Лицевой счёт</label>
                     </div>
                     <div class="form-floating mb-3">
                         <input type="input" class="form-control" id="CorrAccountOrgInput" name="corr_account" placeholder="К/сч" value="{{ed_center.bank_details.corr_account}}" required>
@@ -871,6 +902,7 @@
                         <th scope="col">ФИО</th>
                         <th scope="col">Тип трудоустройства</th>
                         <th scope="col">Уровень образования</th>
+                        <th scope="col">Ученая степень/должность</th>
                         <th scope="col">Наличие опыта педагогической и/или производственной деятельности</th>
                         <th scope="col">Наличие доп. проф. образования по профилю программы за последние 3 года и (или) опыт по профилю программы.</th>
                     </tr>
@@ -879,6 +911,7 @@
                             <td scope="row" style="white-space: nowrap;" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeTeacherModal{{teacher.id}}">{{teacher.get_name}}</td>
                             <td scope="row">{{teacher.get_employment_type_display}}</td>
                             <td scope="row">{{teacher.get_education_level_display}}</td>
+                            <td scope="row">{%if teacher.position != None %}{{teacher.position}}{% endif %}</td>
                             <td scope="row">{{teacher.experience}}</td>
                             <td scope="row">{{teacher.additional_education}}</td>
                         </tr>

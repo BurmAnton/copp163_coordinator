@@ -1,14 +1,16 @@
 from datetime import date, datetime
-from django.http import JsonResponse
+from django.utils.formats import date_format
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files import File
 from django.db.models import Case, When, Value
+from django.utils.encoding import escape_uri_path
 
 from . import imports
 from . import exports
 from .forms import ImportDataForm
-from .contracts import create_document, combine_all_docx
+from .contracts import create_document, combine_all_docx, create_application
 from .models import BankDetails, Competence, ContractorsDocument, DocumentType, EducationCenter, \
                     EducationCenterHead, EducationProgram, Employee, Group, Teacher, Workshop
 from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndicator, EducationCenterProjectYear, Indicator, ProjectPosition, ProjectYear
@@ -95,7 +97,10 @@ def ed_center_application(request, ed_center_id):
                 bank_details.okpo = request.POST['okpo'].strip()
                 bank_details.okved = request.POST['okved'].strip()
                 bank_details.bank = request.POST['bank'].strip()
+                bank_details.bank_inn = request.POST['bank_inn'].strip()
+                bank_details.bank_kpp = request.POST['bank_kpp'].strip()
                 bank_details.biс = request.POST['biс'].strip()
+                bank_details.personal_account_number = request.POST['personal_account_number'].strip()
                 bank_details.account_number = request.POST['account_number'].strip()
                 bank_details.corr_account = request.POST['corr_account'].strip()
                 bank_details.accountant = request.POST['accountant'].strip()
@@ -121,6 +126,11 @@ def ed_center_application(request, ed_center_id):
                 ed_center.home_city = request.POST['home_city'].strip()
                 ed_center.entity_sex = request.POST['entity_sex']
                 ed_center.save()
+                try:
+                    if request.POST['is_federal'] == 'on': is_federal = True
+                except: is_federal = False
+                center_project_year.is_federal = is_federal
+                center_project_year.save()
         elif 'add-program' in request.POST:
             competence_id = request.POST['competence_id']
             competence = get_object_or_404(Competence, id=competence_id)
@@ -158,6 +168,7 @@ def ed_center_application(request, ed_center_id):
                 middle_name=middle_name,
                 employment_type = request.POST['employment_type'],
                 education_level = request.POST['education_level'],
+                position = request.POST['position'],
                 experience = request.POST['experience'],
                 additional_education = request.POST['additional_education']
             )
@@ -254,6 +265,7 @@ def ed_center_application(request, ed_center_id):
             teacher.organization=ed_center
             teacher.employment_type = request.POST['employment_type']
             teacher.education_level = request.POST['education_level']
+            teacher.position = request.POST['position']
             teacher.experience = request.POST['experience']
             teacher.additional_education = request.POST['additional_education']
             teacher.save()
@@ -315,7 +327,18 @@ def ed_center_application(request, ed_center_id):
             elif step == "5": center_project_year.step_5_commentary = comment
             elif step == "6": center_project_year.step_6_commentary = comment
             center_project_year.save()
-        
+        elif 'generate-application'in request.POST:
+           doc_type = get_object_or_404(DocumentType, name="Заявка")
+           old_applications = ContractorsDocument.objects.filter(
+                                doc_type=doc_type, contractor=ed_center)
+           old_applications.delete()
+           document = create_application(center_project_year)
+           
+           response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+           response['Content-Disposition'] = f'attachment; filename=zayavka_{date.today()}.docx'
+           document.save(response)
+           return response
+            
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
         'project_year': project_year,

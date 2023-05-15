@@ -38,8 +38,11 @@ body
     .tabs-panel
         width: 100%
         display: flex
-        justify-content: flex-start
-        gap: 12px
+        justify-content: space-between
+        .tabs
+            display: flex
+            justify-content: flex-start
+            gap: 12px
         .step-btn
             width: 150px
             font-size: 18px
@@ -118,6 +121,8 @@ body
         display: block
         h3
             margin-bottom: 10px
+        .form-check
+            width: 100%
         .dropdown-toggle
             height: 57px !important
             .filter-option-inner-inner

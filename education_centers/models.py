@@ -174,6 +174,8 @@ class Teacher(models.Model):
                                    null=True)
     last_name = models.CharField("Фамилия", max_length=30, blank=False, 
                                  null=False)
+    position = models.CharField("Ученая степень/должность", max_length=30, 
+                                blank=True, null=True)
     EMPLOYMENT_TYPES = (
         ('STFF', 'Штатный педагогический сотрудник'),
         ('TTRC', 'Привлеченный педагогический работник')
@@ -204,6 +206,9 @@ class Teacher(models.Model):
         if self.middle_name == None or self.middle_name == "":
             return f'{self.first_name[0]}. {self.last_name}'
         return f'{self.first_name[0]}.{self.middle_name[0]}. {self.last_name}'
+
+    def get_short_name(self):
+        return f'{self.last_name} {self.first_name[0]}.{self.middle_name[0]}.'
 
     def __str__(self):
         return f'{self.last_name} ({self.organization})'
@@ -246,14 +251,12 @@ class Employee(models.Model):
 
     def get_name(self, is_r=False):
         if is_r:
-            return f'{self.last_name_r} {self.first_name_r} \
-                {self.middle_name_r}'
+            return f'{self.last_name_r} {self.first_name_r} {self.middle_name_r}'
         return f'{self.last_name} {self.first_name} {self.middle_name}'
 
     def get_short_name(self, is_r=False):
         if is_r:
-            return f'{self.last_name_r} {self.first_name_r[0]}.\
-        {self.middle_name_r[0]}.'
+            return f'{self.last_name_r} {self.first_name_r[0]}.{self.middle_name_r[0]}.'
         return f'{self.last_name} {self.first_name[0]}.{self.middle_name[0]}.'
     
     def __str__(self):
@@ -313,12 +316,15 @@ class BankDetails(models.Model):
     kpp = models.CharField("КПП", max_length=25, null=False, blank=False)
     ogrn = models.CharField("ОГРН", max_length=25, null=False, blank=False)
     okpo = models.CharField("ОКПО", max_length=25, null=False, blank=False)
-    okved = models.CharField("ОКВЭД", max_length=25, null=False, blank=False)
+    okved = models.CharField("ОКВЭД", max_length=250, null=False, blank=False)
     oktmo = models.CharField("ОКТМО", max_length=25, null=False, blank=False) 
 
     bank = models.CharField("Банк", max_length=250, null=False, blank=False)
+    bank_inn = models.CharField("Банк", max_length=25, null=True, blank=True)
+    bank_kpp = models.CharField("КПП", max_length=25, null=True, blank=True)
     biс = models.CharField("БИК", max_length=25, null=False, blank=False) 
-    account_number = models.CharField("Расчётный счёт", max_length=25, null=False, blank=False) 
+    account_number = models.CharField("Расчётный счёт", max_length=25, null=False, blank=False)
+    personal_account_number = models.CharField("Лицевой счёт", max_length=25, null=True, blank=True) 
     corr_account = models.CharField("К/сч", max_length=25, null=False, blank=False)
 
     legal_address = models.CharField("Юридический адрес", max_length=500, null=False, blank=False)
@@ -344,9 +350,9 @@ class Workshop(models.Model):
     competence = models.ForeignKey(Competence, verbose_name="Компетенция", on_delete=CASCADE, null=True, blank=True, related_name='workshops')
     adress = models.CharField("Адрес", max_length=200, null=True, blank=True)
     CLASSES_TYPES = (
-        ('T', 'Теоритические занятия'),
+        ('T', 'Теоретические занятия'),
         ('P', 'Практические занятия'),
-        ('TP', 'Практические и теоритические занятия'),
+        ('TP', 'Практические и теоретические занятия'),
     )
     programs = models.ManyToManyField(
         EducationProgram,
