@@ -101,7 +101,14 @@
                             <label for="ProfessionNameInput">Профессия</label>
                         </div>
                         <div class="mb-3">
-                            <label for="DescriptionInput" class="form-label">Описание</label>
+                            <label style="display: flex;align-items: center;" for="DescriptionInput" class="form-label" data-bs-toggle="tooltip" data-bs-html="true" title='ОПИСАНИЕ ЗАПОЛНЯЕТСЯ СТРОГО ПО ШАБЛОНУ! Шаблон описания программы:
+«Программа направлена на формирование компетенций в соответствии с трудовыми функциями (наименование профессии), далее прописать для программам ПО присваиваемый разряд (при наличии) для программ ДПО усваиваемую компетенцию».
+В результате обучения выпускник программы будет способен:
+    • указать трудовые функции (компетенции) или 1-5 конкретных умений из программы ПО или ДПО.
+Особенности программы – программа направлена на формирование компетенций, необходимых для профессиональной деятельности в сфере _____________ (указать предполагаемую сферу деятельности по завершению обучения)'>
+                                <p style="margin-top: 1px;margin-bottom: 0px;">Описание </p>
+                                <img style="width: 21px; padding-left: 3px;" src="{% static 'education_centers/img/info-icon.png' %}" alt="info-icon">
+                            </label>
                             <textarea class="form-control" id="DescriptionInput" name="description" rows="2">{% if program.description != None %}{{program.description}} {% endif %}</textarea>
                         </div>
                         <div class="form mb-3 filter-selectpicker">
@@ -133,7 +140,7 @@
                             <label for="DurationInput">Длительность программы</label>
                         </div>
                         <div class="mb-3">
-                            <label for="NotesInput" class="form-label">Примечания</label>
+                            <label for="NotesInput" class="form-label">Примечания</p></label>
                             <textarea class="form-control" id="NotesInput" name="notes" rows="2"></textarea>
                           </div>
                     </div>
@@ -351,7 +358,14 @@
                                 <label for="ProfessionInput{{program.id}}">Профессия</label>
                             </div>
                             <div class="mb-3">
-                                <label for="DescriptionInput{{program.id}}" class="form-label">Описание</label>
+                                <label style="display: flex;align-items: center;" for="DescriptionInput{{program.id}}" class="form-label" data-bs-toggle="tooltip" data-bs-html="true" title='ОПИСАНИЕ ЗАПОЛНЯЕТСЯ СТРОГО ПО ШАБЛОНУ! Шаблон описания программы:
+«Программа направлена на формирование компетенций в соответствии с трудовыми функциями (наименование профессии), далее прописать для программам ПО присваиваемый разряд (при наличии) для программ ДПО усваиваемую компетенцию».
+В результате обучения выпускник программы будет способен:
+    • указать трудовые функции (компетенции) или 1-5 конкретных умений из программы ПО или ДПО.
+Особенности программы – программа направлена на формирование компетенций, необходимых для профессиональной деятельности в сфере _____________ (указать предполагаемую сферу деятельности по завершению обучения)'>
+                                <p style="margin-top: 1px;margin-bottom: 0px;">Описание </p>
+                                <img style="width: 21px; padding-left: 3px;" src="{% static 'education_centers/img/info-icon.png' %}" alt="info-icon">
+                            </label>
                                 <textarea class="form-control" id="DescriptionInput{{program.id}}" name="description" rows="2">{% if program.description != None %}{{program.description}} {% endif %}</textarea>
                             </div>
                             <div class="form mb-3 filter-selectpicker">
