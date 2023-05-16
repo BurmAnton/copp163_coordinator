@@ -21,19 +21,19 @@
                 <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                     <div class="modal-body">
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="LastNameInput" name="last_name" placeholder="Фамилия" required>
+                            <input type="input" class="form-control" id="LastNameInput" name="last_name" maxlength="30" placeholder="Фамилия" required>
                             <label for="LastNameInput">Фамилия</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="FirstNameInput" name="first_name" placeholder="Имя" required>
+                            <input type="input" class="form-control" id="FirstNameInput" name="first_name" maxlength="30" placeholder="Имя" required>
                             <label for="FirstNameInput">Имя</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="MiddleNameInput" name="middle_name" placeholder="Отчество">
+                            <input type="input" class="form-control" id="MiddleNameInput" name="middle_name" maxlength="30" placeholder="Отчество">
                             <label for="MiddleNameInput">Отчество</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="PositionInput" name="position" placeholder="Должность" required>
+                            <input type="input" class="form-control" id="PositionInput" name="position" maxlength="50" placeholder="Должность" required>
                             <label for="PositionInput">Должность</label>
                         </div>
                         <div class="form-check">
@@ -43,19 +43,19 @@
                             </label>
                           </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="LastNameRInput" name="last_name_r" placeholder="Фамииля (родительный падеж)" required>
+                            <input type="input" class="form-control" id="LastNameRInput" name="last_name_r" maxlength="30" placeholder="Фамииля (родительный падеж)" required>
                             <label for="LastNameRInput">Фамилия (родительный падеж)</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="FirstNameRInput" name="first_name_r" placeholder="Имя (родительный падеж)" required>
+                            <input type="input" class="form-control" id="FirstNameRInput" name="first_name_r" maxlength="30" placeholder="Имя (родительный падеж)" required>
                             <label for="FirstNameRInput">Имя (родительный падеж)</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="MiddleNameRInput" name="middle_name_r" placeholder="Отчество (родительный падеж)">
+                            <input type="input" class="form-control" id="MiddleNameRInput" name="middle_name_r" maxlength="30" placeholder="Отчество (родительный падеж)">
                             <label for="MiddleNameRInput">Отчество (родительный падеж)</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="PositionRInput" name="position_r" placeholder="Должность (родительный падеж)" required>
+                            <input type="input" class="form-control" id="PositionRInput" name="position_r" maxlength="50" placeholder="Должность (родительный падеж)" required>
                             <label for="PositionRInput">Должность (родительный падеж)</label>
                         </div>
                         <div class="form-floating mb-3">
@@ -63,7 +63,7 @@
                             <label for="EmailInput">Email</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="phone" class="form-control" id="PhoneInput" name="phone" placeholder="Телефон" required>
+                            <input type="phone" class="form-control" id="PhoneInput" name="phone" maxlength="120" placeholder="Телефон" required>
                             <label for="PhoneInput">Телефон</label>
                         </div>
                     </div>
@@ -93,11 +93,11 @@
                             </select>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="ProgramNameInput" name="program_name" placeholder="Название" required>
+                            <input type="input" class="form-control" id="ProgramNameInput" name="program_name" maxlength="500" placeholder="Название" required>
                             <label for="ProgramNameInput">Название</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="ProfessionNameInput" name="profession" placeholder="Профессия" required>
+                            <input type="input" class="form-control" id="ProfessionNameInput" name="profession" maxlength="200" placeholder="Профессия" required>
                             <label for="ProfessionNameInput">Профессия</label>
                         </div>
                         <div class="mb-3">
@@ -156,15 +156,15 @@
                 <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                     <div class="modal-body">
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="LastNameTeacherInput" name="last_name" placeholder="Фамилия" required>
+                            <input type="input" class="form-control" id="LastNameTeacherInput" maxlength="30" name="last_name" placeholder="Фамилия" required>
                             <label for="LastNameTeacherInput">Фамилия</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="FirstNameTeacherInput" name="first_name" placeholder="Имя" required>
+                            <input type="input" class="form-control" id="FirstNameTeacherInput" maxlength="30" name="first_name" placeholder="Имя" required>
                             <label for="FirstNameTeacherInput">Имя</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="MiddleNameTeacherInput" name="middle_name" placeholder="Отчество">
+                            <input type="input" class="form-control" id="MiddleNameTeacherInput" maxlength="30" name="middle_name" placeholder="Отчество">
                             <label for="MiddleNameTeacherInput">Отчество</label>
                         </div>
                         <div class="form mb-3 filter-selectpicker">
@@ -188,10 +188,10 @@
                         </div>
                         <div class="mb-3">
                             <label for="educationMajorTeacherInput">Укажите специализацию и квалификация</label>
-                            <input type="input" class="form-control" id="educationMajorTeacherInput" name="education_major" placeholder="«Агрономия», квалификация Агроном">
+                            <input type="input" class="form-control" id="educationMajorTeacherInput" name="education_major" maxlength="150" placeholder="«Агрономия», квалификация Агроном">
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="positionTeacherInput" name="position" placeholder="Ученая степень/должность">
+                            <input type="input" class="form-control" id="positionTeacherInput" name="position" maxlength="150" placeholder="Ученая степень/должность">
                             <label for="positionTeacherInput">Ученая степень/должность</label>
                         </div>
                         <div class="mb-3">
@@ -222,7 +222,7 @@
                 <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                     <div class="modal-body">
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="NameWorkshopInput" name="name" placeholder="Название помещения" required>
+                            <input type="input" class="form-control" id="NameWorkshopInput" name="name" maxlength="500" placeholder="Название помещения" required>
                             <label for="NameWorkshopInput">Название помещения</label>
                         </div>
                         <div class="form mb-3 filter-selectpicker">
@@ -265,19 +265,19 @@
                         <div class="modal-body">
                             <input style="display: none;" type="input" name="employee_id" value="{{employee.id}}" required>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="LastNameInput{{employee.id}}" name="last_name" placeholder="Фамилия" value="{{employee.last_name}}" required>
+                                <input type="input" class="form-control" id="LastNameInput{{employee.id}}" name="last_name" maxlength="30" placeholder="Фамилия" value="{{employee.last_name}}" required>
                                 <label for="LastNameInput{{employee.id}}">Фамилия</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="FirstNameInput{{employee.id}}" name="first_name" placeholder="Имя" value="{{employee.first_name}}" required>
+                                <input type="input" class="form-control" id="FirstNameInput{{employee.id}}" name="first_name" maxlength="30" placeholder="Имя" value="{{employee.first_name}}" required>
                                 <label for="FirstNameInput{{employee.id}}">Имя</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="MiddleNameInput{{employee.id}}" name="middle_name" placeholder="Отчество" {% if employee.middle_name != None %} value="{{employee.middle_name}}" {% endif %}>
+                                <input type="input" class="form-control" id="MiddleNameInput{{employee.id}}" name="middle_name" maxlength="30" placeholder="Отчество" {% if employee.middle_name != None %} value="{{employee.middle_name}}" {% endif %}>
                                 <label for="MiddleNameInput{{employee.id}}">Отчество</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="PositionInput{{employee.id}}" name="position" placeholder="Должность" value="{{employee.position}}" required>
+                                <input type="input" class="form-control" id="PositionInput{{employee.id}}" name="position" maxlength="50" placeholder="Должность" value="{{employee.position}}" required>
                                 <label for="PositionInput{{employee.id}}">Должность</label>
                             </div>
                             <div class="form-check">
@@ -285,19 +285,19 @@
                                 <label class="form-check-label" for="IsHeadInput{{employee.id}}">Руководитель организации</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="LastNameRInput{{employee.id}}" name="last_name_r" placeholder="Фамииля (родительный падеж)" value="{{employee.last_name_r}}" required>
+                                <input type="input" class="form-control" id="LastNameRInput{{employee.id}}" name="last_name_r" maxlength="30" placeholder="Фамииля (родительный падеж)" value="{{employee.last_name_r}}" required>
                                 <label for="LastNameRInput{{employee.id}}">Фамилия (родительный падеж)</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="FirstNameRInput{{employee.id}}" name="first_name_r" placeholder="Имя (родительный падеж)" value="{{employee.first_name_r}}" required>
+                                <input type="input" class="form-control" id="FirstNameRInput{{employee.id}}" name="first_name_r" maxlength="30" placeholder="Имя (родительный падеж)" value="{{employee.first_name_r}}" required>
                                 <label for="FirstNameRInput{{employee.id}}">Имя (родительный падеж)</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="MiddleNameRInput{{employee.id}}" name="middle_name_r" placeholder="Отчество (родительный падеж)" {% if employee.middle_name_r != None %} value="{{employee.middle_name_r}}" {% endif %}>
+                                <input type="input" class="form-control" id="MiddleNameRInput{{employee.id}}" name="middle_name_r" maxlength="30" placeholder="Отчество (родительный падеж)" {% if employee.middle_name_r != None %} value="{{employee.middle_name_r}}" {% endif %}>
                                 <label for="MiddleNameRInput{{employee.id}}">Отчество (родительный падеж)</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="PositionRInput{{employee.id}}" name="position_r" placeholder="Должность (родительный падеж)" value="{{employee.position_r}}" required>
+                                <input type="input" class="form-control" id="PositionRInput{{employee.id}}" name="position_r" maxlength="50" placeholder="Должность (родительный падеж)" value="{{employee.position_r}}" required>
                                 <label for="PositionRInput{{employee.id}}">Должность (родительный падеж)</label>
                             </div>
                             <div class="form-floating mb-3">
@@ -305,7 +305,7 @@
                                 <label for="EmailInput{{employee.id}}">Email</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="phone" class="form-control" id="PhoneInput{{employee.id}}" name="phone" placeholder="Телефон" value="{{employee.phone}}" required>
+                                <input type="phone" class="form-control" id="PhoneInput{{employee.id}}" name="phone" maxlength="120" placeholder="Телефон" value="{{employee.phone}}" required>
                                 <label for="PhoneInput{{employee.id}}">Телефон</label>
                             </div>
                         </div>
@@ -343,11 +343,11 @@
                                 </select>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="ProgramNameInput{{program.id}}" name="program_name" placeholder="Название" value="{{program.program_name}}" required>
+                                <input type="input" class="form-control" id="ProgramNameInput{{program.id}}" name="program_name" maxlength="500" placeholder="Название" value="{{program.program_name}}" required>
                                 <label for="ProgramNameInput{{program.id}}">Название</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="ProfessionInput{{program.id}}" name="profession" placeholder="Профессия" value="{{program.profession}}" required>
+                                <input type="input" class="form-control" id="ProfessionInput{{program.id}}" name="profession" maxlength="200" placeholder="Профессия" value="{{program.profession}}" required>
                                 <label for="ProfessionInput{{program.id}}">Профессия</label>
                             </div>
                             <div class="mb-3">
@@ -416,15 +416,15 @@
                         <div class="modal-body">
                             <input style="display: none;" type="input" name="teacher_id" value="{{teacher.id}}" required>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="LastNameTeacherInput{{teacher.id}}" name="last_name" placeholder="Фамилия" value="{{teacher.last_name}}" required>
+                                <input type="input" class="form-control" id="LastNameTeacherInput{{teacher.id}}" maxlength="30" name="last_name" placeholder="Фамилия" value="{{teacher.last_name}}" required>
                                 <label for="LastNameTeacherInput{{teacher.id}}">Фамилия</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="FirstNameTeacherInput{{teacher.id}}" name="first_name" placeholder="Имя" value="{{teacher.first_name}}" required>
+                                <input type="input" class="form-control" id="FirstNameTeacherInput{{teacher.id}}" maxlength="30" name="first_name" placeholder="Имя" value="{{teacher.first_name}}" required>
                                 <label for="FirstNameTeacherInput{{teacher.id}}">Имя</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="MiddleNameTeacherInput{{teacher.id}}" name="middle_name" placeholder="Отчество" {% if teacher.middle_name != None %} value="{{teacher.middle_name}}" {% endif %}>
+                                <input type="input" class="form-control" id="MiddleNameTeacherInput{{teacher.id}}" maxlength="30" name="middle_name" placeholder="Отчество" {% if teacher.middle_name != None %} value="{{teacher.middle_name}}" {% endif %}>
                                 <label for="MiddleNameTeacherInput{{teacher.id}}">Отчество</label>
                             </div>
                             <div class="form mb-3 filter-selectpicker">
@@ -450,10 +450,10 @@
                             </div>
                             <div class="mb-3">
                                 <label for="educationMajorTeacherInput{{teacher.id}}">Укажите специализацию и квалификация</label>
-                                <input type="input" class="form-control" id="educationMajorTeacherInput{{teacher.id}}" name="education_major" {%if teacher.education_major != None %}value="{{teacher.education_major}}"{% endif %} placeholder="«Агрономия», квалификация Агроном">
+                                <input type="input" class="form-control" id="educationMajorTeacherInput{{teacher.id}}" maxlength="150" name="education_major" {%if teacher.education_major != None %}value="{{teacher.education_major}}"{% endif %} placeholder="«Агрономия», квалификация Агроном">
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="positionTeacherInput{{teacher.id}}" name="position" {%if teacher.position != None %}value="{{teacher.position}}"{% endif %} placeholder="Ученая степень/должность">
+                                <input type="input" class="form-control" id="positionTeacherInput{{teacher.id}}" name="position" maxlength="150" {%if teacher.position != None %}value="{{teacher.position}}"{% endif %} placeholder="Ученая степень/должность">
                                 <label for="positionTeacherInput{{teacher.id}}">Ученая степень/должность</label>
                             </div>
                             <div class="mb-3">
@@ -492,7 +492,7 @@
                         <div class="modal-body">
                             <input style="display: none;" type="input" name="workshop_id" value="{{workshop.id}}" required>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="NameWorkshopInput{{workshop.id}}" name="name" placeholder="Название помещения" value="{{workshop.name}}" required>
+                                <input type="input" class="form-control" id="NameWorkshopInput{{workshop.id}}" name="name" maxlength="500" placeholder="Название помещения" value="{{workshop.name}}" required>
                                 <label for="NameWorkshopInput{{workshop.id}}">Название помещения</label>
                             </div>
                             <div class="form mb-3 filter-selectpicker">
@@ -582,19 +582,19 @@
                 <h3>1.1 Об организации</h3>
                     <div class="about">
                         <div class="form-floating ed-name mb-3">
-                            <input type="input" class="form-control" id="NameOrgInput" name="name" {% if ed_center.name != None %} value="{{ed_center.name}}" {% endif %} required>
+                            <input type="input" class="form-control" id="NameOrgInput" name="name" maxlength="500" {% if ed_center.name != None %} value="{{ed_center.name}}" {% endif %} required>
                             <label for="NameOrgInput">Полное наименование</label>
                         </div>
                         <div class="form-floating w-45 mb-3">
-                            <input type="input" class="form-control" id="ShortNameOrgInput" name="short_name" {% if ed_center.short_name != None %} value="{{ed_center.short_name}}" {% endif %} required>
+                            <input type="input" class="form-control" id="ShortNameOrgInput" name="short_name" maxlength="500" {% if ed_center.short_name != None %} value="{{ed_center.short_name}}" {% endif %} required>
                             <label for="ShortNameOrgInput">Сокращённое наименование</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="ShortNameROrgInput" name="short_name_r" {% if ed_center.short_name_r != None %} value="{{ed_center.short_name_r}}" {% endif %} required>
+                            <input type="input" class="form-control" id="ShortNameROrgInput" name="short_name_r" maxlength="500" {% if ed_center.short_name_r != None %} value="{{ed_center.short_name_r}}" {% endif %} required>
                             <label for="ShortNameROrgInput">Сокращённое наименование (род. падеж)</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="HomeCityOrgInput" name="home_city" {% if ed_center.home_city != None %} value="{{ed_center.home_city}}" {% endif %} required>
+                            <input type="input" class="form-control" id="HomeCityOrgInput" name="home_city" maxlength="150" {% if ed_center.home_city != None %} value="{{ed_center.home_city}}" {% endif %} required>
                             <label for="HomeCityOrgInput">Город (для указания в преамбуле договора)</label>
                         </div>
                         <div class="form mb-3 filter-selectpicker">
@@ -619,7 +619,7 @@
                             </label>
                         </div>
                         <div class="form-floating w-90 mb-3">
-                            <input type="input" class="form-control" id="NoneNdcReasonOrgInput" name="none_ndc_reason" {% if ed_center.none_ndc_reason != None %} value="{{ed_center.none_ndc_reason}}" {% endif %}>
+                            <input type="input" class="form-control" id="NoneNdcReasonOrgInput" name="none_ndc_reason" maxlength="500" {% if ed_center.none_ndc_reason != None %} value="{{ed_center.none_ndc_reason}}" {% endif %}>
                             <label for="NoneNdcReasonOrgInput">Если не является на основании какой статьи Налогового кодекса РФ</label>
                         </div>
                     </div>
@@ -637,63 +637,63 @@
                 <h3>1.3 Реквизиты</h3>
                 <div class="bank-details">
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="InnOrgInput" name="inn" placeholder="ИНН" value="{{ed_center.bank_details.inn}}" required>
+                        <input type="input" class="form-control" id="InnOrgInput" name="inn" maxlength="25" placeholder="ИНН" value="{{ed_center.bank_details.inn}}" required>
                         <label for="InnOrgInput">ИНН</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="KppOrgInput" name="kpp" placeholder="КПП" value="{{ed_center.bank_details.kpp}}" required>
+                        <input type="input" class="form-control" id="KppOrgInput" name="kpp" maxlength="25" placeholder="КПП" value="{{ed_center.bank_details.kpp}}" required>
                         <label for="KppOrgInput">КПП</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="OktmoOrgInput" name="oktmo" placeholder="ОКТМО" value="{{ed_center.bank_details.oktmo}}" required>
+                        <input type="input" class="form-control" id="OktmoOrgInput" name="oktmo" maxlength="25" placeholder="ОКТМО" value="{{ed_center.bank_details.oktmo}}" required>
                         <label for="OktmoOrgInput">ОКТМО</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="OgrnOrgInput" name="ogrn" placeholder="ОГРН" value="{{ed_center.bank_details.ogrn}}" required>
+                        <input type="input" class="form-control" id="OgrnOrgInput" name="ogrn" maxlength="25" placeholder="ОГРН" value="{{ed_center.bank_details.ogrn}}" required>
                         <label for="OgrnOrgInput">ОГРН</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="OkpoOrgInput" name="okpo" placeholder="ОКПО" value="{{ed_center.bank_details.okpo}}" required>
+                        <input type="input" class="form-control" id="OkpoOrgInput" name="okpo" maxlength="25" placeholder="ОКПО" value="{{ed_center.bank_details.okpo}}" required>
                         <label for="OkpoOrgInput">ОКПО</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="OkvedOrgInput" name="okved" placeholder="ОКВЭД" value="{{ed_center.bank_details.okved}}" required>
+                        <input type="input" class="form-control" id="OkvedOrgInput" name="okved" maxlength="250" placeholder="ОКВЭД" value="{{ed_center.bank_details.okved}}" required>
                         <label for="OkvedOrgInput">ОКВЭД</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="BankOrgInput" name="bank" placeholder="Банк" value="{{ed_center.bank_details.bank}}" required>
+                        <input type="input" class="form-control" id="BankOrgInput" name="bank" maxlength="250" placeholder="Банк" value="{{ed_center.bank_details.bank}}" required>
                         <label for="BankOrgInput">Банк</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="InnBankOrgInput" name="bank_inn" placeholder="ИНН банк" {% if ed_center.bank_details.bank_inn != None %} value="{{ed_center.bank_details.bank_inn}}" {% endif %} required>
+                        <input type="input" class="form-control" id="InnBankOrgInput" name="bank_inn" maxlength="25" placeholder="ИНН банк" {% if ed_center.bank_details.bank_inn != None %} value="{{ed_center.bank_details.bank_inn}}" {% endif %} required>
                         <label for="InnBankOrgInput">ИНН банк</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="KppBankOrgInput" name="bank_kpp" placeholder="КПП банк" {% if ed_center.bank_details.bank_kpp != None %} value="{{ed_center.bank_details.bank_kpp}}" {% endif %} required>
+                        <input type="input" class="form-control" id="KppBankOrgInput" name="bank_kpp" maxlength="25" placeholder="КПП банк" {% if ed_center.bank_details.bank_kpp != None %} value="{{ed_center.bank_details.bank_kpp}}" {% endif %} required>
                         <label for="KppBankOrgInput">КПП банк</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="BiсOrgInput" name="biс" placeholder="БИК" value="{{ed_center.bank_details.biс}}" required>
+                        <input type="input" class="form-control" id="BiсOrgInput" name="biс" placeholder="БИК" maxlength="25" value="{{ed_center.bank_details.biс}}" required>
                         <label for="BiсOrgInput">БИК</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="AccountNumberOrgInput" name="account_number" placeholder="р/с" value="{{ed_center.bank_details.account_number}}" required>
+                        <input type="input" class="form-control" id="AccountNumberOrgInput" name="account_number" maxlength="25" placeholder="р/с" value="{{ed_center.bank_details.account_number}}" required>
                         <label for="AccountNumberOrgInput">р/с</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="personalAccountNumberOrgInput" name="personal_account_number" placeholder="Лицевой счёт" {% if ed_center.bank_details.personal_account_number != None %} value="{{ed_center.bank_details.personal_account_number}}" {% endif %} required>
+                        <input type="input" class="form-control" id="personalAccountNumberOrgInput" name="personal_account_number" maxlength="25" placeholder="Лицевой счёт" {% if ed_center.bank_details.personal_account_number != None %} value="{{ed_center.bank_details.personal_account_number}}" {% endif %} required>
                         <label for="personalAccountNumberOrgInput">Лицевой счёт</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="CorrAccountOrgInput" name="corr_account" placeholder="К/сч" value="{{ed_center.bank_details.corr_account}}" required>
+                        <input type="input" class="form-control" id="CorrAccountOrgInput" name="corr_account" maxlength="25" placeholder="К/сч" value="{{ed_center.bank_details.corr_account}}" required>
                         <label for="CorrAccountOrgInput">К/сч</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="AccountantOrgInput" name="accountant" placeholder="Главный бухгалтер" value="{{ed_center.bank_details.accountant}}" required>
+                        <input type="input" class="form-control" id="AccountantOrgInput" name="accountant" maxlength="250" placeholder="Главный бухгалтер" value="{{ed_center.bank_details.accountant}}" required>
                         <label for="AccountantOrgInput">Главный бухгалтер</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="PhoneOrgInput" name="phone" placeholder="Телефон(-ы)" value="{{ed_center.bank_details.phone}}" required>
+                        <input type="input" class="form-control" id="PhoneOrgInput" name="phone" placeholder="Телефон(-ы)" maxlength="120" value="{{ed_center.bank_details.phone}}" required>
                         <label for="PhoneOrgInput">Телефон(-ы)</label>
                     </div>
                     <div class="form-floating mb-3">
@@ -701,11 +701,11 @@
                         <label for="EmailOrgInput">Email</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="LegalAddressOrgInput" name="legal_address" placeholder="Юридический адрес" value="{{ed_center.bank_details.legal_address}}" required>
+                        <input type="input" class="form-control" id="LegalAddressOrgInput" name="legal_address" maxlength="500" placeholder="Юридический адрес" value="{{ed_center.bank_details.legal_address}}" required>
                         <label for="LegalAddressOrgInput">Юридический адрес</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="MailAddressOrgInput" name="mail_address" placeholder="Почтовый адрес" value="{{ed_center.bank_details.mail_address}}" required>
+                        <input type="input" class="form-control" id="MailAddressOrgInput" name="mail_address" maxlength="500" placeholder="Почтовый адрес" value="{{ed_center.bank_details.mail_address}}" required>
                         <label for="MailAddressOrgInput">Почтовый адрес</label>
                     </div>
                 </div>
@@ -788,7 +788,7 @@
                                             </div>
                                             {% if position.is_basis_needed %}
                                                 <div class="mb-3">
-                                                    <input type="input" class="form-control" name="acts_basis" value="{{current_position.acts_basis}}" placeholder="Основание" required>
+                                                    <input type="input" class="form-control" name="acts_basis" maxlength="500" value="{{current_position.acts_basis}}" placeholder="Основание" required>
                                                 </div>
                                             {% endif %}
                                     </div>
