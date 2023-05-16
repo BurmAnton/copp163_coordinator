@@ -174,7 +174,7 @@ class Teacher(models.Model):
                                    null=True)
     last_name = models.CharField("Фамилия", max_length=30, blank=False, 
                                  null=False)
-    position = models.CharField("Ученая степень/должность", max_length=30, 
+    position = models.CharField("Ученая степень/должность", max_length=150, 
                                 blank=True, null=True)
     EMPLOYMENT_TYPES = (
         ('STFF', 'Штатный педагогический сотрудник'),
