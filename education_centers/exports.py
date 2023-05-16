@@ -17,10 +17,18 @@ def programs(project_years=None, ed_centers=None):
     ws = wb.active
     ws.title = "Программы"
     col_titles = [
-        "№ п/п", "Центр обучения", "Субъект РФ", 
-        "Название программы", "Направление программы", "Профессия", 
-        "Описание", "Вид программы", "Колво часов", "Форма обучения", 
-        "Входные требования","Примечания"
+        "№ п/п", 
+        "Центр обучения", 
+        "Субъект РФ", 
+        "Направление программы", 
+        "Название программы", 
+        "Профессия", 
+        "Описание", 
+        "Вид программы", 
+        "Колво часов", 
+        "Форма обучения", 
+        "Входные требования",
+        "Примечания"
     ]
     for col_number, col_title in enumerate(col_titles, start=1):
         ws.cell(row=1, column=col_number, value=col_title)
@@ -30,8 +38,8 @@ def programs(project_years=None, ed_centers=None):
         ws.cell(row=row_number, column=1, value=row_number-2)
         ws.cell(row=row_number, column=2, value=program.ed_center.name)
         ws.cell(row=row_number, column=3, value="Самарская область")
-        ws.cell(row=row_number, column=4, value=program.program_name)
         ws.cell(row=row_number, column=5, value=program.competence.title)
+        ws.cell(row=row_number, column=4, value=program.program_name)
         ws.cell(row=row_number, column=6, value=program.profession)
         ws.cell(row=row_number, column=7, value=program.description)
         ws.cell(row=row_number, column=8, 
