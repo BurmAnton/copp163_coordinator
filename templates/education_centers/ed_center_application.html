@@ -860,6 +860,7 @@
                 </div>
                 <table class="table">
                     <tr class=""> 
+                        <th scope="col">№</th>
                         <th scope="col">Название</th>
                         <th scope="col">Направление программы</th>
                         <th scope="col">Профессия</th>
@@ -872,6 +873,7 @@
                     </tr>
                     {% for program in ed_center.programs.all %}
                         <tr>
+                            <td scope="row">{{ forloop.counter }}</td>
                             <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeProgramModal{{program.id}}">{{program.program_name}}</td>
                             <td scope="row">{{program.competence}}</td>
                             <td scope="row">{{program.profession}}</td>
@@ -925,6 +927,7 @@
                 </div>
                 <table class="table">
                     <tr class=""> 
+                        <th scope="col">№</th>
                         <th scope="col">ФИО</th>
                         <th scope="col">Тип трудоустройства</th>
                         <th scope="col">Уровень образования</th>
@@ -935,6 +938,7 @@
                     </tr>
                     {% for teacher in ed_center.teachers.all %}
                         <tr>
+                            <td scope="row">{{ forloop.counter }}</td>
                             <td scope="row" style="white-space: nowrap;" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeTeacherModal{{teacher.id}}">{{teacher.get_name}}</td>
                             <td scope="row">{{teacher.get_employment_type_display}}</td>
                             <td scope="row">{{teacher.get_education_level_display}}</td>
@@ -987,12 +991,14 @@
                 </div>
                 <table class="table">
                     <tr class=""> 
+                        <th scope="row">№</th>
                         <th scope="col">Наименование аудитории</th>
                         <th scope="col">Вид занятий</th>
                         <th scope="col">Оборудование, программное обеспечение</th>
                     </tr>
                     {% for workshop in workshops %}
                         <tr>
+                            <td scope="row">{{ forloop.counter }}</td>
                             <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeWorkshopModal{{workshop.id}}">{{workshop.name}}</td>
                             <td scope="row">{{workshop.get_classes_type_display}}</td>
                             <td scope="row">{{workshop.equipment}}</td>
@@ -1037,12 +1043,14 @@
                 <form action="" method="post">
                     <table class="table">
                         <tr>
+                            <th scope="row">№</th>
                             <th scope="col">Показатель эффективности</th>
                             <th scope="col">2021</th>
                             <th scope="col">2022</th>
                         </tr>
                         {% for indicator in indicators %}
                             <tr>
+                                <td scope="row">{{ forloop.counter }}</td>
                                 <td scope="row">{{indicator.name}}</td>
                                 <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2021" placeholder="" value="{{indicator|get_indicator_2021:ed_center}}" required></td>
                                 <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2022" placeholder="" value="{{indicator|get_indicator_2022:ed_center}}" required></td>
