@@ -192,6 +192,8 @@ class Teacher(models.Model):
         max_length=4, choices=EDUCATION_LEVELS, 
         verbose_name='Уровень образования', blank=True, null=True
     )
+    education_major = models.CharField("Специальность", max_length=150, 
+                                blank=True, null=True)
     experience = models.TextField("Наличие опыта", null=True, blank=True)
     additional_education = models.TextField(
         "Наличие доп. проф. образования по профилю программы за последние 3 года", 
