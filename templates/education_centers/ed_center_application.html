@@ -535,12 +535,12 @@
         <h3> <b>Статус заявки:</b> {{center_project_year.get_stage_display }}</h3>
         <div class="tabs-panel">
             <div class="tabs">
-                <a class="step-btn btn btn-primary" data-step="1">Организация</a>
-                <a class="step-btn btn btn-outline-primary" data-step="2">Контакты</a>
-                <a class="step-btn btn btn-outline-primary" data-step="3">Программы</a>
-                <a class="step-btn btn btn-outline-primary" data-step="4">Кадры</a>
-                <a class="step-btn btn btn-outline-primary" data-step="5">МТБ</a>
-                <a class="step-btn btn btn-outline-primary" data-step="6">Показатели</a>
+                <a data-step="1" class="step-btn btn {%if stage == 1%}btn-primary{%else%}btn-outline-primary{%endif%}">Организация</a>
+                <a data-step="2" class="step-btn btn {%if stage == 2%}btn-primary{%else%}btn-outline-primary{%endif%}">Контакты</a>
+                <a data-step="3" class="step-btn btn {%if stage == 3%}btn-primary{%else%}btn-outline-primary{%endif%}">Программы</a>
+                <a data-step="4" class="step-btn btn {%if stage == 4%}btn-primary{%else%}btn-outline-primary{%endif%}">Кадры</a>
+                <a data-step="5" class="step-btn btn {%if stage == 5%}btn-primary{%else%}btn-outline-primary{%endif%}">МТБ</a>
+                <a data-step="6" class="step-btn btn {%if stage == 6%}btn-primary{%else%}btn-outline-primary{%endif%}">Показатели</a>
             </div>
             {% if user.is_superuser or center_project_year.get_stage_display == 'заявка проверена' %}
                 <div class="generate-form">
@@ -550,7 +550,7 @@
                 </div>
             {% endif %}
         </div>
-        <div class="organization-step step" data-step="1">
+        <div class="organization-step step" data-step="1" {% if stage == 1%}style="display:block;"{%else%}style="display:none;"{%endif%}>
             <div class="step-hdr">
                 <h2>
                     {% if center_project_year.step_1_check %}
@@ -714,7 +714,7 @@
                 </div>
             </form>
         </div>
-        <div class="positions-step step" data-step="2">
+        <div class="positions-step step" data-step="2" {%if stage == 2%}style="display:block;"{%else%}style="display:none;"{%endif%}>
             <div class="step-hdr">
                 <h2>
                     {% if center_project_year.step_2_check %}
@@ -806,7 +806,7 @@
                 </div>
             </div>
         </div>
-        <div class="programs-step step" data-step="3">
+        <div class="programs-step step" data-step="3" {%if stage == 3%}style="display:block;"{%else%}style="display:none;"{%endif%}>
             <div class="step-hdr">
                 <h2>
                     {% if center_project_year.step_3_check %}
@@ -876,7 +876,7 @@
                 </table>
             </div>
         </div>
-        <div class="teachers-step step" data-step="4">
+        <div class="teachers-step step" data-step="4" {%if stage == 4%}style="display:block;"{%else%}style="display:none;"{%endif%}>
             <div class="step-hdr">
                 <h2>
                     {% if center_project_year.step_4_check %}
@@ -937,7 +937,7 @@
                 </table>
             </div>
         </div>
-        <div class="workshops-step step" data-step="5">
+        <div class="workshops-step step" data-step="5" {%if stage == 5%}style="display:block;"{%else%}style="display:none;"{%endif%}>
             <div class="step-hdr">
                 <h2>
                     {% if center_project_year.step_5_check %}
@@ -991,7 +991,7 @@
                 </table>
             </div>
         </div>
-        <div class="indicators-step step" data-step="6">
+        <div class="indicators-step step" data-step="6" {%if stage == 6%}style="display:block;"{%else%}style="display:none;"{%endif%}>
             <div class="step-hdr">
                 <h2>
                     {% if center_project_year.step_6_check %}
