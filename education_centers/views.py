@@ -168,6 +168,7 @@ def ed_center_application(request, ed_center_id):
                 middle_name=middle_name,
                 employment_type = request.POST['employment_type'],
                 education_level = request.POST['education_level'],
+                education_major = request.POST['education_major'],
                 position = request.POST['position'],
                 experience = request.POST['experience'],
                 additional_education = request.POST['additional_education']
@@ -265,6 +266,7 @@ def ed_center_application(request, ed_center_id):
             teacher.organization=ed_center
             teacher.employment_type = request.POST['employment_type']
             teacher.education_level = request.POST['education_level']
+            teacher.education_major = request.POST['education_major']
             teacher.position = request.POST['position']
             teacher.experience = request.POST['experience']
             teacher.additional_education = request.POST['additional_education']

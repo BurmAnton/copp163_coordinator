@@ -186,6 +186,10 @@
                                 <option value="SPO">Cреднее профессиональное образование</option>
                             </select>
                         </div>
+                        <div class="mb-3">
+                            <label for="educationMajorTeacherInput">Укажите специализацию и квалификация</label>
+                            <input type="input" class="form-control" id="educationMajorTeacherInput" name="education_major" placeholder="«Агрономия», квалификация Агроном">
+                        </div>
                         <div class="form-floating mb-3">
                             <input type="input" class="form-control" id="positionTeacherInput" name="position" placeholder="Ученая степень/должность">
                             <label for="positionTeacherInput">Ученая степень/должность</label>
@@ -443,6 +447,10 @@
                                     <option value="VO">Высшее образование</option>
                                     <option value="SPO">Cреднее профессиональное образование</option>
                                 </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="educationMajorTeacherInput{{teacher.id}}">Укажите специализацию и квалификация</label>
+                                <input type="input" class="form-control" id="educationMajorTeacherInput{{teacher.id}}" name="education_major" {%if teacher.education_major != None %}value="{{teacher.education_major}}"{% endif %} placeholder="«Агрономия», квалификация Агроном">
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="input" class="form-control" id="positionTeacherInput{{teacher.id}}" name="position" {%if teacher.position != None %}value="{{teacher.position}}"{% endif %} placeholder="Ученая степень/должность">
@@ -906,6 +914,7 @@
                         <th scope="col">ФИО</th>
                         <th scope="col">Тип трудоустройства</th>
                         <th scope="col">Уровень образования</th>
+                        <th scope="col">Специальность и квалификация</th>
                         <th scope="col">Ученая степень/должность</th>
                         <th scope="col">Наличие опыта педагогической и/или производственной деятельности</th>
                         <th scope="col">Наличие доп. проф. образования по профилю программы за последние 3 года и (или) опыт по профилю программы.</th>
@@ -915,6 +924,7 @@
                             <td scope="row" style="white-space: nowrap;" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeTeacherModal{{teacher.id}}">{{teacher.get_name}}</td>
                             <td scope="row">{{teacher.get_employment_type_display}}</td>
                             <td scope="row">{{teacher.get_education_level_display}}</td>
+                            <td scope="row">{%if teacher.education_major != None %}{{teacher.education_major}}{% endif %}</td>
                             <td scope="row">{%if teacher.position != None %}{{teacher.position}}{% endif %}</td>
                             <td scope="row">{{teacher.experience}}</td>
                             <td scope="row">{{teacher.additional_education}}</td>
