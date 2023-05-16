@@ -322,8 +322,8 @@ class BankDetails(models.Model):
     oktmo = models.CharField("ОКТМО", max_length=25, null=False, blank=False) 
 
     bank = models.CharField("Банк", max_length=250, null=False, blank=False)
-    bank_inn = models.CharField("Банк", max_length=25, null=True, blank=True)
-    bank_kpp = models.CharField("КПП", max_length=25, null=True, blank=True)
+    bank_inn = models.CharField("Банк ИНН", max_length=25, null=True, blank=True)
+    bank_kpp = models.CharField("Банк КПП", max_length=25, null=True, blank=True)
     biс = models.CharField("БИК", max_length=25, null=False, blank=False) 
     account_number = models.CharField("Расчётный счёт", max_length=25, null=False, blank=False)
     personal_account_number = models.CharField("Лицевой счёт", max_length=25, null=True, blank=True) 
