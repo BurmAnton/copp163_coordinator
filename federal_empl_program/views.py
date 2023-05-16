@@ -246,6 +246,7 @@ def registration(request):
 
 
 def reg_stage(request, stage, ed_cenret_id=None):
+    breakpoint()
     if request.user.is_authenticated:
         return HttpResponseRedirect(reverse("login"))
     return render(request, "federal_empl_program/login.html", {

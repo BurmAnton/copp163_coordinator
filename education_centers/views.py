@@ -24,7 +24,10 @@ def index(request):
     return JsonResponse(False, safe=False)
 
 @csrf_exempt
-def ed_center_application(request, ed_center_id, stage=1):
+def ed_center_application(request, ed_center_id):
+    stage = request.GET.get('s', '')
+    if stage != '': stage = int(stage)
+    else: stage = 1
     ed_center = get_object_or_404(EducationCenter, id=ed_center_id)
     project_year = get_object_or_404(ProjectYear, year=2023)
     center_project_year, is_new = EducationCenterProjectYear.objects.get_or_create(
