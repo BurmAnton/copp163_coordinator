@@ -24,7 +24,7 @@ def index(request):
     return JsonResponse(False, safe=False)
 
 @csrf_exempt
-def ed_center_application(request, ed_center_id):
+def ed_center_application(request, ed_center_id, stage=1):
     ed_center = get_object_or_404(EducationCenter, id=ed_center_id)
     project_year = get_object_or_404(ProjectYear, year=2023)
     center_project_year, is_new = EducationCenterProjectYear.objects.get_or_create(
@@ -41,6 +41,7 @@ def ed_center_application(request, ed_center_id):
     )
     if request.method == "POST":
         if 'add-employee' in request.POST:
+            stage=2
             last_name = request.POST['last_name'].strip().capitalize()
             first_name = request.POST['first_name'].strip().capitalize()
             if request.POST['middle_name'] != None:
@@ -73,6 +74,7 @@ def ed_center_application(request, ed_center_id):
             )
             employee.save()
         elif 'add-position' in request.POST:
+            stage=2
             position_id = request.POST['position_id']
             position = get_object_or_404(ProjectPosition, id=position_id)
             employee_id = request.POST['employee_id']
@@ -132,6 +134,7 @@ def ed_center_application(request, ed_center_id):
                 center_project_year.is_federal = is_federal
                 center_project_year.save()
         elif 'add-program' in request.POST:
+            stage=3
             competence_id = request.POST['competence_id']
             competence = get_object_or_404(Competence, id=competence_id)
             program_name = request.POST['program_name']
@@ -156,6 +159,7 @@ def ed_center_application(request, ed_center_id):
             )
             program.save()
         elif 'add-teacher' in request.POST:
+            stage=4
             last_name = request.POST['last_name'].strip().capitalize()
             first_name = request.POST['first_name'].strip().capitalize()
             if request.POST['middle_name'] != None:
@@ -177,6 +181,7 @@ def ed_center_application(request, ed_center_id):
             teacher.programs.add(*request.POST.getlist('programs'))
             teacher.save()
         elif 'add-workshop' in request.POST:
+            stage=5
             name = request.POST['name'].strip().capitalize()
             workshop = Workshop(
                 name=name,
@@ -188,6 +193,7 @@ def ed_center_application(request, ed_center_id):
             workshop.programs.add(*request.POST.getlist('programs'))
             workshop.save()
         elif 'add-indicators' in request.POST:
+            stage=6
             center_project_year, is_new = EducationCenterProjectYear.objects.get_or_create(
                 project_year=project_year,
                 ed_center=ed_center
@@ -208,6 +214,7 @@ def ed_center_application(request, ed_center_id):
                 center_indicator.free_form_value = request.POST[f'{indicator.id}'].strip()
                 center_indicator.save()
         elif 'change-employee' in request.POST:
+            stage=2
             employee_id = request.POST['employee_id']
             employee = get_object_or_404(Employee, id=employee_id)
             employee.last_name = request.POST['last_name'].strip().capitalize()
@@ -229,6 +236,7 @@ def ed_center_application(request, ed_center_id):
             employee.email=request.POST['email']
             employee.save()
         elif 'change-position' in request.POST:
+            stage=2
             position_id = request.POST['position_id']
             position = get_object_or_404(ProjectPosition, id=position_id)
             employee_id = request.POST['employee_id']
@@ -242,6 +250,7 @@ def ed_center_application(request, ed_center_id):
                 employee_position.acts_basis = request.POST['acts_basis']
             employee_position.save()
         elif 'change-program' in request.POST:
+            stage=3
             program_id = request.POST['program_id']
             program = get_object_or_404(EducationProgram, id=program_id)
             competence_id = request.POST['competence_id']
@@ -256,6 +265,7 @@ def ed_center_application(request, ed_center_id):
             program.notes = request.POST['notes']
             program.save()
         elif 'change-teacher' in request.POST:
+            stage=4
             teacher_id = request.POST['teacher_id']
             teacher = get_object_or_404(Teacher, id=teacher_id)
             teacher.last_name = request.POST['last_name'].strip().capitalize()
@@ -275,6 +285,7 @@ def ed_center_application(request, ed_center_id):
             teacher.programs.add(*request.POST.getlist('programs'))
             teacher.save()
         elif 'change-workshop' in request.POST:
+            stage=5
             workshop_id = request.POST['workshop_id']
             workshop = get_object_or_404(Workshop, id=workshop_id)
             workshop.name = request.POST['name'].strip().capitalize()
@@ -286,18 +297,22 @@ def ed_center_application(request, ed_center_id):
             workshop.programs.add(*request.POST.getlist('programs'))
             workshop.save()
         elif 'delete-employee' in request.POST:
+            stage=2
             employee_id = request.POST['employee_id']
             employee = get_object_or_404(Employee, id=employee_id)
             employee.delete()
         elif 'delete-program' in request.POST:
+            stage=3
             program_id = request.POST['program_id']
             program = get_object_or_404(EducationProgram, id=program_id)
             program.delete()
         elif 'delete-teacher' in request.POST:
+            stage=4
             teacher_id = request.POST['teacher_id']
             teacher = get_object_or_404(Teacher, id=teacher_id)
             teacher.delete()
         elif 'delete-workshop' in request.POST:
+            stage=5
             workshop_id = request.POST['workshop_id']
             workshop = get_object_or_404(Workshop, id=workshop_id)
             workshop.delete()
@@ -306,11 +321,21 @@ def ed_center_application(request, ed_center_id):
         elif 'approve-step' in request.POST:
             step = request.POST['step']
             if   step == "1": center_project_year.step_1_check = True
-            elif step == "2": center_project_year.step_2_check = True
-            elif step == "3": center_project_year.step_3_check = True
-            elif step == "4": center_project_year.step_4_check = True
-            elif step == "5": center_project_year.step_5_check = True
-            elif step == "6": center_project_year.step_6_check = True
+            elif step == "2": 
+                center_project_year.step_2_check = True
+                stage=2
+            elif step == "3": 
+                center_project_year.step_3_check = True
+                stage=3
+            elif step == "4": 
+                center_project_year.step_4_check = True
+                stage=4
+            elif step == "5": 
+                center_project_year.step_5_check = True
+                stage=5
+            elif step == "6": 
+                center_project_year.step_6_check = True
+                stage=6
             if center_project_year.step_1_check and \
                center_project_year.step_2_check and \
                center_project_year.step_3_check and \
@@ -322,12 +347,22 @@ def ed_center_application(request, ed_center_id):
         elif 'step-comment' in request.POST:
             step = request.POST['step']
             comment = request.POST['step_commentary']
-            if   step == "1": center_project_year.step_1_commentary = comment
-            elif step == "2": center_project_year.step_2_commentary = comment
-            elif step == "3": center_project_year.step_3_commentary = comment
-            elif step == "4": center_project_year.step_4_commentary = comment
-            elif step == "5": center_project_year.step_5_commentary = comment
-            elif step == "6": center_project_year.step_6_commentary = comment
+            if   step == "1":center_project_year.step_1_commentary = comment
+            elif step == "2": 
+                center_project_year.step_2_commentary = comment
+                stage=2
+            elif step == "3": 
+                center_project_year.step_3_commentary = comment
+                stage=3
+            elif step == "4": 
+                center_project_year.step_4_commentary = comment
+                stage=4
+            elif step == "5": 
+                center_project_year.step_5_commentary = comment
+                stage=5
+            elif step == "6": 
+                center_project_year.step_6_commentary = comment
+                stage=6
             center_project_year.save()
         elif 'generate-application'in request.POST:
            doc_type = get_object_or_404(DocumentType, name="Заявка")
@@ -349,7 +384,8 @@ def ed_center_application(request, ed_center_id):
         'free_indicators': free_indicators,
         'workshops': Workshop.objects.filter(education_center=ed_center
                                              ).exclude(name=None),
-        'competencies': Competence.objects.filter(is_irpo=True)
+        'competencies': Competence.objects.filter(is_irpo=True),
+        'stage': stage
     })
 
 @csrf_exempt

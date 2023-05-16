@@ -14,6 +14,11 @@ urlpatterns = [
         views.ed_center_application, 
         name='ed_center_application'
     ),
+    path(
+        '<int:ed_center_id>/application/?c=<int:stage>/', 
+        views.ed_center_application, 
+        name='ed_center_application'
+    ),
     path('documents/fed-empl/', views.documents_fed, name='documents_fed'),
     path('programs/import/', views.import_programs, name='import_programs')
 ]
