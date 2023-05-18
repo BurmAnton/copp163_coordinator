@@ -206,8 +206,8 @@ class Teacher(models.Model):
 
     def get_name(self):
         if self.middle_name == None or self.middle_name == "":
-            return f'{self.first_name[0]}. {self.last_name}'
-        return f'{self.first_name[0]}.{self.middle_name[0]}. {self.last_name}'
+            return f'{self.first_name} {self.last_name}'
+        return f'{self.first_name} {self.middle_name[0]} {self.last_name}'
 
     def get_short_name(self):
         return f'{self.last_name} {self.first_name[0]}.{self.middle_name[0]}.'
@@ -231,7 +231,7 @@ class Employee(models.Model):
                                    null=True)
     last_name = models.CharField("Фамилия", max_length=30, blank=False, 
                                  null=False)
-    position = models.CharField("Должность", max_length=50, blank=False, 
+    position = models.CharField("Должность", max_length=150, blank=False, 
                                 null=False)
     is_head = models.BooleanField("Руководитель организации?", default=False)
     first_name_r= models.CharField("Имя (род)", max_length=30, blank=False, 
@@ -240,7 +240,7 @@ class Employee(models.Model):
                                      blank=True, null=True)
     last_name_r = models.CharField("Фамилия (род)", max_length=30, 
                                    blank=False, null=False)
-    position_r = models.CharField("Должность (род)", max_length=50, 
+    position_r = models.CharField("Должность (род)", max_length=150, 
                                   blank=False, null=False)
 
     phone = models.CharField("Телефон(-ы)", max_length=120, blank=False, 
