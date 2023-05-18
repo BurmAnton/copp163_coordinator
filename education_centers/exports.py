@@ -51,10 +51,10 @@ def programs(project_years=None, ed_centers=None):
         elif program.program_type == 'DPOPP':
             program_type = "Дополнительное профессиональное образование (профессиональная переподготовка)"
         elif program.program_type == 'POPP':
-            program_type = "Профессиональное обучение (профессиональная подготовка)" 
+            program_type = "Профессиональное обучение (переподготовка)"
         elif program.program_type == 'POP':
-            program_type ="Профессиональное обучение (переподготовка)"
-        elif program.program_type == 'POPP':
+            program_type = "Профессиональное обучение (профессиональная подготовка)" 
+        elif program.program_type == 'POPK':
             program_type ="Профессиональное обучение (повышение квалификации)"
         ws.cell(row=row_number, column=1, value=row_number-2)
         ws.cell(row=row_number, column=2, value=program.ed_center.name)
