@@ -207,9 +207,11 @@ class Teacher(models.Model):
     def get_name(self):
         if self.middle_name == None or self.middle_name == "":
             return f'{self.first_name} {self.last_name}'
-        return f'{self.first_name} {self.middle_name[0]} {self.last_name}'
+        return f'{self.first_name} {self.middle_name} {self.last_name}'
 
     def get_short_name(self):
+        if self.middle_name == None or self.middle_name == "":
+            return f'{self.last_name} {self.first_name[0]}.'
         return f'{self.last_name} {self.first_name[0]}.{self.middle_name[0]}.'
 
     def __str__(self):
@@ -253,12 +255,16 @@ class Employee(models.Model):
 
     def get_name(self, is_r=False):
         if is_r:
-            return f'{self.last_name_r} {self.first_name_r} {self.middle_name_r}'
+                return f'{self.last_name_r} {self.first_name_r} {self.middle_name_r}'
         return f'{self.last_name} {self.first_name} {self.middle_name}'
 
     def get_short_name(self, is_r=False):
         if is_r:
+            if self.middle_name == None or self.middle_name == "":
+                return f'{self.last_name_r} {self.first_name_r[0]}.'
             return f'{self.last_name_r} {self.first_name_r[0]}.{self.middle_name_r[0]}.'
+        if self.middle_name == None or self.middle_name == "":
+            return f'{self.last_name} {self.first_name[0]}.'
         return f'{self.last_name} {self.first_name[0]}.{self.middle_name[0]}.'
     
     def __str__(self):
