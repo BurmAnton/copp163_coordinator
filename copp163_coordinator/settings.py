@@ -31,14 +31,18 @@ LOGIN_URL = '/login/'
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG")
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(' ')
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 # Application definition
 
 INSTALLED_APPS = [
+    'debug_toolbar',
     'rest_framework',
     'field_history',
     'django_admin_listfilter_dropdown',
@@ -65,6 +69,7 @@ AUTH_GROUP_MODEL = 'users.Group'
 AUTH_PERMISSION_MODEL = 'users.Permission'
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
