@@ -867,6 +867,7 @@
                     <!-- <th scope="col">Описание компетенции</th>-->
                         <th scope="col">Вид программы</th>
                         <th scope="col">Колво часов</th>
+                        <th scope="col">Обеспечение</th>
                         <th scope="col">Форма обучения</th>
                         <th scope="col">Входные требования</th>
                         <!-- <th scope="col">Примечание</th> -->
@@ -880,6 +881,10 @@
                             <!--<td scope="row">{{program.description}}</td>-->
                             <td scope="row">{{program.get_program_type_display}}</td>
                             <td scope="row">{{program.duration}}</td>
+                            <td scope="row">
+                                {{program.teachers.all.count}} педагогов <br>
+                                {{program.workshops.all.count}} аудиторий 
+                            </td>
                             <td scope="row">{{program.get_education_form_display}}</td>
                             <td scope="row">{{program.get_entry_requirements_display}}</td>
                         <!--  <td scope="row">{% if program.notes != None %} {{program.notes}} {% endif %}</td> -->
