@@ -9,7 +9,7 @@ from docx import Document as Document_compose
 from docxtpl import DocxTemplate
 
 from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndicator, ProjectPosition
-from .models import ContractorsDocument, DocumentType, EducationProgram
+from .models import ContractorsDocument, DocumentType, EducationProgram, Teacher
 
 from docxcompose.composer import Composer
 
@@ -88,6 +88,7 @@ def create_application(center_project_year):
         'ed_center': ed_center,
         'is_federal': center_project_year.is_federal,
         'programs': EducationProgram.objects.filter(ed_center=ed_center),
+        'teachers': Teacher.objects.filter(organization=ed_center).exclude(programs=None),
         'contact_employee': EdCenterEmployeePosition.objects.get(ed_center=ed_center, position=contact_position),
         'sign_employee': EdCenterEmployeePosition.objects.get(ed_center=ed_center, position=sign_position),
         'resp_employee': EdCenterEmployeePosition.objects.get(ed_center=ed_center, position=resp_position),
