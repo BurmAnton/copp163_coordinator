@@ -60,6 +60,7 @@ class WorkshopInline(admin.TabularInline):
 
 EducationCentersForm = select2_modelform(EducationCenter, attrs={'width': '400px'})
 
+
 @admin.register(EducationCenter)
 class EducationCentersAdmin(admin.ModelAdmin):
     form = EducationCentersForm

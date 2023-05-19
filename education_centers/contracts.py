@@ -90,7 +90,7 @@ def create_application(center_project_year):
         'programs': EducationProgram.objects.filter(ed_center=ed_center),
         'teachers': Teacher.objects.filter(organization=ed_center).exclude(programs=None),
         'contact_employee': EdCenterEmployeePosition.objects.get(ed_center=ed_center, position=contact_position),
-        'sign_employee': EdCenterEmployeePosition.objects.get(ed_center=ed_center, position=sign_position),
+        'sign_employee': EdCenterEmployeePosition.objects.filter(ed_center=ed_center, position=sign_position).first(),
         'resp_employee': EdCenterEmployeePosition.objects.get(ed_center=ed_center, position=resp_position),
         'citizens_employee': EdCenterEmployeePosition.objects.get(ed_center=ed_center, position=citizens_position),
         'programs_employee': EdCenterEmployeePosition.objects.filter(ed_center=ed_center, position=programs_position).first(),
