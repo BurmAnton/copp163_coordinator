@@ -8,48 +8,9 @@ from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndica
 register = template.Library()
 
 @register.filter
-def get_indicator_2021(indicator, ed_center):
-    center_indicator = EdCenterIndicator.objects.filter(
-        indicator=indicator,
-        ed_center=ed_center
-    )
-    if len(center_indicator) == 0:
-        return ""
-    return center_indicator[0].value_2021
+def exclude_programs(programs, workshop_programs):
+    return programs.exclude(id__in=workshop_programs)
 
-@register.filter
-def get_indicator_2022(indicator, ed_center):
-    center_indicator = EdCenterIndicator.objects.filter(
-        indicator=indicator,
-        ed_center=ed_center
-    )
-    if len(center_indicator) == 0:
-        return ""
-    return center_indicator[0].value_2022
-
-@register.filter
-def get_free_indicator(indicator, ed_center):
-    center_indicator = EdCenterIndicator.objects.filter(
-        indicator=indicator,
-        ed_center=ed_center
-    )
-    if len(center_indicator) == 0:
-        return ""
-    return center_indicator[0].free_form_value
-
-@register.filter
-def get_position(position, ed_center):
-    ed_center_positions = EdCenterEmployeePosition.objects.filter(
-        ed_center=ed_center,
-        position=position
-    )
-    if len(ed_center_positions) != 0:
-        return ed_center_positions[0]
-    return None
-
-@register.filter
-def get_name_r(head):
-    return head.get_name(is_r=True)
 
 @register.filter
 def get_groups_wo_act(groups, group_status=None):

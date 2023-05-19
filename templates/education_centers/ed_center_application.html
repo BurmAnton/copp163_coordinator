@@ -109,7 +109,7 @@
                                 <p style="margin-top: 1px;margin-bottom: 0px;">Описание </p>
                                 <img style="width: 21px; padding-left: 3px;" src="{% static 'education_centers/img/info-icon.png' %}" alt="info-icon">
                             </label>
-                            <textarea class="form-control" id="DescriptionInput" name="description" rows="2">{% if program.description != None %}{{program.description}} {% endif %}</textarea>
+                            <textarea class="form-control" id="DescriptionInput" name="description" rows="2">{{program.description}}</textarea>
                         </div>
                         <div class="form mb-3 filter-selectpicker">
                             <select class="selectpicker w-100" title="Входные требования" data-live-search="true" name="entry_requirements" required>
@@ -260,7 +260,7 @@
             </div>
         </div>
     </div>
-    {% for employee in ed_center.employees.all %}
+    {% for employee in employees %}
         <div class="modal fade change-employee-modal" id="ChangeEmployeeModal{{employee.id}}" tabindex="-1" aria-labelledby="ChangeEmployeeModal{{employee.id}}Label" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -280,7 +280,7 @@
                                 <label for="FirstNameInput{{employee.id}}">Имя</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="MiddleNameInput{{employee.id}}" name="middle_name" maxlength="30" placeholder="Отчество" {% if employee.middle_name != None %} value="{{employee.middle_name}}" {% endif %}>
+                                <input type="input" class="form-control" id="MiddleNameInput{{employee.id}}" name="middle_name" maxlength="30" placeholder="Отчество"  value="{{employee.middle_name}}">
                                 <label for="MiddleNameInput{{employee.id}}">Отчество</label>
                             </div>
                             <div class="form-floating mb-3">
@@ -300,7 +300,7 @@
                                 <label for="FirstNameRInput{{employee.id}}">Имя (родительный падеж)</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="MiddleNameRInput{{employee.id}}" name="middle_name_r" maxlength="30" placeholder="Отчество (родительный падеж)" {% if employee.middle_name_r != None %} value="{{employee.middle_name_r}}" {% endif %}>
+                                <input type="input" class="form-control" id="MiddleNameRInput{{employee.id}}" name="middle_name_r" maxlength="30" placeholder="Отчество (родительный падеж)" value="{{employee.middle_name_r}}">
                                 <label for="MiddleNameRInput{{employee.id}}">Отчество (родительный падеж)</label>
                             </div>
                             <div class="form-floating mb-3">
@@ -330,7 +330,7 @@
             </div>
         </div>
     {% endfor %}
-    {% for program in ed_center.programs.all %}
+    {% for program in programs %}
         <div class="modal fade change-program-modal" id="ChangeProgramModal{{program.id}}" tabindex="-1" aria-labelledby="ChangeProgramModal{{program.id}}Label" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -366,7 +366,7 @@
                                 <p style="margin-top: 1px;margin-bottom: 0px;">Описание </p>
                                 <img style="width: 21px; padding-left: 3px;" src="{% static 'education_centers/img/info-icon.png' %}" alt="info-icon">
                             </label>
-                                <textarea class="form-control" id="DescriptionInput{{program.id}}" name="description" rows="2">{% if program.description != None %}{{program.description}} {% endif %}</textarea>
+                                <textarea class="form-control" id="DescriptionInput{{program.id}}" name="description" rows="2">{{program.description}}</textarea>
                             </div>
                             <div class="form mb-3 filter-selectpicker">
                                 <select class="selectpicker w-100" title="Входные требования" data-live-search="true" name="entry_requirements" required>
@@ -401,7 +401,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="NotesInput{{program.id}}" class="form-label">Примечания</label>
-                                <textarea class="form-control" id="NotesInput{{program.id}}" name="notes" rows="2">{%if program.notes != None %}{{program.notes}} {% endif %}</textarea>
+                                <textarea class="form-control" id="NotesInput{{program.id}}" name="notes" rows="2">{{program.notes}}</textarea>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -418,7 +418,7 @@
             </div>
         </div>
     {% endfor %}
-    {% for teacher in ed_center.teachers.all %}
+    {% for teacher in teachers %}
         <div class="modal fade change-teacher-modal" id="ChangeTeacherModal{{teacher.id}}" tabindex="-1" aria-labelledby="ChangeTeacherModal{{teacher.id}}Label" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -438,7 +438,7 @@
                                 <label for="FirstNameTeacherInput{{teacher.id}}">Имя</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="MiddleNameTeacherInput{{teacher.id}}" maxlength="30" name="middle_name" placeholder="Отчество" {% if teacher.middle_name != None %} value="{{teacher.middle_name}}" {% endif %}>
+                                <input type="input" class="form-control" id="MiddleNameTeacherInput{{teacher.id}}" maxlength="30" name="middle_name" placeholder="Отчество" value="{{teacher.middle_name}}">
                                 <label for="MiddleNameTeacherInput{{teacher.id}}">Отчество</label>
                             </div>
                             <div class="form mb-3 filter-selectpicker">
@@ -450,8 +450,11 @@
                             </div>
                             <div class="form mb-3 filter-selectpicker">
                                 <select class="selectpicker w-100" title="Программы обучения (реализуемые педагогом)" data-live-search="true" name="programs" multiple required>
-                                    {% for program in ed_center.programs.all %}
-                                        <option value="{{program.id}}" {%if program in teacher.programs.all %} selected {%endif%}>{{program.program_name}}</option>
+                                    {% for program in teacher.programs.all %}
+                                        <option value="{{program.id}}" selected>{{program.program_name}}</option>
+                                    {% endfor %}
+                                    {% for program in programs|exclude_programs:teacher.programs.all %}
+                                        <option value="{{program.id}}">{{program.program_name}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -464,19 +467,19 @@
                             </div>
                             <div class="mb-3">
                                 <label for="educationMajorTeacherInput{{teacher.id}}">Укажите специализацию и квалификация</label>
-                                <input type="input" class="form-control" id="educationMajorTeacherInput{{teacher.id}}" maxlength="150" name="education_major" {%if teacher.education_major != None %}value="{{teacher.education_major}}"{% endif %} placeholder="«Агрономия», квалификация Агроном">
+                                <input type="input" class="form-control" id="educationMajorTeacherInput{{teacher.id}}" maxlength="150" name="education_major" value="{{teacher.education_major}}" placeholder="«Агрономия», квалификация Агроном">
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="positionTeacherInput{{teacher.id}}" name="position" maxlength="150" {%if teacher.position != None %}value="{{teacher.position}}"{% endif %} placeholder="Ученая степень/должность">
+                                <input type="input" class="form-control" id="positionTeacherInput{{teacher.id}}" name="position" maxlength="150" value="{{teacher.position}}" placeholder="Ученая степень/должность">
                                 <label for="positionTeacherInput{{teacher.id}}">Ученая степень/должность</label>
                             </div>
                             <div class="mb-3">
                                 <label for="ExperienceInput{{teacher.id}}"  class="form-label">Наличие опыта педагогической и/или производственной деятельности</label>
-                                <textarea class="form-control" id="ExperienceInput{{teacher.id}}" name="experience" rows="2">{%if teacher.experience != None %}{{teacher.experience}} {% endif %}</textarea>
+                                <textarea class="form-control" id="ExperienceInput{{teacher.id}}" name="experience" rows="2">{{teacher.experience}}</textarea>
                             </div>
                             <div class="mb-3">
                                 <label for="AdditionalEducationInput{{teacher.id}}" class="form-label">Наличие доп. проф. образования по профилю программы за последние 3 года и (или) опыт по профилю программы.</label>
-                                <textarea class="form-control" id="AdditionalEducationInput{{teacher.id}}" name="additional_education" rows="2">{%if teacher.additional_education != None %}{{teacher.additional_education}} {% endif %}</textarea>
+                                <textarea class="form-control" id="AdditionalEducationInput{{teacher.id}}" name="additional_education" rows="2">{{teacher.additional_education}}</textarea>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -519,14 +522,17 @@
                             </div>
                             <div class="form mb-3 filter-selectpicker">
                                 <select class="selectpicker w-100" title="Программы обучения (реализуемые в аудитории)" data-live-search="true" name="programs" multiple required>
-                                    {% for program in ed_center.programs.all %}
-                                    <option value="{{program.id}}" {%if program in workshop.programs.all %} selected {% endif %}>{{program.program_name}}</option>
+                                    {%for program in workshop.programs.all %}  
+                                        <option value="{{program.id}}" selected>{{program.program_name}}</option>
+                                    {% endfor %}
+                                    {% for program in programs|exclude_programs:workshop.programs.all %}
+                                        <option value="{{program.id}}">{{program.program_name}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="mb-3">
                                 <label for="EquipmentWorkshopInput{{workshop.id}}" class="form-label">Оборудование, программное обеспечение.</label>
-                                <textarea class="form-control" id="EquipmentWorkshopInput{{workshop.id}}" name="equipment" rows="2">{%if workshop.equipment != None %}{{workshop.equipment}} {% endif %}</textarea>
+                                <textarea class="form-control" id="EquipmentWorkshopInput{{workshop.id}}" name="equipment" rows="2">{{workshop.equipment}}</textarea>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -596,19 +602,19 @@
                 <h3>1.1 Об организации</h3>
                     <div class="about">
                         <div class="form-floating ed-name mb-3">
-                            <input type="input" class="form-control" id="NameOrgInput" name="name" maxlength="500" {% if ed_center.name != None %} value="{{ed_center.name}}" {% endif %} required>
+                            <input type="input" class="form-control" id="NameOrgInput" name="name" maxlength="500" value="{{ed_center.name}}" required>
                             <label for="NameOrgInput">Полное наименование</label>
                         </div>
                         <div class="form-floating w-45 mb-3">
-                            <input type="input" class="form-control" id="ShortNameOrgInput" name="short_name" maxlength="500" {% if ed_center.short_name != None %} value="{{ed_center.short_name}}" {% endif %} required>
+                            <input type="input" class="form-control" id="ShortNameOrgInput" name="short_name" maxlength="500"  value="{{ed_center.short_name}}" required>
                             <label for="ShortNameOrgInput">Сокращённое наименование</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="ShortNameROrgInput" name="short_name_r" maxlength="500" {% if ed_center.short_name_r != None %} value="{{ed_center.short_name_r}}" {% endif %} required>
+                            <input type="input" class="form-control" id="ShortNameROrgInput" name="short_name_r" maxlength="500" value="{{ed_center.short_name_r}}" required>
                             <label for="ShortNameROrgInput">Сокращённое наименование (род. падеж)</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="HomeCityOrgInput" name="home_city" maxlength="150" {% if ed_center.home_city != None %} value="{{ed_center.home_city}}" {% endif %} required>
+                            <input type="input" class="form-control" id="HomeCityOrgInput" name="home_city" maxlength="150" value="{{ed_center.home_city}}" required>
                             <label for="HomeCityOrgInput">Город (для указания в преамбуле договора)</label>
                         </div>
                         <div class="form mb-3 filter-selectpicker">
@@ -633,18 +639,18 @@
                             </label>
                         </div>
                         <div class="form-floating w-90 mb-3">
-                            <input type="input" class="form-control" id="NoneNdcReasonOrgInput" name="none_ndc_reason" maxlength="500" {% if ed_center.none_ndc_reason != None %} value="{{ed_center.none_ndc_reason}}" {% endif %}>
+                            <input type="input" class="form-control" id="NoneNdcReasonOrgInput" name="none_ndc_reason" maxlength="500" value="{{ed_center.none_ndc_reason}}">
                             <label for="NoneNdcReasonOrgInput">Если не является на основании какой статьи Налогового кодекса РФ</label>
                         </div>
                     </div>
                 <h3>1.2 Образовательная лицензия</h3>
                     <div class="license-details">
                         <div class="form-floating mb-3 w-90">
-                            <input type="input" class="form-control" id="EdLicenseOrgInput" name="ed_license" {% if ed_center.ed_license != "0" %}  value="{{ed_center.ed_license}}" {% endif %} required>
+                            <input type="input" class="form-control" id="EdLicenseOrgInput" name="ed_license" value="{{ed_center.ed_license}}" required>
                             <label for="EdLicenseOrgInput">Cерия, номер, дата, срок действия</label>
                         </div>
                         <div class="form-floating mb-3 w-90">
-                            <input type="input" class="form-control" id="LicenseIssuedByOrgInput" name="license_issued_by" {% if ed_center.license_issued_by != None %} value="{{ed_center.license_issued_by}}" {% endif %} required>
+                            <input type="input" class="form-control" id="LicenseIssuedByOrgInput" name="license_issued_by" value="{{ed_center.license_issued_by}}" required>
                             <label for="LicenseIssuedByOrgInput">Кем выдана лизенция на осуществление обр. деятельности (в твор. падеже)</label>
                         </div>
                     </div>
@@ -679,11 +685,11 @@
                         <label for="BankOrgInput">Банк</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="InnBankOrgInput" name="bank_inn" maxlength="25" placeholder="ИНН банк" {% if ed_center.bank_details.bank_inn != None %} value="{{ed_center.bank_details.bank_inn}}" {% endif %} required>
+                        <input type="input" class="form-control" id="InnBankOrgInput" name="bank_inn" maxlength="25" placeholder="ИНН банк" value="{{ed_center.bank_details.bank_inn}}" required>
                         <label for="InnBankOrgInput">ИНН банк</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="KppBankOrgInput" name="bank_kpp" maxlength="25" placeholder="КПП банк" {% if ed_center.bank_details.bank_kpp != None %} value="{{ed_center.bank_details.bank_kpp}}" {% endif %} required>
+                        <input type="input" class="form-control" id="KppBankOrgInput" name="bank_kpp" maxlength="25" placeholder="КПП банк"  value="{{ed_center.bank_details.bank_kpp}}" required>
                         <label for="KppBankOrgInput">КПП банк</label>
                     </div>
                     <div class="form-floating mb-3">
@@ -695,7 +701,7 @@
                         <label for="AccountNumberOrgInput">р/с</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="personalAccountNumberOrgInput" name="personal_account_number" maxlength="25" placeholder="Лицевой счёт" {% if ed_center.bank_details.personal_account_number != None %} value="{{ed_center.bank_details.personal_account_number}}" {% endif %} required>
+                        <input type="input" class="form-control" id="personalAccountNumberOrgInput" name="personal_account_number" maxlength="25" placeholder="Лицевой счёт" value="{{ed_center.bank_details.personal_account_number}}" required>
                         <label for="personalAccountNumberOrgInput">Лицевой счёт</label>
                     </div>
                     <div class="form-floating mb-3">
@@ -768,9 +774,9 @@
                         <th scope="col">email</th>
                         <th scope="col">Телефон</th>
                     </tr>
-                    {% for employee in ed_center.employees.all %}
+                    {% for employee in employees %}
                         <tr>
-                            <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeEmployeeModal{{employee.id}}">{{employee.get_name}}</td>
+                            <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeEmployeeModal{{employee.id}}">{{employee.full_name}}</td>
                             <td scope="row">{{employee.position}}</td>
                             <td scope="row">{{employee.email}}</td>
                             <td scope="row">{{employee.phone}}</td>
@@ -783,37 +789,54 @@
                 </table>
                 <h3>2.2. Распределение сотрудников по ролям</h3>
                 <div class="positions">
-                    {% for position in project_year.positions.all %} 
+                    {% for position in filled_positions %} 
+                        <div class="card position-form">
+                            <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                                <input style="display: none;" type="number" name="position_id" value={{position.position.id}}>
+                                <div class="card-header">{{position.position.position}}</div>
+                                    <div class="card-body">
+                                            <div class="form mb-3 filter-selectpicker">
+                                                <select class="selectpicker w-100" title="Ответственное контактное лицо" data-live-search="true" name="employee_id" required>
+                                                    <option selected value="{{position.employee.id}}">{{position.employee.get_name}}</option>
+                                                    {% for employee in employees %}
+                                                        <option value="{{employee.id}}">{{employee.get_name}} ({{employee.position}})</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            {% if position.position.is_basis_needed %}
+                                                <div class="mb-3">
+                                                    <input type="input" class="form-control" name="acts_basis" maxlength="500" value="{{position.acts_basis}}" placeholder="Основание" required>
+                                                </div>
+                                            {% endif %}
+                                    </div>
+                                    <div class="card-footer">
+                                            <input type="submit" class="btn btn-outline-primary" name="change-position" value="Изменить">
+                                    </div>
+                            </form>
+                        </div>
+                    {% endfor %}
+                    {% for position in empty_positions %} 
                         <div class="card position-form">
                             <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                                 <input style="display: none;" type="number" name="position_id" value={{position.id}}>
                                 <div class="card-header">{{position.position}}</div>
-                                {% with position|get_position:ed_center as current_position %}
                                     <div class="card-body">
                                             <div class="form mb-3 filter-selectpicker">
                                                 <select class="selectpicker w-100" title="Ответственное контактное лицо" data-live-search="true" name="employee_id" required>
-                                                    {% if current_position != None %}
-                                                        <option selected value="{{current_position.employee.id}}">{{current_position.employee.get_name}}</option>
-                                                    {% endif %}
-                                                    {% for employee in ed_center.employees.all %}
+                                                    {% for employee in employees %}
                                                         <option value="{{employee.id}}">{{employee.get_name}} ({{employee.position}})</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>
                                             {% if position.is_basis_needed %}
                                                 <div class="mb-3">
-                                                    <input type="input" class="form-control" name="acts_basis" maxlength="500" value="{{current_position.acts_basis}}" placeholder="Основание" required>
+                                                    <input type="input" class="form-control" name="acts_basis" maxlength="500" placeholder="Основание" required>
                                                 </div>
                                             {% endif %}
                                     </div>
                                     <div class="card-footer">
-                                        {% if current_position != None %}
-                                            <input type="submit" class="btn btn-outline-primary" name="change-position" value="Изменить">
-                                        {% else %}
                                             <input type="submit" class="btn btn-primary" name="add-position" value="Сохранить">
-                                        {% endif %}
                                     </div>
-                                {% endwith %}
                             </form>
                         </div>
                     {% endfor %}
@@ -864,30 +887,26 @@
                         <th scope="col">Название</th>
                         <th scope="col">Направление программы</th>
                         <th scope="col">Профессия</th>
-                    <!-- <th scope="col">Описание компетенции</th>-->
                         <th scope="col">Вид программы</th>
                         <th scope="col">Колво часов</th>
                         <th scope="col">Обеспечение</th>
                         <th scope="col">Форма обучения</th>
                         <th scope="col">Входные требования</th>
-                        <!-- <th scope="col">Примечание</th> -->
                     </tr>
-                    {% for program in ed_center.programs.all %}
+                    {% for program in programs %}
                         <tr>
                             <td scope="row">{{ forloop.counter }}</td>
                             <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeProgramModal{{program.id}}">{{program.program_name}}</td>
                             <td scope="row">{{program.competence}}</td>
                             <td scope="row">{{program.profession}}</td>
-                            <!--<td scope="row">{{program.description}}</td>-->
                             <td scope="row">{{program.get_program_type_display}}</td>
                             <td scope="row">{{program.duration}}</td>
                             <td scope="row">
-                                {{program.teachers.all.count}} педагогов <br>
-                                {{program.workshops.all.count}} аудиторий 
+                                {{program.num_teachers}} педагогов <br>
+                                {{program.num_workshops}} аудиторий 
                             </td>
                             <td scope="row">{{program.get_education_form_display}}</td>
                             <td scope="row">{{program.get_entry_requirements_display}}</td>
-                        <!--  <td scope="row">{% if program.notes != None %} {{program.notes}} {% endif %}</td> -->
                         </tr>
                     {% empty %}
                         <tr>
@@ -941,20 +960,20 @@
                         <th scope="col">Наличие опыта педагогической и/или производственной деятельности</th>
                         <th scope="col">Наличие доп. проф. образования по профилю программы за последние 3 года и (или) опыт по профилю программы.</th>
                     </tr>
-                    {% for teacher in ed_center.teachers.all %}
+                    {% for teacher in teachers %}
                         <tr>
                             <td scope="row">{{ forloop.counter }}</td>
-                            <td scope="row" style="white-space: nowrap;" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeTeacherModal{{teacher.id}}">{{teacher.get_name}}</td>
+                            <td scope="row" style="white-space: nowrap;" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeTeacherModal{{teacher.id}}">{{teacher.full_name}}</td>
                             <td scope="row">{{teacher.get_employment_type_display}}</td>
                             <td scope="row">{{teacher.get_education_level_display}}</td>
-                            <td scope="row">{%if teacher.education_major != None %}{{teacher.education_major}}{% endif %}</td>
-                            <td scope="row">{%if teacher.position != None %}{{teacher.position}}{% endif %}</td>
+                            <td scope="row">{{teacher.education_major}}</td>
+                            <td scope="row">{{teacher.position}}</td>
                             <td scope="row">{{teacher.experience}}</td>
                             <td scope="row">{{teacher.additional_education}}</td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td scope="row" class="none-alert" colspan="5">Не добавлено ни одного педагога</td>
+                            <td scope="row" class="none-alert" colspan="9">Не добавлено ни одного педагога</td>
                         </tr>
                     {% endfor %}
                 </table>
@@ -1057,8 +1076,8 @@
                             <tr>
                                 <td scope="row">{{ forloop.counter }}</td>
                                 <td scope="row">{{indicator.name}}</td>
-                                <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2021" placeholder="" value="{{indicator|get_indicator_2021:ed_center}}" required></td>
-                                <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2022" placeholder="" value="{{indicator|get_indicator_2022:ed_center}}" required></td>
+                                <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2021" placeholder="" value="{{indicator.ed_center_indicator_2021}}" required></td>
+                                <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2022" placeholder="" value="{{indicator.ed_center_indicator_2022}}" required></td>
                             </tr>
                         {% endfor %}
                     </table>
@@ -1066,7 +1085,7 @@
                     {% for indicator in free_indicators %}
                         <div class="mb-3 free-indicator">
                             <label for="NotesIndicatorInput{{indicator.id}}" class="form-label">{{indicator.name}}</label>
-                            <textarea class="form-control" id="NotesIndicatorInput{{indicator.id}}" name="{{indicator.id}}" rows="3">{{indicator|get_free_indicator:ed_center}}</textarea>
+                            <textarea class="form-control" id="NotesIndicatorInput{{indicator.id}}" name="{{indicator.id}}" rows="3">{{indicator.ed_center_indicator}}</textarea>
                         </div>
                     {% endfor %}
                     <div class="submit">

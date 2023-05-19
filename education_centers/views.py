@@ -4,8 +4,9 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files import File
-from django.db.models import Case, When, Value
+from django.db.models import Case, When, Value, Count, OuterRef, Subquery
 from django.utils.encoding import escape_uri_path
+from django.db.models.functions import Concat
 
 from . import imports
 from . import exports
@@ -30,6 +31,12 @@ def ed_center_application(request, ed_center_id):
     else: stage = 1
     ed_center = get_object_or_404(EducationCenter, id=ed_center_id)
     project_year = get_object_or_404(ProjectYear, year=2023)
+    filled_positions = EdCenterEmployeePosition.objects.filter(
+        ed_center=ed_center,
+    )
+    empty_positions = project_year.positions.exclude(
+        positions_employees__in=filled_positions
+    )
     center_project_year, is_new = EducationCenterProjectYear.objects.get_or_create(
         project_year=project_year,
         ed_center=ed_center
@@ -37,11 +44,47 @@ def ed_center_application(request, ed_center_id):
     indicators = Indicator.objects.filter(
         project_year=project_year, 
         is_free_form=False
+    ).annotate(
+        ed_center_indicator_2021=Subquery(
+            EdCenterIndicator.objects.filter(
+                ed_center=ed_center,
+                indicator=OuterRef('pk')
+            ).values('value_2021')[:1]
+        ),
+        ed_center_indicator_2022=Subquery(
+            EdCenterIndicator.objects.filter(
+                ed_center=ed_center,
+                indicator=OuterRef('pk')
+            ).values('value_2022')[:1]
+        ),
     )
     free_indicators = Indicator.objects.filter(
         project_year=project_year, 
         is_free_form=True
+    ).annotate(
+        ed_center_indicator=Subquery(
+            EdCenterIndicator.objects.filter(
+                ed_center=ed_center,
+                indicator=OuterRef('pk')
+            ).values('free_form_value')[:1]
+        )
     )
+    workshops = Workshop.objects.filter(education_center=ed_center
+                                        ).exclude(name=None)
+    competencies = Competence.objects.filter(is_irpo=True)
+    employees = ed_center.employees.all().annotate(
+        full_name=Concat('last_name', Value(' '), 'first_name', Value(' '), 
+                         'middle_name')
+    )
+    teachers = ed_center.teachers.all().annotate(
+        full_name=Concat('last_name', Value(' '), 'first_name', Value(' '), 
+                         'middle_name')
+    )
+    programs = ed_center.programs.all().annotate(
+        num_teachers=Count('teachers'),
+        num_workshops=Count('workshops'),
+    )
+
     if request.method == "POST":
         if 'add-employee' in request.POST:
             stage=2
@@ -381,13 +424,17 @@ def ed_center_application(request, ed_center_id):
             
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
+        'employees': employees,
+        'programs': programs,
+        'teachers': teachers,
+        'workshops': workshops,
         'project_year': project_year,
+        'filled_positions': filled_positions,
+        'empty_positions': empty_positions,
         'center_project_year': center_project_year,
         'indicators': indicators,
         'free_indicators': free_indicators,
-        'workshops': Workshop.objects.filter(education_center=ed_center
-                                             ).exclude(name=None),
-        'competencies': Competence.objects.filter(is_irpo=True),
+        'competencies': competencies,
         'stage': stage
     })
 
