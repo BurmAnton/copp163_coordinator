@@ -54,6 +54,7 @@ class EducationCenterProjectYear(models.Model):
         ('FRMD', "документы сформированы"),
         ('PRVD', "заявка принята"),
     ]
+    appl_docs_link = models.TextField('Ссылка на комп. документов', default="")
     stage = models.CharField("Работа с заявкой", max_length=5, 
                              default='FLLNG', choices=STAGES)
     step_1_check = models.BooleanField("Шаг 1. Проверка", default=False)

@@ -177,6 +177,7 @@ def ed_center_application(request, ed_center_id):
                 try:
                     if request.POST['is_federal'] == 'on': is_federal = True
                 except: is_federal = False
+                center_project_year.appl_docs_link = request.POST['appl_docs_link']
                 center_project_year.is_federal = is_federal
                 center_project_year.save()
         elif 'add-program' in request.POST:
