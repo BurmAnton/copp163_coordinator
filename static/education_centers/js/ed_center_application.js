@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+    document.body.innerHTML = document.body.innerHTML.replace(/None/g, '');
     window.history.replaceState(null, null, `?s=${document.querySelector('.step-btn.btn-primary').dataset.step}`);
     document.querySelectorAll('.step-btn').forEach(step =>{
         step.addEventListener('click', (btn) => {
