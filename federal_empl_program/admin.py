@@ -27,8 +27,8 @@ from datetime import datetime, timedelta
 
 @admin.register(EdCenterEmployeePosition)
 class EdCenterEmployeePositionnAdmin(admin.ModelAdmin):
-    pass
-
+    list_display = ['position', 'ed_center']
+    search_fields = ['ed_center__name']
 
 @admin.register(ProjectPosition)
 class ProjectPositionAdmin(admin.ModelAdmin):
