@@ -91,6 +91,30 @@ class EducationCenterProjectYear(models.Model):
         verbose_name_plural = "Данные колледжей на годы"
 
 
+class EdCenterQuota(models.Model):
+    ed_center_year = models.OneToOneField(
+        EducationCenterProjectYear, 
+        verbose_name="Центр обучения",
+        related_name="quota",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    quota_72  = models.IntegerField('Квота 72ч', null=False, blank=False, 
+                                    default=0)
+    quota_144 = models.IntegerField('Квота 144ч', null=False, blank=False, 
+                                    default=0)
+    quota_256 = models.IntegerField('Квота 256ч', null=False, blank=False, 
+                                    default=0)
+
+    def __str__(self):
+        return  f'{self.ed_center_year.ed_center.name} ({self.ed_center_year.project_year.year})'
+
+    class Meta:
+        verbose_name = "Данные колледжа на год"
+        verbose_name_plural = "Данные колледжей на годы"
+
+
 class Indicator(models.Model):
     project_year = models.ForeignKey(
         ProjectYear, 

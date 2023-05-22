@@ -14,7 +14,7 @@ from .forms import ImportDataForm
 from .contracts import create_document, combine_all_docx, create_application
 from .models import BankDetails, Competence, ContractorsDocument, DocumentType, EducationCenter, \
                     EducationCenterHead, EducationProgram, Employee, Group, Teacher, Workshop
-from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndicator, EducationCenterProjectYear, Indicator, ProjectPosition, ProjectYear
+from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndicator, EdCenterQuota, EducationCenterProjectYear, Indicator, ProjectPosition, ProjectYear
 
 # Create your views here.
 def index(request):
@@ -87,6 +87,9 @@ def ed_center_application(request, ed_center_id):
     programs = ed_center.programs.all().annotate(
         num_teachers=Count('teachers'),
         num_workshops=Count('workshops'),
+    )
+    center_qouta, is_new = EdCenterQuota.objects.get_or_create(
+        ed_center_year=center_project_year
     )
 
     if request.method == "POST":
@@ -426,7 +429,13 @@ def ed_center_application(request, ed_center_id):
            response['Content-Disposition'] = f'attachment; filename=zayavka_{date.today()}.docx'
            document.save(response)
            return response
-            
+        elif 'set-quota' in request.POST:
+            stage=7
+            center_qouta.quota_72 = request.POST['quota_72']
+            center_qouta.quota_144 = request.POST['quota_144']
+            center_qouta.quota_256 = request.POST['quota_256']
+            center_qouta.save()
+
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
         'employees': employees,
@@ -440,6 +449,7 @@ def ed_center_application(request, ed_center_id):
         'indicators': indicators,
         'free_indicators': free_indicators,
         'competencies': competencies,
+        'center_qouta': center_qouta,
         'stage': stage
     })
 
