@@ -58,7 +58,7 @@ def programs(project_years=None, ed_centers=None):
                 program_type = "Профессиональное обучение (профессиональная подготовка)" 
             elif program.program_type == 'POPK':
                 program_type ="Профессиональное обучение (повышение квалификации)"
-            ws.cell(row=row_number, column=1, value=row_number)
+            ws.cell(row=row_number, column=1, value=row_number-2)
             ws.cell(row=row_number, column=2, value=program.ed_center.name)
             ws.cell(row=row_number, column=3, value="Самарская область")
             ws.cell(row=row_number, column=4, value=is_federal)
