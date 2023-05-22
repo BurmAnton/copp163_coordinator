@@ -25,6 +25,10 @@ def index(request):
     return JsonResponse(False, safe=False)
 
 @csrf_exempt
+def export_programs(request):
+    return exports.programs(ed_centers=None)
+
+@csrf_exempt
 def ed_center_application(request, ed_center_id):
     stage = request.GET.get('s', '')
     if stage != '': stage = int(stage)
