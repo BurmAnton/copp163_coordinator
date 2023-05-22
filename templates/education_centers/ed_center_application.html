@@ -561,6 +561,7 @@
                 <a data-step="4" class="step-btn btn {%if stage == 4%}btn-primary{%else%}btn-outline-primary{%endif%}">Кадры</a>
                 <a data-step="5" class="step-btn btn {%if stage == 5%}btn-primary{%else%}btn-outline-primary{%endif%}">МТБ</a>
                 <a data-step="6" class="step-btn btn {%if stage == 6%}btn-primary{%else%}btn-outline-primary{%endif%}">Показатели</a>
+                <a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Квоты</a>
             </div>
             {% if user.is_superuser or center_project_year.get_stage_display == 'заявка проверена' %}
                 <div class="generate-form">
@@ -1097,6 +1098,34 @@
                     </div>
                 </form>
             </div>
+        </div>
+        <div class="quota-step step" data-step="7" {%if stage == 7%}style="display:block;"{%else%}style="display:none;"{%endif%}>
+            <div class="step-hdr" style="display: flex;flex-direction: column;">
+                <h2>Квота</h2>
+                <p>Укажите кол-во граждан, которые соответствуют двум условиям: 
+                    <ol>
+                        <li>Готовы приступить к обучению в указанный месяц по указанной длительности программ (72, 144, 256)</li>
+                        <li>Предварительно по вашим данным подходят под категории ФП "Содействие занятости"</li>
+                    </ol>
+                </p>
+            </div>
+            <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                <div class="form-floating ed-name mb-3">
+                    <input type="number" class="form-control" id="Quota72" name="quota_72" value="{{center_qouta.quota_72}}" required>
+                    <label for="Quota72">Квота 72ч</label>
+                </div>
+                <div class="form-floating w-45 mb-3">
+                    <input type="number" class="form-control" id="Quota144" name="quota_144" value="{{center_qouta.quota_144}}" required>
+                    <label for="Quota144">Квота 144ч</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="number" class="form-control" id="Quota256" name="quota_256" value="{{center_qouta.quota_256}}" required>
+                    <label for="Quota256">Квота 256ч</label>
+                </div>
+                <div class="submit">
+                    <input type="submit" class="btn btn-primary" name="set-quota" value="Сохранить">
+                </div>
+            </form>
         </div>
     </div>
 {% endblock %}
