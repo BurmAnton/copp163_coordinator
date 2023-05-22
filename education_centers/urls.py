@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('export/programs/', views.export_programs, name='export_programs'),
     path(
         '<int:ed_center>/groups',
         views.ed_center_groups, 

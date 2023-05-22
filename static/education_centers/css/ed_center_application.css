@@ -76,7 +76,6 @@ body .filter-selectpicker label {
 }
 .steps .step {
   width: 100%;
-  display: none;
   border-radius: 12px;
   background-color: white;
   box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
@@ -153,9 +152,6 @@ body .filter-selectpicker label {
 .steps .step .free-indicator {
   margin-left: 15px;
   margin-top: 10px;
-}
-.steps .organization-step {
-  display: block;
 }
 .steps .organization-step h3 {
   margin-bottom: 10px;
