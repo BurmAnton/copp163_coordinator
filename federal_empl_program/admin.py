@@ -77,7 +77,13 @@ ApplicationForm = select2_modelform(Application, attrs={'width': '400px'})
 
 @admin.register(Grant)
 class GrantAdmin(admin.ModelAdmin):
-    list_display = ['grant_name', 'qoute_72', 'qoute_144', 'qoute_256']
+    list_display = [
+        'project_year', 
+        'grant_name', 
+        'qouta_72', 
+        'qouta_144', 
+        'qouta_256'
+    ]
 
 @admin.register(Application)
 class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
