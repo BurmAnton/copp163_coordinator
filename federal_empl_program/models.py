@@ -18,7 +18,7 @@ class ProjectYear(models.Model):
     year = models.IntegerField(_('year'), null=False, blank=False)
     programs = models.ManyToManyField(
         EducationProgram,
-        verbose_name="Годы проекта",
+        verbose_name="Программы",
         related_name="project_years",
         blank=True
     )
@@ -243,13 +243,19 @@ class CitizenCategory(models.Model):
         
 
 class Grant(models.Model):
-    grant_name = models.CharField("Название", max_length=100, blank=False)
-    qoute_72 = models.IntegerField('Квота 72', default=0)
-    qoute_144 = models.IntegerField('Квота 144', default=0)
-    qoute_256 = models.IntegerField('Квота 256', default=0)
+    project_year = models.ForeignKey(ProjectYear, verbose_name="Год проекта",
+        null=False, blank=False, on_delete=CASCADE)
+    grant_name = models.CharField("Название", max_length=100, null=False, 
+                                  blank=False)
+    qouta_72 = models.IntegerField('Квота 72', null=False, blank=False, 
+                                   default=0)
+    qouta_144 = models.IntegerField('Квота 144', null=False, blank=False, 
+                                   default=0)
+    qouta_256 = models.IntegerField('Квота 256', null=False, blank=False, 
+                                   default=0)
     
     def __str__(self):
-        return  self.grant_name
+        return f'{self.grant_name} ({self.project_year.year} г.)'
 
     class Meta:
         verbose_name = "Грант"

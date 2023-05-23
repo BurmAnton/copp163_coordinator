@@ -7,7 +7,7 @@ import json
 
 from django.db.models import Q, Count, Sum
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
@@ -21,7 +21,7 @@ from pysendpulse.pysendpulse import PySendPulse
 
 from users.models import User
 from citizens.models import Citizen
-from federal_empl_program.models import Application, CitizenCategory, Grant, Questionnaire, CategoryInstruction
+from federal_empl_program.models import Application, CitizenCategory, EdCenterQuota, EducationCenterProjectYear, Grant, ProjectYear, Questionnaire, CategoryInstruction
 from education_centers.models import Competence, EducationCenterGroup, EducationCenter
 
 @login_required
@@ -450,76 +450,15 @@ def group_select(request):
 
 
 @csrf_exempt
-def quote_dashboard(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        ed_center_id = data.get("ed_center_id", "")
-        value = data.get("value", "")
-        qoute = data.get("qoute", "")
-        lenght = data.get("lenght", "")
-        ed_center = EducationCenter.objects.get(id=ed_center_id)
-        if qoute == 1:
-            if lenght == 72: ed_center.quota_1_72 = value
-            elif lenght == 144: ed_center.quota_1_144 = value
-            else: ed_center.quota_1_256 = value
-        else:
-            if lenght == 72: ed_center.quota_2_72 = value
-            elif lenght == 144: ed_center.quota_2_144 = value
-            else: ed_center.quota_2_256 = value
-        ed_center.save()
-        return JsonResponse({"message": "Quote change successfully."}, status=201)
-    ed_centers = EducationCenter.objects.all().annotate(
-        quote_all_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, edcenter_applicants__resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'])),
-        quote_1_72_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, edcenter_applicants__resume=False,  edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=72)),
-        quote_1_144_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, edcenter_applicants__resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=144)),
-        quote_1_256_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=1, edcenter_applicants__resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=256)),
-        quote_2_72_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=2, edcenter_applicants__resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=72)),
-        quote_2_144_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=2, edcenter_applicants__resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=144)),
-        quote_2_256_count=Count('edcenter_applicants', filter=Q(edcenter_applicants__grant=2, edcenter_applicants__resume=False, edcenter_applicants__appl_status__in=['SED', 'COMP', 'EXAM'], edcenter_applicants__education_program__duration=256))
-    ).order_by('-quote_all_count')
-    distributed_quotes = ed_centers.aggregate(
-        Sum('quota_1_72'),
-        Sum('quota_1_144'),
-        Sum('quota_1_256'),
-        Sum('quota_2_72'),
-        Sum('quota_2_144'),
-        Sum('quota_2_256')
+def quota_dashboard(request):
+    project_year = get_object_or_404(ProjectYear, year=2023)
+    ed_centers_year = EducationCenterProjectYear.objects.filter(
+        project_year=project_year
+    ) 
+    centers_quota = EdCenterQuota.objects.filter(
+        ed_center_year__in=ed_centers_year
     )
-    grant_1 = Grant.objects.get(grant_name='Грант 1')
-    grant_2 = Grant.objects.get(grant_name='Грант 2')
-    undistributed_quotes = {
-        'quote_1_72': grant_1.qoute_72 - distributed_quotes[f'quota_1_72__sum'],
-        'quote_1_144': grant_1.qoute_144 - distributed_quotes[f'quota_1_144__sum'],
-        'quote_1_256': grant_1.qoute_256 - distributed_quotes[f'quota_1_256__sum'],
-        'quote_2_72': grant_2.qoute_72 - distributed_quotes[f'quota_2_72__sum'],
-        'quote_2_144': grant_2.qoute_144 - distributed_quotes[f'quota_2_144__sum'],
-        'quote_2_256': grant_2.qoute_256 - distributed_quotes[f'quota_2_256__sum'],
-    }
 
-    quotes = dict()
-    for i in range(1,3):
-        quote_all = Application.objects.filter(grant=f'{i}', appl_status__in=['SED', 'COMP'], resume=False)
-        quotes[f'quote_{i}_all'] = len(quote_all)
-        quotes[f'quote_{i}_72'] = len(quote_all.filter(education_program__duration=72))
-        quotes[f'quote_{i}_144'] = len(quote_all.filter(education_program__duration=144))
-        quotes[f'quote_{i}_256'] = len(quote_all.filter(education_program__duration=256))
-        quotes[f'quote_{i}_72_remains'] = Grant.objects.get(grant_name=f'Грант {i}').qoute_72 - len(quote_all.filter(education_program__duration=72))
-        quotes[f'quote_{i}_144_remains'] = Grant.objects.get(grant_name=f'Грант {i}').qoute_144 - len(quote_all.filter(education_program__duration=144))
-        quotes[f'quote_{i}_256_remains'] = Grant.objects.get(grant_name=f'Грант {i}').qoute_256 - len(quote_all.filter(education_program__duration=256))
-        quote_all_sed = Application.objects.filter(grant=f'{i}', appl_status='SED', resume=False)
-        quotes[f'quote_{i}_72_sed'] = len(quote_all_sed.filter(education_program__duration=72))
-        quotes[f'quote_{i}_144_sed'] = len(quote_all_sed.filter(education_program__duration=144))
-        quotes[f'quote_{i}_256_sed'] = len(quote_all_sed.filter(education_program__duration=256))
-        quote_all_comp = Application.objects.filter(grant=f'{i}', appl_status='COMP', resume=False)
-        quotes[f'quote_{i}_72_comp'] = len(quote_all_comp.filter(education_program__duration=72))
-        quotes[f'quote_{i}_144_comp'] = len(quote_all_comp.filter(education_program__duration=144))
-        quotes[f'quote_{i}_256_comp'] = len(quote_all_comp.filter(education_program__duration=256))
-
-    return render(request, 'federal_empl_program/quote_dashboard.html', {
-        'ed_centers': ed_centers,
-        'quotes': quotes,
-        'distributed_quotes': distributed_quotes,
-        'undistributed_quotes': undistributed_quotes,
-        'grant_1': grant_1,
-        'grant_2': grant_2
+    return render(request, 'federal_empl_program/quota_dashboard.html', {
+        'centers_quota': centers_quota
     })
