@@ -457,7 +457,7 @@ def quota_dashboard(request):
     ) 
     centers_quota = EdCenterQuota.objects.filter(
         ed_center_year__in=ed_centers_year
-    )
+    ).order_by("-quota_72", "-quota_144", "-quota_256")
     aggregated_quota = centers_quota.aggregate(
         sum_quota72=Sum("quota_72"), 
         sum_quota144=Sum("quota_144"), 
