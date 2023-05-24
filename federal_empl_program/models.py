@@ -111,8 +111,8 @@ class EdCenterQuota(models.Model):
         return  f'{self.ed_center_year.ed_center.name} ({self.ed_center_year.project_year.year})'
 
     class Meta:
-        verbose_name = "Данные колледжа на год"
-        verbose_name_plural = "Данные колледжей на годы"
+        verbose_name = "Квота ЦО на год"
+        verbose_name_plural = "Квота ЦО на годы"
 
 
 class Indicator(models.Model):
