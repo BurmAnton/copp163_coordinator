@@ -20,14 +20,27 @@
                 <th scope="col">Квота 144 ч</th>
                 <th scope="col">Квота 256 ч</th>
             </tr>
+            <tr>
+                <td scope="row"> <b>Всего</b></td>
+                <td scope="row"><b>{{ aggregated_quota.sum_quota72 }}</b></td>
+                <td scope="row"><b>{{ aggregated_quota.sum_quota144 }}</b></td>
+                <td scope="row"><b>{{ aggregated_quota.sum_quota256 }}</b></td>
+            </tr>
             {% for qouta in centers_quota %} 
                 <tr>
-                    <td scope="row">{{ qouta.ed_center_year.ed_center.short_name }}</td>
+                    <td scope="row">
+                        {% if qouta.ed_center_year.ed_center.short_name != None and qouta.ed_center_year.ed_center.short_name != "" %}
+                            {{ qouta.ed_center_year.ed_center.short_name }}
+                        {% else %}
+                            {{ qouta.ed_center_year.ed_center.name }}
+                        {% endif %}
+                    </td>
                     <td scope="row">{{ qouta.quota_72 }}</td>
                     <td scope="row">{{ qouta.quota_144 }}</td>
                     <td scope="row">{{ qouta.quota_256 }}</td>
                 </tr>
             {% endfor %}
+            
         </table>
     </div>
 {% endblock %}
