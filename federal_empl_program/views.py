@@ -458,7 +458,13 @@ def quota_dashboard(request):
     centers_quota = EdCenterQuota.objects.filter(
         ed_center_year__in=ed_centers_year
     )
+    aggregated_quota = centers_quota.aggregate(
+        sum_quota72=Sum("quota_72"), 
+        sum_quota144=Sum("quota_144"), 
+        sum_quota256=Sum("quota_256")
+    )
 
     return render(request, 'federal_empl_program/quota_dashboard.html', {
-        'centers_quota': centers_quota
+        'centers_quota': centers_quota,
+        'aggregated_quota': aggregated_quota
     })
