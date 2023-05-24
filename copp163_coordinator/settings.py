@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'education_centers',
     'region163_dashboard',
     'federal_empl_program',
+    'future_ticket',
     'easy_select2',
     'copp163_coordinator.apps.MyAdminConfig',
     'django.contrib.auth',
