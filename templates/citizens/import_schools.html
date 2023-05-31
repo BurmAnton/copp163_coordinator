@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load ed_centers_extras %}
+
+{% block title %}Импорт школ{% endblock %}
+{% block style %}
+        <link href="{% static 'future_ticket/css/import_programs.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'education_centers/js/fed-empl.js' %}" rel="stylesheet"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="modal-body">
+        <div class="import-form">
+            <h2>Импорт школ (БВБ)</h2>
+            {% if message != None %}
+                <div class="alert alert-success" role="alert">
+                    Профессий добавлено: {{message.1}}
+                </div> 
+            {% endif %}
+            <form enctype="multipart/form-data" action="{% url 'import_schools' %}" method="post">
+                <div class="mb-3">
+                    {{ form }}
+                </div>
+                <button type="submit" class="btn btn-primary" name="import-participants">Импортировать</button>
+            </form>
+            {% for row in message.2 %}
+                <div class="alert alert-danger" role="alert">
+                    В строке {{row.2}} не верно заполнены следующие поля:
+                    <ul>
+                        {% for field in row.1 %}
+                            <li>{{field}}</li>
+                        {% endfor %}
+                    </ul>
+                </div> 
+            {% endfor %}
+            <ul>
+                {% for row in message.3 %}
+                    <li>{{row.1}}</li>
+                {% endfor %}
+            </ul>
+            
+        </div>
+    </div>
+{% endblock %}

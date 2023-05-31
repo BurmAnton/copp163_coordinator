@@ -8,6 +8,10 @@ from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndica
 register = template.Library()
 
 @register.filter
+def get_profession_quota(quota, profession):
+    return quota.filter(profession=profession)
+
+@register.filter
 def exclude_programs(programs, workshop_programs):
     return programs.exclude(id__in=workshop_programs)
 

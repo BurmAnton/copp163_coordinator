@@ -20,6 +20,7 @@
                 </div>
                 <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                     <div class="modal-body">
+                        {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                         <div class="form-floating mb-3">
                             <input type="input" class="form-control" id="LastNameInput" name="last_name" maxlength="30" placeholder="Фамилия" required>
                             <label for="LastNameInput">Фамилия</label>
@@ -76,6 +77,7 @@
             </div>
         </div>
     </div>
+    {% if project != 'bilet'%}
     <div class="modal fade add-program-modal" id="AddProgramModal" tabindex="-1" aria-labelledby="AddProgramModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -153,6 +155,140 @@
             </div>
         </div>
     </div>
+    {% else %}
+    <div class="modal fade add-programs-modal" id="AddProgramsModal" tabindex="-1" aria-labelledby="AddProgramsModalLabel" aria-hidden="true">
+        <div class="modal-dialog add-programs-modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddProgramsLabel">Добавить программы из банка программ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                    <div class="modal-body">
+                        <input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>
+                        <div id="table-wrapper">
+                            <div id="table-scroll">
+                                <table class="table ">
+                                    <tr style="background-color: white;" class="sticky-top"> 
+                                        <th scope="col"></th>
+                                        <th scope="col">Профессия</th>
+                                        <th scope="col">Профессиональная среда</th>
+                                        <th scope="col">Краткое описание задания</th>
+                                        <th scope="col">Автор программы</th>
+                                        <th scope="col">Формат проведения</th>
+                                        <th scope="col">Возрастные категории</th>
+                                        {% for program in approved_programs %}
+                                        <tr>
+                                            <td scope="row">
+                                                <div><input style="margin-left: 0;" type="checkbox" id="BankProgram{{program.id}}" name="{{program.id}}"></div>
+                                            </td>
+                                            <td scope="row"><label for="BankProgram{{program.id}}">{{program.profession}}</label></td>
+                                            <td scope="row">{{program.profession.prof_enviroment}}</td>
+                                            <td scope="row">{{program.description}}</td>
+                                            <td scope="row">{{program.author}}</td>
+                                            <td scope="row">{{program.get_education_form_display}}</td>
+                                            <td scope="row">
+                                                {% for age_group in program.age_groups.all %}
+                                                    {{ age_group.name }}<br>
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <input type="submit" class="btn btn-primary" name="add-programs" value="Добавить">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade add-program-modal" id="AddProgramModal" tabindex="-1" aria-labelledby="AddProgramModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddProgramLabel">Добавить программу</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                    <div class="modal-body">
+                        <input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>
+                        <div class="form mb-3 filter-selectpicker">
+                            <select class="selectpicker w-100" title="Профессия" id="Profession" data-live-search="true" name="profession_id" required>
+                                {% for profession in professions %}
+                                    <option value="{{profession.id}}">{{profession.name}} ({{profession.prof_enviroment}})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="IsNewProfession" name="new_profession">
+                            <label class="form-check-label" for="IsNewProfession">Добавить новую профессию</label>
+                        </div>
+                        <div style="display: none;" class="form-floating mb-3">
+                            <input type="input" class="form-control" id="NewProfession" name="profession" maxlength="250" placeholder="Название профессии">
+                            <label for="NewProfession">Название профессии</label>
+                        </div>
+                        <div style="display: none;" class="form mb-3 filter-selectpicker">
+                            <select class="selectpicker w-100" title="Профессиональная среда" id="ProfEnviroment" data-live-search="true" name="prof_enviroment_id">
+                                {% for prof_enviroment in prof_enviroments %}
+                                    <option value="{{prof_enviroment.id}}">{{prof_enviroment.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" id="DescriptionInput" name="description" maxlength="300" placeholder="Краткое описание задания" required>
+                            <label for="DescriptionInput">Краткое описание задания</label>
+                        </div>
+                        <div class="form mb-3 filter-selectpicker">
+                            <select class="selectpicker w-100" title="Автор" data-live-search="true" name="teacher_id" required>
+                                {% for teacher in teachers %}
+                                    <option value="{{teacher.id}}">{{teacher.full_name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="EmailInput" name="email" placeholder="Email" required>
+                            <label for="EmailInput">Email автора</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="phone" class="form-control" id="PhoneInput" name="phone" maxlength="120" placeholder="Телефон" required>
+                            <label for="PhoneInput">Телефон автора</label>
+                        </div>
+                        <div class="form mb-3 filter-selectpicker">
+                            <select class="selectpicker w-100" title="Форма обучения" data-live-search="true" name="education_form" required>
+                                <option value="FLLLN">Очная с применением ДОТ</option>
+                                <option value="FLL">Очная</option>
+                            </select>
+                        </div>
+                        <div class="form mb-3 filter-selectpicker">
+                            <select class="selectpicker w-100" title="Возрастные категории" data-live-search="true" name="age_groups" multiple required>
+                                {% for age_group in age_groups %}
+                                    <option value="{{age_group.id}}">{{age_group.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form mb-3 filter-selectpicker">
+                            <select class="selectpicker w-100" title="ОВЗ" data-live-search="true" name="disability_types" multiple>
+                                {% for disability_type in disability_types %}
+                                    <option value="{{disability_type.id}}">{{disability_type.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <input type="submit" class="btn btn-primary" name="add-program" value="Сохранить">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {%endif%}
     <div class="modal fade add-teacher-modal" id="AddTeacherModal" tabindex="-1" aria-labelledby="AddTeacherModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -162,6 +298,7 @@
                 </div>
                 <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                     <div class="modal-body">
+                        {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                         <div class="form-floating mb-3">
                             <input type="input" class="form-control" id="LastNameTeacherInput" maxlength="30" name="last_name" placeholder="Фамилия" required>
                             <label for="LastNameTeacherInput">Фамилия</label>
@@ -182,9 +319,15 @@
                         </div>
                         <div class="form mb-3 filter-selectpicker">
                             <select class="selectpicker w-100" title="Программы обучения (реализуемые педагогом)" data-live-search="true" name="programs" multiple required>
-                                {% for program in ed_center.programs.all %}
-                                <option value="{{program.id}}">{{program.program_name}}</option>
-                                {% endfor %}
+                                {% if project == 'bilet'%}
+                                    {% for program in programs %}
+                                        <option value="{{program.id}}">{{program}}</option>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for program in programs %}
+                                    <option value="{{program.id}}">{{program.program_name}}</option>
+                                    {% endfor %}
+                                {% endif %}
                             </select>
                         </div>
                         <div class="form mb-3 filter-selectpicker">
@@ -201,14 +344,21 @@
                             <input type="input" class="form-control" id="positionTeacherInput" name="position" maxlength="150" placeholder="Ученая степень/должность">
                             <label for="positionTeacherInput">Ученая степень/должность</label>
                         </div>
-                        <div class="mb-3">
-                            <label for="ExperienceInput" class="form-label">Наличие опыта педагогической и/или производственной деятельности</label>
-                            <textarea class="form-control" id="ExperienceInput" name="experience" rows="2"></textarea>
-                          </div>
-                          <div class="mb-3">
-                            <label for="AdditionalEducationInput" class="form-label">Наличие доп. проф. образования по профилю программы за последние 3 года и (или) опыт по профилю программы.</label>
-                            <textarea class="form-control" id="AdditionalEducationInput" name="additional_education" rows="2"></textarea>
-                          </div>
+                        {% if project == 'bilet' %}
+                            <div class="mb-3">
+                                <label for="ExperienceInput" class="form-label">Наличие профессиональных сертификаций по компетенции или диплома победителей/призеров конкурсов профмастерства</label>
+                                <textarea class="form-control" id="ExperienceInput" name="bvb_experience" rows="4"></textarea>
+                            </div>
+                        {% else %}
+                            <div class="mb-3">
+                                <label for="ExperienceInput" class="form-label">Наличие опыта педагогической и/или производственной деятельности</label>
+                                <textarea class="form-control" id="ExperienceInput" name="experience" rows="2"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="AdditionalEducationInput" class="form-label">Наличие доп. проф. образования по профилю программы за последние 3 года и (или) опыт по профилю программы.</label>
+                                <textarea class="form-control" id="AdditionalEducationInput" name="additional_education" rows="2"></textarea>
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="modal-footer">
                         <div class="d-grid gap-2">
@@ -227,6 +377,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                    {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                     <div class="modal-body">
                         <div class="form-floating mb-3">
                             <input type="input" class="form-control" id="NameWorkshopInput" name="name" maxlength="500" placeholder="Название помещения" required>
@@ -241,9 +392,15 @@
                         </div>
                         <div class="form mb-3 filter-selectpicker">
                             <select class="selectpicker w-100" title="Программы обучения (реализуемые в аудитории)" data-live-search="true" name="programs" multiple required>
-                                {% for program in ed_center.programs.all %}
-                                <option value="{{program.id}}">{{program.program_name}}</option>
-                                {% endfor %}
+                                {% if project == 'bilet'%}
+                                    {% for program in programs %}
+                                        <option value="{{program.id}}">{{program}}</option>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for program in programs %}
+                                        <option value="{{program.id}}">{{program.program_name}}</option>
+                                    {% endfor %}
+                                {% endif %}
                             </select>
                         </div>
                         <div class="mb-3">
@@ -270,6 +427,7 @@
                     </div>
                     <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                         <div class="modal-body">
+                            {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                             <input style="display: none;" type="input" name="employee_id" value="{{employee.id}}" required>
                             <div class="form-floating mb-3">
                                 <input type="input" class="form-control" id="LastNameInput{{employee.id}}" name="last_name" maxlength="30" placeholder="Фамилия" value="{{employee.last_name}}" required>
@@ -330,6 +488,92 @@
             </div>
         </div>
     {% endfor %}
+    {% if project != 'bilet'%}
+        {% for program in programs %}
+            <div class="modal fade change-program-modal" id="ChangeProgramModal{{program.id}}" tabindex="-1" aria-labelledby="ChangeProgramModal{{program.id}}Label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ChangeProgramModal{{program.id}}Label">Изменить программу</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                            <div class="modal-body">
+                                <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
+                                <div class="form mb-3 filter-selectpicker">
+                                    <select class="selectpicker w-100" title="Направление программы" data-live-search="true" name="competence_id" required>
+                                        <option value="{{program.competence.id}}" selected>{{program.competence.title}}</option>
+                                        {% for competence in competencies %}
+                                            <option value="{{competence.id}}">{{competence.title}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="input" class="form-control" id="ProgramNameInput{{program.id}}" name="program_name" maxlength="500" placeholder="Название" value="{{program.program_name}}" required>
+                                    <label for="ProgramNameInput{{program.id}}">Название</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="input" class="form-control" id="ProfessionInput{{program.id}}" name="profession" maxlength="200" placeholder="Профессия" value="{{program.profession}}" required>
+                                    <label for="ProfessionInput{{program.id}}">Профессия</label>
+                                </div>
+                                <div class="mb-3">
+                                    <label style="display: flex;align-items: center;" for="DescriptionInput{{program.id}}" class="form-label" data-bs-toggle="tooltip" data-bs-html="true" title='ОПИСАНИЕ ЗАПОЛНЯЕТСЯ СТРОГО ПО ШАБЛОНУ! Шаблон описания программы:
+    «Программа направлена на формирование компетенций в соответствии с трудовыми функциями (наименование профессии), далее прописать для программам ПО присваиваемый разряд (при наличии) для программ ДПО усваиваемую компетенцию».
+    В результате обучения выпускник программы будет способен:
+        • указать трудовые функции (компетенции) или 1-5 конкретных умений из программы ПО или ДПО.
+    Особенности программы – программа направлена на формирование компетенций, необходимых для профессиональной деятельности в сфере _____________ (указать предполагаемую сферу деятельности по завершению обучения)'>
+                                    <p style="margin-top: 1px;margin-bottom: 0px;">Описание </p>
+                                    <img style="width: 21px; padding-left: 3px;" src="{% static 'education_centers/img/info-icon.png' %}" alt="info-icon">
+                                </label>
+                                    <textarea class="form-control" id="DescriptionInput{{program.id}}" name="description" rows="2">{{program.description}}</textarea>
+                                </div>
+                                <div class="form mb-3 filter-selectpicker">
+                                    <select class="selectpicker w-100" title="Входные требования" data-live-search="true" name="entry_requirements" required>
+                                        <option value="{{program.entry_requirements}}" selected>{{program.get_entry_requirements_display}}</option>
+                                        <option value="NDC">Без образования</option>
+                                        <option value="SPO">Cреднее профессиональное образование</option>
+                                    </select>
+                                </div>
+                                <div class="form mb-3 filter-selectpicker">
+                                    <select class="selectpicker w-100" title="Вид программы" data-live-search="true" name="program_type" required>
+                                        <option value="{{program.program_type}}" selected>{{program.get_program_type_display}}</option>
+                                        <option value="DPOPK">ДПО ПК</option>
+                                        <option value="DPOPP">ДПО ПП</option>
+                                        <option value="POP">ПО П</option>
+                                        <option value="POPP">ПО ПП</option>
+                                        <option value="POPK">ПО ПК</option>
+                                    </select>
+                                </div>
+                                <th scope="col"></th>
+                                <div class="form mb-3 filter-selectpicker">
+                                    <select class="selectpicker w-100" title="Форма обучения" data-live-search="true" name="education_form" required>
+                                        <option value="{{program.education_form}}" selected>{{program.get_education_form_display}}</option>
+                                        <option value="PRTLN">Очно-заочная с применением ДОТ</option>
+                                        <option value="FLLLN">Очная с применением ДОТ</option>
+                                        <option value="PRT">Очно-заочная</option>
+                                        <option value="FLL">Очная</option>
+                                    </select>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control" id="DurationInput{{program.id}}" name="duration" placeholder="Длительность программы" value="{{program.duration}}" required>
+                                    <label for="DurationInput{{program.id}}">Длительность программы</label>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="NotesInput{{program.id}}" class="form-label">Примечания</label>
+                                    <textarea class="form-control" id="NotesInput{{program.id}}" name="notes" rows="2">{{program.notes}}</textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                                    <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
+                                    <input type="submit" class="btn btn-danger" name="exclude-program" value="Удалить">
+                                </form>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
     {% for program in programs %}
         <div class="modal fade change-program-modal" id="ChangeProgramModal{{program.id}}" tabindex="-1" aria-labelledby="ChangeProgramModal{{program.id}}Label" aria-hidden="true">
             <div class="modal-dialog">
@@ -341,83 +585,86 @@
                     <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                         <div class="modal-body">
                             <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
+                            <input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>
                             <div class="form mb-3 filter-selectpicker">
-                                <select class="selectpicker w-100" title="Направление программы" data-live-search="true" name="competence_id" required>
-                                    <option value="{{program.competence.id}}" selected>{{program.competence.title}}</option>
-                                    {% for competence in competencies %}
-                                        <option value="{{competence.id}}">{{competence.title}}</option>
+                                <select class="selectpicker w-100" title="Профессия" data-live-search="true" name="profession_id" required>
+                                    <option selected value="{{program.profession.id}}">{{program.profession.name}} ({{program.profession.prof_enviroment}})</option>
+                                    {% for profession in professions %}
+                                        <option value="{{profession.id}}">{{profession.name}} ({{profession.prof_enviroment}})</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="ProgramNameInput{{program.id}}" name="program_name" maxlength="500" placeholder="Название" value="{{program.program_name}}" required>
-                                <label for="ProgramNameInput{{program.id}}">Название</label>
+                                <input type="input" class="form-control" id="DescriptionInput{{program.id}}" name="description" value="{{program.description}}" maxlength="300" placeholder="Краткое описание задания" required>
+                                <label for="DescriptionInput{{program.id}}">Краткое описание задания</label>
+                            </div>
+                            <div class="form mb-3 filter-selectpicker">
+                                <select class="selectpicker w-100" title="Автор" data-live-search="true" name="teacher_id" required>
+                                    {% for teacher in teachers %}
+                                        <option {% if teacher == program.author.teacher %}selected{% endif %} value="{{teacher.id}}">{{teacher.full_name}}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="ProfessionInput{{program.id}}" name="profession" maxlength="200" placeholder="Профессия" value="{{program.profession}}" required>
-                                <label for="ProfessionInput{{program.id}}">Профессия</label>
+                                <input type="email" class="form-control" id="EmailInput{{program.id}}" name="email" value="{{program.author.email}}" placeholder="Email" required>
+                                <label for="EmailInput{{program.id}}">Email автора</label>
                             </div>
-                            <div class="mb-3">
-                                <label style="display: flex;align-items: center;" for="DescriptionInput{{program.id}}" class="form-label" data-bs-toggle="tooltip" data-bs-html="true" title='ОПИСАНИЕ ЗАПОЛНЯЕТСЯ СТРОГО ПО ШАБЛОНУ! Шаблон описания программы:
-«Программа направлена на формирование компетенций в соответствии с трудовыми функциями (наименование профессии), далее прописать для программам ПО присваиваемый разряд (при наличии) для программ ДПО усваиваемую компетенцию».
-В результате обучения выпускник программы будет способен:
-    • указать трудовые функции (компетенции) или 1-5 конкретных умений из программы ПО или ДПО.
-Особенности программы – программа направлена на формирование компетенций, необходимых для профессиональной деятельности в сфере _____________ (указать предполагаемую сферу деятельности по завершению обучения)'>
-                                <p style="margin-top: 1px;margin-bottom: 0px;">Описание </p>
-                                <img style="width: 21px; padding-left: 3px;" src="{% static 'education_centers/img/info-icon.png' %}" alt="info-icon">
-                            </label>
-                                <textarea class="form-control" id="DescriptionInput{{program.id}}" name="description" rows="2">{{program.description}}</textarea>
+                            <div class="form-floating mb-3">
+                                <input type="phone" class="form-control" id="PhoneInput{{program.id}}" name="phone" value="{{program.author.phone}}" maxlength="120" placeholder="Телефон" required>
+                                <label for="PhoneInput{{program.id}}">Телефон автора</label>
                             </div>
-                            <div class="form mb-3 filter-selectpicker">
-                                <select class="selectpicker w-100" title="Входные требования" data-live-search="true" name="entry_requirements" required>
-                                    <option value="{{program.entry_requirements}}" selected>{{program.get_entry_requirements_display}}</option>
-                                    <option value="NDC">Без образования</option>
-                                    <option value="SPO">Cреднее профессиональное образование</option>
-                                </select>
-                            </div>
-                            <div class="form mb-3 filter-selectpicker">
-                                <select class="selectpicker w-100" title="Вид программы" data-live-search="true" name="program_type" required>
-                                    <option value="{{program.program_type}}" selected>{{program.get_program_type_display}}</option>
-                                    <option value="DPOPK">ДПО ПК</option>
-                                    <option value="DPOPP">ДПО ПП</option>
-                                    <option value="POP">ПО П</option>
-                                    <option value="POPP">ПО ПП</option>
-                                    <option value="POPK">ПО ПК</option>
-                                </select>
-                            </div>
-                            <th scope="col"></th>
                             <div class="form mb-3 filter-selectpicker">
                                 <select class="selectpicker w-100" title="Форма обучения" data-live-search="true" name="education_form" required>
-                                    <option value="{{program.education_form}}" selected>{{program.get_education_form_display}}</option>
-                                    <option value="PRTLN">Очно-заочная с применением ДОТ</option>
+                                    <option selected value="{{program.education_form}}">{{program.get_education_form_display}}</option>
                                     <option value="FLLLN">Очная с применением ДОТ</option>
-                                    <option value="PRT">Очно-заочная</option>
                                     <option value="FLL">Очная</option>
                                 </select>
                             </div>
-                            <div class="form-floating mb-3">
-                                <input type="number" class="form-control" id="DurationInput{{program.id}}" name="duration" placeholder="Длительность программы" value="{{program.duration}}" required>
-                                <label for="DurationInput{{program.id}}">Длительность программы</label>
+                            <div class="form mb-3 filter-selectpicker">
+                                <select class="selectpicker w-100" title="Возрастные категории" data-live-search="true" name="age_groups" multiple required>
+                                    {% for age_group in age_groups %}
+                                        {% if age_group in program.age_groups.all %}
+                                            <option value="{{age_group.id}}" selected>{{age_group.name}}</option>
+                                        {% else %}
+                                            <option value="{{age_group.id}}">{{age_group.name}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
                             </div>
-                            <div class="mb-3">
-                                <label for="NotesInput{{program.id}}" class="form-label">Примечания</label>
-                                <textarea class="form-control" id="NotesInput{{program.id}}" name="notes" rows="2">{{program.notes}}</textarea>
+                            <div class="form mb-3 filter-selectpicker">
+                                <select class="selectpicker w-100" title="ОВЗ" data-live-search="true" name="disability_types" multiple>
+                                    {% for disability_type in disability_types %}
+                                        {% if disability_type in program.disability_types.all %}
+                                            <option selected value="{{disability_type.id}}">{{disability_type.name}}</option>
+                                        {% else %}
+                                            <option value="{{disability_type.id}}">{{disability_type.name}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <div class="d-grid gap-2">
-                                <input type="submit" class="btn btn-primary" name="change-program" value="Сохранить">
-                            </div>
-                            </form>
-                            <form action="" method="post">
-                                <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
-                                <input type="submit" class="btn btn-danger" name="delete-program" value="Удалить">
-                            </form>
+                            {% if program.ed_center == ed_center %}
+                                <div class="d-grid gap-2">
+                                    <input type="submit" class="btn btn-primary" name="change-program" value="Сохранить">
+                                </div>
+                                </form>
+                                <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                                    <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
+                                    <input type="submit" class="btn btn-danger" name="delete-program" value="Удалить">
+                                </form>
+                            {% else %}
+                                <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                                    <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
+                                    <input type="submit" class="btn btn-danger" name="exclude-program" value="Убрать">
+                                </form>
+                            {% endif %}
                         </div>
                 </div>
             </div>
         </div>
     {% endfor %}
+    {% endif %}
     {% for teacher in teachers %}
         <div class="modal fade change-teacher-modal" id="ChangeTeacherModal{{teacher.id}}" tabindex="-1" aria-labelledby="ChangeTeacherModal{{teacher.id}}Label" aria-hidden="true">
             <div class="modal-dialog">
@@ -428,6 +675,7 @@
                     </div>
                     <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                         <div class="modal-body">
+                            {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                             <input style="display: none;" type="input" name="teacher_id" value="{{teacher.id}}" required>
                             <div class="form-floating mb-3">
                                 <input type="input" class="form-control" id="LastNameTeacherInput{{teacher.id}}" maxlength="30" name="last_name" placeholder="Фамилия" value="{{teacher.last_name}}" required>
@@ -450,12 +698,21 @@
                             </div>
                             <div class="form mb-3 filter-selectpicker">
                                 <select class="selectpicker w-100" title="Программы обучения (реализуемые педагогом)" data-live-search="true" name="programs" multiple required>
-                                    {% for program in teacher.programs.all %}
-                                        <option value="{{program.id}}" selected>{{program.program_name}}</option>
-                                    {% endfor %}
-                                    {% for program in programs|exclude_programs:teacher.programs.all %}
-                                        <option value="{{program.id}}">{{program.program_name}}</option>
-                                    {% endfor %}
+                                    {% if project == 'bilet'%}
+                                        {% for program in teacher.ticket_programs.all %}
+                                            <option value="{{program.id}}" selected>{{program}}</option>
+                                        {% endfor %}
+                                        {% for program in programs|exclude_programs:teacher.ticket_programs.all %}
+                                            <option value="{{program.id}}">{{program}}</option>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for program in teacher.programs.all %}
+                                            <option value="{{program.id}}" selected>{{program.program_name}}</option>
+                                        {% endfor %}
+                                        {% for program in programs|exclude_programs:teacher.ticket_programs.all %}
+                                            <option value="{{program.id}}">{{program.program_name}}</option>
+                                        {% endfor %}
+                                    {% endif %}
                                 </select>
                             </div>
                             <div class="form mb-3 filter-selectpicker">
@@ -473,14 +730,21 @@
                                 <input type="input" class="form-control" id="positionTeacherInput{{teacher.id}}" name="position" maxlength="150" value="{{teacher.position}}" placeholder="Ученая степень/должность">
                                 <label for="positionTeacherInput{{teacher.id}}">Ученая степень/должность</label>
                             </div>
-                            <div class="mb-3">
-                                <label for="ExperienceInput{{teacher.id}}"  class="form-label">Наличие опыта педагогической и/или производственной деятельности</label>
-                                <textarea class="form-control" id="ExperienceInput{{teacher.id}}" name="experience" rows="2">{{teacher.experience}}</textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="AdditionalEducationInput{{teacher.id}}" class="form-label">Наличие доп. проф. образования по профилю программы за последние 3 года и (или) опыт по профилю программы.</label>
-                                <textarea class="form-control" id="AdditionalEducationInput{{teacher.id}}" name="additional_education" rows="2">{{teacher.additional_education}}</textarea>
-                            </div>
+                            {% if project == 'bilet' %}
+                                <div class="mb-3">
+                                    <label for="ExperienceInput{{teacher.id}}" class="form-label">Наличие профессиональных сертификаций по компетенции или диплома победителей/призеров конкурсов профмастерства</label>
+                                    <textarea class="form-control" id="ExperienceInput{{teacher.id}}" name="bvb_experience" rows="4">{{teacher.bvb_experience}}</textarea>
+                                </div>
+                            {% else %}
+                                <div class="mb-3">
+                                    <label for="ExperienceInput{{teacher.id}}"  class="form-label">Наличие опыта педагогической и/или производственной деятельности</label>
+                                    <textarea class="form-control" id="ExperienceInput{{teacher.id}}" name="experience" rows="2">{{teacher.experience}}</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="AdditionalEducationInput{{teacher.id}}" class="form-label">Наличие доп. проф. образования по профилю программы за последние 3 года и (или) опыт по профилю программы.</label>
+                                    <textarea class="form-control" id="AdditionalEducationInput{{teacher.id}}" name="additional_education" rows="2">{{teacher.additional_education}}</textarea>
+                                </div>
+                            {% endif %}
                         </div>
                         <div class="modal-footer">
                             <div class="d-grid gap-2">
@@ -507,6 +771,7 @@
                     </div>
                     <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                         <div class="modal-body">
+                            {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                             <input style="display: none;" type="input" name="workshop_id" value="{{workshop.id}}" required>
                             <div class="form-floating mb-3">
                                 <input type="input" class="form-control" id="NameWorkshopInput{{workshop.id}}" name="name" maxlength="500" placeholder="Название помещения" value="{{workshop.name}}" required>
@@ -522,12 +787,21 @@
                             </div>
                             <div class="form mb-3 filter-selectpicker">
                                 <select class="selectpicker w-100" title="Программы обучения (реализуемые в аудитории)" data-live-search="true" name="programs" multiple required>
-                                    {%for program in workshop.programs.all %}  
-                                        <option value="{{program.id}}" selected>{{program.program_name}}</option>
-                                    {% endfor %}
-                                    {% for program in programs|exclude_programs:workshop.programs.all %}
-                                        <option value="{{program.id}}">{{program.program_name}}</option>
-                                    {% endfor %}
+                                    {% if project == 'bilet'%}
+                                        {% for program in workshop.ticket_programs.all %}
+                                            <option value="{{program.id}}" selected>{{program}}</option>
+                                        {% endfor %}
+                                        {% for program in programs|exclude_programs:workshop.ticket_programs.all %}
+                                            <option value="{{program.id}}">{{program}}</option>
+                                        {% endfor %}
+                                    {% else %}
+                                        {%for program in workshop.programs.all %}  
+                                            <option value="{{program.id}}" selected>{{program.program_name}}</option>
+                                        {% endfor %}
+                                        {% for program in programs|exclude_programs:workshop.programs.all %}
+                                            <option value="{{program.id}}">{{program.program_name}}</option>
+                                        {% endfor %}
+                                    {% endif %}
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -550,7 +824,13 @@
             </div>
         </div>
     {% endfor %}
-    <div class="page-hdr"><h1>Формирование заявки на ПКО</h1></div>
+    <div class="page-hdr">
+        <h1>Формирование заявки на ПКО</h1>
+        <div class="project-choice">
+            <a data-project="bilet" href="{% url 'ed_center_application' ed_center.id %}?p=bilet" class="project-btn btn {%if project == 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Билет в будущее</a>
+            <a data-project="zan" href="{% url 'ed_center_application' ed_center.id %}?p=zan" class="project-btn btn {%if project != 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Содействие занятости</a>
+        </div>
+    </div>
     <div class="steps">
         <h3> <b>Статус заявки:</b> {{center_project_year.get_stage_display }}</h3>
         <div class="tabs-panel">
@@ -582,6 +862,7 @@
                 </h2>
                 {% if user.is_superuser and center_project_year.step_1_check == False %}
                     <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                        {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                         <input style="display: none;" type="input" name="step" value="1" required>
                         <button class="btn btn-success" name="approve-step">Подтвердить</button>
                     </form>
@@ -590,6 +871,7 @@
             {% if user.is_superuser or center_project_year.step_1_commentary != "" %}
                 <h3>Комментарий</h3>
                 <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                    {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                     <input style="display: none;" type="input" name="step" value="1" required>
                     <div class="mb-3">
                         <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_1_commentary != "" %}{{center_project_year.step_1_commentary}}{% endif %}</textarea>
@@ -600,6 +882,7 @@
                 </form>
             {% endif %}
             <form action="{% url 'ed_center_application' ed_center.id %}" method="post" class="collapse show" id="collapseOrgForm">
+                {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                 <h3>1.1 Об организации</h3>
                     <div class="about">
                         <div class="form-floating ed-name mb-3">
@@ -631,18 +914,27 @@
                             <input type="input" class="form-control" id="ApplDocsLinkInput" name="appl_docs_link" value="{{center_project_year.appl_docs_link}}" required>
                             <label for="ApplDocsLinkInput">Полный комплект документов (ссылка на яндекс диск)</label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="is_federal" name="is_federal" {% if center_project_year.is_federal %} checked {% endif %}>
-                            <label class="form-check-label" for="is_federal">
-                                Организация планирует стать федеральным центром обучения
-                            </label>
-                        </div>
+                        {% if project != 'bilet' %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_federal" name="is_federal" {% if center_project_year.is_federal %} checked {% endif %}>
+                                <label class="form-check-label" for="is_federal">
+                                    Организация планирует стать федеральным центром обучения
+                                </label>
+                            </div>
+                        {% endif %}
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="is_ndc" name="is_ndc" {% if ed_center.is_ndc %} checked {% endif %}>
-                            <label class="form-check-label" for="is_ndc">
-                                Является ли организация плательщиком НДС (при реализации образовательных услуг)
+                            <label style="padding-top: 2px !important" class="form-check-label" for="is_ndc">
+                                {% if project != 'bilet' %}Является ли организация плательщиком НДС (при реализации образовательных услуг)
+                                {% else %}Является ли организация плательщиком НДС (при оказании услуг по реализации мероприятий)
+                                {% endif %}
                             </label>
                         </div>
+                        {% if project == 'bilet' %}
+                            <div class="alert alert-warning w-90" role="alert">
+                                Внимание! Проведение профпроб не является образовательной услугой и не освобождается от НДС на основании статьи 149 НК РФ. Проконсультируйтесь с бухгалтером вашей организации - возможны другие основания для освобождения от НДС.
+                            </div>
+                        {% endif %}
                         <div class="form-floating w-90 mb-3">
                             <input type="input" class="form-control" id="NoneNdcReasonOrgInput" name="none_ndc_reason" maxlength="500" value="{{ed_center.none_ndc_reason}}">
                             <label for="NoneNdcReasonOrgInput">Если не является на основании какой статьи Налогового кодекса РФ</label>
@@ -750,6 +1042,7 @@
                 </h2>
                 {% if user.is_superuser and center_project_year.step_2_check == False %}
                     <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                        {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                         <input style="display: none;" type="input" name="step" value="2" required>
                         <button class="btn btn-success" name="approve-step">Подтвердить</button>
                     </form>
@@ -758,6 +1051,7 @@
             {% if user.is_superuser or center_project_year.step_2_commentary != "" %}
                 <h3>Комментарий</h3>
                 <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                    {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                     <input style="display: none;" type="input" name="step" value="2" required>
                     <div class="mb-3">
                         <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_2_commentary != "" %}{{center_project_year.step_2_commentary}}{% endif %}</textarea>
@@ -859,6 +1153,7 @@
                 </h2>
                 {% if user.is_superuser and center_project_year.step_3_check == False %}
                     <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                        {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                         <input style="display: none;" type="input" name="step" value="3" required>
                         <button class="btn btn-success" name="approve-step">Подтвердить</button>
                     </form>
@@ -867,6 +1162,7 @@
             {% if user.is_superuser or center_project_year.step_3_commentary != "" %}
                 <h3>Комментарий</h3>
                 <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                    {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                     <input style="display: none;" type="input" name="step" value="3" required>
                     <div class="mb-3">
                         <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_3_commentary != "" %}{{center_project_year.step_3_commentary}}{% endif %}</textarea>
@@ -880,38 +1176,66 @@
                 <div class="table-hdr">
                     <h3>Список программ</h3>
                     <div style="display: flex; gap: 15px;">
+                        {% if project != 'bilet'%}
                         <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                             <button class="btn btn-outline-primary" name="export-programs">Скачать список программ в эксель</button>
                         </form>
-                        <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить программу</button>
+                        {%endif%}
+                        <button class="btn btn-outline-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramsModal">Добавить из банка программы</button>
+                        <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить новую</button>
                     </div>
                 </div>
                 <table class="table">
                     <tr class=""> 
-                        <th scope="col">№</th>
-                        <th scope="col">Название</th>
-                        <th scope="col">Направление программы</th>
-                        <th scope="col">Профессия</th>
-                        <th scope="col">Вид программы</th>
-                        <th scope="col">Колво часов</th>
-                        <th scope="col">Обеспечение</th>
-                        <th scope="col">Форма обучения</th>
-                        <th scope="col">Входные требования</th>
+                        {% if project == 'bilet' %}
+                            <th scope="col">№</th>
+                            <th scope="col">Профессия</th>
+                            <th scope="col">Профессиональная среда</th>
+                            <th scope="col">Краткое описание задания</th>
+                            <th scope="col">Автор программы</th>
+                            <th scope="col">Статус</th>
+                            <th scope="col">Формат проведения</th>
+                            <th scope="col">Возрастные категории</th>
+                        {% else %}
+                            <th scope="col">№</th>
+                            <th scope="col">Название</th>
+                            <th scope="col">Направление программы</th>
+                            <th scope="col">Профессия</th>
+                            <th scope="col">Вид программы</th>
+                            <th scope="col">Колво часов</th>
+                            <th scope="col">Обеспечение</th>
+                            <th scope="col">Форма обучения</th>
+                            <th scope="col">Входные требования</th>
+                        {% endif %}
                     </tr>
                     {% for program in programs %}
                         <tr>
-                            <td scope="row">{{ forloop.counter }}</td>
-                            <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeProgramModal{{program.id}}">{{program.program_name}}</td>
-                            <td scope="row">{{program.competence}}</td>
-                            <td scope="row">{{program.profession}}</td>
-                            <td scope="row">{{program.get_program_type_display}}</td>
-                            <td scope="row">{{program.duration}}</td>
-                            <td scope="row">
-                                {{program.num_teachers}} педагогов <br>
-                                {{program.num_workshops}} аудиторий 
-                            </td>
-                            <td scope="row">{{program.get_education_form_display}}</td>
-                            <td scope="row">{{program.get_entry_requirements_display}}</td>
+                            {% if project == 'bilet'%}
+                                <td scope="row">{{ forloop.counter }}</td>
+                                <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeProgramModal{{program.id}}">{{program.profession}}</td>
+                                <td scope="row">{{program.profession.prof_enviroment}}</td>
+                                <td scope="row">{{program.description}}</td>
+                                <td scope="row">{{program.author}}</td>
+                                <td scope="row">{{program.get_status_display}}</td>
+                                <td scope="row">{{program.get_education_form_display}}</td>
+                                <td scope="row">
+                                    {% for age_group in program.age_groups.all %}
+                                        {{ age_group.name }}<br>
+                                    {% endfor %}
+                                </td>
+                            {%else%}
+                                <td scope="row">{{ forloop.counter }}</td>
+                                <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeProgramModal{{program.id}}">{{program.profession}}</td>
+                                <td scope="row">{{program.profession.prof_enviroment}}</td>
+                                <td scope="row">{{program.description}}</td>
+                                <td scope="row">{{program.author}}</td>
+                                <td scope="row">
+                                    {{program.num_teachers}} педагогов <br>
+                                    {{program.num_workshops}} аудиторий 
+                                </td>
+                                <td scope="row">{{program.get_education_form_display}}</td>
+                                <td scope="row">{{program.get_age_group_display}}</td>
+                            {%endif%}
                         </tr>
                     {% empty %}
                         <tr>
@@ -932,6 +1256,7 @@
                 </h2>
                 {% if user.is_superuser and center_project_year.step_4_check == False %}
                     <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                        {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                         <input style="display: none;" type="input" name="step" value="4" required>
                         <button class="btn btn-success" name="approve-step">Подтвердить</button>
                     </form>
@@ -940,6 +1265,7 @@
             {% if user.is_superuser or center_project_year.step_4_commentary != "" %}
                 <h3>Комментарий</h3>
                 <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                    {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                     <input style="display: none;" type="input" name="step" value="4" required>
                     <div class="mb-3">
                         <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_4_commentary != "" %}{{center_project_year.step_4_commentary}}{% endif %}</textarea>
@@ -962,19 +1288,27 @@
                         <th scope="col">Уровень образования</th>
                         <th scope="col">Специальность и квалификация</th>
                         <th scope="col">Ученая степень/должность</th>
-                        <th scope="col">Наличие опыта педагогической и/или производственной деятельности</th>
-                        <th scope="col">Наличие доп. проф. образования по профилю программы за последние 3 года и (или) опыт по профилю программы.</th>
+                        {% if project == 'bilet' %}
+                            <th scope="col">Наличие профессиональных сертификаций по компетенции или диплома победителей/призеров конкурсов профмастерства</th>
+                        {% else %}
+                            <th scope="col">Наличие опыта педагогической и/или производственной деятельности</th>
+                            <th scope="col">Наличие доп. образования/опыта по профилю программы за последние 3 года.</th>
+                        {% endif %}
                     </tr>
                     {% for teacher in teachers %}
                         <tr>
                             <td scope="row">{{ forloop.counter }}</td>
-                            <td scope="row" style="white-space: nowrap;" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeTeacherModal{{teacher.id}}">{{teacher.full_name}}</td>
+                            <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeTeacherModal{{teacher.id}}">{{teacher.full_name}}</td>
                             <td scope="row">{{teacher.get_employment_type_display}}</td>
                             <td scope="row">{{teacher.get_education_level_display}}</td>
                             <td scope="row">{{teacher.education_major}}</td>
                             <td scope="row">{{teacher.position}}</td>
-                            <td scope="row">{{teacher.experience}}</td>
-                            <td scope="row">{{teacher.additional_education}}</td>
+                            {% if project == 'bilet' %}
+                                <td scope="col">{{teacher.bvb_experience}}</td>
+                            {% else %}
+                                <td scope="row">{{teacher.experience}}</td>
+                                <td scope="row">{{teacher.additional_education}}</td>
+                            {% endif %}
                         </tr>
                         {% empty %}
                         <tr>
@@ -996,6 +1330,7 @@
                 
                 {% if user.is_superuser and center_project_year.step_5_check == False %}
                     <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                        {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                         <input style="display: none;" type="input" name="step" value="5" required>
                         <button class="btn btn-success" name="approve-step">Подтвердить</button>
                     </form>
@@ -1004,6 +1339,7 @@
             {% if user.is_superuser or center_project_year.step_5_commentary != "" %}
                 <h3>Комментарий</h3>
                 <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                    {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                     <input style="display: none;" type="input" name="step" value="5" required>
                     <div class="mb-3">
                         <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_5_commentary != "" %}{{center_project_year.step_5_commentary}}{% endif %}</textarea>
@@ -1051,6 +1387,7 @@
                 </h2>
                 {% if user.is_superuser and center_project_year.step_6_check == False %}
                     <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                        {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                         <input style="display: none;" type="input" name="step" value="6" required>
                         <button class="btn btn-success" name="approve-step">Подтвердить</button>
                     </form>
@@ -1059,6 +1396,7 @@
             {% if user.is_superuser or center_project_year.step_6_commentary != "" %}
                 <h3>Комментарий</h3>
                 <form class="comment-form" action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                    {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                     <input style="display: none;" type="input" name="step" value="6" required>
                     <div class="mb-3">
                         <textarea class="form-control" name="step_commentary" rows="3" {% if user.is_superuser == False %}disabled{% endif %}>{% if center_project_year.step_6_commentary != "" %}{{center_project_year.step_6_commentary}}{% endif %}</textarea>
@@ -1069,30 +1407,53 @@
                 </form>
             {% endif %}
             <div class="collapse show" id="collapseIndicators">
+                <div class="table-hdr">
+                    <h3>Показатели эффективности</h3>
+                </div>
                 <form action="" method="post">
+                    {% if project == 'bilet'%}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="is_disability" name="is_disability" {% if center_project_year.is_disability %} checked {% endif %}>
+                            <label style="padding-top: 2px !important" class="form-check-label" for="is_disability">
+                                Имеется возможность обеспечения участия в Проекте участников с ОВЗ, наличие безбарьерной архитектурной доступности и специальных условий к прохождению практических мероприятий
+                            </label>
+                        </div>
+                    {% endif %}
+                    {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                     <table class="table">
                         <tr>
                             <th scope="row">№</th>
                             <th scope="col">Показатель эффективности</th>
-                            <th scope="col">2021</th>
-                            <th scope="col">2022</th>
+                            {% if project == 'bilet' %}
+                                <th scope="col">Общее количество участников мероприятий за последние 3 года, чел.</th>
+                            {% else %}
+                                <th scope="col">2021</th>
+                                <th scope="col">2022</th>
+                            {% endif %}
                         </tr>
                         {% for indicator in indicators %}
                             <tr>
                                 <td scope="row">{{ forloop.counter }}</td>
                                 <td scope="row">{{indicator.name}}</td>
-                                <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2021" placeholder="" value="{{indicator.ed_center_indicator_2021}}" required></td>
-                                <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2022" placeholder="" value="{{indicator.ed_center_indicator_2022}}" required></td>
+                                {% if project == 'bilet' %}
+                                <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}" placeholder="" value="{{indicator.ed_center_indicator}}" required></td>
+                                {% else %}
+                                    <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2021" placeholder="" value="{{indicator.ed_center_indicator_2021}}" required></td>
+                                    <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2022" placeholder="" value="{{indicator.ed_center_indicator_2022}}" required></td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     </table>
-                    <h3>6.1 Доп. сведения участника ПКО</h3>
-                    {% for indicator in free_indicators %}
-                        <div class="mb-3 free-indicator">
-                            <label for="NotesIndicatorInput{{indicator.id}}" class="form-label">{{indicator.name}}</label>
-                            <textarea class="form-control" id="NotesIndicatorInput{{indicator.id}}" name="{{indicator.id}}" rows="3">{{indicator.ed_center_indicator}}</textarea>
-                        </div>
-                    {% endfor %}
+                    {% if free_indicators.count != 0 %}
+                        <h3>6.1 Доп. сведения участника ПКО</h3>
+                        {% for indicator in free_indicators %}
+                            <div class="mb-3 free-indicator">
+                                <label for="NotesIndicatorInput{{indicator.id}}" class="form-label">{{indicator.name}}</label>
+                                <textarea class="form-control" id="NotesIndicatorInput{{indicator.id}}" name="{{indicator.id}}" rows="3">{{indicator.ed_center_indicator}}</textarea>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
                     <div class="submit">
                         <input type="submit" class="btn btn-primary" name="add-indicators" value="Сохранить">
                     </div>
@@ -1101,30 +1462,76 @@
         </div>
         <div class="quota-step step" data-step="7" {%if stage == 7%}style="display:block;"{%else%}style="display:none;"{%endif%}>
             <div class="step-hdr" style="display: flex;flex-direction: column;">
-                <h2>Квота на июнь</h2>
-                <p>Укажите кол-во граждан, которые соответствуют двум условиям: 
-                    <ol>
-                        <li>Готовы приступить к обучению в указанный месяц по указанной длительности программ (72, 144, 256)</li>
-                        <li>Предварительно по вашим данным подходят под категории ФП "Содействие занятости"</li>
-                    </ol>
-                </p>
+                {% if project == 'bilet' %}
+                    <h2>Квота</h2>
+                    
+                {% else %}
+                    <h2>Квота на июнь</h2>
+                    <p>Укажите кол-во граждан, которые соответствуют двум условиям: 
+                        <ol>
+                            <li>Готовы приступить к обучению в указанный месяц по указанной длительности программ (72, 144, 256)</li>
+                            <li>Предварительно по вашим данным подходят под категории ФП "Содействие занятости"</li>
+                        </ol>
+                    </p>
+                {% endif %}
             </div>
             <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
-                <div class="form-floating ed-name mb-3">
-                    <input type="number" class="form-control" id="Quota72" name="quota_72" value="{{center_qouta.quota_72}}" required>
-                    <label for="Quota72">Квота 72ч</label>
-                </div>
-                <div class="form-floating w-45 mb-3">
-                    <input type="number" class="form-control" id="Quota144" name="quota_144" value="{{center_qouta.quota_144}}" required>
-                    <label for="Quota144">Квота 144ч</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <input type="number" class="form-control" id="Quota256" name="quota_256" value="{{center_qouta.quota_256}}" required>
-                    <label for="Quota256">Квота 256ч</label>
-                </div>
-                <div class="submit">
-                    <input type="submit" class="btn btn-primary" name="set-quota" value="Сохранить">
-                </div>
+                {% if project == 'bilet' %}
+                    {% for profession in chosen_professions %}
+                        <h3 style="padding: 0;margin-bottom: 10px;margin-top: 10px;">{{profession}}</h3>
+                        <table class="table">
+                            <tr>
+                                <th scope="row">№</th>
+                                <th scope="row">Школа</th>
+                                <th scope="row">Квота</th>
+                            </tr>
+                            
+                                {% for profession in center_quota|get_profession_quota:profession %}
+                                <tr>
+                                    <td scope="row">{{ forloop.counter }}</td>
+                                    <td scope="row">{{profession.school}}</td>
+                                    <td scope="row">{{profession.value}}</td>
+                                </tr>
+                                {% empty %}
+                                <tr><td scope="row" class="none-alert" colspan="3">Не добавлено ни одной квоты</td></tr>
+                                {% endfor %}
+                            </tr>
+                        </table>
+                        <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                            <input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>
+                            <input type="input" style="display: none;" class="form-control" name="profession" value="{{profession.id}}" required>
+                            <div class="profession-quota">
+                                <div class="form mb-3 selectpicker school">
+                                    <select class="selectpicker school-selectpicker" title="Школа" data-live-search="true" name="school_id" required>
+                                        {% for school in schools %}
+                                            <option value="{{school.id}}">{{school.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="w-45 mb-3">
+                                    <input type="number" class="form-control" name="quota" placeholder="квота" required>
+                                </div>
+                                <button class="btn btn-outline-primary" name="add-school">Добавить школу</button>
+                            </div>
+                        </form>
+                    {% endfor %}
+                {% else %}
+                    <div class="form-floating ed-name mb-3">
+                        <input type="number" class="form-control" id="Quota72" name="quota_72" value="{{center_quota.quota_72}}" required>
+                        <label for="Quota72">Квота 72ч</label>
+                    </div>
+                    <div class="form-floating w-45 mb-3">
+                        <input type="number" class="form-control" id="Quota144" name="quota_144" value="{{center_quota.quota_144}}" required>
+                        <label for="Quota144">Квота 144ч</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="number" class="form-control" id="Quota256" name="quota_256" value="{{center_quota.quota_256}}" required>
+                        <label for="Quota256">Квота 256ч</label>
+                    </div>
+                    <div class="submit">
+                        <input type="submit" class="btn btn-primary" name="set-quota" value="Сохранить">
+                    </div>
+                {% endif %}
             </form>
         </div>
     </div>

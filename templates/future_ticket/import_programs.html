@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load ed_centers_extras %}
+
+{% block title %}Импорт программ{% endblock %}
+{% block style %}
+        <link href="{% static 'future_ticket/css/import_programs.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'education_centers/js/fed-empl.js' %}" rel="stylesheet"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="modal-body">
+        <div class="import-form">
+            <h2>Импорт программ (БВБ)</h2>
+            {% if message != None %}
+                <div class="alert alert-success" role="alert">
+                    Программ добавлено: {{message.2}}
+                </div> 
+            {% endif %}
+            <form enctype="multipart/form-data" action="{% url 'import_ticket_programs' %}" method="post">
+                <div class="mb-3">
+                    {{ form }}
+                </div>
+                <button type="submit" class="btn btn-primary" name="import-participants">Импортировать</button>
+                <p style="margin: 0;"><a href="https://docs.google.com/spreadsheets/d/1rnuSBsx5rEbLltfChc-_Hn18yNchSXTZ/edit?usp=sharing&ouid=101434463062322581540&rtpof=true&sd=true" target="_blank">Шаблон</a></p>
+            </form>
+            {% for row in message.4 %}
+                <div class="alert alert-danger" role="alert">
+                    В строке {{row.2}} не верно заполнены следующие поля:
+                    <ul>
+                        {% for field in row.1 %}
+                            <li>{{field}}</li>
+                        {% endfor %}
+                    </ul>
+                </div> 
+            {% endfor %}
+            {% for error in message.5 %}
+                {% if error.0 == 'MissingEdCenter' %}
+                    <div class="alert alert-danger" role="alert">
+                        В строке {{error.2}} указан ЦО, которого нет на платформе: {{error.1}}
+                    </div>
+                {% elif error.0 == 'ToManyEdCenters' %}
+                    <div class="alert alert-danger" role="alert">
+                        Найдено {{error.3}} ЦО с кратким названием: {{error.1}} (строка {{error.2}})
+                    </div>
+                {% elif error.0 == 'WrongEnviroment' %}
+                    <div class="alert alert-danger" role="alert">
+                        Нет среды "{{error.1}}" (строка {{error.2}})
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
