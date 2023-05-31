@@ -100,15 +100,24 @@ def ed_center_application(request, ed_center_id):
             employee.save()
         elif 'add-position' in request.POST:
             stage=2
-            position_id = request.POST['position_id']
-            position = get_object_or_404(ProjectPosition, id=position_id)
             employee_id = request.POST['employee_id']
             employee = get_object_or_404(Employee, id=employee_id)
-            employee_position = EdCenterEmployeePosition(
-                position=position,
-                ed_center=ed_center,
-                employee=employee
-            )
+            if project == 'bilet':
+                position_id = request.POST['position_id']
+                position = get_object_or_404(TicketProjectPosition, id=position_id)
+                employee_position = TicketEdCenterEmployeePosition(
+                    position=position,
+                    ed_center=ed_center,
+                    employee=employee
+                )
+            else:
+                position_id = request.POST['position_id']
+                position = get_object_or_404(ProjectPosition, id=position_id)
+                employee_position = EdCenterEmployeePosition(
+                    position=position,
+                    ed_center=ed_center,
+                    employee=employee
+                )
             if position.is_basis_needed:
                 employee_position.acts_basis = request.POST['acts_basis']
             employee_position.save()
@@ -162,7 +171,6 @@ def ed_center_application(request, ed_center_id):
         elif 'add-program' in request.POST:
             stage=3
             if 'bilet' in request.POST:
-                project = 'bilet'
                 try:
                     if request.POST['new_profession'] == 'on': 
                         new_profession = True
@@ -349,14 +357,23 @@ def ed_center_application(request, ed_center_id):
             employee.save()
         elif 'change-position' in request.POST:
             stage=2
-            position_id = request.POST['position_id']
-            position = get_object_or_404(ProjectPosition, id=position_id)
+            
             employee_id = request.POST['employee_id']
             employee = get_object_or_404(Employee, id=employee_id)
-            employee_position = EdCenterEmployeePosition.objects.filter(
-                position=position,
-                ed_center=ed_center
-            ).first()
+            if project == 'bilet':
+                position_id = request.POST['position_id']
+                position = get_object_or_404(TicketProjectPosition, id=position_id)
+                employee_position = TicketEdCenterEmployeePosition.objects.filter(
+                    position=position,
+                    ed_center=ed_center
+                ).first()
+            else:
+                position_id = request.POST['position_id']
+                position = get_object_or_404(ProjectPosition, id=position_id)
+                employee_position = EdCenterEmployeePosition.objects.filter(
+                    position=position,
+                    ed_center=ed_center
+                ).first()
             employee_position.employee = employee
             if position.is_basis_needed:
                 employee_position.acts_basis = request.POST['acts_basis']
@@ -660,7 +677,7 @@ def ed_center_application(request, ed_center_id):
 
     disability_types = DisabilityType.objects.all()
     age_groups = AgeGroup.objects.all()
-    
+
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
         'employees': employees,

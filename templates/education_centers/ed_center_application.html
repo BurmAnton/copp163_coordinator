@@ -1091,6 +1091,7 @@
                     {% for position in filled_positions %} 
                         <div class="card position-form">
                             <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                                {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                                 <input style="display: none;" type="number" name="position_id" value={{position.position.id}}>
                                 <div class="card-header">{{position.position.position}}</div>
                                     <div class="card-body">
@@ -1109,7 +1110,7 @@
                                             {% endif %}
                                     </div>
                                     <div class="card-footer">
-                                            <input type="submit" class="btn btn-outline-primary" name="change-position" value="Изменить">
+                                        <input type="submit" class="btn btn-outline-primary" name="change-position" value="Изменить">
                                     </div>
                             </form>
                         </div>
@@ -1117,6 +1118,7 @@
                     {% for position in empty_positions %} 
                         <div class="card position-form">
                             <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                                {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                                 <input style="display: none;" type="number" name="position_id" value={{position.id}}>
                                 <div class="card-header">{{position.position}}</div>
                                     <div class="card-body">
