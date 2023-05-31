@@ -103,6 +103,7 @@ class EducationProgram(models.Model):
         blank=True
     )
     program_name = models.CharField("Название программы", max_length=500)
+
     competence = models.ForeignKey(Competence, verbose_name="Компетенция", on_delete=CASCADE, related_name='programs')
     PROGRAM_TYPES = (
         ('DPOPK', 'ДПО ПК'),
@@ -112,11 +113,6 @@ class EducationProgram(models.Model):
         ('POPK', 'ПО ПК'),
     )
     program_type = models.CharField(max_length=5, choices=PROGRAM_TYPES, verbose_name='Тип программы', blank=True, null=True)
-    PROGRAM_DURATIONS = (
-        (72, '72 ч.'),
-        (144, '144 ч.'),
-        (256, '256 ч.')
-    )
     duration = models.IntegerField("Длительность (ак. часов)", blank=True)
     EDUCATION_FORMS = (
         ('PRTLN', 'Очно-заочная с применением ДОТ'),
@@ -136,7 +132,7 @@ class EducationProgram(models.Model):
         "Профессия", max_length=200, blank=True, null=True
     )
     description = models.TextField(
-        "Описание компетенции", null=True, blank=True
+        "Описание программы", null=True, blank=True
     )
     notes = models.TextField("Примечания", null=True, blank=True)
 
@@ -195,6 +191,8 @@ class Teacher(models.Model):
     education_major = models.CharField("Специальность", max_length=150, 
                                 blank=True, null=True)
     experience = models.TextField("Наличие опыта", null=True, blank=True)
+    bvb_experience = models.TextField(
+        "Наличие профессиональных сертификаций", null=True, blank=True)
     additional_education = models.TextField(
         "Наличие доп. проф. образования по профилю программы за последние 3 года", 
         null=True, blank=True

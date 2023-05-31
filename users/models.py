@@ -6,6 +6,18 @@ from django.db.models.deletion import DO_NOTHING, CASCADE
 
 from .managers import CustomUserManager
 
+class DisabilityType(models.Model):
+    name = models.CharField("ОВЗ", max_length=100)
+    description = models.CharField("Описание", max_length=300, blank=True, 
+                                   null=True)
+
+    def __str__(self):
+        return  f"{self.name}"
+
+    class Meta:
+        verbose_name = "Инвалидность"
+        verbose_name_plural = "Инвалидности"
+
 class User(AbstractUser):
     username = None
     middle_name = models.CharField("Отчество", max_length=30, blank=True, null=True)

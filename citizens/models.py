@@ -8,41 +8,62 @@ from users.models import User
 from organizations.models import Company
 from education_centers.models import EducationCenterGroup
 
+class Municipality(models.Model):
+    name = models.CharField("Название", max_length=100)
+
+    class Meta:
+        verbose_name = "Муниципалитет"
+        verbose_name_plural = "Муниципалитеты"
+
+    def __str__(self):
+        return  self.name
+    
+
 class School(models.Model):
     name = models.CharField("Название школы", max_length=100)
     specialty = models.CharField("Уклон школы", max_length=50, blank=True, null=True)
 
     TER_CHOICES = [
-        ('TADM', "Тольяттинское управление министерства образования и науки Самарской области"),
+        ('TADM', "Тольяттинское управление"),
         ('NWADM', "Северо-Западное управление"),
         ('WADM', "Западное управление"),
         ('SWADM', "Юго-Западное управление"),
         ('POVADM', "Поволжское управление"),
         ('SADM', "Южное управление"),
-        ('DEPSAM', "Департамент образования Администрации городского округа Самара"),
+        ('DEPSAM', "Департамент образования г.о. Самара"),
         ('SEADM', "Юго-Восточное управление"),
         ('OTRADM', "Отрадненское управление"),
         ('CENTADM', "Центральное управление"),
         ('NEADM', "Северо-Восточное управление"),
-        ('DEPTOL', "Департамент образования Администрации городского округа Тольятти"),
+        ('DEPTOL', "Департамент образования г.о. Тольятти"),
         ('NADM', "Северное управление"),
         ('KINADM', "Кинельское управление"),
         ('SAMADM', "Самарское управление"),
     ]
     territorial_administration = models.CharField("Тер. управление", choices=TER_CHOICES, max_length=20, blank=True, null=True)
 
+    municipality = models.ForeignKey(
+        Municipality,
+        verbose_name="Муниципалитет", 
+        related_name='schools',
+        blank=True, 
+        null=True,
+        on_delete=CASCADE
+    )
     city = models.CharField("Населённый пункт", max_length=100, blank=True, null=True)
     adress = models.CharField("Адрес", max_length=250, blank=True, null=True)
     school_coordinators = models.ManyToManyField(User, verbose_name="Педагоги-навигаторы", related_name="coordinated_schools", blank=True)
     is_bilet = models.BooleanField('Есть педагог-навигатор', default=False)
-    inn = models.CharField("ИНН", max_length=20, blank=True, null=True)
+    inn = models.CharField(
+        "ИНН", max_length=20, blank=True, null=True, unique=True
+    )
 
     class Meta:
         verbose_name = "Школа"
         verbose_name_plural = "Школы"
 
     def __str__(self):
-        return  f"{self.name}({self.city})"
+        return  f"{self.name} ({self.get_territorial_administration_display()})"
     
 class SchoolClass(models.Model):
     school = models.ForeignKey(School, verbose_name="Школа", related_name="classes", on_delete=CASCADE)

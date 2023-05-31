@@ -83,12 +83,13 @@ def create_application(center_project_year):
     resp_position = ProjectPosition.objects.get(position="Контакт, ответственный за заключение договора")
     citizens_position = ProjectPosition.objects.get(position="Лицо, подписывающее договоры с гражданами")
     programs_position =ProjectPosition.objects.get(position="Ответственный за формирование каталога программ")
+    programs = EducationProgram.objects.filter(ed_center=ed_center).exclude(is_bvb=True)
     context = {
         'creation_date' : date_format(date.today(), 'd «E» Y г.'),
         'ed_center': ed_center,
         'is_federal': center_project_year.is_federal,
-        'programs': EducationProgram.objects.filter(ed_center=ed_center),
-        'teachers': Teacher.objects.filter(organization=ed_center).exclude(programs=None),
+        'programs': programs,
+        'teachers': Teacher.objects.filter(organization=ed_center, programs__in=programs),
         'contact_employee': EdCenterEmployeePosition.objects.get(ed_center=ed_center, position=contact_position),
         'sign_employee': EdCenterEmployeePosition.objects.filter(ed_center=ed_center, position=sign_position).first(),
         'resp_employee': EdCenterEmployeePosition.objects.get(ed_center=ed_center, position=resp_position),

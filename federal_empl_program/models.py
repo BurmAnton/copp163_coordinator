@@ -127,10 +127,9 @@ class Indicator(models.Model):
     name = models.CharField("Показатель эффективности", max_length=500, 
                             blank=False,null=False)
     is_free_form = models.BooleanField("Свободная форма?", default=False)
-    year = models.IntegerField('Показатель за (год)', null=False, blank=False)
     
     def __str__(self):
-        return  f'{self.name} ({self.year} г.)'
+        return  f'{self.name}'
 
     class Meta:
         verbose_name = "Показатель эффективности"
@@ -220,12 +219,11 @@ class EdCenterEmployeePosition(models.Model):
     )
     
     def __str__(self):
-        return  f'{self.employee}\
-                 ({self.position})'
+        return  f'{self.employee} ({self.position})'
 
     class Meta:
-        verbose_name = "Данные колледжа на год"
-        verbose_name_plural = "Данные колледжей на годы"
+        verbose_name = "Роль сотрудника"
+        verbose_name_plural = "Роли сотрудников"
 
 
 

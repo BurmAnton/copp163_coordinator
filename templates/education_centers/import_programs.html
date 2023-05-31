@@ -12,12 +12,13 @@
 
 {% block body %}
     <div class="modal-body">
+         
         <form enctype="multipart/form-data" action="{% url 'import_programs' %}" method="post">
             <div class="mb-3">
                 {{ form }}
             </div>
             <button type="submit" class="btn btn-primary" name="import-participants">Импортировать</button>
-            <p style="margin: 0;"><a href="https://docs.google.com/spreadsheets/d/1mg_lWECAnsFC80Pr6tz1mqsX8q-HPx7dKp6ywSAN3Sg/edit?usp=sharing" target="_blank">Шаблон</a></p>
+            <p style="margin: 0;"><a href="https://docs.google.com/spreadsheets/d/1rnuSBsx5rEbLltfChc-_Hn18yNchSXTZ/edit?usp=sharing&ouid=101434463062322581540&rtpof=true&sd=true" target="_blank">Шаблон</a></p>
         </form>
         {{message}}
     </div>

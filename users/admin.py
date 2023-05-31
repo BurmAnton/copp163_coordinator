@@ -6,7 +6,7 @@ from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django_admin_listfilter_dropdown.filters import  RelatedOnlyDropdownFilter
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import User, Group, PartnerContact, PartnerOrganization, Project, PartnerContactEmail, PartnerContactPhone
+from .models import DisabilityType, User, Group, PartnerContact, PartnerOrganization, Project, PartnerContactEmail, PartnerContactPhone
 
 @admin.register(User)
 class UserAdmin(UserAdmin):
@@ -71,6 +71,11 @@ class PartnerOrganizationAdmin(admin.ModelAdmin):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(DisabilityType)
+class DisabilityTypeAdmin(admin.ModelAdmin):
     pass
 
 

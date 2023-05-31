@@ -7,14 +7,25 @@ from django.core.files import File
 from django.db.models import Case, When, Value, Count, OuterRef, Subquery
 from django.utils.encoding import escape_uri_path
 from django.db.models.functions import Concat
+from citizens.models import School
+
+from users.models import DisabilityType
 
 from . import imports
 from . import exports
 from .forms import ImportDataForm
 from .contracts import create_document, combine_all_docx, create_application
-from .models import BankDetails, Competence, ContractorsDocument, DocumentType, EducationCenter, \
-                    EducationCenterHead, EducationProgram, Employee, Group, Teacher, Workshop
-from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndicator, EdCenterQuota, EducationCenterProjectYear, Indicator, ProjectPosition, ProjectYear
+from .models import BankDetails, Competence, ContractorsDocument, DocumentType,\
+                    EducationCenter, EducationCenterHead, EducationProgram,\
+                    Employee, Group, Teacher, Workshop
+from federal_empl_program.models import EdCenterEmployeePosition,\
+                                        EdCenterIndicator, EdCenterQuota,\
+                                        EducationCenterProjectYear, Indicator,\
+                                        ProjectPosition, ProjectYear
+from future_ticket.models import AgeGroup, ProfEnviroment, ProgramAuthor, TicketFullQuota, TicketProfession, TicketProgram, TicketProjectYear,TicketProjectPosition,\
+                                 EducationCenterTicketProjectYear, \
+                                 TicketEdCenterEmployeePosition, \
+                                 TicketIndicator, EdCenterTicketIndicator, TicketQuota
 
 # Create your views here.
 def index(request):
@@ -30,68 +41,29 @@ def export_programs(request):
 
 @csrf_exempt
 def ed_center_application(request, ed_center_id):
+    project = request.GET.get('p', '')
+    if 'bilet' in request.POST: project = 'bilet'
+    project_year = request.GET.get('y', '')
+    if project_year != '': project_year = int(project_year)
+    else: project_year = datetime.now().year
     stage = request.GET.get('s', '')
     if stage != '': stage = int(stage)
     else: stage = 1
     ed_center = get_object_or_404(EducationCenter, id=ed_center_id)
-    project_year = get_object_or_404(ProjectYear, year=2023)
-    filled_positions = EdCenterEmployeePosition.objects.filter(
-        ed_center=ed_center,
-    )
-    empty_positions = project_year.positions.exclude(
-        positions_employees__in=filled_positions
-    )
-    center_project_year, is_new = EducationCenterProjectYear.objects.get_or_create(
-        project_year=project_year,
-        ed_center=ed_center
-    )
-    indicators = Indicator.objects.filter(
-        project_year=project_year, 
-        is_free_form=False
-    ).annotate(
-        ed_center_indicator_2021=Subquery(
-            EdCenterIndicator.objects.filter(
-                ed_center=ed_center,
-                indicator=OuterRef('pk')
-            ).values('value_2021')[:1]
-        ),
-        ed_center_indicator_2022=Subquery(
-            EdCenterIndicator.objects.filter(
-                ed_center=ed_center,
-                indicator=OuterRef('pk')
-            ).values('value_2022')[:1]
-        ),
-    )
-    free_indicators = Indicator.objects.filter(
-        project_year=project_year, 
-        is_free_form=True
-    ).annotate(
-        ed_center_indicator=Subquery(
-            EdCenterIndicator.objects.filter(
-                ed_center=ed_center,
-                indicator=OuterRef('pk')
-            ).values('free_form_value')[:1]
+    full_quota = None
+    if project == 'bilet':
+        project_year = get_object_or_404(TicketProjectYear, year=project_year)
+        center_project_year = EducationCenterTicketProjectYear.objects.get_or_create(
+                project_year=project_year,ed_center=ed_center)[0]
+        full_quota = get_object_or_404(TicketFullQuota, project_year=project_year)
+    else:
+        project_year = get_object_or_404(ProjectYear, year=project_year)
+        center_project_year = EducationCenterProjectYear.objects.get_or_create(
+                project_year=project_year, ed_center=ed_center)[0]
+        center_quota, is_new = EdCenterQuota.objects.get_or_create(
+            ed_center_year=center_project_year
         )
-    )
-    workshops = Workshop.objects.filter(education_center=ed_center
-                                        ).exclude(name=None)
-    competencies = Competence.objects.filter(is_irpo=True)
-    employees = ed_center.employees.all().annotate(
-        full_name=Concat('last_name', Value(' '), 'first_name', Value(' '), 
-                         'middle_name')
-    )
-    teachers = ed_center.teachers.all().annotate(
-        full_name=Concat('last_name', Value(' '), 'first_name', Value(' '), 
-                         'middle_name')
-    )
-    programs = ed_center.programs.all().annotate(
-        num_teachers=Count('teachers'),
-        num_workshops=Count('workshops'),
-    )
-    center_qouta, is_new = EdCenterQuota.objects.get_or_create(
-        ed_center_year=center_project_year
-    )
-
+    
     if request.method == "POST":
         if 'add-employee' in request.POST:
             stage=2
@@ -189,29 +161,87 @@ def ed_center_application(request, ed_center_id):
                 center_project_year.save()
         elif 'add-program' in request.POST:
             stage=3
-            competence_id = request.POST['competence_id']
-            competence = get_object_or_404(Competence, id=competence_id)
-            program_name = request.POST['program_name']
-            profession = request.POST['profession']
-            description = request.POST['description']
-            entry_requirements = request.POST['entry_requirements']
-            program_type = request.POST['program_type']
-            education_form = request.POST['education_form']
-            duration = int(request.POST['duration'])
-            notes = request.POST['notes']
-            program = EducationProgram(
-                competence=competence,
-                program_name=program_name,
-                ed_center=ed_center,
-                profession=profession,
-                description=description,
-                entry_requirements=entry_requirements,
-                program_type=program_type,
-                education_form=education_form,
-                duration=duration,
-                notes=notes
-            )
-            program.save()
+            if 'bilet' in request.POST:
+                project = 'bilet'
+                try:
+                    if request.POST['new_profession'] == 'on': 
+                        new_profession = True
+                except: new_profession = False
+                if new_profession:
+                    profession = request.POST['profession']
+                    prof_enviroment_id = request.POST['prof_enviroment_id']
+                    prof_enviroment = get_object_or_404(
+                        ProfEnviroment, 
+                        id=prof_enviroment_id
+                    )
+                    profession = TicketProfession(
+                        name=profession,
+                        prof_enviroment=prof_enviroment,
+                        is_federal=False
+                    )
+                    profession.save()
+                else:
+                    profession_id = request.POST['profession_id']
+                    profession = get_object_or_404(
+                        TicketProfession, 
+                        id=profession_id
+                    )
+                description = request.POST['description']
+                teacher_id =request.POST['teacher_id']
+                teacher = get_object_or_404(Teacher, id=teacher_id)
+                email = request.POST['email']
+                phone = request.POST['phone']
+                author, is_new = ProgramAuthor.objects.get_or_create(
+                    teacher=teacher,
+                )
+                author.phone=phone
+                author.email=email
+                author.save()
+                
+                education_form = request.POST['education_form']
+                age_groups = request.POST.getlist('age_groups')
+                disability_types = request.POST.getlist('disability_types')
+                program = TicketProgram(
+                    ed_center=ed_center,
+                    profession=profession,
+                    description=description,
+                    author=author,
+                    education_form=education_form,
+                )
+                program.save()
+                program.disability_types.add(*disability_types)
+                program.age_groups.add(*age_groups)
+                center_project_year.programs.add(program)
+            else:
+                competence_id = request.POST['competence_id']
+                competence = get_object_or_404(Competence, id=competence_id)
+                program_name = request.POST['program_name']
+                profession = request.POST['profession']
+                description = request.POST['description']
+                entry_requirements = request.POST['entry_requirements']
+                program_type = request.POST['program_type']
+                education_form = request.POST['education_form']
+                duration = int(request.POST['duration'])
+                notes = request.POST['notes']
+                program = EducationProgram(
+                    competence=competence,
+                    program_name=program_name,
+                    ed_center=ed_center,
+                    profession=profession,
+                    description=description,
+                    entry_requirements=entry_requirements,
+                    program_type=program_type,
+                    education_form=education_form,
+                    duration=duration,
+                    notes=notes
+                )
+                program.save()
+        elif 'add-programs' in request.POST:
+            stage=3
+            for program in request.POST:
+                if request.POST[program] == 'on':
+                    center_project_year.programs.add(int(program))
+            center_project_year.save()
         elif 'add-teacher' in request.POST:
             stage=4
             last_name = request.POST['last_name'].strip().capitalize()
@@ -228,11 +258,17 @@ def ed_center_application(request, ed_center_id):
                 education_level = request.POST['education_level'],
                 education_major = request.POST['education_major'],
                 position = request.POST['position'],
-                experience = request.POST['experience'],
-                additional_education = request.POST['additional_education']
             )
+            if project == 'bilet':
+                teacher.bvb_experience = request.POST['bvb_experience']
+            else:
+                teacher.experience = request.POST['experience']
+                teacher.additional_education = request.POST['additional_education']
             teacher.save()
-            teacher.programs.add(*request.POST.getlist('programs'))
+            if 'bilet' in request.POST:
+                teacher.ticket_programs.add(*request.POST.getlist('programs'))
+            else:
+                teacher.programs.add(*request.POST.getlist('programs'))
             teacher.save()
         elif 'add-workshop' in request.POST:
             stage=5
@@ -244,29 +280,51 @@ def ed_center_application(request, ed_center_id):
                 equipment = request.POST['equipment'],
             )
             workshop.save()
-            workshop.programs.add(*request.POST.getlist('programs'))
+            if 'bilet' in request.POST:
+                workshop.ticket_programs.add(*request.POST.getlist('programs'))
+            else:
+                workshop.programs.add(*request.POST.getlist('programs'))
             workshop.save()
         elif 'add-indicators' in request.POST:
             stage=6
-            center_project_year, is_new = EducationCenterProjectYear.objects.get_or_create(
-                project_year=project_year,
-                ed_center=ed_center
-            )
-            for indicator in indicators:
-                center_indicator, is_new = EdCenterIndicator.objects.get_or_create(
-                    ed_center=ed_center,
-                    indicator=indicator
+            if project == 'bilet':
+                indicators = TicketIndicator.objects.filter(
+                    project_year=project_year, is_free_form=False)
+                for indicator in indicators:
+                    center_indicator, is_new = EdCenterTicketIndicator.objects.get_or_create(
+                        ed_center=ed_center,
+                        indicator=indicator
+                    )
+                    center_indicator.value = request.POST[f'{indicator.id}'].strip()
+                    center_indicator.save()
+                
+                try:
+                    if request.POST['is_disability'] == 'on': is_disability = True
+                except: is_disability = False
+                center_project_year.is_disability = is_disability
+                center_project_year.save()
+            else:
+                indicators = Indicator.objects.filter(
+                    project_year=project_year, is_free_form=False)
+                for indicator in indicators:
+                    center_indicator, is_new = EdCenterIndicator.objects.get_or_create(
+                        ed_center=ed_center,
+                        indicator=indicator
+                    )
+                    center_indicator.value_2021 = request.POST[f'{indicator.id}_2021'].strip()
+                    center_indicator.value_2022 = request.POST[f'{indicator.id}_2022'].strip()
+                    center_indicator.save()
+                free_indicators = Indicator.objects.filter(
+                    project_year=project_year, 
+                    is_free_form=True
                 )
-                center_indicator.value_2021 = request.POST[f'{indicator.id}_2021'].strip()
-                center_indicator.value_2022 = request.POST[f'{indicator.id}_2022'].strip()
-                center_indicator.save()
-            for indicator in free_indicators:
-                center_indicator, is_new = EdCenterIndicator.objects.get_or_create(
-                    ed_center=ed_center,
-                    indicator=indicator
-                )
-                center_indicator.free_form_value = request.POST[f'{indicator.id}'].strip()
-                center_indicator.save()
+                for indicator in free_indicators:
+                    center_indicator, is_new = EdCenterIndicator.objects.get_or_create(
+                        ed_center=ed_center,
+                        indicator=indicator
+                    )
+                    center_indicator.free_form_value = request.POST[f'{indicator.id}'].strip()
+                    center_indicator.save()
         elif 'change-employee' in request.POST:
             stage=2
             employee_id = request.POST['employee_id']
@@ -306,17 +364,46 @@ def ed_center_application(request, ed_center_id):
         elif 'change-program' in request.POST:
             stage=3
             program_id = request.POST['program_id']
-            program = get_object_or_404(EducationProgram, id=program_id)
-            competence_id = request.POST['competence_id']
-            program.competence = get_object_or_404(Competence, id=competence_id)
-            program.program_name = request.POST['program_name']
-            program.profession = request.POST['profession']
-            program.description = request.POST['description']
-            program.entry_requirements = request.POST['entry_requirements']
-            program.program_type = request.POST['program_type']
-            program.education_form = request.POST['education_form']
-            program.duration = int(request.POST['duration'])
-            program.notes = request.POST['notes']
+            if 'bilet' in request.POST:
+                program = get_object_or_404(TicketProgram, id=program_id)
+                profession_id = request.POST['profession_id']
+                profession = get_object_or_404(
+                    TicketProfession, 
+                    id=profession_id
+                )
+                program.profession = profession
+                program.description = request.POST['description']
+                teacher_id =request.POST['teacher_id']
+                teacher = get_object_or_404(Teacher, id=teacher_id)
+                email = request.POST['email']
+                phone = request.POST['phone']
+                author, is_new = ProgramAuthor.objects.get_or_create(
+                    teacher=teacher,
+                )
+                author.phone=phone
+                author.email=email
+                author.save()
+                program.author = author
+                program.education_form = request.POST['education_form']
+                age_groups = request.POST.getlist('age_groups')
+                program.age_groups.clear()
+                program.age_groups.add(*age_groups)
+                disability_types = request.POST.getlist('disability_types')
+                program.disability_types.clear()
+                program.disability_types.add(*disability_types)
+            else:
+                program = get_object_or_404(EducationProgram, id=program_id)
+                competence_id = request.POST['competence_id']
+                program.competence = get_object_or_404(Competence, id=competence_id)
+                program.program_name = request.POST['program_name']
+                program.profession = request.POST['profession']
+                program.description = request.POST['description']
+                program.entry_requirements = request.POST['entry_requirements']
+                program.program_type = request.POST['program_type']
+                program.education_form = request.POST['education_form']
+                program.duration = int(request.POST['duration'])
+                program.notes = request.POST['notes']
+                if project == 'bilet': program.is_bvb = True
             program.save()
         elif 'change-teacher' in request.POST:
             stage=4
@@ -332,11 +419,18 @@ def ed_center_application(request, ed_center_id):
             teacher.education_level = request.POST['education_level']
             teacher.education_major = request.POST['education_major']
             teacher.position = request.POST['position']
-            teacher.experience = request.POST['experience']
-            teacher.additional_education = request.POST['additional_education']
+            if project == 'bilet':
+                teacher.bvb_experience = request.POST['bvb_experience']
+            else:
+                teacher.experience = request.POST['experience']
+                teacher.additional_education = request.POST['additional_education']
             teacher.save()
-            teacher.programs.clear()
-            teacher.programs.add(*request.POST.getlist('programs'))
+            if 'bilet' in request.POST:
+                teacher.ticket_programs.clear()
+                teacher.ticket_programs.add(*request.POST.getlist('programs'))
+            else:
+                teacher.programs.clear()
+                teacher.programs.add(*request.POST.getlist('programs'))
             teacher.save()
         elif 'change-workshop' in request.POST:
             stage=5
@@ -347,8 +441,12 @@ def ed_center_application(request, ed_center_id):
             workshop.classes_type = request.POST['classes_type']
             workshop.equipment = request.POST['equipment']
             workshop.save()
-            workshop.programs.clear()
-            workshop.programs.add(*request.POST.getlist('programs'))
+            if 'bilet' in request.POST:
+                workshop.ticket_programs.clear()
+                workshop.ticket_programs.add(*request.POST.getlist('programs'))
+            else:
+                workshop.programs.clear()
+                workshop.programs.add(*request.POST.getlist('programs'))
             workshop.save()
         elif 'delete-employee' in request.POST:
             stage=2
@@ -358,8 +456,17 @@ def ed_center_application(request, ed_center_id):
         elif 'delete-program' in request.POST:
             stage=3
             program_id = request.POST['program_id']
-            program = get_object_or_404(EducationProgram, id=program_id)
+            if project == 'bilet':
+                program = get_object_or_404(TicketProgram, id=program_id)
+            else:
+                program = get_object_or_404(EducationProgram, id=program_id)
             program.delete()
+        elif 'exclude-program' in request.POST:
+            stage=3
+            program_id = request.POST['program_id']
+            program = get_object_or_404(TicketProgram, id=program_id)
+            center_project_year.programs.remove(program)
+            center_project_year.save()
         elif 'delete-teacher' in request.POST:
             stage=4
             teacher_id = request.POST['teacher_id']
@@ -431,17 +538,142 @@ def ed_center_application(request, ed_center_id):
            return response
         elif 'set-quota' in request.POST:
             stage=7
-            center_qouta.quota_72 = request.POST['quota_72']
-            center_qouta.quota_144 = request.POST['quota_144']
-            center_qouta.quota_256 = request.POST['quota_256']
-            center_qouta.save()
+            center_quota.quota_72 = request.POST['quota_72']
+            center_quota.quota_144 = request.POST['quota_144']
+            center_quota.quota_256 = request.POST['quota_256']
+            center_quota.save()
+        elif 'add-school' in request.POST:
+            stage=7
+            profession_id = request.POST['profession']
+            profession = get_object_or_404(TicketProfession, id=profession_id)
+            is_federal = profession.is_federal
+            school_id = request.POST['school_id']
+            school = get_object_or_404(School, id=school_id)
+            value = int(request.POST['quota'])
+            quota, is_new = TicketQuota.objects.get_or_create(
+                quota=full_quota,
+                ed_center=ed_center,
+                profession=profession,
+                school=school,
+                is_federal=is_federal
+            )
+            quota.value = value
+            quota.save()
+    approved_programs = None
+    chosen_professions = None
+    schools = None
+    if project == 'bilet':
+        filled_positions = TicketEdCenterEmployeePosition.objects.filter(
+            ed_center=ed_center,
+        )
+        empty_positions = project_year.positions.exclude(
+            positions_employees__in=filled_positions
+        )
+        indicators = TicketIndicator.objects.filter(
+            project_year=project_year, 
+            is_free_form=False
+        ).annotate(
+            ed_center_indicator=Subquery(
+                EdCenterTicketIndicator.objects.filter(
+                    ed_center=ed_center,
+                    indicator=OuterRef('pk')
+                ).values('value')[:1]
+            ),
+        )
+        free_indicators = TicketIndicator.objects.filter(
+            project_year=project_year, 
+            is_free_form=True
+        ).annotate(
+            ed_center_indicator=Subquery(
+                EdCenterTicketIndicator.objects.filter(
+                    ed_center=ed_center,
+                    indicator=OuterRef('pk')
+                ).values('free_form_value')[:1]
+            )
+        )
+        programs = center_project_year.programs.all().annotate(
+            num_teachers=Count('teachers'),
+            num_workshops=Count('workshops'),
+        )
+        chosen_professions = TicketProfession.objects.filter(
+            programs__in=programs).distinct()
+        schools = School.objects.all()
+        approved_programs = TicketProgram.objects.filter(status='PRWD')
+        approved_programs= approved_programs.exclude(
+            id__in=center_project_year.programs.all()
+        )
+        center_quota = TicketQuota.objects.filter(ed_center=ed_center)
+    else:
+        filled_positions = EdCenterEmployeePosition.objects.filter(
+            ed_center=ed_center,
+        )
+        empty_positions = project_year.positions.exclude(
+            positions_employees__in=filled_positions
+        )
 
+        indicators = Indicator.objects.filter(
+            project_year=project_year, 
+            is_free_form=False
+        ).annotate(
+            ed_center_indicator_2021=Subquery(
+                EdCenterIndicator.objects.filter(
+                    ed_center=ed_center,
+                    indicator=OuterRef('pk')
+                ).values('value_2021')[:1]
+            ),
+            ed_center_indicator_2022=Subquery(
+                EdCenterIndicator.objects.filter(
+                    ed_center=ed_center,
+                    indicator=OuterRef('pk')
+                ).values('value_2022')[:1]
+            ),
+        )
+        free_indicators = Indicator.objects.filter(
+            project_year=project_year, 
+            is_free_form=True
+        ).annotate(
+            ed_center_indicator=Subquery(
+                EdCenterIndicator.objects.filter(
+                    ed_center=ed_center,
+                    indicator=OuterRef('pk')
+                ).values('free_form_value')[:1]
+            )
+        )
+        programs = ed_center.programs.all().annotate(
+            num_teachers=Count('teachers'),
+            num_workshops=Count('workshops'),
+        )
+        
+    workshops = Workshop.objects.filter(
+        education_center=ed_center).exclude(name=None)
+    competencies = Competence.objects.filter(is_irpo=True)
+    employees = ed_center.employees.all().annotate(
+            full_name=Concat('last_name', Value(' '), 'first_name', Value(' '), 
+                            'middle_name')
+        )
+    teachers = ed_center.teachers.all().annotate(
+        full_name=Concat('last_name', Value(' '), 'first_name', Value(' '), 
+                        'middle_name')
+    )
+    professions = TicketProfession.objects.all()
+    prof_enviroments = ProfEnviroment.objects.all()
+
+    disability_types = DisabilityType.objects.all()
+    age_groups = AgeGroup.objects.all()
+    
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
         'employees': employees,
         'programs': programs,
+        'approved_programs': approved_programs,
         'teachers': teachers,
         'workshops': workshops,
+        'professions': professions,
+        'chosen_professions': chosen_professions,
+        'schools': schools,
+        'prof_enviroments': prof_enviroments,
+        'age_groups': age_groups,
+        'disability_types': disability_types,
         'project_year': project_year,
         'filled_positions': filled_positions,
         'empty_positions': empty_positions,
@@ -449,7 +681,8 @@ def ed_center_application(request, ed_center_id):
         'indicators': indicators,
         'free_indicators': free_indicators,
         'competencies': competencies,
-        'center_qouta': center_qouta,
+        'center_quota': center_quota,
+        'project': project,
         'stage': stage
     })
 

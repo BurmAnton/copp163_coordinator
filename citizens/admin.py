@@ -111,7 +111,7 @@ class SchoolAdmin(admin.ModelAdmin):
         ('city', DropdownFilter),
         ('school_coordinators', RelatedOnlyDropdownFilter)
     )
-    list_display = ('name', 'city', 'adress', 'specialty')
+    list_display = ('name', 'inn', 'territorial_administration', 'municipality')
     filter_horizontal = ("school_coordinators",)
     inlines = [SchoolClassInline]
     fieldsets = (
