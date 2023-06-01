@@ -185,7 +185,8 @@ def ed_center_application(request, ed_center_id):
                     profession = TicketProfession(
                         name=profession,
                         prof_enviroment=prof_enviroment,
-                        is_federal=False
+                        is_federal=False,
+                        is_centers=True
                     )
                     profession.save()
                 else:

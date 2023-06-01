@@ -96,7 +96,7 @@ def load_profession(sheet, row):
         profession, is_new = TicketProfession.objects.get_or_create(
             name=name,
             prof_enviroment=prof_enviroment,
-            is_federal=True
+            is_federal=False
         )
         return ['OK', is_new, profession]
     return ['MissingField', missing_fields, row]

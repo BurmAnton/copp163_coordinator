@@ -1182,9 +1182,11 @@
                         <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                             <button class="btn btn-outline-primary" name="export-programs">Скачать список программ в эксель</button>
                         </form>
-                        {%endif%}
+                        <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить программу</button>
+                        {%else%}
                         <button class="btn btn-outline-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramsModal">Добавить из банка программы</button>
                         <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить новую</button>
+                        {%endif%}
                     </div>
                 </div>
                 <table class="table">
