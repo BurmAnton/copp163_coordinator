@@ -237,7 +237,24 @@ class EducationCenterTicketProjectYear(models.Model):
     step_6_commentary = models.TextField(
         "Шаг 6. Комментарий", null=True, blank=True, default=""
     )
+    step_8_check = models.BooleanField("Шаг 8. Проверка", default=False)
+    step_8_commentary = models.TextField(
+        "Шаг 8. Комментарий", null=True, blank=True, default=""
+    )
     quota = models.IntegerField('Квота', null=False, blank=False, default=0)
+
+    def doc_directory_path(instance, filename):
+        return 'media/applications/{0}/{1}'.format(
+            instance.id, filename
+        )
+    application_file = models.FileField(
+        "Скан заявки",
+        null=True, 
+        blank=True,
+        upload_to=doc_directory_path
+    )
+    appl_track_number = models.CharField(
+        "Трек номер", max_length=150, blank=True, null=True)
 
     def __str__(self):
         return  f'{self.ed_center} ({self.project_year.year} г.)'
