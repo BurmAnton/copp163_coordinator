@@ -318,7 +318,7 @@
                             </select>
                         </div>
                         <div class="form mb-3 filter-selectpicker">
-                            <select class="selectpicker w-100" title="Программы обучения (реализуемые педагогом)" data-live-search="true" name="programs" multiple required>
+                            <select class="selectpicker w-100" title="Программы профпроб (реализуемые педагогом)" data-live-search="true" name="programs" multiple>
                                 {% if project == 'bilet'%}
                                     {% for program in programs %}
                                         <option value="{{program.id}}">{{program}}</option>
@@ -391,7 +391,7 @@
                             </select>
                         </div>
                         <div class="form mb-3 filter-selectpicker">
-                            <select class="selectpicker w-100" title="Программы обучения (реализуемые в аудитории)" data-live-search="true" name="programs" multiple required>
+                            <select class="selectpicker w-100" title="Программы профпроб (реализуемые в аудитории)" data-live-search="true" name="programs" multiple required>
                                 {% if project == 'bilet'%}
                                     {% for program in programs %}
                                         <option value="{{program.id}}">{{program}}</option>
@@ -697,7 +697,7 @@
                                 </select>
                             </div>
                             <div class="form mb-3 filter-selectpicker">
-                                <select class="selectpicker w-100" title="Программы обучения (реализуемые педагогом)" data-live-search="true" name="programs" multiple required>
+                                <select class="selectpicker w-100" title="Программы профпроб (реализуемые педагогом)" data-live-search="true" name="programs" multiple>
                                     {% if project == 'bilet'%}
                                         {% for program in teacher.ticket_programs.all %}
                                             <option value="{{program.id}}" selected>{{program}}</option>
@@ -786,7 +786,7 @@
                                 </select>
                             </div>
                             <div class="form mb-3 filter-selectpicker">
-                                <select class="selectpicker w-100" title="Программы обучения (реализуемые в аудитории)" data-live-search="true" name="programs" multiple required>
+                                <select class="selectpicker w-100" title="Программы профпроб (реализуемые в аудитории)" data-live-search="true" name="programs" multiple required>
                                     {% if project == 'bilet'%}
                                         {% for program in workshop.ticket_programs.all %}
                                             <option value="{{program.id}}" selected>{{program}}</option>
@@ -911,7 +911,7 @@
                             </select>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="ApplDocsLinkInput" name="appl_docs_link" value="{{center_project_year.appl_docs_link}}" required>
+                            <input type="input" class="form-control" id="ApplDocsLinkInput" name="appl_docs_link" value="{{center_project_year.appl_docs_link}}">
                             <label for="ApplDocsLinkInput">Полный комплект документов (ссылка на яндекс диск)</label>
                         </div>
                         {% if project != 'bilet' %}
@@ -1125,7 +1125,7 @@
                                             <div class="form mb-3 filter-selectpicker">
                                                 <select class="selectpicker w-100" title="Ответственное контактное лицо" data-live-search="true" name="employee_id" required>
                                                     {% for employee in employees %}
-                                                        <option value="{{employee.id}}">{{employee.get_name}} ({{employee.position}})</option>
+                                                        <option value="{{employee.id}}">{{employee.get_name}}</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>
