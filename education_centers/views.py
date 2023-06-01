@@ -208,7 +208,6 @@ def ed_center_application(request, ed_center_id):
                 author.email=email
                 author.save()
                 
-                education_form = request.POST['education_form']
                 age_groups = request.POST.getlist('age_groups')
                 disability_types = request.POST.getlist('disability_types')
                 program = TicketProgram(
@@ -216,7 +215,8 @@ def ed_center_application(request, ed_center_id):
                     profession=profession,
                     description=description,
                     author=author,
-                    education_form=education_form,
+                    program_link=request.POST['program_link'],
+                    education_form='FLL',
                 )
                 program.save()
                 program.disability_types.add(*disability_types)
@@ -268,11 +268,11 @@ def ed_center_application(request, ed_center_id):
                 education_level = request.POST['education_level'],
                 education_major = request.POST['education_major'],
                 position = request.POST['position'],
+                experience = request.POST['experience']
             )
             if project == 'bilet':
                 teacher.bvb_experience = request.POST['bvb_experience']
             else:
-                teacher.experience = request.POST['experience']
                 teacher.additional_education = request.POST['additional_education']
             teacher.save()
             if 'bilet' in request.POST:
@@ -392,6 +392,7 @@ def ed_center_application(request, ed_center_id):
                 )
                 program.profession = profession
                 program.description = request.POST['description']
+                program.program_link=request.POST['program_link']
                 teacher_id =request.POST['teacher_id']
                 teacher = get_object_or_404(Teacher, id=teacher_id)
                 email = request.POST['email']
@@ -419,10 +420,9 @@ def ed_center_application(request, ed_center_id):
                 program.description = request.POST['description']
                 program.entry_requirements = request.POST['entry_requirements']
                 program.program_type = request.POST['program_type']
-                program.education_form = request.POST['education_form']
+                program.education_form = 'FLL'
                 program.duration = int(request.POST['duration'])
                 program.notes = request.POST['notes']
-                if project == 'bilet': program.is_bvb = True
             program.save()
         elif 'change-teacher' in request.POST:
             stage=4
@@ -438,10 +438,10 @@ def ed_center_application(request, ed_center_id):
             teacher.education_level = request.POST['education_level']
             teacher.education_major = request.POST['education_major']
             teacher.position = request.POST['position']
+            teacher.experience = request.POST['experience']
             if project == 'bilet':
                 teacher.bvb_experience = request.POST['bvb_experience']
             else:
-                teacher.experience = request.POST['experience']
                 teacher.additional_education = request.POST['additional_education']
             teacher.save()
             if 'bilet' in request.POST:

@@ -115,7 +115,7 @@ def programs(form):
         'Почта автора программы', 'Место работы автора программы', 
         'Формат проведения', 'Возрастная категория 6-7', 
         'Возрастная категория 8-9', 'Возрастная категория 10-11', 
-        'Доступность для участников с ОВЗ'
+        'Доступность для участников с ОВЗ', 'Файл программы (ссылка)'
     }
 
     cheak_col_names = cheak_col_match(sheet, fields_names)
@@ -189,6 +189,7 @@ def load_program(sheet, row):
         age_groups.append('8-9 класс')
     if sheet['Возрастная категория 10-11'][row] == 'Да':
         age_groups.append('10-11 класс')
+    program_link = sheet['Файл программы (ссылка)'][row]
 
     if len(missing_fields) == 0:
         ed_center = EducationCenter.objects.filter(short_name=ed_center_name)
@@ -236,6 +237,7 @@ def load_program(sheet, row):
         )
         age_groups = AgeGroup.objects.filter(name__in=age_groups)
         program.age_groups.set(age_groups)
+        program.program_link = program_link
         program.save()
 
         return ['OK', is_new, program]

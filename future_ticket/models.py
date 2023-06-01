@@ -124,6 +124,8 @@ class TicketProgram(models.Model):
     description = models.TextField(
         "Краткое описание задания", null=True, blank=True
     )
+    program_link = models.CharField("Ссылка на программу", max_length=500, 
+                                    blank=True, null=True)
     age_groups = models.ManyToManyField(
         AgeGroup,
         verbose_name='Возрастная категория',
@@ -192,11 +194,16 @@ class EducationCenterTicketProjectYear(models.Model):
         on_delete=models.CASCADE
     )
     STAGES = [
-        ('FLLNG', "заполнение заявки"),
-        ('VRFD', "заявка проверена"),
-        ('FRMD', "документы сформированы"),
-        ('PRVD', "заявка принята"),
+        ('FLLNG', "заполнение"),
+        ('FLLD', "на проверке"),
+        ('RWRK', "отправленна на доработку"),
+        ('VRFD', "проверена"),
+        ('FRMD', "сформирована"),
+        ('DWNLD', "подгружена"),
+        ('PRVD', "принята"),
     ]
+    stage = models.CharField("Работа с заявкой", max_length=5, 
+                             default='FLLNG', choices=STAGES)
     programs = models.ManyToManyField(
         TicketProgram,
         verbose_name="Программы",
@@ -205,8 +212,7 @@ class EducationCenterTicketProjectYear(models.Model):
     )
     is_disability = models.BooleanField("ОВЗ?", default=False)
     appl_docs_link = models.TextField('Ссылка на комп. документов', default="")
-    stage = models.CharField("Работа с заявкой", max_length=5, 
-                             default='FLLNG', choices=STAGES)
+    
     step_1_check = models.BooleanField("Шаг 1. Проверка", default=False)
     step_1_commentary = models.TextField(
         "Шаг 1. Комментарий", null=True, blank=True, default=""
