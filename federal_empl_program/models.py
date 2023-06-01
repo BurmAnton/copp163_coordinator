@@ -49,10 +49,13 @@ class EducationCenterProjectYear(models.Model):
         on_delete=models.CASCADE
     )
     STAGES = [
-        ('FLLNG', "заполнение заявки"),
-        ('VRFD', "заявка проверена"),
-        ('FRMD', "документы сформированы"),
-        ('PRVD', "заявка принята"),
+        ('FLLNG', "заполнение"),
+        ('FLLD', "на проверке"),
+        ('RWRK', "отправленна на доработку"),
+        ('VRFD', "проверена"),
+        ('FRMD', "сформирована"),
+        ('DWNLD', "подгружена"),
+        ('PRVD', "принята"),
     ]
     appl_docs_link = models.TextField('Ссылка на комп. документов', default="")
     stage = models.CharField("Работа с заявкой", max_length=5, 

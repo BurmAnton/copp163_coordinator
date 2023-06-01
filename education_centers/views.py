@@ -13,7 +13,7 @@ from users.models import DisabilityType
 
 from . import imports
 from . import exports
-from .forms import ImportDataForm
+from .forms import ImportDataForm, ImportTicketDataForm
 from .contracts import create_document, combine_all_docx, create_application
 from .models import BankDetails, Competence, ContractorsDocument, DocumentType,\
                     EducationCenter, EducationCenterHead, EducationProgram,\
@@ -498,53 +498,42 @@ def ed_center_application(request, ed_center_id):
             workshop.delete()
         elif 'export-programs' in request.POST:
             return exports.programs(ed_centers=[ed_center,])
-        elif 'approve-step' in request.POST:
-            step = request.POST['step']
-            if   step == "1": center_project_year.step_1_check = True
-            elif step == "2": 
-                center_project_year.step_2_check = True
-                stage=2
-            elif step == "3": 
-                center_project_year.step_3_check = True
-                stage=3
-            elif step == "4": 
-                center_project_year.step_4_check = True
-                stage=4
-            elif step == "5": 
-                center_project_year.step_5_check = True
-                stage=5
-            elif step == "6": 
-                center_project_year.step_6_check = True
-                stage=6
-            if center_project_year.step_1_check and \
-               center_project_year.step_2_check and \
-               center_project_year.step_3_check and \
-               center_project_year.step_4_check and \
-               center_project_year.step_5_check and \
-               center_project_year.step_6_check:
-                center_project_year.stage = 'VRFD'
-            center_project_year.save()
         elif 'step-comment' in request.POST:
             step = request.POST['step']
             comment = request.POST['step_commentary']
-            if   step == "1":center_project_year.step_1_commentary = comment
+            if   step == "1":
+                center_project_year.step_1_commentary = comment
+                center_project_year.step_1_check = False
+                center_project_year.stage = 'RWRK'
             elif step == "2": 
                 center_project_year.step_2_commentary = comment
+                center_project_year.step_2_check = False
+                center_project_year.stage = 'RWRK'
                 stage=2
             elif step == "3": 
                 center_project_year.step_3_commentary = comment
+                center_project_year.step_3_check = False
+                center_project_year.stage = 'RWRK'
                 stage=3
             elif step == "4": 
                 center_project_year.step_4_commentary = comment
+                center_project_year.step_4_check = False
+                center_project_year.stage = 'RWRK'
                 stage=4
             elif step == "5": 
                 center_project_year.step_5_commentary = comment
+                center_project_year.step_5_check = False
+                center_project_year.stage = 'RWRK'
                 stage=5
             elif step == "6": 
                 center_project_year.step_6_commentary = comment
+                center_project_year.step_6_check = False
+                center_project_year.stage = 'RWRK'
                 stage=6
             center_project_year.save()
         elif 'generate-application'in request.POST:
+           center_project_year.stage = 'FRMD'
+           center_project_year.save()
            doc_type = get_object_or_404(DocumentType, name="Заявка")
            old_applications = ContractorsDocument.objects.filter(
                                 doc_type=doc_type, contractor=ed_center)
@@ -578,6 +567,48 @@ def ed_center_application(request, ed_center_id):
             )
             quota.value = value
             quota.save()
+        elif 'approve-step' in request.POST:
+            step = request.POST['step']
+            if   step == "1": center_project_year.step_1_check = True
+            elif step == "2": 
+                center_project_year.step_2_check = True
+                stage=2
+            elif step == "3": 
+                center_project_year.step_3_check = True
+                stage=3
+            elif step == "4": 
+                center_project_year.step_4_check = True
+                stage=4
+            elif step == "5": 
+                center_project_year.step_5_check = True
+                stage=5
+            elif step == "6": 
+                center_project_year.step_6_check = True
+                stage=6
+            elif step == "8": 
+                center_project_year.step_8_check = True
+                stage=8
+                center_project_year.stage = 'PRVD'
+            if center_project_year.step_1_check and \
+               center_project_year.step_2_check and \
+               center_project_year.step_3_check and \
+               center_project_year.step_4_check and \
+               center_project_year.step_5_check and \
+               center_project_year.step_6_check:
+                center_project_year.stage = 'VRFD'
+            center_project_year.save()
+        elif 'send-application' in request.POST:
+            center_project_year.stage = 'FLLD'
+            center_project_year.save()
+        elif 'upload-application' in request.POST:
+            stage = 8
+            center_project_year.stage = 'FRMD'
+            center_project_year.save()
+            form = ImportTicketDataForm(request.POST, request.FILES)
+            if form.is_valid():
+                center_project_year.application_file = request.FILES['import_file']
+                center_project_year.appl_track_number = request.POST['appl_track_number']
+                center_project_year.save()
     approved_programs = None
     chosen_professions = None
     schools = None
@@ -702,7 +733,8 @@ def ed_center_application(request, ed_center_id):
         'competencies': competencies,
         'center_quota': center_quota,
         'project': project,
-        'stage': stage
+        'stage': stage,
+        'form': ImportTicketDataForm()
     })
 
 @csrf_exempt
