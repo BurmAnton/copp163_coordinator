@@ -391,7 +391,7 @@
                             </select>
                         </div>
                         <div class="form mb-3 filter-selectpicker">
-                            <select class="selectpicker w-100" title="Программы профпроб (реализуемые в аудитории)" data-live-search="true" name="programs" multiple required>
+                            <select class="selectpicker w-100" title="Программы профпроб (реализуемые в аудитории)" data-live-search="true" name="programs" multiple>
                                 {% if project == 'bilet'%}
                                     {% for program in programs %}
                                         <option value="{{program.id}}">{{program}}</option>
@@ -786,7 +786,7 @@
                                 </select>
                             </div>
                             <div class="form mb-3 filter-selectpicker">
-                                <select class="selectpicker w-100" title="Программы профпроб (реализуемые в аудитории)" data-live-search="true" name="programs" multiple required>
+                                <select class="selectpicker w-100" title="Программы профпроб (реализуемые в аудитории)" data-live-search="true" name="programs" multiple>
                                     {% if project == 'bilet'%}
                                         {% for program in workshop.ticket_programs.all %}
                                             <option value="{{program.id}}" selected>{{program}}</option>
@@ -910,11 +910,11 @@
                                 <option value="N">Средний</option>
                             </select>
                         </div>
-                        <div class="form-floating mb-3">
-                            <input type="input" class="form-control" id="ApplDocsLinkInput" name="appl_docs_link" value="{{center_project_year.appl_docs_link}}">
-                            <label for="ApplDocsLinkInput">Полный комплект документов (ссылка на яндекс диск)</label>
-                        </div>
                         {% if project != 'bilet' %}
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" id="ApplDocsLinkInput" name="appl_docs_link" value="{{center_project_year.appl_docs_link}}">
+                                <label for="ApplDocsLinkInput">Полный комплект документов (ссылка на яндекс диск)</label>
+                            </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="is_federal" name="is_federal" {% if center_project_year.is_federal %} checked {% endif %}>
                                 <label class="form-check-label" for="is_federal">
@@ -1229,16 +1229,17 @@
                                 </td>
                             {%else%}
                                 <td scope="row">{{ forloop.counter }}</td>
-                                <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeProgramModal{{program.id}}">{{program.profession}}</td>
-                                <td scope="row">{{program.profession.prof_enviroment}}</td>
-                                <td scope="row">{{program.description}}</td>
-                                <td scope="row">{{program.author}}</td>
+                                <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeProgramModal{{program.id}}">{{program.program_name}}</td>
+                                <td scope="row">{{program.competence}}</td>
+                                <td scope="row">{{program.profession}}</td>
+                                <td scope="row">{{program.get_program_type_display}}</td>
+                                <td scope="row">{{program.duration}}</td>
                                 <td scope="row">
                                     {{program.num_teachers}} педагогов <br>
                                     {{program.num_workshops}} аудиторий 
                                 </td>
                                 <td scope="row">{{program.get_education_form_display}}</td>
-                                <td scope="row">{{program.get_age_group_display}}</td>
+                                <td scope="row">{{program.get_entry_requirements_display}}</td>
                             {%endif%}
                         </tr>
                     {% empty %}
