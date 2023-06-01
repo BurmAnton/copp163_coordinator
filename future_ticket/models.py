@@ -31,6 +31,7 @@ class TicketProfession(models.Model):
         on_delete=models.CASCADE
     )
     is_federal = models.BooleanField("Федеральная?", default=False)
+    is_centers = models.BooleanField("Создана ЦО?", default=False)
 
     class Meta:
         verbose_name = "Профессия"
