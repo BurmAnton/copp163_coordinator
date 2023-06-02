@@ -938,23 +938,32 @@
                                 </label>
                             </div>
                         {% endif %}
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="is_ndc" name="is_ndc" {% if ed_center.is_ndc %} checked {% endif %}>
-                            <label style="padding-top: 2px !important" class="form-check-label" for="is_ndc">
-                                {% if project != 'bilet' %}Является ли организация плательщиком НДС (при реализации образовательных услуг)
-                                {% else %}Является ли организация плательщиком НДС (при оказании услуг по реализации мероприятий)
-                                {% endif %}
-                            </label>
-                        </div>
                         {% if project == 'bilet' %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_ndc" name="is_ndc" {% if center_project_year.is_ndc %} checked {% endif %}>
+                                <label style="padding-top: 2px !important" class="form-check-label" for="is_ndc">
+                                    Является ли организация плательщиком НДС (при оказании услуг по реализации мероприятий)
+                                </label>
+                            </div>
                             <div class="alert alert-warning w-90" role="alert">
                                 Внимание! Проведение профпроб не является образовательной услугой и не освобождается от НДС на основании статьи 149 НК РФ. Проконсультируйтесь с бухгалтером вашей организации - возможны другие основания для освобождения от НДС.
                             </div>
+                            <div class="form-floating w-90 mb-3">
+                                <input type="input" class="form-control" id="NoneNdcReasonOrgInput" name="none_ndc_reason" maxlength="500" value="{{center_project_year.none_ndc_reason}}">
+                                <label for="NoneNdcReasonOrgInput">Если не является на основании какой статьи Налогового кодекса РФ</label>
+                            </div>
+                        {% else %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_ndc" name="is_ndc" {% if ed_center.is_ndc %} checked {% endif %}>
+                                <label style="padding-top: 2px !important" class="form-check-label" for="is_ndc">
+                                    Является ли организация плательщиком НДС (при реализации образовательных услуг)
+                                </label>
+                            </div>
+                            <div class="form-floating w-90 mb-3">
+                                <input type="input" class="form-control" id="NoneNdcReasonOrgInput" name="none_ndc_reason" maxlength="500" value="{{ed_center.none_ndc_reason}}">
+                                <label for="NoneNdcReasonOrgInput">Если не является на основании какой статьи Налогового кодекса РФ</label>
+                            </div>
                         {% endif %}
-                        <div class="form-floating w-90 mb-3">
-                            <input type="input" class="form-control" id="NoneNdcReasonOrgInput" name="none_ndc_reason" maxlength="500" value="{{ed_center.none_ndc_reason}}">
-                            <label for="NoneNdcReasonOrgInput">Если не является на основании какой статьи Налогового кодекса РФ</label>
-                        </div>
                     </div>
                 <h3>1.2 Образовательная лицензия</h3>
                     <div class="license-details">

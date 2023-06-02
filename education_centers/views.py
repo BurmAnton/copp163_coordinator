@@ -175,12 +175,20 @@ def ed_center_application(request, ed_center_id):
                 try:
                     if request.POST['is_ndc'] == 'on': is_ndc = True
                 except: is_ndc = False
-                if is_ndc == False:
-                    ed_center.is_ndc = False
-                    ed_center.none_ndc_reason = request.POST['none_ndc_reason'].strip()
+                if 'bilet' not in request.POST:
+                    if is_ndc == False:
+                        ed_center.is_ndc = False
+                        ed_center.none_ndc_reason = request.POST['none_ndc_reason'].strip()
+                    else:
+                        ed_center.is_ndc = True
+                        ed_center.none_ndc_reason = ""
                 else:
-                    ed_center.is_ndc = True
-                    ed_center.none_ndc_reason = ""
+                    if is_ndc == False:
+                        center_project_year.is_ndc = False
+                        center_project_year.none_ndc_reason = request.POST['none_ndc_reason'].strip()
+                    else:
+                        center_project_year.is_ndc = True
+                        center_project_year.none_ndc_reason = ""
                 ed_center.name = request.POST['name'].strip()
                 ed_center.short_name = request.POST['short_name'].strip()
                 ed_center.short_name_r = request.POST['short_name_r'].strip()
