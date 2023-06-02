@@ -9,7 +9,8 @@ from docx import Document as Document_compose
 from docxtpl import DocxTemplate
 
 from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndicator, ProjectPosition
-from .models import ContractorsDocument, DocumentType, EducationProgram, Teacher
+from future_ticket.models import EdCenterTicketIndicator, TicketEdCenterEmployeePosition, TicketProfession, TicketProjectPosition
+from .models import ContractorsDocument, DocumentType, EducationProgram, Teacher, Workshop
 
 from docxcompose.composer import Composer
 
@@ -76,6 +77,15 @@ def create_document(doc_type, contractor, doc_date, parent_doc, groups):
 
     return contract
 
+def combine_all_docx(filename_master,files_list, file_name):
+    number_of_sections=len(files_list)
+    master = Document_compose(filename_master)
+    composer = Composer(master)
+    for i in range(0, number_of_sections):
+        doc_temp = Document_compose(files_list[i].doc_file)
+        composer.append(doc_temp)
+    composer.save(file_name)
+
 def create_application(center_project_year):
     ed_center = center_project_year.ed_center
     contact_position = ProjectPosition.objects.get(position="Контактное лицо и администратор ЦО")
@@ -83,7 +93,8 @@ def create_application(center_project_year):
     resp_position = ProjectPosition.objects.get(position="Контакт, ответственный за заключение договора")
     citizens_position = ProjectPosition.objects.get(position="Лицо, подписывающее договоры с гражданами")
     programs_position =ProjectPosition.objects.get(position="Ответственный за формирование каталога программ")
-    programs = EducationProgram.objects.filter(ed_center=ed_center).exclude(is_bvb=True)
+    programs = EducationProgram.objects.filter(ed_center=ed_center)
+    
     context = {
         'creation_date' : date_format(date.today(), 'd «E» Y г.'),
         'ed_center': ed_center,
@@ -110,6 +121,7 @@ def create_application(center_project_year):
         'experience_programs': EdCenterIndicator.objects.get(indicator__name="Имеется опыт участия организации в реализации программ профессионального обучения и дополнительного профессионального образования в сетевой форме (укажите перечень программ):", ed_center=ed_center),
         'experience_other': EdCenterIndicator.objects.get(indicator__name="Укажите иную информацию по профилю профессионального обучения и дополнительного профессионального образования", ed_center=ed_center),
     }
+    
     doc_type = get_object_or_404(DocumentType, name="Заявка")
     
     document = DocxTemplate(doc_type.template)
@@ -133,11 +145,59 @@ def create_application(center_project_year):
 
     return document
 
-def combine_all_docx(filename_master,files_list, file_name):
-    number_of_sections=len(files_list)
-    master = Document_compose(filename_master)
-    composer = Composer(master)
-    for i in range(0, number_of_sections):
-        doc_temp = Document_compose(files_list[i].doc_file)
-        composer.append(doc_temp)
-    composer.save(file_name)
+def create_ticket_application(center_project_year):
+    ed_center = center_project_year.ed_center
+    contact_position = TicketProjectPosition.objects.get(position="Контактное лицо и администратор ЦО")
+    sign_position = TicketProjectPosition.objects.get(position="Должностное лицо, подписывающее договор")
+    programs = center_project_year.programs.all()
+    professions = TicketProfession.objects.filter(
+        programs__in=programs).distinct()
+    professions_dict = dict()
+    for profession in professions:
+        professions_dict[f'{profession.name}'] = dict()
+        profession_programs = programs.filter(profession=profession)
+        professions_dict[f'{profession.name}']['teachers'] = Teacher.objects.filter(
+            organization=ed_center,
+            ticket_programs__in=profession_programs
+        ).distinct()
+        professions_dict[f'{profession.name}']['workshops'] = Workshop.objects.filter(
+            education_center=ed_center,
+            ticket_programs__in=profession_programs
+        ).distinct()
+    
+    context = {
+        'creation_date' : date_format(date.today(), 'd «E» Y г.'),
+        'ed_center': ed_center,
+        'center_project_year': center_project_year,
+        'contact_employee': TicketEdCenterEmployeePosition.objects.get(ed_center=ed_center, position=contact_position),
+        'sign_employee': TicketEdCenterEmployeePosition.objects.get(ed_center=ed_center, position=sign_position),
+        'programs': programs,
+        'professions': professions,
+        'professions_dict': professions_dict,
+        'events': EdCenterTicketIndicator.objects.get(indicator__name="Мероприятия по профессиональной ориентации учащихся 6–11-х классов общеобразовательных организаций в рамках проекта «Билет в будущее»", ed_center=ed_center).value,
+        'training': EdCenterTicketIndicator.objects.get(indicator__name="Профессиональные пробы в рамках регионального проекта «Мой выбор»", ed_center=ed_center).value,
+        'courses': EdCenterTicketIndicator.objects.get(indicator__name="Предпрофильные курсы для учащихся 9-х классов, проведение дней открытых дверей с мастер-классами", ed_center=ed_center).value,
+        'nti': EdCenterTicketIndicator.objects.get(indicator__name="Прочие профориентационные мероприятия, включая Олимпиады НТИ (всероссийские многопрофильные командные инженерные соревнования для школьников 8-11 классов), фестивали и т.д.", ed_center=ed_center).value
+    }
+    doc_type = get_object_or_404(DocumentType, name="Заявка (БВБ)")
+
+    document = DocxTemplate(doc_type.template)
+    document.render(context)
+
+    path = f'media/applications/{center_project_year.id}'
+    isExist = os.path.exists(path)
+    if not isExist:
+        os.makedirs(path)
+    document_name = "заявка_ПКО_СЗ"
+    path_to_contract = f'{path}/{document_name}.docx'
+    document.save(path_to_contract)
+    contract, is_new = ContractorsDocument.objects.get_or_create(
+        contractor=ed_center,
+        doc_type=doc_type,
+        register_number=get_document_number(doc_type, ed_center),
+        parent_doc=None
+    )
+    contract.doc_file.name=path_to_contract
+    contract.save()
+
+    return document
