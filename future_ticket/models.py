@@ -211,7 +211,8 @@ class EducationCenterTicketProjectYear(models.Model):
         blank=True
     )
     is_disability = models.BooleanField("ОВЗ?", default=False)
-    appl_docs_link = models.TextField('Ссылка на комп. документов', default="")
+    appl_docs_link = models.TextField('Ссылка на комп. документов', 
+                                      default="", null=True, blank=True)
     
     step_1_check = models.BooleanField("Шаг 1. Проверка", default=False)
     step_1_commentary = models.TextField(
@@ -241,7 +242,6 @@ class EducationCenterTicketProjectYear(models.Model):
     step_8_commentary = models.TextField(
         "Шаг 8. Комментарий", null=True, blank=True, default=""
     )
-    quota = models.IntegerField('Квота', null=False, blank=False, default=0)
 
     def doc_directory_path(instance, filename):
         return 'media/applications/{0}/{1}'.format(
