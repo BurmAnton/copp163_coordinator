@@ -1,0 +1,59 @@
+body {
+  background-color: rgba(242, 242, 242, 0.5411764706);
+}
+body h2 {
+  font-size: 24px;
+}
+body h3 {
+  font-size: 20px;
+  padding-left: 10px;
+  margin: 0;
+}
+body .page-hdr {
+  margin-top: 25px;
+  display: grid;
+  justify-content: center;
+  justify-items: center;
+  grid-template-columns: 30% 30% 30%;
+}
+body .page-hdr h1 {
+  grid-row: 1;
+  grid-column: 2;
+}
+body .page-hdr .project-choice {
+  grid-row: 1;
+  grid-column: 3;
+}
+body .page-hdr h3 {
+  grid-row: 2;
+  grid-column: 2;
+}
+body .centers-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 85%;
+  margin: auto;
+  margin-top: 25px;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
+  padding: 25px 50px 25px 50px;
+}
+body .centers-list h2 {
+  text-align: center;
+}
+body .centers-list table th {
+  color: #394959;
+  font-weight: 400 !important;
+  font-size: 16px;
+  line-height: 20px;
+  border-top: 0;
+  border-bottom: 2px solid #394959;
+}
+body .centers-list table td {
+  color: #394959;
+  font-weight: 300 !important;
+  max-width: 250px;
+  word-wrap: break-word;
+}/*# sourceMappingURL=applications.css.map */
