@@ -50,9 +50,21 @@
                                                 <li><a class="dropdown-item" href="{% url 'quota_dashboard' %}">Распределение квоты</a></li>
                                                 {% if request.user.is_superuser %}
                                                     <li><a class="dropdown-item" href="{% url 'import_express' %}">Импорт с экспресса</a></li>
+                                                    <li><a class="dropdown-item" href="{% url 'applications' %}?p=zen">Мониторинг заявок</a></li>
                                                 {% endif %}
                                             </ul>
                                         </li>
+                                        {% if request.user.is_superuser %}
+                                            <li class="nav-item dropdown nav-link-fp">
+                                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    ФП «Билет в будущее»
+                                                </a>
+                                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                                        <li><a class="dropdown-item" href="{% url 'applications' %}?p=bilet">Мониторинг заявок</a></li>
+                                                    </ul>
+                                                </li>
+                                            </li>
+                                        {% endif %}
                                         {% if request.user.is_superuser %}
                                             <li class="nav-item">
                                                 <a class="nav-link" href="{% url 'contacts_list' %}">Партнёры</a>
