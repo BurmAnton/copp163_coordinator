@@ -14,7 +14,7 @@ from users.models import DisabilityType
 from . import imports
 from . import exports
 from .forms import ImportDataForm, ImportTicketDataForm
-from .contracts import create_document, combine_all_docx, create_application
+from .contracts import create_document, combine_all_docx, create_application, create_ticket_application
 from .models import BankDetails, Competence, ContractorsDocument, DocumentType,\
                     EducationCenter, EducationCenterHead, EducationProgram,\
                     Employee, Group, Teacher, Workshop
@@ -567,11 +567,18 @@ def ed_center_application(request, ed_center_id):
         elif 'generate-application'in request.POST:
            center_project_year.stage = 'FRMD'
            center_project_year.save()
-           doc_type = get_object_or_404(DocumentType, name="Заявка")
-           old_applications = ContractorsDocument.objects.filter(
-                                doc_type=doc_type, contractor=ed_center)
-           old_applications.delete()
-           document = create_application(center_project_year)
+           if 'bilet' in request.POST:
+               doc_type = get_object_or_404(DocumentType, name="Заявка (БВБ)")
+               old_applications = ContractorsDocument.objects.filter(
+                                        doc_type=doc_type, contractor=ed_center)
+               old_applications.delete()
+               document = create_ticket_application(center_project_year)
+           else:
+               doc_type = get_object_or_404(DocumentType, name="Заявка")
+               old_applications = ContractorsDocument.objects.filter(
+                                       doc_type=doc_type, contractor=ed_center)
+               old_applications.delete()
+               document = create_application(center_project_year)
            
            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
            response['Content-Disposition'] = f'attachment; filename=zayavka_{date.today()}.docx'
@@ -674,15 +681,12 @@ def ed_center_application(request, ed_center_id):
                 ).values('free_form_value')[:1]
             )
         )
-        programs = center_project_year.programs.all().annotate(
-            num_teachers=Count('teachers'),
-            num_workshops=Count('workshops'),
-        )
+        programs = center_project_year.programs.all()
         chosen_professions = TicketProfession.objects.filter(
             programs__in=programs).distinct()
         schools = School.objects.all()
         approved_programs = TicketProgram.objects.filter(status='PRWD')
-        approved_programs= approved_programs.exclude(
+        approved_programs = approved_programs.exclude(
             id__in=center_project_year.programs.all()
         )
         center_quota = TicketQuota.objects.filter(ed_center=ed_center)
