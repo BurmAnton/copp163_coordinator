@@ -213,7 +213,10 @@ class EducationCenterTicketProjectYear(models.Model):
     is_disability = models.BooleanField("ОВЗ?", default=False)
     appl_docs_link = models.TextField('Ссылка на комп. документов', 
                                       default="", null=True, blank=True)
-    
+    is_ndc = models.BooleanField("Платит НДС?", default=False)
+    none_ndc_reason = models.CharField(
+        "Основание работы без НДС", max_length=500, null=True, blank=True, default=""
+    )
     step_1_check = models.BooleanField("Шаг 1. Проверка", default=False)
     step_1_commentary = models.TextField(
         "Шаг 1. Комментарий", null=True, blank=True, default=""
