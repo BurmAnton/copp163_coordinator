@@ -40,6 +40,7 @@
                     <td scope="row">
                        <a href="{% url 'ed_center_application' center.ed_center.id %}?p={{project}}" target="_blank">
                             {{ center.ed_center.short_name }}
+                            {% if center.ed_center.short_name == "" %}{{center.ed_center.name}}{% endif %}
                        </a> 
                     </td>
                     <td scope="row">{{ center.get_stage_display }}</td>
