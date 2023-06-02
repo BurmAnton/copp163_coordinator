@@ -39,6 +39,31 @@ def index(request):
 def export_programs(request):
     return exports.programs(ed_centers=None)
 
+
+def applications(request):
+    project = request.GET.get('p', '')
+    project_year = request.GET.get('y', '')
+    if project_year != '': project_year = int(project_year)
+    else: project_year = datetime.now().year
+
+    if project == 'bilet':
+        project_year = get_object_or_404(TicketProjectYear, year=project_year)
+        centers_project_year = EducationCenterTicketProjectYear.objects.filter(
+            project_year=project_year,
+        ).exclude(stage='FLLNG')
+    else:
+        project_year = get_object_or_404(ProjectYear, year=project_year)
+        centers_project_year = EducationCenterProjectYear.objects.filter(
+            project_year=project_year
+        ).exclude(stage='FLLNG')
+        project = 'zen'
+
+    return render(request, "education_centers/applications.html", {
+        'project': project,
+        'project_year': project_year,
+        'centers_project_year': centers_project_year
+    })
+
 @csrf_exempt
 def ed_center_application(request, ed_center_id):
     project = request.GET.get('p', '')

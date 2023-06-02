@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load ed_centers_extras %}
+
+{% block title %}Мониторинг заявок{% endblock %}
+{% block style %}
+        <link href="{% static 'education_centers/css/applications.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'education_centers/js/applications.js' %}" rel="stylesheet"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="page-hdr">
+        <h1>Мониторинг заявков на ПКО</h1>
+        <div class="project-choice">
+            <a data-project="bilet" href="{% url 'applications' %}?p=bilet" class="project-btn btn {%if project == 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Билет в будущее</a>
+            <a data-project="zan" href="{% url 'applications' %}?p=zan" class="project-btn btn {%if project != 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Содействие занятости</a>
+        </div>
+        <h3> 
+            <b>Проект:</b> 
+            {% if project == 'bilet' %}
+                Билет в будущее
+            {% else %}
+                Содействие заянятости
+            {% endif %}
+        </h3>
+    </div>
+    <div class="centers-list">
+        <h2>Список участников ПКО</h2>
+        <table class="table">
+            <tr style="background-color: white;" class="sticky-top"> 
+                <th scope="col">№</th>
+                <th scope="col">ЦО</th>
+                <th scope="col">Статус</th>
+            </tr>
+            {%for center in centers_project_year %}
+                <tr class="">
+                    <td scope="row">{{ forloop.counter }}</td>
+                    <td scope="row">
+                       <a href="{% url 'ed_center_application' center.ed_center.id %}?p={{project}}" target="_blank">
+                            {{ center.ed_center.short_name }}
+                       </a> 
+                    </td>
+                    <td scope="row">{{ center.get_stage_display }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
