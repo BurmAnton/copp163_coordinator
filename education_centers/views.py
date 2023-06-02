@@ -50,12 +50,12 @@ def applications(request):
         project_year = get_object_or_404(TicketProjectYear, year=project_year)
         centers_project_year = EducationCenterTicketProjectYear.objects.filter(
             project_year=project_year,
-        ).exclude(stage='FLLNG')
+        )
     else:
         project_year = get_object_or_404(ProjectYear, year=project_year)
         centers_project_year = EducationCenterProjectYear.objects.filter(
             project_year=project_year
-        ).exclude(stage='FLLNG')
+        )
         project = 'zen'
 
     return render(request, "education_centers/applications.html", {
