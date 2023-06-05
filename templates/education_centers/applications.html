@@ -12,7 +12,7 @@
 
 {% block body %}
     <div class="page-hdr">
-        <h1>Мониторинг заявков на ПКО</h1>
+        <h1>Мониторинг заявок на ПКО</h1>
         <div class="project-choice">
             <a data-project="bilet" href="{% url 'applications' %}?p=bilet" class="project-btn btn {%if project == 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Билет в будущее</a>
             <a data-project="zan" href="{% url 'applications' %}?p=zan" class="project-btn btn {%if project != 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Содействие занятости</a>
