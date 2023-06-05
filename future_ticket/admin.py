@@ -75,11 +75,15 @@ class AgeGroupAdmin(admin.ModelAdmin):
 
 @admin.register(TicketProgram)
 class TicketProgramAdmin(admin.ModelAdmin):
+    search_fields = [
+        'profession__name',
+        'ed_center__name',
+        'ed_center__short_name'
+    ]
     list_display = [
         'profession', 
         'ed_center', 
         'education_form',
-        'description',
     ]
 
     
