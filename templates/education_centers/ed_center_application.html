@@ -566,9 +566,13 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
+                                <div class="d-grid gap-2">
+                                    <input style="display: block !important;" type="submit" class="btn btn-primary" name="change-program" value="Сохранить">
+                                </div>
+                            </form>
                                 <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                                     <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
-                                    <input type="submit" class="btn btn-danger" name="exclude-program" value="Удалить">
+                                    <input type="submit" class="btn btn-danger" name="delete-program" value="Удалить">
                                 </form>
                             </div>
                     </div>
@@ -606,8 +610,11 @@
                             </div>
                             <div class="form mb-3 filter-selectpicker">
                                 <select class="selectpicker w-100" title="Автор" data-live-search="true" name="teacher_id" required>
+                                    <option selected value="{{program.author.teacher.id}}">{{program.author.teacher.get_name}}</option>
                                     {% for teacher in teachers %}
-                                        <option {% if teacher == program.author.teacher %}selected{% endif %} value="{{teacher.id}}">{{teacher.full_name}}</option>
+                                        {% if teacher != program.author.teacher %}
+                                            <option value="{{teacher.id}}">{{teacher.full_name}}</option>
+                                        {% endif %}
                                     {% endfor %}
                                 </select>
                             </div>
@@ -650,16 +657,17 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            {% if program.ed_center == ed_center %}
+                            {% if program.ed_center == ed_center and program.status == 'NEW' %}
                                 <div class="d-grid gap-2">
-                                    <input type="submit" class="btn btn-primary" name="change-program" value="Сохранить">
+                                    <input style="display: block !important;" type="submit" class="btn btn-primary" name="change-program" value="Сохранить">
                                 </div>
-                                </form>
+                            </form>
                                 <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                                     <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
                                     <input type="submit" class="btn btn-danger" name="delete-program" value="Удалить">
                                 </form>
                             {% else %}
+                                </form>
                                 <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                                     <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
                                     <input type="submit" class="btn btn-danger" name="exclude-program" value="Убрать">
