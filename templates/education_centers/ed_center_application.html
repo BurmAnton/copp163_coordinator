@@ -476,7 +476,7 @@
                                 <label for="PhoneInput{{employee.id}}">Телефон</label>
                             </div>
                         </div>
-                        {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                        {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
                             <div class="modal-footer">
                                 <div class="d-grid gap-2">
                                     <input type="submit" class="btn btn-primary" name="change-employee" value="Сохранить">
@@ -567,7 +567,7 @@
                                     <textarea class="form-control" id="NotesInput{{program.id}}" name="notes" rows="2">{{program.notes}}</textarea>
                                 </div>
                             </div>
-                            {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                            {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
                                 <div class="modal-footer">
                                     <div class="d-grid gap-2">
                                         <input style="display: block !important;" type="submit" class="btn btn-primary" name="change-program" value="Сохранить">
@@ -660,7 +660,7 @@
                                 </select>
                             </div>
                         </div>
-                        {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                        {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
                             <div class="modal-footer">
                                 {% if program.ed_center == ed_center and program.status == 'NEW' %}
                                     <div class="d-grid gap-2">
@@ -766,7 +766,7 @@
                                 </div>
                             {% endif %}
                         </div>
-                        {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                        {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
                             <div class="modal-footer">
                                 <div class="d-grid gap-2">
                                     <input type="submit" class="btn btn-primary" name="change-teacher" value="Сохранить">
@@ -830,7 +830,7 @@
                                 <textarea class="form-control" id="EquipmentWorkshopInput{{workshop.id}}" name="equipment" rows="2">{{workshop.equipment}}</textarea>
                             </div>
                         </div>
-                        {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                        {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
                             <div class="modal-footer">
                                 <div class="d-grid gap-2">
                                     <input type="submit" class="btn btn-primary" name="change-workshop" value="Сохранить">
@@ -1067,7 +1067,7 @@
                         <label for="MailAddressOrgInput">Почтовый адрес</label>
                     </div>
                 </div>
-                {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
                     <div class="submit">
                         <input type="submit" class="btn btn-primary" name="add-org" value="Сохранить">
                     </div>
@@ -1107,7 +1107,7 @@
             <div class="collapse show" id="collapseContactsForm">
                 <div class="table-hdr">
                     <h3>2.2 Добавление сотрудников</h3>
-                    {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                    {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
                         <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddEmployeeModal">Добавить сотрудника</button>
                     {%endif%}    
                 </div>
@@ -1154,7 +1154,7 @@
                                                 </div>
                                             {% endif %}
                                     </div>
-                                    {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                                    {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
                                         <div class="card-footer">
                                             <input type="submit" class="btn btn-outline-primary" name="change-position" value="Изменить">
                                         </div>
@@ -1229,11 +1229,11 @@
                             <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                                 <button class="btn btn-outline-primary" name="export-programs">Скачать список программ в эксель</button>
                             </form>
-                            {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                            {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
                                 <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить программу</button>
                             {%endif%}
                         {%else%}
-                            {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                            {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
                                 <button class="btn btn-outline-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramsModal">Добавить из банка программы</button>
                                 <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить новую</button>
                             {%endif%}
@@ -1338,7 +1338,7 @@
             <div class="collapse show" id="collapseTeachers">
                 <div class="table-hdr">
                     <h3>Список педагогов</h3>
-                    {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                    {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
                         <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddTeacherModal">Добавить педагога</button>
                     {% endif %}
                 </div>
@@ -1414,7 +1414,7 @@
             <div class="collapse show" id="collapseWorkshop">
                 <div class="table-hdr">
                     <h3>Список материально-технического обеспечения</h3>
-                    {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                    {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
                         <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddWorkshopModal">Добавить помещение</button>
                     {% endif %}
                 </div>
@@ -1517,7 +1517,7 @@
                             </div>
                         {% endfor %}
                     {% endif %}
-                    {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                    {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
                         <div class="submit">
                             <input type="submit" class="btn btn-primary" name="add-indicators" value="Сохранить">
                         </div>
@@ -1593,7 +1593,7 @@
                         <input type="number" class="form-control" id="Quota256" name="quota_256" value="{{center_quota.quota_256}}" required>
                         <label for="Quota256">Квота 256ч</label>
                     </div>
-                    {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                    {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
                         <div class="submit">
                             <input type="submit" class="btn btn-primary" name="set-quota" value="Сохранить">
                         </div>
