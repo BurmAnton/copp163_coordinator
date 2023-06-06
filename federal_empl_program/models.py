@@ -87,7 +87,7 @@ class EducationCenterProjectYear(models.Model):
     is_federal = models.BooleanField("Федеральный центр", default=False)
 
     def __str__(self):
-        return  f'{self.ed_center} ({self.year} г.)'
+        return  f'{self.ed_center} ({self.project_year.year} г.)'
 
     class Meta:
         verbose_name = "Данные колледжа на год"

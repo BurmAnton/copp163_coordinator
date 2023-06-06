@@ -52,9 +52,20 @@ body .centers-list table th {
   border-top: 0;
   border-bottom: 2px solid #394959;
 }
+body .centers-list table .sticky-top {
+  z-index: 100 !important;
+}
 body .centers-list table td {
   color: #394959;
   font-weight: 300 !important;
   max-width: 250px;
   word-wrap: break-word;
+}
+body .centers-list .filter form {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+body .centers-list .filter form .dropdown-toggle {
+  width: 350px;
 }/*# sourceMappingURL=applications.css.map */
