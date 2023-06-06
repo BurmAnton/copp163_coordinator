@@ -196,7 +196,7 @@ class EducationCenterTicketProjectYear(models.Model):
     STAGES = [
         ('FLLNG', "заполнение"),
         ('FLLD', "на проверке"),
-        ('RWRK', "отправленна на доработку"),
+        ('RWRK', "отправлена на доработку"),
         ('VRFD', "проверена"),
         ('FRMD', "сформирована"),
         ('DWNLD', "подгружена"),
