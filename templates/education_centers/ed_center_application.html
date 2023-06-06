@@ -476,16 +476,18 @@
                                 <label for="PhoneInput{{employee.id}}">Телефон</label>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <div class="d-grid gap-2">
-                                <input type="submit" class="btn btn-primary" name="change-employee" value="Сохранить">
+                        {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                            <div class="modal-footer">
+                                <div class="d-grid gap-2">
+                                    <input type="submit" class="btn btn-primary" name="change-employee" value="Сохранить">
+                                </div>
+                                </form>
+                                <form action="" method="post">
+                                    <input style="display: none;" type="input" name="employee_id" value="{{employee.id}}" required>
+                                    <input type="submit" class="btn btn-danger" name="delete-employee" value="Удалить">
+                                </form>
                             </div>
-                            </form>
-                            <form action="" method="post">
-                                <input style="display: none;" type="input" name="employee_id" value="{{employee.id}}" required>
-                                <input type="submit" class="btn btn-danger" name="delete-employee" value="Удалить">
-                            </form>
-                        </div>
+                        {% endif %}
                 </div>
             </div>
         </div>
@@ -565,16 +567,18 @@
                                     <textarea class="form-control" id="NotesInput{{program.id}}" name="notes" rows="2">{{program.notes}}</textarea>
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <div class="d-grid gap-2">
-                                    <input style="display: block !important;" type="submit" class="btn btn-primary" name="change-program" value="Сохранить">
-                                </div>
-                            </form>
-                                <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
-                                    <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
-                                    <input type="submit" class="btn btn-danger" name="delete-program" value="Удалить">
+                            {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                                <div class="modal-footer">
+                                    <div class="d-grid gap-2">
+                                        <input style="display: block !important;" type="submit" class="btn btn-primary" name="change-program" value="Сохранить">
+                                    </div>
                                 </form>
-                            </div>
+                                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                                        <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
+                                        <input type="submit" class="btn btn-danger" name="delete-program" value="Удалить">
+                                    </form>
+                                </div>
+                            {% endif %}
                     </div>
                 </div>
             </div>
@@ -656,24 +660,26 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            {% if program.ed_center == ed_center and program.status == 'NEW' %}
-                                <div class="d-grid gap-2">
-                                    <input style="display: block !important;" type="submit" class="btn btn-primary" name="change-program" value="Сохранить">
-                                </div>
-                            </form>
-                                <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
-                                    <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
-                                    <input type="submit" class="btn btn-danger" name="delete-program" value="Удалить">
+                        {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                            <div class="modal-footer">
+                                {% if program.ed_center == ed_center and program.status == 'NEW' %}
+                                    <div class="d-grid gap-2">
+                                        <input style="display: block !important;" type="submit" class="btn btn-primary" name="change-program" value="Сохранить">
+                                    </div>
                                 </form>
-                            {% else %}
-                                </form>
-                                <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
-                                    <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
-                                    <input type="submit" class="btn btn-danger" name="exclude-program" value="Убрать">
-                                </form>
-                            {% endif %}
-                        </div>
+                                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                                        <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
+                                        <input type="submit" class="btn btn-danger" name="delete-program" value="Удалить">
+                                    </form>
+                                {% else %}
+                                    </form>
+                                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                                        <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
+                                        <input type="submit" class="btn btn-danger" name="exclude-program" value="Убрать">
+                                    </form>
+                                {% endif %}
+                            </div>
+                        {% endif %}
                 </div>
             </div>
         </div>
@@ -760,17 +766,18 @@
                                 </div>
                             {% endif %}
                         </div>
-                        <div class="modal-footer">
-                            <div class="d-grid gap-2">
-                                <input type="submit" class="btn btn-primary" name="change-teacher" value="Сохранить">
+                        {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                            <div class="modal-footer">
+                                <div class="d-grid gap-2">
+                                    <input type="submit" class="btn btn-primary" name="change-teacher" value="Сохранить">
+                                </div>
+                                </form>
+                                <form action="" method="post">
+                                    <input style="display: none;" type="input" name="teacher_id" value="{{teacher.id}}" required>
+                                    <input type="submit" class="btn btn-danger" name="delete-teacher" value="Удалить">
+                                </form>
                             </div>
-                            </form>
-                            <form action="" method="post">
-                                <input style="display: none;" type="input" name="teacher_id" value="{{teacher.id}}" required>
-                                <input type="submit" class="btn btn-danger" name="delete-teacher" value="Удалить">
-                            </form>
-                        </div>
-                    
+                        {% endif %}
                 </div>
             </div>
         </div>
@@ -823,17 +830,18 @@
                                 <textarea class="form-control" id="EquipmentWorkshopInput{{workshop.id}}" name="equipment" rows="2">{{workshop.equipment}}</textarea>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <div class="d-grid gap-2">
-                                <input type="submit" class="btn btn-primary" name="change-workshop" value="Сохранить">
+                        {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                            <div class="modal-footer">
+                                <div class="d-grid gap-2">
+                                    <input type="submit" class="btn btn-primary" name="change-workshop" value="Сохранить">
+                                </div>
+                                </form>
+                                <form action="" method="post">
+                                    <input style="display: none;" type="input" name="workshop_id" value="{{workshop.id}}" required>
+                                    <input type="submit" class="btn btn-danger" name="delete-workshop" value="Удалить">
+                                </form>
                             </div>
-                            </form>
-                            <form action="" method="post">
-                                <input style="display: none;" type="input" name="workshop_id" value="{{workshop.id}}" required>
-                                <input type="submit" class="btn btn-danger" name="delete-workshop" value="Удалить">
-                            </form>
-                        </div>
-                    
+                        {% endif %}
                 </div>
             </div>
         </div>
@@ -856,7 +864,7 @@
                 <a data-step="5" class="step-btn btn {%if stage == 5%}btn-primary{%else%}btn-outline-primary{%endif%}">МТБ</a>
                 <a data-step="6" class="step-btn btn {%if stage == 6%}btn-primary{%else%}btn-outline-primary{%endif%}">Показатели</a>
                 <a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Квоты</a>
-                {% if project == 'bilet' and center_project_year.stage == 'FRMD' %}
+                {% if project == 'bilet' and center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' %}
                     <a data-step="8" class="step-btn btn {%if stage == 8%}btn-primary{%else%}btn-outline-primary{%endif%}">Заявка</a>
                 {% endif %}
             </div>
@@ -868,7 +876,7 @@
                     {% else %}
                         {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' %}
                             <input style="height: 100%;" type="submit" class="btn btn-primary" name="send-application" value="Отправить на проверку">
-                        {% elif center_project_year.stage == 'VRFD' %}
+                        {% elif center_project_year.stage != 'FLLNG' and center_project_year.stage != 'RWRK' and center_project_year.stage != 'FLLD' %}
                             <input style="height: 100%;" type="submit" class="btn btn-primary" name="generate-application" value="Сгенерировать заявку">
                         {% endif %}
                     {% endif %}
@@ -1059,9 +1067,11 @@
                         <label for="MailAddressOrgInput">Почтовый адрес</label>
                     </div>
                 </div>
-                <div class="submit">
-                    <input type="submit" class="btn btn-primary" name="add-org" value="Сохранить">
-                </div>
+                {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                    <div class="submit">
+                        <input type="submit" class="btn btn-primary" name="add-org" value="Сохранить">
+                    </div>
+                {% endif %}
             </form>
         </div>
         <div class="positions-step step" data-step="2" {%if stage == 2%}style="display:block;"{%else%}style="display:none;"{%endif%}>
@@ -1097,7 +1107,9 @@
             <div class="collapse show" id="collapseContactsForm">
                 <div class="table-hdr">
                     <h3>2.2 Добавление сотрудников</h3>
-                    <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddEmployeeModal">Добавить сотрудника</button>
+                    {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                        <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddEmployeeModal">Добавить сотрудника</button>
+                    {%endif%}    
                 </div>
                 <table class="table">
                     <tr class=""> 
@@ -1212,13 +1224,17 @@
                     <h3>Список программ</h3>
                     <div style="display: flex; gap: 15px;">
                         {% if project != 'bilet'%}
-                        <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
-                            <button class="btn btn-outline-primary" name="export-programs">Скачать список программ в эксель</button>
-                        </form>
-                        <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить программу</button>
+                            <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                                <button class="btn btn-outline-primary" name="export-programs">Скачать список программ в эксель</button>
+                            </form>
+                            {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                                <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить программу</button>
+                            {%endif%}
                         {%else%}
-                        <button class="btn btn-outline-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramsModal">Добавить из банка программы</button>
-                        <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить новую</button>
+                            {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                                <button class="btn btn-outline-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramsModal">Добавить из банка программы</button>
+                                <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить новую</button>
+                            {%endif%}
                         {%endif%}
                     </div>
                 </div>
@@ -1320,7 +1336,9 @@
             <div class="collapse show" id="collapseTeachers">
                 <div class="table-hdr">
                     <h3>Список педагогов</h3>
-                    <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddTeacherModal">Добавить педагога</button>
+                    {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                        <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddTeacherModal">Добавить педагога</button>
+                    {% endif %}
                 </div>
                 <table class="table">
                     <tr class=""> 
@@ -1394,7 +1412,9 @@
             <div class="collapse show" id="collapseWorkshop">
                 <div class="table-hdr">
                     <h3>Список материально-технического обеспечения</h3>
-                    <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddWorkshopModal">Добавить помещение</button>
+                    {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                        <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddWorkshopModal">Добавить помещение</button>
+                    {% endif %}
                 </div>
                 <table class="table">
                     <tr class=""> 
@@ -1495,10 +1515,11 @@
                             </div>
                         {% endfor %}
                     {% endif %}
-                    
-                    <div class="submit">
-                        <input type="submit" class="btn btn-primary" name="add-indicators" value="Сохранить">
-                    </div>
+                    {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                        <div class="submit">
+                            <input type="submit" class="btn btn-primary" name="add-indicators" value="Сохранить">
+                        </div>
+                    {% endif %}
                 </form>
             </div>
         </div>
@@ -1570,13 +1591,15 @@
                         <input type="number" class="form-control" id="Quota256" name="quota_256" value="{{center_quota.quota_256}}" required>
                         <label for="Quota256">Квота 256ч</label>
                     </div>
-                    <div class="submit">
-                        <input type="submit" class="btn btn-primary" name="set-quota" value="Сохранить">
-                    </div>
+                    {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                        <div class="submit">
+                            <input type="submit" class="btn btn-primary" name="set-quota" value="Сохранить">
+                        </div>
+                    {% endif %}
                 {% endif %}
             </form>
         </div>
-        {% if project == 'bilet' and center_project_year.stage == 'FRMD' %}
+        {% if project == 'bilet' and center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' %}
             <div class="scan-step step" data-step="8" {%if stage == 8%}style="display:block;"{%else%}style="display:none;"{%endif%}>
                 <div class="step-hdr">
                     <h2>
@@ -1611,9 +1634,11 @@
                         <label for="ApplTrackNumber">Трек номер</label>
                     </div>
                     <input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>
-                    <div class="submit">
-                        <input type="submit" class="btn btn-primary" name="upload-application" value="Сохранить">
-                    </div>
+                    {% if center_project_year.stage != 'PRVD' or user.is_superuser  %}
+                        <div class="submit">
+                            <input type="submit" class="btn btn-primary" name="upload-application" value="Сохранить">
+                        </div>
+                    {% endif %}
                 </form>
             </div>
         {% endif %}
