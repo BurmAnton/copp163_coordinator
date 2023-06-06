@@ -1154,9 +1154,11 @@
                                                 </div>
                                             {% endif %}
                                     </div>
-                                    <div class="card-footer">
-                                        <input type="submit" class="btn btn-outline-primary" name="change-position" value="Изменить">
-                                    </div>
+                                    {% if center_project_year.stage == 'FLLNG' or user.is_superuser %}
+                                        <div class="card-footer">
+                                            <input type="submit" class="btn btn-outline-primary" name="change-position" value="Изменить">
+                                        </div>
+                                    {% endif %}
                             </form>
                         </div>
                     {% endfor %}
