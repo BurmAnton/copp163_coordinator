@@ -39,10 +39,11 @@ def index(request):
 def export_programs(request):
     return exports.programs(ed_centers=None)
 
-
+@csrf_exempt
 def applications(request):
     project = request.GET.get('p', '')
     project_year = request.GET.get('y', '')
+    if 'bilet' in request.POST: project = 'bilet'
     if project_year != '': project_year = int(project_year)
     else: project_year = datetime.now().year
 
@@ -57,11 +58,18 @@ def applications(request):
             project_year=project_year
         )
         project = 'zen'
+    
+    chosen_stages = None
+    if request.method == "POST":
+        chosen_stages = request.POST.getlist('stages')
+        centers_project_year = centers_project_year.filter(stage__in=chosen_stages)
 
     return render(request, "education_centers/applications.html", {
         'project': project,
         'project_year': project_year,
-        'centers_project_year': centers_project_year
+        'centers_project_year': centers_project_year,
+        'stages': EducationCenterTicketProjectYear.STAGES,
+        'chosen_stages': chosen_stages
     })
 
 @csrf_exempt

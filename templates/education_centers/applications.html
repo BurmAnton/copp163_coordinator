@@ -28,6 +28,24 @@
     </div>
     <div class="centers-list">
         <h2>Список участников ПКО</h2>
+        <div class="filter">
+            <form action="{% url 'applications' %}" method="post">
+                {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
+                <div class="form-floating mb-3 filter-selectpicker">
+                    <select class="selectpicker" data-width="100%" data-live-search="true" title="Статусы" name="stages" multiple>
+                        {% for stage in stages %}
+                            {% if stage.0 in chosen_stages %}
+                                <option selected value="{{stage.0}}">{{stage.1}}</option>
+                            {% else %}
+                                <option value="{{stage.0}}">{{stage.1}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    
+                </div>
+                <button type="submit" class="btn btn-primary" name="filter-events">Применить</button>
+            </form>
+        </div>
         <table class="table">
             <tr style="background-color: white;" class="sticky-top"> 
                 <th scope="col">№</th>
