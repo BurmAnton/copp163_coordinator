@@ -141,13 +141,13 @@ class TicketProgram(models.Model):
         Teacher,
         verbose_name='педагоги', 
         related_name='ticket_programs',
-        blank=False
+        blank=True
     )
     workshops = models.ManyToManyField(
         Workshop,
         verbose_name='аудитории', 
         related_name='ticket_programs',
-        blank=False
+        blank=True
     )
 
     class Meta:
