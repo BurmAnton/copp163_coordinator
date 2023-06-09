@@ -7,6 +7,7 @@ from django.core.files import File
 from django.db.models import Case, When, Value, Count, OuterRef, Subquery
 from django.utils.encoding import escape_uri_path
 from django.db.models.functions import Concat
+from django.contrib.postgres.aggregates import ArrayAgg
 from citizens.models import School
 
 from users.models import DisabilityType
@@ -88,7 +89,6 @@ def ed_center_application(request, ed_center_id):
         project_year = get_object_or_404(TicketProjectYear, year=project_year)
         center_project_year = EducationCenterTicketProjectYear.objects.get_or_create(
                 project_year=project_year,ed_center=ed_center)[0]
-        full_quota = get_object_or_404(TicketFullQuota, project_year=project_year)
     else:
         project_year = get_object_or_404(ProjectYear, year=project_year)
         center_project_year = EducationCenterProjectYear.objects.get_or_create(
@@ -660,6 +660,8 @@ def ed_center_application(request, ed_center_id):
     approved_programs = None
     chosen_professions = None
     schools = None
+    ticket_programs = None
+    professions = None
     if project == 'bilet':
         filled_positions = TicketEdCenterEmployeePosition.objects.filter(
             ed_center=ed_center,
@@ -690,9 +692,13 @@ def ed_center_application(request, ed_center_id):
             )
         )
         programs = center_project_year.programs.all()
+        ticket_programs = programs.values('id', 'profession__name',)
+        professions = TicketProfession.objects.all().values(
+            'id', 'name', 'prof_enviroment__name')
         chosen_professions = TicketProfession.objects.filter(
-            programs__in=programs).distinct()
-        schools = School.objects.all()
+            programs__in=programs).distinct().values(
+            'id', 'name', 'prof_enviroment__name')
+        schools = School.objects.all().values('id', 'name')
         approved_programs = TicketProgram.objects.filter(status='PRWD')
         approved_programs = approved_programs.exclude(
             id__in=center_project_year.programs.all()
@@ -750,11 +756,10 @@ def ed_center_application(request, ed_center_id):
         full_name=Concat('last_name', Value(' '), 'first_name', Value(' '), 
                         'middle_name')
     )
-    professions = TicketProfession.objects.all()
-    prof_enviroments = ProfEnviroment.objects.all()
+    prof_enviroments = ProfEnviroment.objects.all().values('id', 'name')
 
-    disability_types = DisabilityType.objects.all()
-    age_groups = AgeGroup.objects.all()
+    disability_types = DisabilityType.objects.all().values('id', 'name')
+    age_groups = AgeGroup.objects.all().values('id', 'name')
 
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
@@ -779,6 +784,7 @@ def ed_center_application(request, ed_center_id):
         'center_quota': center_quota,
         'project': project,
         'stage': stage,
+        'ticket_programs': ticket_programs,
         'form': ImportTicketDataForm()
     })
 
