@@ -166,7 +166,6 @@ class TicketProjectYear(models.Model):
         related_name="ticket_project_years",
         blank=True
     )
-    
 
     def __str__(self):
         return  str(self.year)

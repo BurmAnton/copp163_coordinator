@@ -13,4 +13,5 @@ urlpatterns = [
         views.import_ticket_programs, 
         name='import_ticket_programs'
     ),
+    path('quotas/dashboard/', views.quotas, name='quotas')
 ]
