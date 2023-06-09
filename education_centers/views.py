@@ -7,7 +7,6 @@ from django.core.files import File
 from django.db.models import Case, When, Value, Count, OuterRef, Subquery
 from django.utils.encoding import escape_uri_path
 from django.db.models.functions import Concat
-from django.contrib.postgres.aggregates import ArrayAgg
 from citizens.models import School
 
 from users.models import DisabilityType
@@ -89,6 +88,7 @@ def ed_center_application(request, ed_center_id):
         project_year = get_object_or_404(TicketProjectYear, year=project_year)
         center_project_year = EducationCenterTicketProjectYear.objects.get_or_create(
                 project_year=project_year,ed_center=ed_center)[0]
+        full_quota = get_object_or_404(TicketFullQuota, project_year=project_year)
     else:
         project_year = get_object_or_404(ProjectYear, year=project_year)
         center_project_year = EducationCenterProjectYear.objects.get_or_create(
