@@ -9,12 +9,19 @@ register = template.Library()
 
 @register.filter
 def get_profession_quota(quota, profession):
-    return quota.filter(profession=profession)
+    return quota.filter(profession=profession['id'])
 
 @register.filter
 def exclude_programs(programs, workshop_programs):
     return programs.exclude(id__in=workshop_programs)
 
+@register.filter
+def exclude_groups(age_groups, program_age_groups):
+    return age_groups.exclude(id__in=program_age_groups)
+
+@register.filter
+def exclude_disabilities(disabilities, program_disabilities):
+    return disabilities.exclude(id__in=program_disabilities)
 
 @register.filter
 def get_groups_wo_act(groups, group_status=None):
