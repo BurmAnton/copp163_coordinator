@@ -1,0 +1,122 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load ticket_extras %}
+
+{% block title %}Квота{% endblock %}
+{% block style %}
+        <link href="{% static 'future_ticket/css/quotas.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'future_ticket/js/quotas.js' %}" rel="stylesheet"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="page-hdr">
+        <h1>Квота Билет в будущее (2023г.)</h1>
+    </div>
+    <div class="collapse show ter-stat" id="collapseStat">
+        <div class="table-hdr">
+            <h3>Квота по управлениям</h3>
+        </div>
+        <table class="table">
+            <tr class=""> 
+                <th scope="col">Тер. управление</th>
+                <th scope="col" class="center">Федеральная квота</th>
+                <th scope="col" class="center">Остальная квота</th>
+                <th scope="col" class="center">Всего</th>
+            </tr>
+            {% for key, value in quota_stat.items %}
+                <tr>
+                    <td scope="row">{{ key }}</td>
+                    <td scope="row" class="center">{{ value|get_item:'federal_quota' }}</td>
+                    <td scope="row" class="center">{{ value|get_item:'none_federal_quota' }}</td>
+                    <td scope="row" class="center">{{ value|get_item:'full_quota' }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <th scope="col">Всего</th>
+                <th scope="row" class="center">{{ quota_stat_all|get_item:'federal_quota' }}/{{ full_quota.federal_quota }}</th>
+                <th scope="row" class="center">{{ quota_stat_all|get_item:'none_federal_quota' }}/{{ full_quota.full_quota|subtract:full_quota.federal_quota }}</th>
+                <th scope="row" class="center">{{ quota_stat_all|get_item:'full_qouta' }}/{{ full_quota.full_quota }}</th>
+            </tr>
+        </table>
+    </div>
+    <div class="collapse show quota-table" id="collapseQuotas">
+        <form action="{% url 'quotas' %}" method="post">
+            <div class="table-hdr">
+                <h3>Общий список квот</h3>
+                {% if user.is_superuser %}
+                    <button class="btn btn-primary" name="save-quotas">Сохранить</button>
+                {% endif %}
+            </div>
+            <div class="control-panel">
+                <div class="input-group mb-3 table-search">
+                    <input type="text" class="form-control" id="myInput" onkeyup="SearchFunction()" placeholder="Поиск..">
+                </div>
+                <div class="filters">
+                    <div class="form mb-3">
+                        <select class="selectpicker" title="Выберите управления" multiple data-width="100%" onchange="FilterFunction(1, 'TerAdminFilter')" data-live-search="true" name="ter_admin" id="TerAdminFilter">
+                            <option class="project" value="TADM">Тольяттинское управление</option>
+                            <option class="project" value="NWADM">Северо-Западное управление</option>
+                            <option class="project" value="WADM">Западное управление</option>
+                            <option class="project" value="SWADM">Юго-Западное управление</option>
+                            <option class="project" value="POVADM">Поволжское управление</option>
+                            <option class="project" value="SADM">Южное управление</option>
+                            <option class="project" value="DEPSAM">Департамент образования г.о. Самара</option>
+                            <option class="project" value="SEADM">Юго-Восточное управление</option>
+                            <option class="project" value="OTRADM">Отрадненское управление</option>
+                            <option class="project" value="CENTADM">Центральное управление</option>
+                            <option class="project" value="NEADM">Северо-Восточное управление</option>
+                            <option class="project" value="DEPTOL">Департамент образования г.о. Тольятти</option>
+                            <option class="project" value="NADM">Северное управление</option>
+                            <option class="project" value="KINADM">Кинельское управление</option>
+                            <option class="project" value="SAMADM">Самарское управление</option>
+                        </select>
+                    </div>
+                    <div class="form mb-3">
+                        <select class="selectpicker" title="Выберите ЦО" multiple data-width="100%" onchange="FilterFunction(0, 'ProjectCenter')" data-live-search="true" name="center" id="ProjectCenter">
+                            {% for ed_center in ed_centers %}
+                                <option class="ter_admin" value="{{ ed_center.short_name }}">{{ ed_center.short_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form mb-3">
+                        <select class="selectpicker" title="Выберите школы" multiple data-width="100%" onchange="FilterFunction(5, 'SchoolsFilter')" data-live-search="true" name="schools" id="SchoolsFilter">
+                            {% for school in schools %}
+                                <option class="school" value="{{ school.name }}">{{ school.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form mb-3">
+                        <select class="selectpicker" title="Выберите тип квоты" multiple data-width="100%" onchange="FilterFunction(2, 'FedFilter')" data-live-search="true" name="fed_filter" id="FedFilter">
+                            <option class="fed" value="Да">Да</option>
+                            <option class="fed" value="Нет">Нет</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <table class="table quotas-table">
+                <tr class="sticky-top"> 
+                    <th scope="row">Центр обучения</th>
+                    <th scope="row">Тер. управление</th>
+                    <th scope="row" class="center">Фед?</th>
+                    <th scope="row" class="center">Запрос</th>
+                    <th scope="row" class="center">Одобрено</th>
+                    <th scope="row">Школа</th>
+                    <th scope="row">Профессия</th>
+                </tr>
+                {% for quota in quotas %}
+                    <tr>
+                        <td scope="row">{{ quota.ed_center.short_name }}</td>
+                        <td scope="row">{{ quota.school.get_territorial_administration_display }}</td>
+                        <td scope="row" class="center">{% if quota.is_federal %}Да{% else %}Нет{% endif %}</td>
+                        <td scope="row" class="center">{{ quota.value }}</td>
+                        <td scope="row" class="center"><input type="number" name="{{quota.id}}" value="{{ quota.approved_value }}" required></td>
+                        <td scope="row">{{ quota.school.name }}</td>
+                        <td scope="row">{{ quota.profession }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </form>
+    </div>
+{% endblock %}

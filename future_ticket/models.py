@@ -430,6 +430,7 @@ class TicketQuota(models.Model):
     )
     is_federal = models.BooleanField("Федеральная?", default=False)
     value = models.IntegerField("Квота", default=0)
+    approved_value = models.IntegerField("Одобренная квота", default=0)
 
     def __str__(self):
         return f'{self.profession} ({self.ed_center}, {self.school})'
