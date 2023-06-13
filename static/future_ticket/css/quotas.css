@@ -1,0 +1,93 @@
+body {
+  background-color: rgba(242, 242, 242, 0.5411764706);
+}
+body .page-hdr {
+  margin: auto;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  text-align: center;
+}
+body .ter-stat, body .quota-table {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 85%;
+  margin: auto;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
+  padding: 25px 50px 25px 50px;
+}
+body .ter-stat .disappear, body .quota-table .disappear {
+  display: none !important;
+}
+body .ter-stat .control-panel .filters, body .quota-table .control-panel .filters {
+  display: flex;
+  gap: 15px;
+}
+body .ter-stat .control-panel .filters .dropdown-toggle, body .quota-table .control-panel .filters .dropdown-toggle {
+  min-width: 200px;
+  max-width: 400px;
+}
+body .ter-stat .control-panel .table-search, body .quota-table .control-panel .table-search {
+  width: 400px;
+}
+body .ter-stat .control-panel .table-search input, body .quota-table .control-panel .table-search input {
+  border: 1px solid #394959;
+  padding-left: 27px;
+  background-image: url("../img/search-icon.png");
+  background-position: 4px 8px;
+  background-size: 20px;
+  background-repeat: no-repeat;
+}
+body .ter-stat .table-hdr, body .quota-table .table-hdr {
+  text-align: center;
+  display: flex;
+  justify-content: space-between;
+}
+body .ter-stat table, body .quota-table table {
+  z-index: 100;
+}
+body .ter-stat table .disapear-TerAdminFilter, body .ter-stat table .disapear-ProjectCenter, body .ter-stat table .disapear-FedFilter, body .ter-stat table .disapear-SchoolsFilter, body .quota-table table .disapear-TerAdminFilter, body .quota-table table .disapear-ProjectCenter, body .quota-table table .disapear-FedFilter, body .quota-table table .disapear-SchoolsFilter {
+  display: none !important;
+}
+body .ter-stat table .center, body .quota-table table .center {
+  text-align: center;
+}
+body .ter-stat table thead, body .quota-table table thead {
+  z-index: 100;
+}
+body .ter-stat table th, body .quota-table table th {
+  background-color: white;
+  color: #394959;
+  font-weight: 400 !important;
+  font-size: 16px;
+  line-height: 20px;
+  border-top: 0;
+  border-bottom: 2px solid #394959;
+}
+body .ter-stat table th div, body .quota-table table th div {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+body .ter-stat table th div img, body .quota-table table th div img {
+  width: 23px;
+}
+body .ter-stat table .sticky-top, body .quota-table table .sticky-top {
+  z-index: 100 !important;
+}
+body .ter-stat table td, body .quota-table table td {
+  color: #394959;
+  font-weight: 300 !important;
+  max-width: 250px;
+  word-wrap: break-word;
+}
+body .ter-stat table td input, body .quota-table table td input {
+  width: 70px;
+  border: 0;
+  color: #394959;
+  font-weight: 300 !important;
+}/*# sourceMappingURL=quotas.css.map */
