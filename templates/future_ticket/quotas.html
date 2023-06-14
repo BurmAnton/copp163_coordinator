@@ -28,16 +28,16 @@
             {% for key, value in quota_stat.items %}
                 <tr>
                     <td scope="row">{{ key }}</td>
-                    <td scope="row" class="center">{{ value|get_item:'federal_quota' }}</td>
-                    <td scope="row" class="center">{{ value|get_item:'none_federal_quota' }}</td>
-                    <td scope="row" class="center">{{ value|get_item:'full_quota' }}</td>
+                    <td scope="row" class="center">{{ value|get_item:'federal_quota' }}/{{ value|get_item:'approved_federal_quota' }}</td>
+                    <td scope="row" class="center">{{ value|get_item:'none_federal_quota' }}/{{ value|get_item:'approved_none_federal_quota' }}</td>
+                    <td scope="row" class="center">{{ value|get_item:'full_quota' }}/{{ value|get_item:'approved_full_quota' }}</td>
                 </tr>
             {% endfor %}
             <tr>
                 <th scope="col">Всего</th>
-                <th scope="row" class="center">{{ quota_stat_all|get_item:'federal_quota' }}/{{ full_quota.federal_quota }}</th>
-                <th scope="row" class="center">{{ quota_stat_all|get_item:'none_federal_quota' }}/{{ full_quota.full_quota|subtract:full_quota.federal_quota }}</th>
-                <th scope="row" class="center">{{ quota_stat_all|get_item:'full_qouta' }}/{{ full_quota.full_quota }}</th>
+                <th scope="row" class="center">{{ quota_stat_all|get_item:'federal_quota' }}/{{ quota_stat_all|get_item:'approved_federal_quota' }}/{{ full_quota.federal_quota }}</th>
+                <th scope="row" class="center">{{ quota_stat_all|get_item:'none_federal_quota' }}/{{ quota_stat_all|get_item:'approved_none_federal_quota' }}/{{ full_quota.full_quota|subtract:full_quota.federal_quota }}</th>
+                <th scope="row" class="center">{{ quota_stat_all|get_item:'full_qouta' }}/{{ quota_stat_all|get_item:'approved_full_qouta' }}/{{ full_quota.full_quota }}</th>
             </tr>
         </table>
     </div>
