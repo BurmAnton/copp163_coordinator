@@ -65,7 +65,7 @@ def quotas(request):
         quota_stat_all['full_qouta'] += full_quota['value__sum']
         quota_stat_all['federal_quota'] += federal_quota['value__sum']
         quota_stat_all['none_federal_quota'] += none_federal_quota['value__sum']
-        quota_stat_all['approved_full_qouta'] += full_quota['value__sum']
+        quota_stat_all['approved_full_qouta'] += full_quota['approved_value__sum']
         quota_stat_all['approved_federal_quota'] += federal_quota['approved_value__sum']
         quota_stat_all['approved_none_federal_quota'] += none_federal_quota['approved_value__sum']
     full_quota = get_object_or_404(TicketFullQuota, project_year=project_year)
