@@ -650,7 +650,7 @@ def ed_center_application(request, ed_center_id):
             center_project_year.save()
         elif 'upload-application' in request.POST:
             stage = 8
-            center_project_year.stage = 'FRMD'
+            center_project_year.stage = 'DWNLD'
             center_project_year.save()
             form = ImportTicketDataForm(request.POST, request.FILES)
             if form.is_valid():
