@@ -1781,7 +1781,7 @@
                 </div>
                 <form action="{% url 'ed_center_application' ed_center.id %}" method="post" enctype="multipart/form-data">
                     {% if center_project_year.application_file != None %}
-                        <p><a href="{{center_project_year.application_file.url}}">Скан заявки</a></p>
+                        <!--<p><a href="{{center_project_year.application_file.url}}">Скан заявки</a></p>-->
                     {% endif %}
                     <div class="mb-3">
                         {% csrf_token %}
