@@ -16,8 +16,8 @@ from . import exports
 from .forms import ImportDataForm, ImportTicketDataForm
 from .contracts import create_document, combine_all_docx, create_application, create_ticket_application
 from .models import BankDetails, Competence, ContractorsDocument, DocumentType,\
-                    EducationCenter, EducationCenterHead, EducationProgram,\
-                    Employee, Group, Teacher, Workshop
+                    EducationCenter, EducationProgram,Employee, Group,\
+                    Teacher, Workshop
 from federal_empl_program.models import EdCenterEmployeePosition,\
                                         EdCenterIndicator, EdCenterQuota,\
                                         EducationCenterProjectYear, Indicator,\
@@ -832,7 +832,7 @@ def ed_center_groups(request, ed_center):
                 bill.save()
         elif 'head' in request.POST:
             if ed_center.head is None:
-                head = EducationCenterHead()
+                #head = EducationCenterHead()
                 head.organization = ed_center
             else: head = ed_center.head
             head.last_name = request.POST['last_name'].strip().capitalize()

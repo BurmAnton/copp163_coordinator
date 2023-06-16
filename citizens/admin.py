@@ -6,21 +6,10 @@ from easy_select2 import select2_modelform
 from datetime import timedelta
 from django_admin_listfilter_dropdown.filters import DropdownFilter, RelatedOnlyDropdownFilter
 
-from .models import Citizen, Job, School, SchoolClass, DisabilityType
+from .models import Citizen, School, DisabilityType
 from federal_empl_program.models import Application
 from education_centers.models import EducationCenter
 from users.models import User
-
-JobForm = select2_modelform(Job, attrs={'width': '400px'})
-
-class JobInline(admin.TabularInline):
-    model = Job
-    form = JobForm
-    def get_extra(self, request, obj=None, **kwargs):
-        extra = 0
-        if obj:
-            return extra + obj.jobs.count()
-        return extra
 
 
 ApplicationForm = select2_modelform(Application, attrs={'width': '400px'})
@@ -55,7 +44,7 @@ class CitizensAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'snils_number', 'email')
     readonly_fields = ['get_is_employed_history', 'get_self_employed_history']
     inlines = [
-        ApplicationInline, JobInline 
+        ApplicationInline, 
     ]
     fieldsets = (
         (None, {
@@ -93,12 +82,6 @@ class CitizensAdmin(admin.ModelAdmin):
                 return queryset
         return queryset
 
-SchoolClassForm = select2_modelform(SchoolClass, attrs={'width': '400px'})
-
-class SchoolClassInline(admin.TabularInline):
-    model = SchoolClass
-    form = SchoolClassForm
-
 
 
 SchoolForm = select2_modelform(School, attrs={'width': '400px'})
@@ -113,7 +96,6 @@ class SchoolAdmin(admin.ModelAdmin):
     )
     list_display = ('name', 'inn', 'territorial_administration', 'municipality')
     filter_horizontal = ("school_coordinators",)
-    inlines = [SchoolClassInline]
     fieldsets = (
         (None, {
             'fields': (
@@ -152,20 +134,3 @@ class CitizenInline(admin.TabularInline):
         }),
     )
     short_description='Студенты'
-    
-SchoolClassesForm = select2_modelform(SchoolClass, attrs={'width': '400px'})
-
-@admin.register(SchoolClass)
-class SchoolClassesAdmin(admin.ModelAdmin):
-    form = SchoolClassesForm
-    inlines = [
-        CitizenInline
-    ]
-    list_display = ('grade_number', 'grade_letter', 'school')
-    search_fields = ['school', 'grade_number', 'grade_letter', 'students']
-    list_filter = (
-        ('school', RelatedOnlyDropdownFilter),
-        ('grade_number', DropdownFilter), 
-        ('grade_letter', DropdownFilter),
-    )
-

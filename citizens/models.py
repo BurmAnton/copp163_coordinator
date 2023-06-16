@@ -6,7 +6,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from users.models import User
 from organizations.models import Company
-from education_centers.models import EducationCenterGroup
+
 
 class Municipality(models.Model):
     name = models.CharField("Название", max_length=100)
@@ -65,19 +65,6 @@ class School(models.Model):
     def __str__(self):
         return  f"{self.name} ({self.get_territorial_administration_display()})"
     
-class SchoolClass(models.Model):
-    school = models.ForeignKey(School, verbose_name="Школа", related_name="classes", on_delete=CASCADE)
-    grade_number = models.IntegerField("Номер класса", validators=[MaxValueValidator(11),MinValueValidator(1)])
-    grade_letter = models.CharField("Буква класса", max_length=4)
-    specialty = models.CharField("Уклон класса", max_length=50, blank=True, null=True)
-
-    class Meta:
-        verbose_name = "Класс"
-        verbose_name_plural = "Классы"
-
-    def __str__(self):
-        return  f"{self.grade_number}{self.grade_letter} – {self.school}"
-
 
 class DisabilityType(models.Model):
     name = models.CharField("ОВЗ", max_length=100)
@@ -122,9 +109,6 @@ class Citizen(models.Model):
     res_city = models.CharField("Населённый пункт", max_length=250, blank=True, null=True)
     res_disctrict = models.CharField("Населённый пункт", max_length=50, blank=True, null=True)
 
-    ed_center_group = models.ForeignKey(EducationCenterGroup, verbose_name="Предварительная заявка", on_delete=CASCADE, related_name="citizens", blank=True, null=True)
-
-
     STATUS_CHOICES = [
         ('SCHT', "Учитель в школе"),
         ('SCHS', "Обучающиеся общеообразовательных организаций"),
@@ -139,7 +123,6 @@ class Citizen(models.Model):
     ]
     social_status = models.CharField("Социальный статус", max_length=4, choices=STATUS_CHOICES, blank=True, null=True)
     school = models.ForeignKey(School, verbose_name="Школа", related_name="students", blank=True, null=True, on_delete=DO_NOTHING)
-    school_class = models.ForeignKey(SchoolClass, verbose_name="Школный класс", related_name="students", blank=True, null=True, on_delete=DO_NOTHING)
     EDUCATION_CHOICES = [
         ('SPVO', "СПО/ВО"),
         ('STDN', "Cтудент ВО/СПО"),
@@ -163,22 +146,3 @@ class Citizen(models.Model):
         if self.middle_name is not None:
             return  f'{self.last_name} {self.first_name} {self.middle_name}'
         return f'{self.last_name} {self.first_name}'
-
-class Job(models.Model):
-    worker = models.ForeignKey(Citizen, on_delete=CASCADE, related_name='jobs')
-
-    place_of_work = models.ForeignKey(Company, verbose_name="Место работы", on_delete=CASCADE, related_name='employees')
-    position = models.CharField("Должность", max_length=50)
-
-    start_date = models.DateField("Дата начала работы")
-    end_date = models.DateField("Дата окончания работы")
-    
-    class Meta:
-        verbose_name = "Работа"
-        verbose_name_plural = "Работы"
-
-    def __str__(self):
-        if self.end_date is not None:
-            return  f"{self.position}, {self.place_of_work} ({self.start_date} – {self.end_date})"
-        else:
-            return  f"{self.position}, {self.place_of_work} (c {self.start_date})"
