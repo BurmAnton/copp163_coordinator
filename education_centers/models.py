@@ -11,29 +11,8 @@ from users.models import User
 
 class Competence(models.Model):
     title = models.CharField("Название компетенции", max_length=500)
-    
-    СOMPETENCE_BLOCKS = (
-        ('IT', 'Информационные и коммуникационные технологии'),
-        ('SR', 'Сфера услуг'),
-        ('BD', 'Строительство и строительные технологии'),
-        ('MF', 'Производство и инженерные технологии'),
-        ('DS', 'Творчество и дизайн'),
-        ('TR', 'Транспорт и логистика'),
-        ('ED', 'Образование')
-    )
-    block = models.CharField(max_length=2, choices=СOMPETENCE_BLOCKS, verbose_name='Блок', blank=True, null=True)
-    СOMPETENCE_STAGES = (
-        ('MN', 'Основная'),
-        ('PR', 'Презентационная')
-    )
-    competence_stage = models.CharField(max_length=2, choices=СOMPETENCE_STAGES, verbose_name='Стадия', blank=True, null=True)
-    СOMPETENCE_TYPES = (
-        ('RU', 'WorldSkills Russia'),
-        ('WSI', 'WorldSkills International'),
-        ('WSE', 'WorldSkills Eurasia')
-    )
-    competence_type = models.CharField(max_length=3, choices=СOMPETENCE_TYPES, verbose_name='Тип', blank=True, null=True)
     is_irpo = models.BooleanField("ИРПО?", default=True)
+    is_worldskills = models.BooleanField("ВС?", default=True)
 
     class Meta:
         verbose_name = "Компетенция"
@@ -127,7 +106,7 @@ class EducationProgram(models.Model):
         ('SPO', "Среднее профессиональное образование"),
     ]
     entry_requirements = models.CharField("Входные требования", max_length=4, choices=EDUCATION_CHOICES, blank=True, null=True)
-    program_link =  models.CharField("Ссылка на программу", max_length=200, blank=True, null=True)
+    program_link = models.CharField("Ссылка на программу", max_length=200, blank=True, null=True)
 
     profession = models.CharField(
         "Профессия", max_length=200, blank=True, null=True
@@ -270,46 +249,6 @@ class Employee(models.Model):
         return f'{self.last_name} ({self.position})'
 
 
-class EducationCenterHead(models.Model):
-    organization = models.OneToOneField(
-        EducationCenter,
-        verbose_name="Организация",
-        related_name="head",
-        null=False,
-        blank=False,
-        on_delete=CASCADE
-    )
-    first_name = models.CharField("Имя", max_length=30, blank=False, null=False)
-    middle_name = models.CharField("Отчество", max_length=30, blank=True, null=True)
-    last_name = models.CharField("Фамилия", max_length=30, blank=False, null=False)
-    position = models.CharField("Должность", max_length=50, blank=False, null=False)
-    
-    first_name_r= models.CharField("Имя (род)", max_length=30, blank=False, null=False)
-    middle_name_r = models.CharField("Отчество (род)", max_length=30, blank=True, null=True)
-    last_name_r = models.CharField("Фамилия (род)", max_length=30, blank=False, null=False)
-    position_r = models.CharField("Должность (род)", max_length=50, blank=False, null=False)
-
-    phone = models.CharField("Телефон(-ы)", max_length=120, blank=False, null=False)
-    email = models.EmailField(_('email address'))
-
-    class Meta:
-        verbose_name = "Представитель организации"
-        verbose_name_plural = "Представители организаций"
-
-    def get_name(self, is_r=False):
-        if is_r:
-            return f'{self.last_name_r} {self.first_name_r} {self.middle_name_r}'
-        return f'{self.last_name} {self.first_name} {self.middle_name}'
-
-    def get_short_name(self, is_r=False):
-        if is_r:
-            return f'{self.last_name_r} {self.first_name_r[0]}.{self.middle_name_r[0]}.'
-        return f'{self.last_name} {self.first_name[0]}.{self.middle_name[0]}.'
-    
-    def __str__(self):
-        return f'{self.last_name} ({self.position})'
-
-
 class BankDetails(models.Model):
     organization = models.OneToOneField(
         EducationCenter,
@@ -408,55 +347,6 @@ class Group(models.Model):
     def __str__(self):
         return  f"{self.name}"
 
-class EducationCenterGroup(models.Model):
-    education_center = models.ForeignKey(EducationCenter, verbose_name='Центр обучения', on_delete=CASCADE, related_name='ed_center_groups', null=True, blank=True)
-    competence = models.ForeignKey(Competence, verbose_name='Компетенция', on_delete=CASCADE, related_name='ed_center_groups')
-    program = models.CharField("Название программы", max_length=500, null=True, blank=False)
-    program_link = models.CharField("Ссылка на программу", max_length=200, null=True, blank=False)
-    reg_link = models.CharField("Ссылка на программу на сайте работа в россии", max_length=300, null=True, blank=False)
-    description = models.TextField("Описание", max_length=120, null=True, blank=True)
-    PROGRAM_DURATIONS = (
-        ('72', '72 ч.'),
-        ('144', '144 ч.'),
-        ('256', '256 ч.')
-    )
-    duration = models.CharField("Длительность (ак. часов)", max_length=3, choices=PROGRAM_DURATIONS, blank=True)
-    ED_REQ = [   
-        ("scl","Не требуется"),
-        ("pro", "Свидетельство о профессии"),
-        ("clg","Среднее специальное/Высшее")
-    ]
-    educational_requirements = models.CharField("Требования к образованию", max_length=4, choices=ED_REQ)
-    is_visible = models.BooleanField("Показывать в списке планируемого обучения", default=False)
-
-    FORMATS = [   
-        ("on","Онлайн"),
-        ("off","Очный")
-    ]
-    is_online = models.CharField("Формат проведения", max_length=4, choices=FORMATS, default='off')
-    city = models.CharField("Город проведения", max_length=100, blank=True, null=True, default="")
-
-    min_group_size = models.IntegerField('Минимальный размер')
-    max_group_size = models.IntegerField('Максимальный размер')
-    
-    start_date = models.DateField('Дата старта')
-    end_date = models.DateField('Дата окончания', blank=True, null=True)
-
-    study_period = models.CharField("Период проведения занятий", max_length=128, blank=True, null=True)
-    study_days_count = models.IntegerField("Занятий в неделю", validators=[MaxValueValidator(7),MinValueValidator(1)], blank=True, null=True)
-    ed_schedule_link = models.URLField("Ссылка на график обучения", max_length=256, blank=True, null=True)
-
-    group = models.OneToOneField(Group, verbose_name='Группа Express', on_delete=CASCADE, related_name='ed_center_group', blank=True, null=True)
-
-    class Meta:
-        verbose_name = "ЦО группа"
-        verbose_name_plural = "ЦО группы"
-        
-    def __str__(self):
-        if self.end_date == None:
-            return  f"{self.education_center} {self.program} (с {self.start_date})"            
-        else:
-            return  f"{self.education_center} {self.program} ({self.start_date}–{self.end_date})"    
 
 class DocumentType(models.Model):
     name = models.CharField(
@@ -488,6 +378,7 @@ class DocumentType(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
 
 class ContractorsDocument(models.Model):
     creation_date = models.DateTimeField("Дата создания", blank=True, null=True, default=now)

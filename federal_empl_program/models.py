@@ -9,9 +9,8 @@ from django.utils.timezone import now
 
 from citizens.models import Citizen
 from organizations.models import Company
-from education_centers.models import Competence, EducationCenterGroup,\
-                                     EducationProgram, EducationCenter,\
-                                     Group, Employee
+from education_centers.models import Competence, EducationProgram,\
+                                     EducationCenter, Group, Employee
 
 
 class ProjectYear(models.Model):

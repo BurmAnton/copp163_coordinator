@@ -10,19 +10,14 @@ from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter,\
       DropdownFilter, ChoiceDropdownFilter
 
 from .models import Workshop, EducationCenter, EducationProgram, Competence, \
-      Group, EducationCenterGroup, ContractorsDocument, DocumentType, \
-      BankDetails, EducationCenterHead
+      Group, ContractorsDocument, DocumentType, BankDetails
 from federal_empl_program.models import Application, EducationCenterProjectYear, ProjectYear
-from citizens.models import Citizen, School, SchoolClass
+from citizens.models import Citizen, School
 from users.models import User
 import users
 
 @admin.register(BankDetails)
 class BankDetailsAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(EducationCenterHead)
-class EducationCenterHeadAdmin(admin.ModelAdmin):
     pass
 
 @admin.register(DocumentType)
@@ -101,21 +96,15 @@ class EducationCentersAdmin(admin.ModelAdmin):
 
 EducationProgramForm = select2_modelform(EducationProgram, attrs={'width': '400px'})
 
-class EducationProgramInline(admin.TabularInline):
-    model = EducationProgram
-    form = EducationProgramForm
 
 CompetenceForm = select2_modelform(Competence, attrs={'width': '400px'})
 
 @admin.register(Competence)
 class CompetencesAdmin(admin.ModelAdmin):
     form = CompetenceForm
-    list_filter = ('block', 'competence_stage', 'competence_type')
     search_fields = ['title']
-    list_display = ['title', 'block', 'competence_stage', 'competence_type']
-    inlines = [
-        EducationProgramInline,
-    ]
+    list_display = ['title']
+
 
 EducationProgramForm = select2_modelform(EducationProgram, attrs={'width': '400px'})
 
@@ -214,73 +203,3 @@ class CitizensInline(admin.TabularInline):
             if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
                 return self.readonly_fields + ('last_name', 'first_name', 'middle_name', 'phone_number', 'email')
         return self.readonly_fields
-
-EducationCenterForm = select2_modelform(EducationCenterGroup, attrs={'width': '400px'})
-
-#@admin.register(EducationCenterGroup)
-class EducationCenterGroupAdmin(admin.ModelAdmin):
-    form = EducationCenterForm
-    inlines = [
-        CitizensInline, 
-    ]
-    list_filter = (
-        ('education_center', RelatedOnlyDropdownFilter),
-        ('competence', RelatedOnlyDropdownFilter),
-        ('city', DropdownFilter),
-        ('start_date'),
-        ('end_date')
-    )
-
-    search_fields = ['education_center', 'get_id', 'competence', 'program', 'start_date', 'end_date']
-    list_display = ('get_id', 'competence', 'program', 'education_center', 'city', 'education_period')
-    fieldsets = (
-        (None, {
-            'fields': ('education_center', 'competence', 'program', 'program_link', 'educational_requirements', 'duration', 'description', 'is_visible')
-        }),
-        ('Формат и место проведения', {
-            'fields': ('is_online', 'ed_city')
-        }),
-        ('Размер группы', {
-            'fields': ('min_group_size', 'max_group_size')
-        }),
-        ('Период', {
-            'fields': ('start_date', 'end_date', 'study_period', 'study_days_count', 'ed_schedule_link'),
-        }),
-    )
-
-    def education_period(self, ed_group):
-        start_date = ed_group.start_date.strftime('%d/%m/%y')
-        end_date = ed_group.end_date
-        if end_date is not None:
-            end_date = end_date.strftime('%d/%m/%y')
-            period = f"{start_date}\xa0–\xa0{end_date}"
-        else:
-            period = f"с {start_date}"
-        return period
-    education_period.short_description = 'Период обучения'
-    education_period.admin_order_field = 'start_date'
-
-    def get_id(self, group):
-        id = f'ЦО-{group.id}'
-        return id
-    get_id.short_description = 'ID'
-    get_id.admin_order_field = 'id'
-    
-    
-    def get_readonly_fields(self, request, obj=None):
-        cl_group = users.models.Group.objects.filter(name='Представитель ЦО')
-
-        if len(cl_group) != 0:
-            if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
-                return self.readonly_fields + ('is_visible',)
-        return self.readonly_fields
-
-    def get_queryset(self, request):
-        queryset = super().get_queryset(request)
-        cl_group = users.models.Group.objects.filter(name='Представитель ЦО')
-
-        if len(cl_group) != 0:
-            if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
-                education_centers = EducationCenter.objects.filter(contact_person=request.user)
-                return queryset.filter(education_center__in=education_centers)
-        return queryset
