@@ -247,7 +247,7 @@ class EducationCenterTicketProjectYear(models.Model):
 
     def doc_directory_path(instance, filename):
         return 'media/applications/{0}/{1}'.format(
-            instance.id, filename
+            instance.id, f'zayavka_scan.pdf'
         )
     application_file = models.FileField(
         "Скан заявки",

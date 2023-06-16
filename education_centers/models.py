@@ -51,6 +51,7 @@ class EducationCenter(models.Model):
     contact_person = models.ForeignKey(User, verbose_name="Контактное лицо", related_name="education_centers", on_delete=DO_NOTHING, blank=True, null=True)
     home_city = models.CharField("Город", max_length=150, null=True, blank=True, default="")
     ENTITY_SEXES = (
+        ('ML', 'Мужской'),
         ('M', 'Женский'),
         ('N', 'Средний')
     )
@@ -391,12 +392,6 @@ class Group(models.Model):
         ('NCOM', "Отменена"),
     ]
     group_status = models.CharField("Статус заявки", max_length=4, default='NEW', choices=GROUP_STATUS_CHOICES)
-    EDUCATION_PROJECTS = (
-        ('COMM', 'Коммерция'),
-        ('PoE', 'Содействие занятости'),
-        ('OTHR', 'Другое')
-    )
-    education_project = models.CharField(max_length=4, choices=EDUCATION_PROJECTS, verbose_name='Федеральная программа', blank=True, null=True)
 
     is_new_price = models.BooleanField("Новая цена", default=False)
 

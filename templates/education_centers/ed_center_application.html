@@ -1025,7 +1025,7 @@
                 <a data-step="5" class="step-btn btn {%if stage == 5%}btn-primary{%else%}btn-outline-primary{%endif%}">МТБ</a>
                 <a data-step="6" class="step-btn btn {%if stage == 6%}btn-primary{%else%}btn-outline-primary{%endif%}">Показатели</a>
                 <a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Квоты</a>
-                {% if project == 'bilet' and center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' %}
+                {% if project == 'bilet' and center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'DWNLD' %}
                     <a data-step="8" class="step-btn btn {%if stage == 8%}btn-primary{%else%}btn-outline-primary{%endif%}">Заявка</a>
                 {% endif %}
             </div>
@@ -1099,6 +1099,7 @@
                                 {% if ed_center.entity_sex != None %}
                                     <option selected value="{{ed_center.entity_sex}}">{{ed_center.get_entity_sex_display}}</option>
                                 {% endif %}
+                                <option value="ML">Мужской</option>
                                 <option value="M">Женский</option>
                                 <option value="N">Средний</option>
                             </select>
