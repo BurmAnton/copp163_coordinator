@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     'organizations',
     'citizens',
     'education_centers',
-    'region163_dashboard',
     'federal_empl_program',
     'future_ticket',
     'easy_select2',

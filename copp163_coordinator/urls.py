@@ -20,7 +20,6 @@ from django.conf import settings
 
 urlpatterns = [
     path('', include('federal_empl_program.urls')),
-    path('dashboard/', include('region163_dashboard.urls')),
     path('ticket/', include('future_ticket.urls')),
     path('education_centers/', include('education_centers.urls')),
     path('users/', include('users.urls')),
