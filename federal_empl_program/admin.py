@@ -16,9 +16,8 @@ from easy_select2 import select2_modelform
 from django_admin_listfilter_dropdown.filters import  RelatedDropdownFilter, ChoiceDropdownFilter, RelatedOnlyDropdownFilter, DropdownFilter
 from field_history.models import FieldHistory
 
-from .models import Application, EdCenterEmployeePosition, Questionnaire, InteractionHistory, \
-                    CitizenCategory, CategoryInstruction, Grant, ProjectYear, \
-                    Indicator, ProjectPosition
+from .models import Application, EdCenterEmployeePosition,CitizenCategory, \
+                    Grant, ProjectYear, Indicator, ProjectPosition
 from education_centers.models import EducationCenter, EducationProgram
 from users.models import Group
 
@@ -45,26 +44,6 @@ class IndicatorAdmin(admin.ModelAdmin):
     pass
 
 
-QuestionnaireForm = select2_modelform(Questionnaire, attrs={'width': '400px'})
-
-class QuestionnaireInline(admin.StackedInline):
-    form = QuestionnaireForm
-    model = Questionnaire
-
-InteractionHistoryForm = select2_modelform(InteractionHistory, attrs={'width': '400px'})
-
-class InteractionHistoryInLine(admin.TabularInline):
-    model = InteractionHistory
-    form = InteractionHistoryForm
-    classes = ['collapse']
-    ordering = ("-id",)
-    fields = ['interaction_date', 'comunication_type', 'short_description']
-    def get_extra(self, request, obj=None, **kwargs):
-        extra = 0
-        if obj:
-            return extra
-        return extra
-
 @admin.register(CitizenCategory)
 class CitizenCategoryAdmin(admin.ModelAdmin):
     list_display = (
@@ -88,22 +67,22 @@ class GrantAdmin(admin.ModelAdmin):
 @admin.register(Application)
 class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
     form = ApplicationForm
-    inlines = [InteractionHistoryInLine, QuestionnaireInline]
     
-    readonly_fields = ['get_applicant', 'get_history', 'id', 'get_phone', 'get_email', 'get_city']
+    readonly_fields = ['get_applicant', 'id', 'get_phone', 'get_email', 'get_city']
 
     fieldsets = (
         (None, {
             'fields': ('get_applicant', 'id', 'get_phone', 'get_email', 'get_city')
         }),
         ('Работа с заявкой', {
-            'fields': ('resume', 'admit_status', 'appl_status', 'change_status_date', 
-            'citizen_category', 'competence', 'education_program', 'education_center', 'ed_ready_time',
-            'ed_center_group', 'group', 'is_enrolled', 'is_deducted'),
+            'fields': ('appl_status', 'change_status_date', 'citizen_category',
+                        'competence', 'education_program', 'education_center',
+                        'group'
+                    ),
         }),
         ('Работа по трудоустройству', {
             'classes': ('collapse',),
-            'fields': ('empoyment_specialist', 'contract_type', 'is_working', 'find_work', 'get_history', 'employer'),
+            'fields': ('contract_type', 'is_working', 'find_work'),
         }),
     )
 
@@ -130,21 +109,6 @@ class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
         return city
     get_city.short_description='Город'
 
-    def get_comment(self, application):
-        comment = InteractionHistory.objects.filter(application=application).latest().short_description
-        return comment
-    get_comment.short_description='Последний комментарий'
-        
-    def get_comment_date(self, application):
-        comment = InteractionHistory.objects.filter(application=application).latest().interaction_date
-        return comment
-    get_comment_date.short_description='Дата комментария'
-
-    def get_history(self, application):
-        history = application.field_history.latest('date_created').date_created + timedelta(hours=4)
-        return history.strftime('%d/%m/%y %H:%M') 
-    get_history.short_description='Дата последнего изменения'
-
     search_fields = ['applicant__phone_number','applicant__email','applicant__snils_number',
     'applicant__first_name','applicant__middle_name','applicant__last_name', 'id']
     
@@ -154,7 +118,7 @@ class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
         'is_working',
         'payment',
         'payment_amount',
-        'education_program',
+        'group',
         'grant'
     ]
     list_totals = ['payment_amount',]
@@ -172,7 +136,6 @@ class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
     list_filter = (
         ('group__start_date', DropdownFilter),
         ('group__end_date', DropdownFilter),
-        ('citizen_consultant', RelatedOnlyDropdownFilter),
         ('appl_status', ChoiceDropdownFilter),
         ('citizen_category', RelatedOnlyDropdownFilter)
     )
@@ -180,7 +143,6 @@ class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
     actions = ['allow_applications', 'get_job', 'get_jobless', 'get_paid', 'get_paid_part', 'cancel_payment']
     def allow_applications(self, request, queryset):
         queryset.update(appl_status='ADM')
-        queryset.update(admit_status='ADM')
     allow_applications.short_description='Изменить статус на допущен к обучению'
 
     def get_job(self, request, queryset):
@@ -253,13 +215,13 @@ class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
         if len(cl_group) != 0:
             if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
                 return self.readonly_fields + [
-                    'citizen_consultant','admit_status', 'appl_status', 
-                    'citizen_category', 'competence', 'education_program', 'education_center',
-                    'group', 'is_enrolled', 'is_deducted', 'education_document', 'pasport', 'resume', 'worksearcher_certificate',
-                    'consent_pers_data', 'workbook', 'unemployed_certificate', 'senior_certificate',
-                    'parental_leave_confirm','birth_certificate', 'birth_certificate_undr_seven', 
-                    'notIP_certificate', 'empoyment_specialist', 'contract_type', 'is_working', 'find_work', 'get_history', 'employer',
-                    'ed_ready_time'
+                    'citizen_consultant', 'appl_status', 'citizen_category',
+                    'competence', 'education_program', 'education_center',
+                    'group', 'education_document','pasport', 'worksearcher_certificate',
+                    'consent_pers_data', 'workbook', 'unemployed_certificate',
+                    'senior_certificate', 'parental_leave_confirm',
+                    'birth_certificate', 'birth_certificate_undr_seven',
+                    'contract_type', 'is_working', 'find_work',
                 ]
         return self.readonly_fields
 
@@ -277,8 +239,3 @@ class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
             'total': total,
         }
         return super(ApplicationAdmin, self).changelist_view(request, extra_context=context)
-
-
-@admin.register(CategoryInstruction)
-class CategoryInstructionAdmin(admin.ModelAdmin):
-    pass
