@@ -5,14 +5,14 @@
     <li>
       {% url cl.opts|admin_urlname:'add' as add_url %}
       <a href="{% add_preserved_filters add_url is_popup to_field %}" class="addlink">
-        Добавить заявку
+        Добавить профессию
       </a>
     </li>
     {% if request.user.is_superuser %}
       <li>
-        <form method="POST" action="{% url 'bvb_students_report' %}">
-            <button type="submit" class="addlink">Скачать</button>
-        </form>
+        <a href="{% url 'export_professions' %}" class="addlink">
+            Скачать
+        </a>
       </li>
     {% endif %}
   {% endif %}
