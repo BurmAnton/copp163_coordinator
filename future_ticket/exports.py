@@ -20,7 +20,8 @@ def professions():
         "Среда",
         "Федеральная?",
         "Колво программ",
-        "Колво заявок"
+        "Колво заявок (Запрос)",
+        "Колво заявок (Одобрено)"
     ]
     for col_number, col_title in enumerate(col_titles, start=1):
         ws.cell(row=1, column=col_number, value=col_title)
@@ -30,14 +31,18 @@ def professions():
         if profession.is_federal: is_federal = "Да"
         else: is_federal = "Нет"
         quota_sum = TicketQuota.objects.filter(profession=profession).distinct(
-                            ).aggregate(Sum('quota'))['quota__sum']
-        if quota_sum == None: quota_sum = 0
+                            ).aggregate(Sum('value'), Sum('approved_value'))
+        value = quota_sum['value__sum']
+        approved_value = quota_sum['approved_value__sum']
+        if value == None: value = 0
+        if approved_value == None: approved_value = 0
         ws.cell(row=row_number, column=1, value=profession.id)
         ws.cell(row=row_number, column=2, value=profession.name)
         ws.cell(row=row_number, column=3, value=profession.prof_enviroment.name)
         ws.cell(row=row_number, column=4, value=is_federal)
         ws.cell(row=row_number, column=5, value=len(profession.programs.all()))
-        ws.cell(row=row_number, column=6, value=quota_sum)
+        ws.cell(row=row_number, column=6, value=value)
+        ws.cell(row=row_number, column=7, value=approved_value)
         row_number += 1
     
     wb.template = False
