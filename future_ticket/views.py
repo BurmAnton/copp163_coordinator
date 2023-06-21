@@ -10,7 +10,7 @@ from future_ticket.models import EducationCenterTicketProjectYear,\
                                  TicketFullQuota, TicketProjectYear, TicketQuota
 
 from .forms import ImportDataForm
-from . import imports
+from . import imports, exports
 
 def equalize_quotas(request):
     quotas = TicketQuota.objects.all()
@@ -113,3 +113,7 @@ def import_ticket_programs(request):
         'message': message,
         'form' : ImportDataForm(),
     })
+
+@csrf_exempt
+def export_professions(request):
+    return exports.professions()

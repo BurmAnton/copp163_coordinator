@@ -13,6 +13,11 @@ urlpatterns = [
         views.import_ticket_programs, 
         name='import_ticket_programs'
     ),
+    path(
+        'export/professions/', 
+        views.export_professions, 
+        name='export_professions'
+    ),
     path('quotas/dashboard/', views.quotas, name='quotas'),
-    path('quotas/equalize/', views.equalize_quotas, name='equalize_quotas')
+    path('quotas/equalize/', views.equalize_quotas, name='equalize_quotas'),
 ]
