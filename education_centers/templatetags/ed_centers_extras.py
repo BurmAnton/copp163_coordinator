@@ -8,6 +8,14 @@ from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndica
 register = template.Library()
 
 @register.filter
+def count_teachers(program, ed_center):
+    return len(program.teachers.filter(organization=ed_center))
+
+@register.filter
+def count_workshops(program, ed_center):
+    return len(program.workshops.filter(education_center=ed_center))
+
+@register.filter
 def get_profession_quota(quota, profession):
     return quota.filter(profession=profession['id'])
 
