@@ -9,6 +9,11 @@ urlpatterns = [
         name='import_ticket_professions'
     ),
     path(
+        'professions/import/merge', 
+        views.merge_ticket_professions, 
+        name='merge_ticket_professions'
+    ),
+    path(
         'programs/import/', 
         views.import_ticket_programs, 
         name='import_ticket_programs'

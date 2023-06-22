@@ -47,6 +47,82 @@ def load_worksheet_dict(sheet, fields_names_set):
                 sheet_dict[fields_names_set[col]].append(cell_value)
     return sheet_dict
 
+def change_professions(form):
+    try:
+        sheet = get_sheet(form)
+    except IndexError:
+        return ['Import', 'IndexError']
+    
+    #Требуемые поля таблицы
+    fields_names = {"ID", "Слияние", "Название", "Среда", "Федеральная?"}
+    
+    cheak_col_names = cheak_col_match(sheet, fields_names)
+    if cheak_col_names[0] != True:
+        return cheak_col_names
+    
+    sheet_dict = load_worksheet_dict(sheet, cheak_col_names[1])
+
+    missing_fields = []
+    errors = []
+    changed_professions_count = 0
+    for row in range(len(sheet_dict['ID'])):
+        profession = change_profession(sheet_dict, row)
+        if profession[0] == 'OK':
+            if profession[1]:
+                changed_professions_count += 1
+        elif profession[0] == 'MissingField':
+            missing_fields.append(profession)
+        else: errors.append(profession)
+    return ['OK', changed_professions_count, missing_fields, errors]
+
+def change_profession(sheet, row):
+    missing_fields = []
+
+    profession_id = sheet["ID"][row]
+    profession = TicketProfession.objects.filter(id=profession_id)
+    if len(profession) != 0: 
+        profession = profession[0]
+    else: missing_fields.append("ID")
+
+    name = sheet["Название"][row]
+    if name != "" and name != None: name = name.strip()
+    else: missing_fields.append("Название")
+
+    prof_enviroment = sheet["Среда"][row]
+    prof_enviroment = ProfEnviroment.objects.filter(name=prof_enviroment)
+    if len(prof_enviroment) != 0: 
+        prof_enviroment = prof_enviroment[0]
+    else: missing_fields.append("Среда")
+
+    is_federal = sheet["Федеральная?"][row]
+    if is_federal == "Да": is_federal = True
+    elif is_federal == "Нет": is_federal = False
+    else: missing_fields.append("Федеральная?")
+    
+    if len(missing_fields) == 0:
+        profession.name = name
+        profession.prof_enviroment = prof_enviroment
+        profession.is_federal = is_federal
+        profession.save()
+
+        merge_id = sheet["Слияние"][row]
+        if merge_id != "" and merge_id != None:
+            merge_profession = TicketProfession.objects.filter(id=merge_id)
+            if len(merge_profession) == 0: 
+                return ['FailedMerge', profession, row]
+            else:
+                merge_profession = merge_profession[0]
+                for program in profession.programs.all():
+                    program.profession = merge_profession
+                    program.save()
+                for quota in profession.quotas.all():
+                    quota.profession = merge_profession
+                    quota.save()
+                profession.delete()
+                return ['OK', True, merge_profession, row + 2]
+        return ['OK', False, profession]
+    return ['MissingField', missing_fields, row + 2]
+
 def professions(form):
     try:
         sheet = get_sheet(form)

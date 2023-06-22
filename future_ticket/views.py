@@ -115,5 +115,21 @@ def import_ticket_programs(request):
     })
 
 @csrf_exempt
+def merge_ticket_professions(request):
+    form = ImportDataForm()
+    message = None
+    if request.method == 'POST':
+        form = ImportDataForm(request.POST, request.FILES)
+        if form.is_valid():
+            data = imports.change_professions(form)
+            message = data
+    
+    return render(request, "future_ticket/merge_programs.html", {
+        'message': message,
+        'form' : ImportDataForm(),
+    })
+
+
+@csrf_exempt
 def export_professions(request):
     return exports.professions()
