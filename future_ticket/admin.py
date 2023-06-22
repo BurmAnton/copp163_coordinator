@@ -60,6 +60,10 @@ class ProfEnviromentAdmin(admin.ModelAdmin):
 
 @admin.register(TicketProfession)
 class TicketProfessionAdmin(admin.ModelAdmin):
+    search_fields = [
+        'name', 
+        'prof_enviroment__name'
+    ]
     list_display = ['name', 'prof_enviroment', 'is_federal']
 
 
