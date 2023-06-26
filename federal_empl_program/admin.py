@@ -72,7 +72,7 @@ class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
 
     fieldsets = (
         (None, {
-            'fields': ('get_applicant', 'id', 'get_phone', 'get_email', 'get_city')
+            'fields': ('get_applicant', 'id', 'project_year', 'get_phone', 'get_email', 'get_city')
         }),
         ('Работа с заявкой', {
             'fields': ('appl_status', 'change_status_date', 'citizen_category',
