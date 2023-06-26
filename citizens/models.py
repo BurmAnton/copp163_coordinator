@@ -84,13 +84,6 @@ class Citizen(models.Model):
     middle_name = models.CharField("Отчество", max_length=60, blank=True, null=True)
     
     user = models.OneToOneField(User, verbose_name="Пользователь", related_name="citizen", on_delete=DO_NOTHING, null=True)
-    STAGES_LIST = [
-        ('VG', 'Профориентация'),
-        ('EG', 'Запись в группу'),
-        ('APL', 'Подача заявки'),
-        ('SE', 'Начал обучение'),
-    ]
-    aplication_stages = models.CharField("Стадия", max_length=3, choices=STAGES_LIST, default='REG')
 
     SEX_CHOICES = [
         ('M', "Мужской"),
