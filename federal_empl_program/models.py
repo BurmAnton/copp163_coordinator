@@ -263,6 +263,14 @@ class Grant(models.Model):
 
 
 class Application(models.Model):
+    project_year = models.ForeignKey(
+        ProjectYear, 
+        verbose_name="Год проекта",
+        related_name="applications",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
     applicant = models.ForeignKey(Citizen, verbose_name="Заявитель", on_delete=CASCADE, related_name='POE_applications')
     creation_date = models.DateTimeField("Дата создания", blank=True, null=True, default=now)
     APPL_STATUS_CHOICES = [
