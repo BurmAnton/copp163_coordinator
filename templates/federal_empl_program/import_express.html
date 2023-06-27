@@ -11,40 +11,30 @@
 
 {% block body %}
     <div class="card" style="width: 25rem;" id='import_form'>
+        {% if message != None %}
+            <div class="alert alert-success" role="alert">
+                Заявок добавлено: {{message.1}}
+            </div> 
+        {% endif %}
         <h2>Импортировать&nbspданные</h2>
         <form enctype="multipart/form-data" action="{% url 'import_express' %}" method="post">
             <div class="input-group mb-3">
                 {{ form }}
             </div>
-            {% if message.0 == True %}
-                <div class="alert alert-success" role="alert">
-                    <p>Граждан добавлено – <strong>{{ message.1 }}</strong></p>
-                    <p>Заявок добавлено – <strong>{{ message.2 }}</strong></p>
-                </div>   
-            {% elif message.0 == False %}
-                <div class="alert alert-danger" role="alert">
-                    {% if message.1 == "FieldError" %}
-                        <p>В таблице нет следующих требуемых столбцов:</p>
-                        <ol>
-                            {% for missing_field in message.2 %}
-                                <li>
-                                    <strong>
-                                        {{ missing_field }}
-                                    </strong>
-                                </li>
-                            {% endfor %}
-                        </ol>
-                    {% elif message.1 == "EmptySheet" %}
-                        <p><strong>Таблица пуста</strong></p>
-                    {% elif message.1 == "IndexError" %}
-                        <p><strong>IndexError</strong></p>
-                    {% endif %}
-                </div> 
-            {% endif %}
             <div class="submit">
                 <input type="submit" value="Загрузить данные" class="btn btn-primary">   
             </div>
         </form>
+        {% for row in message.2 %}
+                <div class="alert alert-danger" role="alert">
+                    В строке {{row.2}} не верно заполнены следующие поля:
+                    <ul>
+                        {% for field in row.1 %}
+                            <li>{{field}}</li>
+                        {% endfor %}
+                    </ul>
+                </div> 
+            {% endfor %}
     </div>
 
 {% endblock %}

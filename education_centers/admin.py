@@ -146,9 +146,11 @@ class GroupAdmin(admin.ModelAdmin):
     list_display = ('name', 'education_period', 'is_new_price', 'workshop_link', 'competence')
     
     def competence(self, group):
-        url = reverse("admin:education_centers_competence_change", args=[group.education_program.competence.id])
-        link = f'<a href="%s"> %s </a>' % (url, group.education_program.competence)
-        return mark_safe(link)
+        if group.education_program != None:
+            url = reverse("admin:education_centers_competence_change", args=[group.education_program.competence.id])
+            link = f'<a href="%s"> %s </a>' % (url, group.education_program.competence)
+            return mark_safe(link)
+        return "-"
     competence.short_description = 'Компетенция'
 
     def workshop_link(self, group):

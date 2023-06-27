@@ -1,4 +1,5 @@
 import pytz
+import math
 
 from users.models import User
 from openpyxl import load_workbook
@@ -9,59 +10,12 @@ from django.utils import timezone
 from citizens.models import Citizen, School
 from education_centers.models import EducationProgram, EducationCenter, \
                                      Workshop, Competence
-from .models import Application, Group, CitizenCategory
+from .models import Application, Group, CitizenCategory, ProjectYear
 
 def get_sheet(form):
     workbook = load_workbook(form.cleaned_data['import_file'])
     sheet = workbook.active
     return sheet
-
-def express_import(form):
-    try:
-        sheet = get_sheet(form)
-    except IndexError:
-        return [False, 'IndexError']
-
-    fields_names_set = {
-        'Фамилия', 'Имя', 'Отчество', 'Пол', 'Дата рождения', 'СНИЛС', 
-        'Email', 'Телефон', 'Регион для обучения', 'Город проживания', 
-        'Регион проживания', 'Категория слушателя', 'Подкатегория слушателя', 
-        'Компетенция','Выбранное место обучения', 
-        'Адрес выбранного место обучения', 'Программа обучения в заявке', 
-        'Дата создания заявки на обучение', 'Статус заявки на обучение', 'Дата последней смены статуса',
-        'Группа', 'Тип договора', 'Дата начала обучения', 'Дата окончания обучения', 
-    }
-
-    cheak = cheak_col_match(sheet, fields_names_set)
-    if cheak[0] == False:
-        return cheak
-    
-    sheet_dict = load_worksheet_dict(sheet, cheak[1])
-    citizens = 0
-    applications = 0
-    for row in range(len(sheet_dict['СНИЛС'])):
-        citizen = load_citizen(sheet_dict, row)
-        if citizen[1] == "Added":
-            citizens += 1
-        if sheet_dict["Статус заявки на обучение"][row] is not None:
-            application = load_application(sheet_dict, row, citizen[0])
-            if application is not None:
-                if application[1] == "Added":
-                    applications += 1
-                application = application[0]
-            if sheet_dict["Компетенция"][row] is not None:
-                competence = load_Competence(sheet_dict, row, application)
-                program_name = sheet_dict["Программа обучения в заявке"][row]
-                if program_name is not None and program_name != 'Не указана заявка у Группы':
-                    education_program = load_EducationProgram(sheet_dict, row, competence, application)
-            if sheet_dict["Выбранное место обучения"][row] is not None:
-                education_center = load_EducationCenter(sheet_dict, row, competence, application)
-                if sheet_dict["Адрес выбранного место обучения"][row] is not None:
-                    workshop = load_Workshop(sheet_dict, row, competence, education_center)
-            if sheet_dict["Группа"][row] is not None:
-                load_Group(sheet_dict, row, workshop, education_program, application)
-    
-    return [True, citizens, applications]
 
 def cheak_col_match(sheet, fields_names_set):
     i = 0
@@ -69,7 +23,7 @@ def cheak_col_match(sheet, fields_names_set):
     sheet_fields = []
     sheet_col = {}
     if sheet[f"A2"].value is None:
-        return [False, 'EmptySheet']
+        return ['EmptySheet', ]
     try:
         for col_header in range(1, col_count+1):
             if sheet.cell(row=1,column=col_header).value is not None:
@@ -80,340 +34,203 @@ def cheak_col_match(sheet, fields_names_set):
             if field not in sheet_fields:
                 missing_fields.append(field)
         if len(missing_fields) != 0:
-            return [False, 'FieldError', missing_fields]
+            return ['MissingFieldsError', missing_fields]
     except IndexError:
-            return [False, 'IndexError']
+            return ['IndexError', ]
     return [True, sheet_col]
-    
+
 def load_worksheet_dict(sheet, fields_names_set):
     row_count = sheet.max_row
     sheet_dict = {}
     for col in fields_names_set:
         sheet_dict[fields_names_set[col]] = []
         for row in range(2, row_count+1): 
-            snils = sheet[f"F{row}"].value
+            snils = sheet[f"A{row}"].value
             if snils != None:
-                sheet_dict[fields_names_set[col]].append(sheet.cell(row=row,column=col).value)
+                cell_value = sheet.cell(row=row,column=col).value
+                try: cell_value = str(math.floor(cell_value))
+                except (ValueError, TypeError): pass
+                sheet_dict[fields_names_set[col]].append(cell_value)
     return sheet_dict
 
-def load_citizen(sheet_dict, row):
-    snils = sheet_dict["СНИЛС"][row]
-    citizen = Citizen.objects.filter(snils_number=snils)
-    if len(citizen) == 0:
-        citizen = add_citizen(sheet_dict, row)
-        return [citizen, 'Added']
-    else:
-        citizen = update_citizen(sheet_dict, row, citizen[0])
-        return [citizen, "Updated"]
 
-def add_citizen(sheet_dict, row):
-    sex = sheet_dict["Пол"][row]
-    if sheet_dict["Отчество"][row] is not None:
-        middle_name = sheet_dict["Отчество"][row].capitalize()
-    else:
-        middle_name = None
-    if sheet_dict["Город проживания"][row] == None:
-        res_city = None
-    else: 
-        res_city = sheet_dict["Город проживания"][row].capitalize()
-        if len(res_city) > 50:
-            res_city = res_city[0:49]
-    citizen = Citizen(
-        first_name = sheet_dict["Имя"][row].capitalize(),
-        last_name = sheet_dict["Фамилия"][row].capitalize(),
-        phone_number = sheet_dict["Телефон"][row],
-        middle_name = middle_name,
-        sex = 'F' if  sex == 'ж' else 'M', 
-        email=sheet_dict["Email"][row],
-        snils_number=sheet_dict["СНИЛС"][row],
-        res_region = sheet_dict["Регион проживания"][row].capitalize(),
-        res_city = res_city
-    )
-    citizen.save()
-    return citizen
+def express_import(form):
+    try:
+        sheet = get_sheet(form)
+    except IndexError:
+        return ['Import', 'IndexError']
+   
+    #Требуемые поля таблицы
+    fields_names = [
+        "Фамилия", "Имя", "Отчество", "Пол", "Дата рождения", "СНИЛС",
+        "Email", "Телефон", "Категория слушателя", "Город проживания", 
+        "Регион проживания", "Компетенция","Выбранное место обучения", 
+        "Адрес выбранного место обучения", "Статус заявки", "Группа",
+        "Дата создания заявки","Дата начала обучения", 
+        "Дата окончания обучения", "Программа обучения"
+    ]
 
-def update_citizen(sheet_dict, row, citizen):
-    first_name = sheet_dict["Имя"][row].capitalize()
-    if citizen.first_name != first_name:
-        citizen.first_name = first_name
-    if sheet_dict["Отчество"][row] is not None:
-        middle_name = sheet_dict["Отчество"][row].capitalize()
-    else:
-        middle_name = sheet_dict["Отчество"][row]
-    if (citizen.middle_name != middle_name) and (middle_name != None):
-        citizen.middle_name = middle_name
-    last_name = sheet_dict["Фамилия"][row].capitalize()
-    if citizen.last_name != last_name:
-        citizen.last_name = last_name
-    phone_number = sheet_dict["Телефон"][row]
-    if citizen.phone_number != phone_number:
-        citizen.phone_number = phone_number
-    sex = sheet_dict["Пол"][row]
-    sex = 'F' if  sex == 'ж' else 'M'
-    if citizen.sex != sex:
-        citizen.sex = sex
-    email = sheet_dict["Email"][row]
-    if citizen.email != email:
-        citizen.email = email
-    res_region = sheet_dict["Регион проживания"][row].capitalize()
-    if citizen.res_region != res_region:
-        citizen.res_region = res_region
-    if sheet_dict["Город проживания"][row] == None:
-        res_city = None
-    else: 
-        res_city = sheet_dict["Город проживания"][row].capitalize()
-        if len(res_city) > 50:
-            res_city = res_city[0:49]
-    if citizen.res_region != res_region:
-        citizen.res_region = res_region  
-    citizen.save()
-    return citizen
+    cheak_col_names = cheak_col_match(sheet, fields_names)
+    if cheak_col_names[0] != True:
+        return cheak_col_names
+    
+    sheet_dict = load_worksheet_dict(sheet, cheak_col_names[1])
 
-def load_application(sheet_dict, row, applicant):
-    application_date = sheet_dict["Дата создания заявки на обучение"][row]
-    application_date = datetime.strptime(application_date, "%Y-%m-%d %H:%M:%S")
-    application_date = timezone.make_aware(application_date)
-    application_date.astimezone(pytz.timezone('Europe/Samara'))
-    applications = Application.objects.filter(applicant=applicant)
-    if sheet_dict["Статус заявки на обучение"][row] == 'Заявка отменена':
-        applications_by_date = applications.filter(creation_date=application_date)
-        dublicate_applications = applications.filter(creation_date=application_date, appl_status = 'DUPL')
-        if len(dublicate_applications) > 0:
-            if dublicate_applications[0].creation_date < application_date:
-                dublicate_applications[0].delete()
-                application = add_application(sheet_dict, row, applicant)
-                
-                return [application, 'Added']
+    missing_fields = []
+    errors = []
+    added_users = 0
+    added_applications = 0
+    for row in range(len(sheet_dict['СНИЛС'])):
+        citizen = load_citizen(sheet_dict, row)
+        if citizen[0] == 'MissingField':
+            missing_fields.append(citizen)
+        else:
+            if citizen[2] == True: added_users += 1
+            citizen = citizen[1]
+            application = load_application(citizen, sheet_dict, row)
+            if application[0] == 'MissingField':
+                missing_fields.append(citizen)
             else:
-                return [dublicate_applications[0], "Updated"]
-        elif len(applications_by_date) > 0:
-            application = update_application(sheet_dict, row, applicant, application_date, applications_by_date[0])
-            return [application, "Updated"]
-        else:
-            application = add_application(sheet_dict, row, applicant)
-            return [application, 'Added']
-    else:
-        applications = Application.objects.filter(applicant=applicant)
-        applications_by_date = applications.filter(creation_date=application_date)
-        if len(applications) == 0:
-            application = add_application(sheet_dict, row, applicant)
-            return [application, 'Added']
-        elif len(applications_by_date) == 0:
-            for application in applications.exclude(creation_date=application_date):
-                application.appl_status = 'DUPL'
-                application.save()
-            application = add_application(sheet_dict, row, applicant)
-            return [application, 'Added']
-        else:
-            application = update_application(sheet_dict, row, applicant, application_date, applications_by_date[0])
-            return [application, "Updated"]
+                added_applications += 1
+                application = application[1]
+    return ['OK', added_applications, missing_fields, errors]
 
-def add_application(sheet_dict, row, applicant):
-    creation_date = datetime.strptime(sheet_dict["Дата создания заявки на обучение"][row], "%Y-%m-%d %H:%M:%S")
-    creation_date = timezone.make_aware(creation_date)
-    creation_date.astimezone(pytz.timezone('Europe/Samara'))
-    contract_type = set_contract_type(sheet_dict["Тип договора"][row])
-    express_status = sheet_dict["Статус заявки на обучение"][row]
-    appl_status, admit_status = set_application_status(express_status)
+def load_citizen(sheet, row):
+    missing_fields = []
+
+    snils_number = sheet["СНИЛС"][row]
+    if snils_number != "": snils_number = snils_number.strip().title()
+    else: missing_fields.append("СНИЛС")
+    last_name = sheet["Фамилия"][row]
+    if last_name != "": last_name = last_name.strip().title()
+    else: missing_fields.append("Фамилия")
+    first_name = sheet["Имя"][row]
+    if first_name != "": first_name = first_name.strip().title()
+    else: missing_fields.append("Имя")
+    middle_name = sheet["Отчество"][row]
+    if middle_name != "" and middle_name != None:
+        middle_name = middle_name.strip().title()
+    else: middle_name = None
+
+    sex = sheet["Пол"][row]
+    if sex == "м": sex = 'M'
+    elif sex == "ж": sex = 'F'
+    else: sex = None
+    birthday = sheet["Дата рождения"][row]
+    if birthday != "":
+        birthday = datetime.strptime(birthday, "%Y-%m-%d")
+        birthday = timezone.make_aware(birthday)
+        birthday.astimezone(pytz.timezone('Europe/Samara'))
+    else: birthday = None
     
-    change_status_date = datetime.strptime(sheet_dict["Дата последней смены статуса"][row], "%Y-%m-%d %H:%M:%S")
-    change_status_date = timezone.make_aware(change_status_date)
-    category = sheet_dict["Категория слушателя"][row]
-    category = CitizenCategory.objects.filter(official_name=category)
+    email = sheet["Email"][row]
+    if email != "": email = email.strip()
+    else: email = None
+    phone_number = sheet["Телефон"][row]
+    if phone_number != "": phone_number = phone_number.strip()
+    else: phone_number = None
+    res_city = sheet["Город проживания"][row]
+    if res_city != "": res_city = res_city.strip()
+    else: res_city = None
+    res_region = sheet["Регион проживания"][row]
+    if res_region != "": res_region = res_region.strip()
+    else: res_region = None
 
-    if len(category) != 0:
-        category = category[0]
-        if category.official_name == "Работники, находящиеся под риском увольнения, включая введение режима неполного рабочего времени, простой, временную приостановку работ, предоставление отпусков без сохранения заработной платы, проведение мероприятий по высвобождению работников":
-            grant = '2'
-        elif category.official_name == "Безработные граждане, зарегистрированные в органах службы занятости":
-            grant = '2'
-        else: 
-            grant = '1'
-    else: 
-        category = None
-        grant = None
-    if len(Group.objects.filter(name=sheet_dict["Группа"][row])) == 0:
-        group = None
-        ed_ready_time = None
-    else:
-        ed_ready_time = 'ALR'
-        group = sheet_dict["Группа"][row].partition('(')[0]
-        if len(Group.objects.filter(name=sheet_dict["Группа"][row])) != 0:
-            group = Group.objects.get(name=sheet_dict["Группа"][row])
-        
-    application = Application(
-        applicant=applicant,
-        creation_date=creation_date,
-        admit_status=admit_status,
-        appl_status=appl_status,
-        change_status_date=change_status_date,
-        citizen_category=category,
-        group=group,
-        grant=grant,
-        contract_type=contract_type,
-        ed_ready_time=ed_ready_time
+    if len(missing_fields) == 0:
+        citizen, is_new = Citizen.objects.get_or_create(
+             snils_number=snils_number
+        )
+        citizen.last_name = last_name
+        citizen.first_name = first_name
+        citizen.middle_name = middle_name
+        citizen.sex = sex
+        citizen.birthday = birthday
+        citizen.email = email
+        citizen.phone_number = phone_number
+        citizen.res_city = res_city
+        citizen.res_region = res_region
+        citizen.save()
+        return ['OK', citizen, is_new]
+    return ['MissingField', missing_fields, row + 2]
+
+def load_application(citizen, sheet, row):
+    missing_fields = []
+
+    application_date = sheet["Дата создания заявки"][row]
+    if application_date != "": 
+        application_date = datetime.strptime(
+            application_date, "%Y-%m-%d %H:%M:%S"
+        )
+        application_date = timezone.make_aware(application_date)
+        application_date.astimezone(pytz.timezone('Europe/Samara'))
+    else: missing_fields.append("Дата создания заявки")
+    project_year, is_new = ProjectYear.objects.get_or_create(
+        year=application_date.year
     )
-    application.save()
-    application.legacy_id = application.id
-    application.save()
-    return application
-
-def update_application(sheet_dict, row, applicant, application_date, application):
-    creation_date = datetime.strptime(sheet_dict["Дата создания заявки на обучение"][row], "%Y-%m-%d %H:%M:%S")
-    creation_date = timezone.make_aware(creation_date)
-    creation_date.astimezone(pytz.timezone('Europe/Samara'))
-    if application.creation_date != creation_date:
-        application.creation_date = creation_date
-    
-    contract_type = set_contract_type(sheet_dict["Тип договора"][row])
-    if application.contract_type != contract_type:
-        application.contract_type = contract_type
-    express_status = sheet_dict["Статус заявки на обучение"][row]
-    aplication_status = update_application_status(express_status, application)
-    appl_status = aplication_status[0]
-    admit_status = aplication_status[1]
-    change_status_date = datetime.strptime(sheet_dict["Дата последней смены статуса"][row], "%Y-%m-%d %H:%M:%S")
-    change_status_date = timezone.make_aware(change_status_date)
-    application.change_status_date = change_status_date
-    if application.appl_status != appl_status:
-        application.appl_status = appl_status
-    if application.admit_status != admit_status:
-        application.admit_status = admit_status
-    category = sheet_dict["Категория слушателя"][row]
-    category = CitizenCategory.objects.filter(official_name=category)
-    if len(category) != 0:
-        category = category[0]
-        if category.official_name == "Работники, находящиеся под риском увольнения, включая введение режима неполного рабочего времени, простой, временную приостановку работ, предоставление отпусков без сохранения заработной платы, проведение мероприятий по высвобождению работников":
-            grant = '2'
-        elif category.official_name == "Безработные граждане, зарегистрированные в органах службы занятости":
-            grant = '2'
-        else: grant = '1'
-    else: 
-        category = None
-        grant = None
-    application.citizen_category = category
-    application.grant = grant
-    application.save()
-    if len(Group.objects.filter(name=sheet_dict["Группа"][row])) == 0:
-        group = None
-    else:
-        group = Group.objects.get(name=sheet_dict["Группа"][row])
-        application.ed_ready_time = 'ALR'
-    if application.group != group:
-        application.group = group
-    application.save()
-    if application.legacy_id == '':
-        application.legacy_id = application.id
-        application.save()
-    return application
-
-def set_application_status(express_status):
-    if express_status == "Направлен в ЦО":
-        admit_status = 'ADM'
-        appl_status = 'ADM'
-    elif express_status == 'Зачислен':
-        admit_status = 'ADM'
-        appl_status = 'SED'
-    elif express_status == 'Направлен на экзамен':
-        admit_status = 'ADM'
-        appl_status = 'EXAM'      
-    elif express_status == 'Завершил обучение':
-        admit_status = 'ADM'
-        appl_status = 'COMP'
-    elif express_status == 'Отказался от обучения':
-        admit_status = 'ADM'
-        appl_status = 'NCOM'
-    elif express_status == 'Заявка отменена':
-        admit_status = 'REF'
-        appl_status = 'NCOM'
-    else:
-        admit_status = 'RECA'
-        appl_status = 'NEW'
-    return [appl_status, admit_status]
-
-def update_application_status(express_status, application):
-    if express_status == "Направлен в ЦО":
-        admit_status = 'ADM'
-        appl_status = 'ADM'
-    elif express_status == 'Зачислен':
-        admit_status = 'ADM'
-        appl_status = 'SED'
-    elif express_status == 'Направлен на экзамен':
-        admit_status = 'ADM'
-        appl_status = 'EXAM'      
-    elif express_status == 'Завершил обучение':
-        admit_status = 'ADM'
-        appl_status = 'COMP'
-    elif express_status == 'Отказался от обучения':
-        admit_status = 'ADM'
-        appl_status = 'NCOM'
-    elif express_status == 'Заявка отменена':
-        admit_status = 'REF'
-        appl_status = 'NCOM'   
-    else:
-        admit_status = application.admit_status
-        appl_status = application.appl_status
-    return [appl_status, admit_status]
-
-def set_contract_type(contract_type):
-    if contract_type == "Трехсторонний договор":
-        contract_type = 'NEW' 
-    elif contract_type == "Двухстронний договор":
-        contract_type = 'SELF'
-    elif contract_type == 'Без договора':
-        contract_type = 'NOT'
-    else:
-        contract_type = '–'
-    return contract_type
-
-def load_Competence(sheet_dict, row, application):
-    title=sheet_dict["Компетенция"][row]
-    title = title.replace('(Ворлдскиллс)', '')
-    #checking competence existance in DB
-    competencies = Competence.objects.filter(title=title)
-    if len(competencies) == 0:
-        competence = add_competence(title)
-    else:
-        competence = competencies[0]
-    if application is not None:
-        application.competence = competence
-        application.save()
-    return competence
-
-def add_competence(title):
-    competence = Competence(
-        title=title,
-        block="",
-        competence_type="",
-        competence_stage=""
+    appl_status = None
+    for status in Application.APPL_STATUS_CHOICES:
+        if sheet["Статус заявки"][row] == status[1]:
+            appl_status = status[0]
+    if appl_status == None: missing_fields.append("Статус заявки")
+    citizen_category_name = sheet["Категория слушателя"][row]
+    citizen_category = CitizenCategory.objects.filter(
+        official_name=citizen_category_name,
+        project_year=project_year
     )
-    competence.save()
-    return competence
-
-def load_EducationProgram(sheet_dict, row, competence, application):
-    program_name=sheet_dict["Программа обучения в заявке"][row]
-    education_program = EducationProgram.objects.filter(program_name=set_program_name(program_name), duration=set_program_duration(program_name))
-    if len(education_program) == 0:
-        education_program = add_EducationProgram(program_name, competence)
+    if len(citizen_category) == 0:
+        missing_fields.append("Категория слушателя")
+    else: citizen_category = citizen_category[0]
+    competence = sheet["Компетенция"][row]
+    competence, is_new = Competence.objects.get_or_create(
+        title = competence,
+        is_worldskills=True
+    )
+    education_program = sheet["Программа обучения"][row]
+    if education_program == "нет":
+        education_program = None
     else:
-        education_program = education_program[0]
+        education_program = load_EducationProgram(sheet, row, competence)
+    education_center = sheet["Выбранное место обучения"][row].strip()
+    education_center, is_new = EducationCenter.objects.get_or_create(
+        name=education_center
+    )
+    workshop, is_new = Workshop.objects.get_or_create(
+        competence=competence,
+        education_center=education_center,
+        adress=sheet["Адрес выбранного место обучения"][row]
+    )
+    group, is_new = Group.objects.get_or_create(
+        name=sheet["Группа"][row].strip(),
+        workshop=workshop,
+        education_program=education_program,
+        start_date=sheet["Дата начала обучения"][row],
+        end_date=sheet["Дата окончания обучения"][row],
+        group_status='COMP'
+    )
+    application, is_new = Application.objects.get_or_create(
+        project_year=project_year,
+        creation_date=application_date,
+        competence=competence,
+        applicant=citizen,
+        education_center=education_center,
+        appl_status='COMP',
+        citizen_category=citizen_category,
+        group=group
+    )
+    return ['OK', application, is_new]
 
-    application.education_program = education_program
-    application.save()
-    return education_program
-
-def add_EducationProgram(program_name, competence):
+def load_EducationProgram(sheet_dict, row, competence):
+    program_name=sheet_dict["Программа обучения"][row]
     program_type = set_program_type(program_name)
     duration = set_program_duration(program_name)
     program_name = set_program_name(program_name)
-    program = EducationProgram(
+    education_program, is_new = EducationProgram.objects.get_or_create(
         program_name=program_name,
         competence=competence,
         program_type=program_type,
         duration=duration
     )
-    program.save()
-    return program
+    return education_program
 
 def set_program_type(program_name):
     program_types = (
@@ -442,82 +259,3 @@ def set_program_name(program_name):
     program_name = program_name.split('(', 1)[0]
     program_name = program_name.replace('" ', '')
     return program_name
-
-def load_EducationCenter(sheet_dict, row, competence, application):
-    name = sheet_dict["Выбранное место обучения"][row]
-    education_center, is_new = EducationCenter.objects.get_or_create(name=name)
-    education_center.competences.add(competence)
-    if application is not None:
-        application.education_center = education_center
-        application.save()
-    education_center.competences.add(competence)
-    return education_center
-
-def load_Workshop(sheet_dict, row, competence, education_center):
-    adress = sheet_dict["Адрес выбранного место обучения"][row]
-    if len(Workshop.objects.filter(adress=adress, competence=competence)) == 0:
-        workshop = Workshop(
-            competence=competence,
-            education_center=education_center,
-            adress=adress
-        )
-        workshop.save()
-    else:
-        workshop = Workshop.objects.get(adress=adress, competence=competence)
-    return workshop
-
-def load_Group(sheet_dict, row, workshop, education_program, application):
-    name = (sheet_dict["Группа"][row]).partition('(')
-    if len(Group.objects.filter(name=name[0])) == 0:
-        group = add_Group(sheet_dict, row, name, workshop, education_program)
-        application.group = group
-        application.save()
-    else:
-        group = update_Group(sheet_dict, row, workshop, education_program, name)
-    if application is not None:
-        application.group = group
-        application.ed_ready_time = 'ALR'
-        application.save()
-    return group
-
-def add_Group(sheet_dict, row, name, workshop, education_program):
-    start_date = sheet_dict["Дата начала обучения"][row]
-    end_date = sheet_dict["Дата окончания обучения"][row]
-    group = Group(
-        name=name[0],
-        workshop=workshop,
-        education_program=education_program,
-        start_date=start_date,
-        end_date=end_date,
-    )
-    group.save()
-    return group
-
-def update_Group(sheet_dict, row, workshop, education_program, name):
-    group = Group.objects.get(name=name[0])
-    distance_education = False
-    if group.distance_education != distance_education:
-        group.distance_education = distance_education
-    start_date = sheet_dict["Дата начала обучения"][row]
-    if group.start_date != start_date:
-        group.start_date = start_date
-    end_date = sheet_dict["Дата окончания обучения"][row]
-    if group.end_date != end_date:
-        group.end_date = end_date
-    if group.workshop != workshop:
-        group.workshop = workshop
-    if group.workshop != workshop:
-        group.workshop = workshop
-    group.save()
-    return group
-
-def load_worksheet_dict_st(sheet, fields_names_set):
-    row_count = sheet.max_row
-    sheet_dict = {}
-    for col in fields_names_set:
-        sheet_dict[fields_names_set[col]] = []
-        for row in range(2, row_count+1): 
-            email = sheet[f"A{row}"].value
-            if email != None:
-                sheet_dict[fields_names_set[col]].append(sheet.cell(row=row,column=col).value)
-    return sheet_dict
