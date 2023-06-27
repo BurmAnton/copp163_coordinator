@@ -233,6 +233,14 @@ class CitizenCategory(models.Model):
     short_name = models.CharField("Название", max_length=100, blank=False)
     official_name = models.CharField("Офицальное наименованние", 
                                      max_length=500, blank=True)
+    project_year = models.ForeignKey(
+        ProjectYear, 
+        verbose_name="Год проекта",
+        related_name="categories",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
     
     def __str__(self):
         return  self.short_name
