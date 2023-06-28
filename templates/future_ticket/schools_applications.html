@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load ticket_extras %}
+
+{% block title %}Квота{% endblock %}
+{% block style %}
+    <link href="{% static 'future_ticket/css/schools_applications.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'future_ticket/js/schools_applications.js' %}" rel="stylesheet"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="schools-applications">
+        <h2>Данные ответственных за реализацию мероприятий профминимума в образовательных организациях</h2>
+        <div class="control-panel">
+            <div class="input-group mb-3 table-search">
+                <input type="text" class="form-control" id="myInput" onkeyup="SearchFunction()" placeholder="Поиск..">
+            </div>
+            <div class="filters">
+                <div class="form mb-3">
+                    <select class="selectpicker" title="Выберите управления" multiple data-width="100%" onchange="FilterFunction(1, 'TerAdminFilter')" data-live-search="true" name="ter_admin" id="TerAdminFilter">
+                        <option class="project" value="TADM">Тольяттинское управление</option>
+                        <option class="project" value="NWADM">Северо-Западное управление</option>
+                        <option class="project" value="WADM">Западное управление</option>
+                        <option class="project" value="SWADM">Юго-Западное управление</option>
+                        <option class="project" value="POVADM">Поволжское управление</option>
+                        <option class="project" value="SADM">Южное управление</option>
+                        <option class="project" value="DEPSAM">Департамент образования г.о. Самара</option>
+                        <option class="project" value="SEADM">Юго-Восточное управление</option>
+                        <option class="project" value="OTRADM">Отрадненское управление</option>
+                        <option class="project" value="CENTADM">Центральное управление</option>
+                        <option class="project" value="NEADM">Северо-Восточное управление</option>
+                        <option class="project" value="DEPTOL">Департамент образования г.о. Тольятти</option>
+                        <option class="project" value="NADM">Северное управление</option>
+                        <option class="project" value="KINADM">Кинельское управление</option>
+                        <option class="project" value="SAMADM">Самарское управление</option>
+                    </select>
+                </div>
+                <div class="form mb-3">
+                    <select class="selectpicker" title="Выберите школы" multiple data-width="100%" onchange="FilterFunction(0, 'SchoolsFilter')" data-live-search="true" name="schools" id="SchoolsFilter">
+                        {% for school in schools %}
+                            <option class="school" value="{{ school.school.name }}">{{ school.school.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <table class="table applications-table">
+            <tr class="sticky-top">
+                <th scope="row">Школа</th>
+                <th scope="row">Тер. управление</th>
+                <th scope="row" class="center">ФИО</th>
+                <th scope="row" class="center">Должность</th>
+                <th scope="row" class="center">Email</th>
+                <th scope="row" class="center">Телефон</th>
+                <th scope="row" class="center">Приказ</th>
+            </tr>
+            {% for school in schools %}
+            <tr>
+                <td scope="row">{{ school.school.name }}</td>
+                <td scope="row">{{ school.school.get_territorial_administration_display }}</td>
+                <td scope="row">{{ school.resp_full_name }}</td>
+                <td scope="row">{{ school.resp_position }}</td>
+                <td scope="row">{{ school.email }}</td>
+                <td scope="row">{{ school.phone }}</td>
+                <td scope="row">
+                    <a href="{{school.resp_order.url}}">Приказ</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+
+    </div>
+    
+{% endblock %}

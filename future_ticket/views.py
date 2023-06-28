@@ -1,12 +1,17 @@
+from datetime import date, datetime
+from transliterate import translit
+
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from citizens.models import School
 from django.db.models import Sum, Count
+from education_centers.forms import ImportSchoolOrderDataForm, ImportTicketDataForm
 from education_centers.models import EducationCenter
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-from future_ticket.models import EducationCenterTicketProjectYear,\
+
+from future_ticket.models import EducationCenterTicketProjectYear, SchoolProjectYear,\
                                  TicketFullQuota, TicketProjectYear, TicketQuota
 
 from .forms import ImportDataForm
@@ -133,3 +138,49 @@ def merge_ticket_professions(request):
 @csrf_exempt
 def export_professions(request):
     return exports.professions()
+
+
+def schools_application(request):
+    message = None
+    if request.method == 'POST':
+        project_year = datetime.now().year
+        project_year = get_object_or_404(TicketProjectYear, year=project_year)
+        form = ImportTicketDataForm(request.POST, request.FILES)
+        if form.is_valid():
+            resp_full_name = request.POST['resp_full_name']
+            resp_position = request.POST['resp_position']
+            email = request.POST['email']
+            phone = request.POST['phone']
+            school_id = request.POST['school']
+            school = School.objects.get(id=school_id)
+            school_project = SchoolProjectYear(
+                project_year=project_year,
+                school=school,
+                resp_full_name=resp_full_name,
+                resp_position=resp_position,
+                email=email,
+                phone=phone
+            )
+            school_project.save()
+            resp_order = request.FILES['import_file']
+            school_project.resp_order = resp_order
+            school_project.save()
+            message = "OK"
+        else:
+            message = "Error"
+    schools = School.objects.filter(
+        ticket_project_years=None
+    )
+
+    return render(request, "future_ticket/schools_application.html", {
+        'schools': schools,
+        'form': ImportSchoolOrderDataForm(),
+        'message': message
+    })
+
+def schools_applications(request): 
+    schools = SchoolProjectYear.objects.all()
+
+    return render(request, "future_ticket/schools_applications.html", {
+        'schools': schools
+    })

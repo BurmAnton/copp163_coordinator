@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import AgeGroup, ProfEnviroment, ProgramAuthor, TicketFullQuota, TicketProfession, TicketProgram, TicketProjectYear, EducationCenterTicketProjectYear,\
+from .models import AgeGroup, ProfEnviroment, ProgramAuthor, SchoolProjectYear, TicketFullQuota, TicketProfession, TicketProgram, TicketProjectYear, EducationCenterTicketProjectYear,\
                     TicketProjectPosition, TicketEdCenterEmployeePosition,\
                     TicketIndicator, EdCenterTicketIndicator, TicketQuota
 # Register your models here.
@@ -94,6 +94,21 @@ class TicketProgramAdmin(admin.ModelAdmin):
 @admin.register(TicketFullQuota)
 class TicketFullQuotaAdmin(admin.ModelAdmin):
     list_display = ['project_year', 'full_quota', 'federal_quota']
+
+
+@admin.register(SchoolProjectYear)
+class SchoolProjectYearAdmin(admin.ModelAdmin):
+    search_fields = [
+        'school__name', 
+    ]
+    list_display = [
+        'school', 
+        'resp_full_name', 
+        'resp_position',
+        'phone',
+        'email',
+        'project_year'
+    ]
 
 
 @admin.register(TicketQuota)
