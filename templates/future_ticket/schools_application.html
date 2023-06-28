@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load ticket_extras %}
+
+{% block title %}Квота{% endblock %}
+{% block style %}
+    <link href="{% static 'future_ticket/css/schools_application.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="school-form">
+        <h2>Данные о назначении ответственного  за реализацию мероприятий профминимума в образовательной организации</h2>
+        {% if message == 'OK' %}
+            <div class="alert alert-success w-90" role="alert">
+                Данные успешно сохранены!
+            </div>
+        {% endif %}
+        {% if message == 'Error' %}
+            <div class="alert alert-danger w-90" role="alert">
+                Что-то пошло не так. Попробуйте повторно отправить форму или обратиться в поддержку.
+            </div>
+        {% endif %}
+        <div class="alert alert-warning w-90" role="alert">
+            Если у Вас возникли вопросы, пишите на почту технической поддержки: <b><u>support@copp63.ru</u></b>
+        </div>
+        <form action="{% url 'schools_application' %}" method="post" enctype="multipart/form-data">
+            <div class="form mb-3 filter-selectpicker">
+                <select class="selectpicker w-100" title="Школа" data-live-search="true" name="school">
+                    {% for school in schools.all %}
+                        <option value="{{school.id}}">{{school}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="input" class="form-control" id="ApplTrackNumber" name="resp_full_name" required>
+                <label for="ApplTrackNumber">ФИО ответственного лица</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="input" class="form-control" id="ApplTrackNumber" name="resp_position" required>
+                <label for="ApplTrackNumber">Должность ответственного лица</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="EmailInput" name="email" placeholder="Email"required>
+                <label for="EmailInput">Email ответственного лица</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="phone" class="form-control" id="PhoneInput" name="phone" maxlength="120" placeholder="Телефон" required>
+                <label for="PhoneInput">Телефон ответственного лица</label>
+            </div>
+            <div class="mb-3">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                {{ form.import_file.label_tag }} 
+                {{ form.import_file.help_text }}
+                {{ form.import_file.errors }}
+                {{ form.import_file }}
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="is_ndc" required>
+                <label class="form-check-label" for="is_ndc">
+                    Даю согласие на обработку <a href="http://copp63.ru/resources/7" target="_blank" rel="noopener noreferrer">персональных данных</a>
+                </label>
+            </div>
+            <div class="submit">
+                <input type="submit" class="btn btn-primary" value="Сохранить">
+            </div>
+        </form>
+    </div>
+    
+{% endblock %}

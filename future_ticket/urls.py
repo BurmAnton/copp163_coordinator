@@ -25,4 +25,14 @@ urlpatterns = [
     ),
     path('quotas/dashboard/', views.quotas, name='quotas'),
     path('quotas/equalize/', views.equalize_quotas, name='equalize_quotas'),
+    path(
+        'schools/application', 
+        views.schools_application, 
+        name='schools_application'
+    ),
+    path(
+        'schools/applications', 
+        views.schools_applications, 
+        name='schools_applications'
+    )
 ]

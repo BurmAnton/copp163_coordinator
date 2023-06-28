@@ -1,3 +1,5 @@
+from transliterate import translit
+
 from django.db import models
 from django.db.models.deletion import DO_NOTHING, CASCADE
 from django.utils.translation import gettext_lazy as _
@@ -438,3 +440,43 @@ class TicketQuota(models.Model):
     class Meta:
         verbose_name = "Квота"
         verbose_name_plural = "Квоты"
+
+
+class SchoolProjectYear(models.Model):
+    project_year = models.ForeignKey(
+        TicketProjectYear, 
+        verbose_name="Год проекта (БВБ)",
+        related_name="schools",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    school = models.ForeignKey(
+        School, 
+        verbose_name="Школа",
+        related_name="ticket_project_years",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    resp_full_name = models.CharField(
+        "ФИО ответственного", max_length=250, blank=False, null=False)
+    resp_position = models.CharField(
+        "Должность", max_length=100, blank=False, null=False)
+    phone = models.CharField("Телефон", max_length=120, blank=False, 
+                             null=False)
+    email = models.EmailField(_('email address'), blank=False, null=False)
+    
+    def template_directory_path(instance, filename):
+        try:
+            return 'media/documents/{0}'.format(translit(filename, reversed=True))
+        except:
+            return 'media/documents/{0}'.format(filename)
+    resp_order = models.FileField("Приказ", upload_to=template_directory_path)
+    
+    def __str__(self):
+        return f'{self.resp_full_name} ({self.school})'
+     
+    class Meta:
+        verbose_name = "Школа (год проекта)"
+        verbose_name_plural = "Школы (годы проекта)"

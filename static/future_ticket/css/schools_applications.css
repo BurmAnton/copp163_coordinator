@@ -1,0 +1,57 @@
+body {
+  background-color: rgba(242, 242, 242, 0.5411764706);
+}
+body .schools-applications {
+  margin: auto;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  width: 80%;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
+  padding: 25px 50px 25px 50px;
+}
+body .schools-applications h2 {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 25px;
+}
+body .schools-applications .control-panel .filters {
+  display: flex;
+  gap: 15px;
+}
+body .schools-applications .control-panel .filters .dropdown-toggle {
+  min-width: 300px;
+  max-width: 500px;
+}
+body .schools-applications .control-panel .table-search {
+  width: 300px;
+}
+body .schools-applications .control-panel .table-search input {
+  border: 1px solid #394959;
+  padding-left: 27px;
+  background-image: url("../img/search-icon.png");
+  background-position: 4px 8px;
+  background-size: 20px;
+  background-repeat: no-repeat;
+}
+body .schools-applications table .sticky-top {
+  z-index: 100 !important;
+}
+body .schools-applications table .disapear-TerAdminFilter, body .schools-applications table .disapear-ProjectCenter, body .schools-applications table .disapear-FedFilter, body .schools-applications table .disapear-SchoolsFilter {
+  display: none !important;
+}
+body .schools-applications table th {
+  color: #394959;
+  font-weight: 400 !important;
+  font-size: 16px;
+  line-height: 20px;
+  border-top: 0;
+  border-bottom: 2px solid #394959;
+}
+body .schools-applications table td {
+  color: #394959;
+  font-weight: 300 !important;
+  max-width: 250px;
+  word-wrap: break-word;
+}/*# sourceMappingURL=schools_applications.css.map */
