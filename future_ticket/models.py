@@ -130,7 +130,7 @@ class TicketProgram(models.Model):
                                     blank=True, null=True)
     age_groups = models.ManyToManyField(
         AgeGroup,
-        verbose_name='Возрастная категория',
+        verbose_name='Возрастные категории',
         related_name='programs',
         blank=False
     )

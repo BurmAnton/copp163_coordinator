@@ -139,6 +139,9 @@ def merge_ticket_professions(request):
 def export_professions(request):
     return exports.professions()
 
+@csrf_exempt
+def export_ticket_programs(request):
+    return exports.programs()
 
 def schools_application(request):
     message = None
