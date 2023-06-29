@@ -23,6 +23,11 @@ urlpatterns = [
         views.export_professions, 
         name='export_professions'
     ),
+    path(
+        'export/programs/', 
+        views.export_ticket_programs, 
+        name='export_ticket_programs'
+    ),
     path('quotas/dashboard/', views.quotas, name='quotas'),
     path('quotas/equalize/', views.equalize_quotas, name='equalize_quotas'),
     path(
