@@ -40,6 +40,10 @@ def export_programs(request):
     return exports.programs(ed_centers=None)
 
 @csrf_exempt
+def export_ed_centers(request):
+    return exports.ed_centers()
+
+@csrf_exempt
 def applications(request):
     project = request.GET.get('p', '')
     project_year = request.GET.get('y', '')
@@ -920,6 +924,21 @@ def import_programs(request):
             message = data
     
     return render(request, "education_centers/import_programs.html", {
+        'message': message,
+        'form' : ImportDataForm(),
+    })
+
+@csrf_exempt
+def merge_centers(request):
+    form = ImportDataForm()
+    message = None
+    if request.method == 'POST':
+        form = ImportDataForm(request.POST, request.FILES)
+        if form.is_valid():
+            data = imports.merge_ed_centers(form)
+            message = data
+    
+    return render(request, "education_centers/merge_centers.html", {
         'message': message,
         'form' : ImportDataForm(),
     })

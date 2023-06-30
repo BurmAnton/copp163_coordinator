@@ -146,3 +146,50 @@ def load_program(sheet, row):
         program.save()
         return ['OK', is_new, program]
     return ['MissingField', missing_fields, program_name]
+
+def merge_ed_centers(form):
+    try:
+        sheet = get_sheet(form)
+    except IndexError:
+        return ['Import', 'IndexError']
+    
+    #Требуемые поля таблицы
+    fields_names = {"ID", "Слияние"}
+
+    cheak_col_names = cheak_col_match(sheet, fields_names)
+    if cheak_col_names[0] != True:
+        return cheak_col_names
+    
+    sheet_dict = load_worksheet_dict(sheet, cheak_col_names[1])
+
+    merged_centers_count = 0
+    errors = []
+    for row in range(len(sheet_dict['ID'])):
+        merge = merge_center(sheet_dict, row)
+        if merge[0] == 'OK':
+            merged_centers_count += 1
+        else: errors.append(merge)
+    return ['OK', merged_centers_count, errors]
+
+def merge_center(sheet, row):
+    merge_center_id = sheet["ID"][row]
+    merge_ed_center = EducationCenter.objects.filter(id=merge_center_id)
+    if len(merge_ed_center) == 0:
+        return ['MergeIdNotFound', merge_center_id, row]
+    merge_ed_center = merge_ed_center[0]
+
+    center_id = sheet["Слияние"][row]
+    ed_center = EducationCenter.objects.filter(id=center_id)
+    if len(ed_center) == 0:
+        return ['IdNotFound', ed_center, row]
+    ed_center = ed_center[0]
+    
+    ed_center.teachers.add(*merge_ed_center.teachers.all())
+    ed_center.workshops.add(*merge_ed_center.workshops.all())
+    ed_center.programs.add(*merge_ed_center.programs.all())
+    ed_center.edcenter_applicants.add(*merge_ed_center.edcenter_applicants.all())
+    ed_center.ticket_programs.add(*merge_ed_center.ticket_programs.all())
+    ed_center.save()
+    merge_ed_center.delete()
+    
+    return ['OK', ed_center]

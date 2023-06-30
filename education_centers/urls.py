@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('export/programs/', views.export_programs, name='export_programs'),
+    path('export/ed_centers/', views.export_ed_centers, name='export_ed_centers'),
     path(
         '<int:ed_center>/groups',
         views.ed_center_groups, 
@@ -17,5 +18,6 @@ urlpatterns = [
     ),
     path('applications', views.applications, name='applications'),
     path('documents/fed-empl/', views.documents_fed, name='documents_fed'),
-    path('programs/import/', views.import_programs, name='import_programs')
+    path('programs/import/', views.import_programs, name='import_programs'),
+    path('centers/merge/', views.merge_centers, name='merge_centers')
 ]
