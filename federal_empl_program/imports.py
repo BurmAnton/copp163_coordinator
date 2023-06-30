@@ -119,8 +119,6 @@ def load_citizen(sheet, row):
     birthday = sheet["Дата рождения"][row]
     if birthday != "":
         birthday = datetime.strptime(birthday, "%Y-%m-%d")
-        birthday = timezone.make_aware(birthday)
-        birthday.astimezone(pytz.timezone('Europe/Samara'))
     else: birthday = None
     
     email = sheet["Email"][row]
@@ -247,11 +245,12 @@ def set_program_type(program_name):
     return program_type
 
 def set_program_duration(program_name):
-    duration = 144
-    durations =  EducationProgram.PROGRAM_DURATIONS
-    for dur in durations:
-        if dur[1] in program_name:
-            duration = dur[0]
+    if "72" in program_name:
+        duration = 72
+    elif "144" in program_name:
+        duration = 144
+    elif "256" in program_name:
+        duration = 256
     return duration
 
 def set_program_name(program_name):
