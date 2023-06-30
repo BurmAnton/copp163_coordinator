@@ -7,7 +7,39 @@ from django.utils.encoding import escape_uri_path
 
 from federal_empl_program.models import EducationCenterProjectYear, ProjectYear
 
-from .models import EducationProgram
+from .models import EducationCenter, EducationProgram
+
+def ed_centers():
+    ed_centers = EducationCenter.objects.all()
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Центры обучения"
+    col_titles = [
+        "ID",
+        "Наименование",
+        "Краткое наименование"
+    ]
+
+    for col_number, col_title in enumerate(col_titles, start=1):
+        ws.cell(row=1, column=col_number, value=col_title)
+    
+    row_number = 2
+    for ed_center in ed_centers:
+        ws.cell(row=row_number, column=1, value=ed_center.id)
+        ws.cell(row=row_number, column=2, value=ed_center.name)
+        ws.cell(row=row_number, column=3, value=ed_center.short_name)
+        row_number += 1
+    
+    wb.template = False
+    response = HttpResponse(
+        content=save_virtual_workbook(wb), 
+        content_type='application/vnd.openxmlformats-\
+        officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = "attachment; filename=" + \
+        escape_uri_path(f'ed_centers_{datetime.now().strftime("%d/%m/%y")}.xlsx')
+    return response
 
 def programs(project_years=None, ed_centers=None):
     programs = EducationProgram.objects.all()
