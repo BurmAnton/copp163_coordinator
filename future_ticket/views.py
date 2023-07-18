@@ -196,8 +196,11 @@ def schools_application(request):
         'message': message
     })
 
-def schools_applications(request): 
+@csrf_exempt
+def schools_applications(request):     
     schools = SchoolProjectYear.objects.all()
+    if request.method == 'POST':
+        return exports.schools_applications(schools)
 
     return render(request, "future_ticket/schools_applications.html", {
         'schools': schools

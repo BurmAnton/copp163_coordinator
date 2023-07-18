@@ -12,7 +12,12 @@
 
 {% block body %}
     <div class="schools-applications">
-        <h2>Данные ответственных за реализацию мероприятий профминимума в образовательных организациях</h2>
+        <div class="header">
+            <h2>Данные ответственных за реализацию мероприятий профминимума в образовательных организациях</h2>
+            <form action="{% url 'schools_applications' %}" method="post">
+                <input type="submit" class="btn btn-primary" value="Скачать">
+            </form>
+        </div>
         <div class="control-panel">
             <div class="input-group mb-3 table-search">
                 <input type="text" class="form-control" id="myInput" onkeyup="SearchFunction()" placeholder="Поиск..">
@@ -65,7 +70,7 @@
                 <td scope="row">{{ school.email }}</td>
                 <td scope="row">{{ school.phone }}</td>
                 <td scope="row">
-                    <a href="{{school.resp_order.url}}">Приказ</a>
+                    <a href="{{school.resp_order.url}}" target="_blank">Приказ</a>
                 </td>
             </tr>
         {% endfor %}
