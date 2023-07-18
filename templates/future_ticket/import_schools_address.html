@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load ed_centers_extras %}
+
+{% block title %}Импорт программ{% endblock %}
+{% block style %}
+        <link href="{% static 'future_ticket/css/import_programs.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'education_centers/js/fed-empl.js' %}" rel="stylesheet"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="modal-body">
+        <div class="import-form">
+            <h2>Импорт адресов школ</h2>
+            {% if message != None %}
+                <div class="alert alert-success" role="alert">
+                    Адресов добавлено: {{message.0}}
+                </div> 
+            {% endif %}
+            <form enctype="multipart/form-data" action="{% url 'import_schools_address' %}" method="post">
+                <div class="mb-3">
+                    {{ form }}
+                </div>
+                <button type="submit" class="btn btn-primary" name="import-participants">Импортировать</button>
+            </form>
+            {% for missing_field in message.1 %}
+                <div class="alert alert-danger" role="alert">
+                    В строке {{ missing_field.0 }} не заполнено поле '{{ missing_field.1 }}' (инн - {{ missing_field.2 }}).
+                </div> 
+            {% endfor %}
+            {% for error in message.2 %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

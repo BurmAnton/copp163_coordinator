@@ -19,6 +19,11 @@ urlpatterns = [
         name='import_ticket_programs'
     ),
     path(
+        'schools/adress/import/', 
+        views.import_schools_address, 
+        name='import_schools_address'
+    ),
+    path(
         'export/professions/', 
         views.export_professions, 
         name='export_professions'

@@ -1,6 +1,7 @@
 import math
 from django.shortcuts import get_object_or_404
 from openpyxl import load_workbook
+from citizens.models import School
 from education_centers.models import EducationCenter, Teacher
 
 from future_ticket.models import AgeGroup, ProfEnviroment, ProgramAuthor, TicketProfession, TicketProgram
@@ -318,3 +319,55 @@ def load_program(sheet, row):
 
         return ['OK', is_new, program]
     return ['MissingField', missing_fields, row]
+
+
+def schools_address(form):
+    try:
+        sheet = get_sheet(form)
+    except IndexError:
+        return ['Import', 'IndexError']
+
+    #Требуемые поля таблицы
+    fields_names = {
+        'Нас. пункт', 'ИНН', 'Юридический адрес'
+    }
+
+    cheak_col_names = cheak_col_match(sheet, fields_names)
+    if cheak_col_names[0] != True:
+        return cheak_col_names
+
+    sheet = load_worksheet_dict(sheet, cheak_col_names[1])
+    
+    added_adress_count = 0
+    missing_fields = []
+    errors = []
+    for row in range(len(sheet['ИНН'])):
+        valid_row = True
+        inn = sheet["ИНН"][row]
+        school = School.objects.filter(inn=inn)
+        if len(school) == 0: 
+            errors.append(f'Школы с ИНН {inn} нет в БД (строка - {row+2})')
+            valid_row = False
+        elif len(school) > 1:
+            errors.append(f'Найдено больше одной школы с ИНН: {inn} (строка - {row+2})')
+            valid_row = False
+        else: school = school[0]
+        adress = sheet["Юридический адрес"][row]
+        if adress != "" and adress != None:
+            adress = adress.strip()
+        else: 
+            missing_fields.append([row+2, "Юридический адрес", inn])
+            valid_row = False
+        city = sheet["Нас. пункт"][row]
+        if city != "" and city != None:
+            city = city.strip()
+        else: 
+            missing_fields.append([row+2, "Нас. пункт", inn])
+            valid_row = False
+        if valid_row:
+            school.adress = adress
+            school.city = city
+            school.save()
+            added_adress_count += 1
+    
+    return [added_adress_count, missing_fields, errors]
