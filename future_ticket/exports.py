@@ -108,3 +108,55 @@ def programs():
             f'programs_{datetime.now().strftime("%d/%m/%y %H:%M")}.xlsx'
         )
     return response
+
+def schools_applications(applications):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Школы"
+    col_titles = [
+        "Школа", 
+        "ИНН",
+        "Тер. управление",
+        "ФИО",
+        "Должность",
+        "Email",
+        "Телефон",
+        "Приказ"
+    ]
+
+    for col_number, col_title in enumerate(col_titles, start=1):
+        ws.cell(row=1, column=col_number, value=col_title)
+
+    row_number = 2
+    for application in applications:
+        ws.cell(row=row_number, column=1, value=application.school.name)
+        ws.cell(row=row_number, column=2, value=application.school.inn)
+        ws.cell(
+            row=row_number, 
+            column=3, 
+            value=application.school.get_territorial_administration_display()
+        )
+        ws.cell(row=row_number, column=4, value=application.resp_full_name)
+        ws.cell(row=row_number, column=5, value=application.resp_position)
+        ws.cell(row=row_number, column=6, value=application.email)
+        ws.cell(row=row_number, column=7, value=application.phone)
+        ws.cell(
+            row=row_number, 
+            column=8, 
+            value=f'https://copp63-coordinator.ru{application.resp_order.url}'
+        )
+        row_number += 1
+    
+    wb.template = False
+    response = HttpResponse(
+        content=save_virtual_workbook(wb), 
+        content_type='application/vnd.openxmlformats-\
+        officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = "attachment; filename=" + \
+        escape_uri_path(
+            f'prof_min_{datetime.now().strftime("%d/%m/%y %H:%M")}.xlsx'
+        )
+    return response
+        
+    
