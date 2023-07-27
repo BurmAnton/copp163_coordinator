@@ -16,13 +16,37 @@ from easy_select2 import select2_modelform
 from django_admin_listfilter_dropdown.filters import  RelatedDropdownFilter, ChoiceDropdownFilter, RelatedOnlyDropdownFilter, DropdownFilter
 from field_history.models import FieldHistory
 
-from .models import Application, EdCenterEmployeePosition,CitizenCategory, \
+from .models import Application, CitizenApplication, EdCenterEmployeePosition,CitizenCategory, \
                     Grant, ProjectYear, Indicator, ProjectPosition
 from education_centers.models import EducationCenter, EducationProgram
 from users.models import Group
 
 from datetime import datetime, timedelta
 
+
+@admin.register(CitizenApplication)
+class CitizenApplicationAdmin(admin.ModelAdmin):
+    list_display = [
+        'last_name', 
+        'first_name',
+        'middle_name',
+        'consultation',
+        'email',
+        'phone_number',
+        'competence',
+        'education_type',
+        'employment_status',
+        'planned_employment',
+        'practice_time'
+    ]
+    search_field = [
+        'last_name', 
+        'first_name',
+        'middle_name',
+        'email',
+        'phone_number',
+        'competence',
+    ]
 
 @admin.register(EdCenterEmployeePosition)
 class EdCenterEmployeePositionnAdmin(admin.ModelAdmin):

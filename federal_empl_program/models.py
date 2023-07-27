@@ -361,3 +361,79 @@ class Application(models.Model):
     
     def __str__(self):
         return  f"{self.applicant} ({self.get_appl_status_display()})"
+    
+
+class CitizenApplication(models.Model):
+    first_name = models.CharField("Имя", max_length=30, null=True)
+    last_name = models.CharField("Фамилия", max_length=50, null=True)
+    middle_name = models.CharField("Отчество", max_length=60, blank=True, null=True)
+
+    SEX_CHOICES = [
+        ('M', "Мужской"),
+        ('F', "Женский")
+    ]
+    sex = models.CharField("Пол", max_length=1, choices=SEX_CHOICES, blank=True, null=True)
+    birthday = models.DateField("Дата рождения", blank=True, null=True)
+
+    email = models.EmailField("Email", max_length=320, blank=True, null=True)
+    phone_number = models.CharField("Номер телефона", max_length=40, blank=True, null=True)
+
+    competence = models.CharField("Компетенция", max_length=250, null=True)
+    EDUCATION_CHOICES = [
+        ('SPVO', "Имею диплом о среднем профессиональном или высшем образовании (например, колледжа или вуза)"),
+        ('SCHL', 'Имею среднее образование (школа), в том числе неоконченное'),
+        ('STDN', "Cтудент"),
+    ]
+    education_type = models.CharField(
+        "Образование", 
+        max_length=4, 
+        choices=EDUCATION_CHOICES, 
+        blank=True, 
+        null=True
+    )
+    EMPLOYMENT_STATUSES = [
+        ('MPL', "Трудоустроен"),
+        ('SMPL', "Cамозанятый или индивидуальный предприниматель"),
+        ('NMPL', 'Не работаю'),
+    ]
+    employment_status = models.CharField(
+        "Трудоустройство", 
+        max_length=4, 
+        choices=EMPLOYMENT_STATUSES, 
+        blank=True, 
+        null=True
+    )
+    PLANNED_EMPLOYMENT_STATUSES = [
+        ('SVMPL', "Cохранение рабочего места"),
+        ('CMPL', "Трудоустройство на новую работу"),
+        ('SMPL', 'Открытие или сохранение самозанятости/ИП'),
+    ]
+    planned_employment = models.CharField(
+        "Цель обучения", 
+        max_length=5, 
+        choices=PLANNED_EMPLOYMENT_STATUSES, 
+        blank=True, 
+        null=True
+    )
+    PRACTICE_TIME_SLOTS = [
+        ('MRNG', "9:00-13:00"),
+        ('DAYT', "13:00-17:00"),
+        ('EVNG', '17:00-21:00'),
+    ]
+    practice_time = models.CharField(
+        "Удобное время", 
+        max_length=4, 
+        choices=PRACTICE_TIME_SLOTS, 
+        blank=True, 
+        null=True
+    )
+    consultation = models.BooleanField("консультация?", default=False)
+
+    class Meta:
+        verbose_name = "Предварительная заявка"
+        verbose_name_plural = "Предварительные заявки"
+
+    def __str__(self):
+        if self.middle_name is not None:
+            return  f'{self.last_name} {self.first_name} {self.middle_name}'
+        return f'{self.last_name} {self.first_name}'

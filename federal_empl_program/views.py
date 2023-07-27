@@ -21,7 +21,7 @@ from pysendpulse.pysendpulse import PySendPulse
 
 from users.models import User
 from citizens.models import Citizen
-from federal_empl_program.models import EducationCenterProjectYear, \
+from federal_empl_program.models import CitizenApplication, EducationCenterProjectYear, \
                                         EdCenterQuota,  ProjectYear
 
 
@@ -106,4 +106,38 @@ def quota_dashboard(request):
     return render(request, 'federal_empl_program/quota_dashboard.html', {
         'centers_quota': centers_quota,
         'aggregated_quota': aggregated_quota
+    })
+
+@csrf_exempt
+def citizen_application(request):
+    is_register = False
+    if request.method == "POST":
+        middle_name = request.POST["middle_name"]
+        if middle_name == '': middle_name = None
+        birthday = request.POST["birthday"]
+        birthday = datetime.strptime(birthday, "%Y-%m-%d")
+        sex = request.POST.getlist("GenderOptions")
+        if 'male' in sex: sex = 'M'
+        else: sex = 'F'
+        consultation = request.POST.getlist("consultation")
+        if len(consultation) == 0: consultation = False
+        else: consultation = True
+        citizen_application = CitizenApplication.objects.get_or_create(
+            last_name=request.POST["last_name"],
+            first_name=request.POST["first_name"],
+            middle_name=middle_name,
+            email=request.POST["email"],
+            phone_number=request.POST["phone"],
+            birthday=birthday,
+            sex=sex,
+            competence=request.POST["competence"],
+            education_type=request.POST["education_type"],
+            employment_status=request.POST["employment_status"],
+            practice_time=request.POST["practice_time"],
+            planned_employment=request.POST["planned_employment"]
+        )
+        is_register = True
+        
+    return render(request, 'federal_empl_program/citizen_application.html', {
+        'is_register': is_register
     })
