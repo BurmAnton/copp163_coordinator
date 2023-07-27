@@ -1,0 +1,129 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block title %}Заявка на обучение{% endblock %}
+
+{% block style %}
+    <link href="{% static 'federal_empl_program/css/citizen_application.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'federal_empl_program/js/citizen_application.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center align-self-center">
+        <div class="card sign-card">
+            {% if is_register %}
+                <div class="is_register">
+                    <h4>Заявка отправлена</h4>
+                    <h5>Свяжемся с вами в течение 2 рабочих дней для проведения консультации.</h5>
+                </div>
+            {% else %}
+                <div class="form-title"><p>Заявка на обучение</p></div>
+                <div class="reg-form">
+                    <div class="reg-form-type"></div>
+                    <form method="POST" action="{% url 'citizen_application' %}">
+                    <!--Личные данные-->
+                        <div class="step-title first-step" style="text-align:center; justify-content: center;"><h5>Шаг 1/2: Личные данные</h5></div>
+                        <div class="input-group mb-3 first-step first-step-mandatory">
+                            <input type="input" class="form-control" name="last_name" id="LastName" placeholder="Фамилия">
+                        </div>
+                        <div class="input-group mb-3 first-step first-step-mandatory">
+                            <input type="input" class="form-control" name="first_name" id="Name" placeholder="Имя" required>
+                        </div>
+                        <div class="input-group mb-3 first-step first-step-optional">
+                            <input type="input" class="form-control" name="middle_name" id="MiddleName" placeholder="Отчество">
+                        </div>
+                        <label class="form-check-label first-step" for="Birthday">Дата рождения</label>
+                        <div class="input-group mb-3 first-step first-step-mandatory">
+                            <input type="date" class="form-control" name="birthday" id="Birthday" placeholder="Дата рождения" required>
+                        </div>
+                        <div class="first-step">
+                            <label class="form-check-label ">Укажите свой пол</label>
+                        </div>
+                        <div class="first-step">
+                            <div class="form-check form-check-inline">
+                                <input style="margin-top: 4px;" class="form-check-input" type="radio" name="GenderOptions" id="MaleOptions" value="male" checked>
+                                <label class="form-check-label" for="MaleOptions">Мужской</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input style="margin-top: 4px;" class="form-check-input" type="radio" name="GenderOptions" id="FemaleOptions" value="female">
+                                <label class="form-check-label" for="FemaleOptions">Женский</label>
+                            </div>  
+                        </div>
+                        <div class="input-group mb-3 first-step first-step-mandatory">
+                            <input type="email" class="form-control reg-email" name="email" id="Email" placeholder="Email" required>
+                        </div>
+                        <div class="input-group mb-3 first-step first-step-mandatory">
+                            <input type="phone2numeric" class="form-control" name="phone" id="Phone" placeholder="Номер телефона" maxlength="18" required>
+                        </div>
+                    <!--Параметры обучения-->
+                        <div class="step-title second-step" style="text-align:center;"><h5>Шаг 2/2: Образовательные данные</h5></div>
+                        <div class="mb-3 second-step second-step-mandatory">
+                            <label class="form-check-label" for="Competence">Укажите интересующее вас направление обучения из <a style="text-decoration: underline;" href="https://docs.yandex.ru/docs/view?url=ya-disk-public%3A%2F%2FFKO%2FhFEZxhnjOt8IEKBpcGDzlk7h%2Bn6zfGRXE0URo8tf8JZoMe8fXIm0EFJLUbl%2F%2FCH%2B%2BsnE5duAiqM%2FEjDILQ%3D%3D&name=%D0%9D%D0%B0%D0%BF%D1%80%D0%B0%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%BE%D0%B1%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B2%20%D0%A1%D0%B0%D0%BC%D0%B0%D1%80%D1%81%D0%BA%D0%BE%D0%B9%20%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%B8.pdf&nosw=1" target="_blank" rel="noopener noreferrer">списка</a></label>
+                            <input type="input" class="form-control" name="competence" id="Competence" placeholder="Укажите направление">
+                        </div>
+                        <label class="form-check-label second-step" for="education_lvl">Уровень образования</label>
+                        <div class="form mb-3 second-step">
+                            <select class="selectpicker second-step-mandatory second-step-mandatory-select" data-width="100%" data-live-search="true" id="Education_lvl" name="education_type" required>
+                                <option value="">Выберите уровень образования</option>
+                                <option value="SPVO">Имею диплом о среднем профессиональном или высшем образовании (например, колледжа или вуза)</option>
+                                <option value="SCHL">Имею среднее образование (школа), в том числе неоконченное</option>
+                                <option value="STDN">Студент</option>
+                            </select>
+                        </div>
+                        <label class="form-check-label second-step" for="education_goal">Текущий статус трудоустройства</label>
+                        <div class="form mb-3 second-step">
+                            <select class="selectpicker second-step-mandatory second-step-mandatory-select" data-width="100%" data-live-search="true" id="Empl_status" name="employment_status" required>
+                                <option value="">Выберите трудовой статус</option>
+                                <option value="MPL">Трудоустроен</option>
+                                <option value="SMPL">Cамозанятый или индивидуальный предприниматель</option>
+                                <option value="NMPL">Не работаю</option>
+                            </select>
+                        </div>
+                        <label class="form-check-label second-step" for="convenient_time">Удобное время для занятий</label>
+                        <div class="form mb-3 second-step">
+                            <select class="selectpicker second-step-mandatory second-step-mandatory-select" data-width="100%" data-live-search="true" id="Convenient_time" name="practice_time" required>
+                                <option value="">Выберите время</option>
+                                <option value="MRNG">9:00-13:00</option>
+                                <option value="DAYT">13:00-17:00</option>
+                                <option value="EVNG">17:00-21:00</option>
+                            </select>
+                        </div>
+                        <label class="form-check-label second-step" for="education_goal">Планируемая занятость после обучения</label>
+                        <div class="form mb-3 second-step">
+                            <select class="selectpicker second-step-mandatory second-step-mandatory-select" data-width="100%" data-live-search="true" id="Education_goal" name="planned_employment" required>
+                                <option value="">Выберите тип занятости</option>
+                                <option value="SVMPL">Cохранение рабочего места</option>
+                                <option value="CMPL">Трудоустройство на новую работу</option>
+                                <option value="SMPL">Открытие или сохранение самозанятости/ИП</option>
+                            </select>
+                        </div>
+                        <div class="form-check second-step">
+                            <input class="form-check-input" type="checkbox" id="consultation" name="consultation">
+                            <label class="form-check-label" for="consultation">
+                                Мне нужна консультация
+                            </label>
+                        </div>
+                        {% if message %}
+                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                <div>
+                                    {{message}}
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="d-grid gap-2">
+                            <button style="justify-content: center;" type="submit" class="btn second-step btn-primary btn-submit disabled">Отправить заявку</button>
+                        </div>
+                    </form>
+                <!--Переходы-->
+                    <div class="reg-control mb-3 d-grid gap-2">
+                        <button class="btn btn-view btn-secondary btn-forward disabled">Продолжить</button>
+                        <button class="btn btn-view btn-dark btn-backward"  style="display:none;">Назад</button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

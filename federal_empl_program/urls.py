@@ -10,5 +10,11 @@ urlpatterns = [
     re_path(r'^login/$', views.login, name="login"),
     path('logout/', views.logout, name="logout"),
     #Quotes
-    path('quota/dashboard/', views.quota_dashboard, name="quota_dashboard")
+    path('quota/dashboard/', views.quota_dashboard, name="quota_dashboard"),
+    #Applicants
+    path(
+        'application/citizen/', 
+        views.citizen_application, 
+        name="citizen_application"
+    ),
 ]
