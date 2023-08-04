@@ -1,4 +1,5 @@
-from datetime import date, datetime
+import calendar
+from datetime import date, datetime, timedelta
 from email.mime import application
 from dateutil.relativedelta import relativedelta
 import string
@@ -14,15 +15,18 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
 
+from education_centers.models import Competence, EducationProgram
+
 from .forms import ImportDataForm
 from .imports import express_import
 
 from pysendpulse.pysendpulse import PySendPulse
 
+from .utils import get_applications_plot
 from users.models import User
 from citizens.models import Citizen
-from federal_empl_program.models import CitizenApplication, EducationCenterProjectYear, \
-                                        EdCenterQuota,  ProjectYear
+from federal_empl_program.models import Application, CitizenApplication, EducationCenterProjectYear, \
+                                        EdCenterQuota, Grant,  ProjectYear
 
 
 @login_required
@@ -141,3 +145,107 @@ def citizen_application(request):
     return render(request, 'federal_empl_program/citizen_application.html', {
         'is_register': is_register
     })
+
+def applications_dashboard(request, year=2023):
+    project_year = get_object_or_404(ProjectYear, year=year)
+    ed_centers = EducationCenterProjectYear.objects.filter(
+        project_year=project_year)
+    applications = Application.objects.filter(
+        project_year=project_year, appl_status__in=['ADM', 'SED', 'COMP'])
+
+    competencies = Competence.objects.filter(
+        competence_applicants__in=applications).distinct()
+    
+    programs = EducationProgram.objects.filter(
+        programm_applicants__in=applications).distinct()
+    
+    grants = Grant.objects.filter(project_year=project_year)
+    if grants != None:
+        grant_1 = grants.filter(grant_name='Грант 1')[0]
+        grant_1_sum = grant_1.qouta_72 + grant_1.qouta_144 + grant_1.qouta_256
+        ratio = f'{applications.filter(grant="1", appl_status="COMP").count()}/{(grant_1_sum)}'
+        procent = round(applications.filter(grant="1", appl_status="COMP").count() / (grant_1_sum) * 100, 2)
+        grant_1_full = f'{ratio} ({procent}%)'
+        grant_2 = grants.filter(grant_name='Грант 2')[0]
+        grant_2_sum = grant_2.qouta_72 + grant_2.qouta_144 + grant_2.qouta_256
+        ratio = f'{applications.filter(grant="2", appl_status="COMP").count()}/{(grant_2_sum)}'
+        procent = round(applications.filter(grant="2", appl_status="COMP").count() / (grant_2_sum) * 100, 2)
+        grant_2_full = f'{ratio} ({procent}%)'
+        grants_full_sum = grant_1_sum + grant_2_sum
+        ratio = f'{applications.filter(appl_status="COMP").count()}/{(grants_full_sum)}'
+        procent = round(applications.filter(appl_status="COMP").count() / (grants_full_sum) * 100, 2)
+        grants_full = f'{ratio} ({procent}%)'
+        grant_y = grants.filter(grant_name='Молодёжь')[0]
+    else:
+        grant_1 = None
+        grant_2 = None
+        grant_y = None
+    
+    start_month = 3
+    end_month = 12
+    monthly_applications = dict()
+    monthly_applications['Подали заявку'] = []
+    monthly_applications['Завершили обучение'] = []
+    months = []
+    applications = applications.filter(appl_status="COMP")
+    for month in range(start_month, end_month+1):
+        start_date = datetime(year, month, 1)
+        next_month = start_date.replace(day=28) + timedelta(days=4)
+        res = next_month - timedelta(days=next_month.day)
+        end_date = res.date()
+        monthly_applications['Подали заявку'].append(
+            applications.filter(
+                creation_date__gte=start_date,
+                creation_date__lte=end_date,
+            ).count()
+        )
+        monthly_applications['Завершили обучение'].append(
+            applications.filter(
+                change_status_date__gte=start_date,
+                change_status_date__lte=end_date,
+            ).count()
+        )
+        months.append(calendar.month_name[month])
+        
+    chart = get_applications_plot(months, monthly_applications)
+
+    return render(request, 'federal_empl_program/applications_dashboard.html', {
+        'chart': chart,
+        'project_year': project_year,
+        'ed_centers_count': len(ed_centers),
+        'competencies_count': len(competencies),
+        'programs_count': len(programs),
+        'applications': applications,
+        'grant_1': grant_1,
+        'grant_1_full': grant_1_full,
+        'grant_2': grant_2,
+        'grant_2_full': grant_2_full,
+        'grant_y': grant_y,
+        'grants_full': grants_full,
+        'adm_grant_1': applications.filter(grant='1', appl_status='ADM'),
+        'adm_grant_2': applications.filter(grant='2', appl_status='ADM'),
+        'sed_grant_1': applications.filter(grant='1', appl_status='SED'),
+        'sed_grant_2': applications.filter(grant='2', appl_status='SED'),
+        'comp_grant_1': applications.filter(grant='1', appl_status='COMP'),
+        'comp_grant_2': applications.filter(grant='2', appl_status='COMP'),
+        'grant_1_72': applications.filter(
+            grant='1', education_program__duration=72, appl_status='COMP'),
+        'grant_1_144': applications.filter(
+            grant='1', education_program__duration=144, appl_status='COMP'),
+        'grant_1_256': applications.filter(
+            grant='1', education_program__duration=256, appl_status='COMP'),
+        'grant_2_72': applications.filter(
+            grant='2', education_program__duration=72, appl_status='COMP'),
+        'grant_2_144': applications.filter(
+            grant='2', education_program__duration=144, appl_status='COMP'),
+        'grant_2_256': applications.filter(
+            grant='2', education_program__duration=256, appl_status='COMP'),
+        'duration_72': applications.filter(
+            education_program__duration=72, appl_status='COMP'),
+        'duration_144': applications.filter(
+            education_program__duration=144, appl_status='COMP'),
+        'duration_256': applications.filter(
+            education_program__duration=256, appl_status='COMP'),
+
+    })
+

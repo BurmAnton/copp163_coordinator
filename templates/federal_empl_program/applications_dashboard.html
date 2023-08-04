@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load fed_extras %}
+
+{% block title %}Статистика по ЦО{% endblock %}
+{% block style %}
+    <link href="{% static 'federal_empl_program/css/applications_dashboard.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'federal_empl_program/js/applications_dashboard.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="stat">
+        <div class="container">
+            <div class="text-center">
+                <h1>Федеральный проект «Содействие занятости»</h1>
+            </div>
+            <div class="row justify-content-center main-stats">
+                <div class="card text-center mb-3" style="max-width: 12rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Компетенций:</h5>
+                        <h4 class="card-title">{{competencies_count}}</h4>
+                    </div>
+                </div>
+                <div class="card text-center mb-3" style="max-width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Программ подготовки:</h5>
+                        <h4 class="card-title">{{programs_count}}</h4>
+                    </div>
+                </div>
+                <div class="card text-center mb-3" style="max-width: 15rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Центров обучения:</h5>
+                        <h4 class="card-title">{{ed_centers_count}}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="qouta_table">
+                <div><h3>Заявки по стадиям и квотам</h3></div>
+                <table class="table table-striped">
+                    <thead>
+                        <th></th>
+                        <th>Квота из средств ПРФ</th>
+                        <th>Квота из средств ФБ</th>
+                        <th>Общая квота</th>
+                    </thead>
+                    <tr>
+                        <th>Допущено</th>
+                        <td>{{adm_grant_1.count}}</td>
+                        <td>{{adm_grant_2.all.count}}</td>
+                        <td>{{adm_grant_1.all.count|add:adm_grant_2.all.count}}</td>
+                    </tr>
+                    <tr>
+                        <th>Учатся</th>
+                        <td>{{sed_grant_1.all.count}}</td>
+                        <td>{{sed_grant_2.all.count}}</td>
+                        <td>{{sed_grant_1.all.count|add:sed_grant_2.all.count}}</td>
+                    </tr>
+                    <tr>
+                        <th>Завершили обучение</th>
+                        <td>{{comp_grant_1.all.count}}</td>
+                        <td>{{comp_grant_2.all.count}}</td>
+                        <td>{{comp_grant_1.all.count|add:comp_grant_2.all.count}}</td>
+                    </tr>
+                    <tr>
+                        <th>72ч</th>
+                        <td>{{grant_1_72.all.count}}/{{grant_1.qouta_72}}</td>
+                        <td>{{grant_2_72.all.count}}/{{grant_2.qouta_72}}</td>
+                        <td>{{duration_72.all.count}}/{{grant_1.qouta_72|add:grant_2.qouta_72}}</td>
+                    </tr>
+                    <tr>
+                        <th>144ч</th>
+                        <td>{{grant_1_144.all.count}}/{{grant_1.qouta_144}}</td>
+                        <td>{{grant_2_144.all.count}}/{{grant_2.qouta_144}}</td>
+                        <td>{{duration_144.all.count}}/{{grant_1.qouta_144|add:grant_2.qouta_144}}</td>
+                    </tr>
+                    <tr>
+                        <th>256ч</th>
+                        <td>{{grant_1_256.all.count}}/{{grant_1.qouta_256}}</td>
+                        <td>{{grant_2_256.all.count}}/{{grant_2.qouta_256}}</td>
+                        <td>{{duration_256.all.count}}/{{grant_1.qouta_256|add:grant_2.qouta_256}}</td>
+                    </tr>
+                    <tr class='table-darkblue'>
+                        <td style="font-weight: bold">% выполнения</td>
+                        <td>{{grant_1_full}}</td>
+                        <td>{{grant_2_full}}</td>
+                        <td>{{grants_full}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="graphic">
+            <div><h3>Статистика по заявкам (по месячно)</h3></div>
+            <div>
+                <img src='data:image/png;base64, {{chart|safe}}'>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

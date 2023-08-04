@@ -11,10 +11,16 @@ urlpatterns = [
     path('logout/', views.logout, name="logout"),
     #Quotes
     path('quota/dashboard/', views.quota_dashboard, name="quota_dashboard"),
-    #Applicants
+    #Applications
     path(
         'application/citizen/', 
         views.citizen_application, 
         name="citizen_application"
+    ),
+    path('quota/dashboard/', views.quota_dashboard, name="quota_dashboard"),
+    path(
+        'applications/dashboard/<int:year>', 
+        views.applications_dashboard, 
+        name="applications_dashboard"
     ),
 ]
