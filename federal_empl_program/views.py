@@ -187,20 +187,20 @@ def applications_dashboard(request, year=2023):
     monthly_applications['Подали заявку'] = []
     monthly_applications['Завершили обучение'] = []
     months = []
-    applications = applications.filter(appl_status="COMP")
+    comp_applications = applications.filter(appl_status="COMP")
     for month in range(start_month, end_month+1):
         start_date = datetime(year, month, 1)
         next_month = start_date.replace(day=28) + timedelta(days=4)
         res = next_month - timedelta(days=next_month.day)
         end_date = res.date()
         monthly_applications['Подали заявку'].append(
-            applications.filter(
+            comp_applications.filter(
                 creation_date__gte=start_date,
                 creation_date__lte=end_date,
             ).count()
         )
         monthly_applications['Завершили обучение'].append(
-            applications.filter(
+            comp_applications.filter(
                 change_status_date__gte=start_date,
                 change_status_date__lte=end_date,
             ).count()
