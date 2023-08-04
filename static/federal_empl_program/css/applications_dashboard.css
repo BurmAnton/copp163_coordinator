@@ -1,0 +1,130 @@
+.stat, .stat-table {
+  padding-bottom: 50px;
+  padding-top: 50px;
+}
+
+.stat {
+  background-color: #e9ecf7;
+}
+.stat .stat-table .btn-dark {
+  background-color: #426cf8 !important;
+  border-color: #426cf8 !important;
+}
+.stat .qouta_table {
+  text-align: center;
+  width: 90%;
+  margin: auto;
+}
+.stat .table-darkblue td {
+  background-color: #394959 !important;
+  color: white;
+  font-weight: bold;
+}
+.stat .graphic {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+}
+.stat .graphic img {
+  width: 100%;
+}
+
+h1 {
+  margin-bottom: 30px;
+}
+
+.card {
+  background-color: #778899;
+  color: white;
+  padding: 0;
+}
+
+.main-stats .card {
+  background-color: #394959;
+  margin-right: 5px;
+}
+
+.table {
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  width: 90%;
+  box-shadow: 1px 0px 5px 2px rgba(0, 0, 0, 0.2);
+}
+@media (max-width: 600px) {
+  .table {
+    width: 100%;
+  }
+}
+.table .sticky-top {
+  background-color: #394959 !important;
+  color: white !important;
+}
+.table .competence-row {
+  background-color: #778899 !important;
+  color: white !important;
+  border-top: 0px;
+}
+.table .program-row {
+  background-color: #778899 !important;
+  color: white !important;
+  border-top: 0px;
+}
+.table .table-striped {
+  background-color: #e9ecf7 !important;
+}
+.table td {
+  border-top: 0px solid #dee2e6;
+}
+
+tbody, td, tfoot, th, thead, tr {
+  border-color: inherit;
+  border-style: none;
+  border-width: 0;
+}
+
+.stages {
+  width: 10%;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.stage {
+  max-width: 50px;
+  width: 10%;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.delay-cell {
+  max-width: 50px;
+}
+
+.comp {
+  vertical-align: middle;
+}
+
+.card-group {
+  text-align: center;
+  vertical-align: middle;
+  width: 100%;
+  margin: auto;
+}
+
+.card-body {
+  padding: 0.5rem;
+}
+
+.card-title {
+  margin: 0;
+}
+
+.filter {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  margin: auto;
+}/*# sourceMappingURL=applications_dashboard.css.map */
