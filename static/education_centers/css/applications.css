@@ -80,6 +80,7 @@ body .centers-list .filter form button {
 }
 body .centers-list .action-panel {
   margin-top: 15px;
+  margin-bottom: 15px;
   display: flex;
   align-items: flex-end;
   gap: 10px;
