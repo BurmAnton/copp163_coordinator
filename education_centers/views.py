@@ -51,18 +51,6 @@ def applications(request):
     if 'bilet' in request.POST: project = 'bilet'
     if project_year != '': project_year = int(project_year)
     else: project_year = datetime.now().year
-    if request.method == "POST":
-        data = json.loads(request.body.decode("utf-8"))
-        stage = data['stage']
-        centers_list = data['centers_list']
-        for center_id in centers_list:
-            if project == 'bilet':
-                center_year = get_object_or_404(EducationCenterTicketProjectYear, id=center_id)
-            else:
-                center_year = get_object_or_404(EducationCenterProjectYear, id=center_id)
-            center_year.stage = stage
-            center_year.save()
-        return JsonResponse({"message": "Centers stage changed successfully."}, status=201)
     if project == 'bilet':
         project_year = get_object_or_404(TicketProjectYear, year=project_year)
         centers_project_year = EducationCenterTicketProjectYear.objects.filter(
@@ -79,8 +67,21 @@ def applications(request):
     
     chosen_stages = None
     if request.method == "POST":
-        chosen_stages = request.POST.getlist('stages')
-        centers_project_year = centers_project_year.filter(stage__in=chosen_stages)
+        if 'filter-events' in request.POST:
+            chosen_stages = request.POST.getlist('stages')
+            centers_project_year = centers_project_year.filter(stage__in=chosen_stages)
+        else:
+            data = json.loads(request.body.decode("utf-8"))
+            stage = data['stage']
+            centers_list = data['centers_list']
+            for center_id in centers_list:
+                if project == 'bilet':
+                    center_year = get_object_or_404(EducationCenterTicketProjectYear, id=center_id)
+                else:
+                    center_year = get_object_or_404(EducationCenterProjectYear, id=center_id)
+                center_year.stage = stage
+                center_year.save()
+            return JsonResponse({"message": "Centers stage changed successfully."}, status=201)
 
     return render(request, "education_centers/applications.html", {
         'project': project,
