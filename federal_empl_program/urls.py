@@ -11,13 +11,17 @@ urlpatterns = [
     path('logout/', views.logout, name="logout"),
     #Quotes
     path('quota/dashboard/', views.quota_dashboard, name="quota_dashboard"),
+    path(
+        'quota/<int:ed_center_id>/request', 
+        views.quota_center_request, 
+        name="quota_center_request"
+    ),
     #Applications
     path(
         'application/citizen/', 
         views.citizen_application, 
         name="citizen_application"
     ),
-    path('quota/dashboard/', views.quota_dashboard, name="quota_dashboard"),
     path(
         'applications/dashboard/<int:year>', 
         views.applications_dashboard, 

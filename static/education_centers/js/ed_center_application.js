@@ -4,7 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let user = document.querySelector('.stage-h3').dataset.user
     if (stage != 'FLLNG' && stage != 'RWRK' && user === 'False') {
         document.querySelectorAll('.modal-footer').forEach(footer =>{
-            footer.remove();
+            if (stage == 'FNSHD' && footer.classList.contains('program-change')){
+                footer.querySelector('.btn-danger').remove();
+            }else{
+                footer.remove();
+            }
         })
     }
     window.history.replaceState(null, null, `?p=${document.querySelector('.project-btn.btn-primary').dataset.project}&s=${document.querySelector('.step-btn.btn-primary').dataset.step}`);

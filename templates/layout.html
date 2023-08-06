@@ -47,11 +47,15 @@
                                             ФП «Содействие занятости»
                                         </a>
                                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                                <li><a class="dropdown-item" href="{% url 'quota_dashboard' %}">Распределение квоты</a></li>
+                                                {% if request.user.role == 'CO' %}
+                                                    <li><a class="dropdown-item" href="{% url 'ed_center_application' ed_center_id=request.user.education_centers.first.id %}">Заявки на ПКО</a></li>
+                                                    <li><a class="dropdown-item" href="{% url 'quota_center_request' ed_center_id=request.user.education_centers.first.id %}">Запрос квоты</a></li>
+                                                {% endif %}
                                                 {% if request.user.is_superuser %}
                                                     <li><a class="dropdown-item" href="{% url 'import_express' %}">Импорт с экспресса</a></li>
                                                     <li><a class="dropdown-item" href="{% url 'applications' %}?p=zen">Мониторинг заявок</a></li>
                                                 {% endif %}
+                                                <li><a class="dropdown-item" href="{% url 'quota_dashboard' %}">Распределение квоты</a></li>
                                             </ul>
                                         </li>
                                         {% if request.user.is_superuser %}
@@ -75,9 +79,11 @@
                                     </ul>
                                 </ul>
                                 <div class="d-flex">
-                                    <a href="{% url 'admin:index' %}">
-                                        <button type="submit" class="btn btn-dark admin-button">Админ-панель</button> 
-                                    </a>
+                                    {% if request.user.is_superuser %}
+                                        <a href="{% url 'admin:index' %}">
+                                            <button type="submit" class="btn btn-dark admin-button">Админ-панель</button> 
+                                        </a>
+                                    {% endif %}
                                     <div>
                                         <a class="logout" href="{% url 'logout' %}">
                                             <div class="logout-img">
