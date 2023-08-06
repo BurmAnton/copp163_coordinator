@@ -55,10 +55,11 @@ class EducationCenterProjectYear(models.Model):
         ('FRMD', "сформирована"),
         ('DWNLD', "подгружена"),
         ('PRVD', "принята"),
+        ('FNSHD', "ПКО пройден"),
     ]
-    appl_docs_link = models.TextField('Ссылка на комп. документов', default="")
     stage = models.CharField("Работа с заявкой", max_length=5, 
                              default='FLLNG', choices=STAGES)
+    appl_docs_link = models.TextField('Ссылка на комп. документов', default="")
     step_1_check = models.BooleanField("Шаг 1. Проверка", default=False)
     step_1_commentary = models.TextField(
         "Шаг 1. Комментарий", null=True, blank=True, default=""
@@ -91,6 +92,106 @@ class EducationCenterProjectYear(models.Model):
     class Meta:
         verbose_name = "Данные колледжа на год"
         verbose_name_plural = "Данные колледжей на годы"
+
+
+class QuotaRequest(models.Model):
+    project_year = models.ForeignKey(
+        ProjectYear, 
+        verbose_name="Год проекта",
+        related_name="quota_requests",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    request_number = models.IntegerField(
+        'Номер запроса', null=False, blank=False)
+    STATUS = [
+        ('DRFT', "заполнение"),
+        ('SND', "отправлена"),
+        ('PRVD', "согласована"),
+    ]
+    status = models.CharField("Работа с запросом", max_length=5, 
+                             default='DRFT', choices=STATUS)
+    send_date = models.DateField("Дата отправки", null=True, blank=True)
+    approval_date = models.DateField(
+        "Дата согласования", null=True, blank=True)
+    
+    def __str__(self):
+        return f'Запрос №{self.request_number} ({self.get_status_display()})'
+
+    class Meta:
+        verbose_name = "Запрос квоты"
+        verbose_name_plural = "Запрос квоты"
+
+class EdCenterQuotaRequest(models.Model):
+    request = models.ForeignKey(
+        QuotaRequest, 
+        verbose_name="Запрос квоты",
+        related_name="centers_requests",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    ed_center_year = models.ForeignKey(
+        EducationCenterProjectYear, 
+        verbose_name="Центра обучения (год проекта)",
+        related_name="quota_requests",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    STATUS = [
+        ('DRFT', "заполнение"),
+        ('LCK', "на проверке"),
+        ('SND', "отправлена"),
+        ('PRVD', "согласована"),
+    ]
+    status = models.CharField("Работа с запросом", max_length=5, 
+                             default='DRFT', choices=STATUS)
+    request_number = models.IntegerField(
+        'Номер запроса', null=False, blank=False)
+    
+    def __str__(self):
+        return f'Запрос {self.ed_center_request.ed_center.short_name} №{self.request_number} ({self.status})'
+
+    class Meta:
+        verbose_name = "Запрос квоты (ЦО)"
+        verbose_name_plural = "Запрос квоты (ЦО)"
+
+
+class ProgramQuotaRequest(models.Model):
+    ed_center_request = models.ForeignKey(
+        EdCenterQuotaRequest, 
+        verbose_name="Запрос квоты (ЦО)",
+        related_name="quota_requests",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    program = models.ForeignKey(
+        EducationProgram, 
+        verbose_name="Программа",
+        related_name="quota_requests",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    price = models.IntegerField(
+        'Стоимость программы', null=False, blank=False, default=0)
+    req_quota = models.IntegerField(
+        'Запращиваемая квота', null=False, blank=False, default=0)
+    ro_quota = models.IntegerField(
+        'Квота (коррекция РО)', null=False, blank=False, default=0)
+    approved_quota = models.IntegerField(
+        'Квота (согласованная)', null=False, blank=False, default=0)
+    
+    def __str__(self):
+        return f'{self.program.program_name} ({self.ed_center_request.ed_center_year})'
+
+    class Meta:
+        verbose_name = "Запрос квоты (программа)"
+        verbose_name_plural = "Запрос квоты (программы)"
+
 
 
 class EdCenterQuota(models.Model):

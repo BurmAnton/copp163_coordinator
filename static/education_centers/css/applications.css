@@ -61,6 +61,12 @@ body .centers-list table td {
   max-width: 250px;
   word-wrap: break-word;
 }
+body .centers-list table .selected-row {
+  background-color: rgba(242, 242, 242, 0.5411764706);
+}
+body .centers-list table .selected-all-row {
+  background-color: #f2f2f2 !important;
+}
 body .centers-list .filter form {
   display: flex;
   align-items: flex-start;
@@ -68,4 +74,26 @@ body .centers-list .filter form {
 }
 body .centers-list .filter form .dropdown-toggle {
   width: 350px;
+}
+body .centers-list .filter form button {
+  width: 130px;
+}
+body .centers-list .action-panel {
+  margin-top: 15px;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+body .centers-list .action-panel .filter-selectpicker {
+  margin-bottom: 0rem !important;
+}
+body .centers-list .action-panel .dropdown-toggle {
+  width: 350px;
+}
+body .centers-list .action-panel button {
+  width: 130px;
+}
+body .centers-list .action-panel .row-count {
+  font-size: 16px;
+  font-weight: 300;
 }/*# sourceMappingURL=applications.css.map */

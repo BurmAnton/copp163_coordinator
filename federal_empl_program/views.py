@@ -15,7 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
 
-from education_centers.models import Competence, EducationProgram
+from education_centers.models import Competence, EducationCenter, EducationProgram
 
 from .forms import ImportDataForm
 from .imports import express_import
@@ -25,8 +25,8 @@ from pysendpulse.pysendpulse import PySendPulse
 from .utils import get_applications_plot
 from users.models import User
 from citizens.models import Citizen
-from federal_empl_program.models import Application, CitizenApplication, EducationCenterProjectYear, \
-                                        EdCenterQuota, Grant,  ProjectYear
+from federal_empl_program.models import Application, CitizenApplication, EdCenterQuotaRequest, EducationCenterProjectYear, \
+                                        EdCenterQuota, Grant, ProgramQuotaRequest,  ProjectYear, QuotaRequest
 
 
 @login_required
@@ -132,9 +132,7 @@ def citizen_application(request):
             middle_name=middle_name,
             email=request.POST["email"],
             phone_number=request.POST["phone"],
-            birthday=birthday,
-            sex=sex,
-            competence=request.POST["competence"],
+            birthday=request.POST["competence"],
             education_type=request.POST["education_type"],
             employment_status=request.POST["employment_status"],
             practice_time=request.POST["practice_time"],
@@ -249,3 +247,93 @@ def applications_dashboard(request, year=2023):
 
     })
 
+@csrf_exempt
+def quota_center_request(request, ed_center_id):
+    project_year = get_object_or_404(ProjectYear, year=2023)
+    ed_center = get_object_or_404(EducationCenter, id=ed_center_id)
+    ed_center_year = EducationCenterProjectYear.objects.filter(
+        project_year=project_year, ed_center=ed_center).first()
+    if ed_center_year.stage != 'FNSHD':
+        return HttpResponseRedirect(reverse('login'))
+    quota_request = QuotaRequest.objects.first()
+    ed_center_request, is_new = EdCenterQuotaRequest.objects.get_or_create(
+        request=quota_request,
+        ed_center_year=ed_center_year,
+        request_number=1
+    )
+    conditions = False
+    if 'send-request' in request.POST:
+        ed_center_request.status = 'LCK'
+        ed_center_request.save()
+    if 'add-programs' in request.POST:
+        programs = request.POST.getlist('programs')
+        for program_id in programs:
+            program = get_object_or_404(EducationProgram, id=program_id)
+            program_quota = ProgramQuotaRequest(
+                ed_center_request=ed_center_request,
+                program=program,
+            )
+            program_quota.save()
+    programs_quota = ProgramQuotaRequest.objects.filter(
+        ed_center_request=ed_center_request)
+    programs_quota_72 = programs_quota.filter(program__duration__lte=72)
+    programs_quota_144 = programs_quota.filter(
+        program__duration__gt=72, program__duration__lte=144
+    )
+    programs_quota_256 = programs_quota.filter(program__duration__gt=144)
+
+    if 'set-quota' in request.POST:
+        quota = request.POST['quota']
+        if quota == '72': programs_quota = programs_quota_72
+        elif quota == '144': programs_quota = programs_quota_144
+        elif quota == '256': programs_quota = programs_quota_256
+        for program_quota in programs_quota:
+            program_quota.price = int(request.POST[f'price_{program_quota.id}'])
+            program_quota.req_quota = int(request.POST[f'req_quota_{program_quota.id}'])
+            program_quota.save()
+    
+    if (len(programs_quota_72) != 0):
+        sum_72 = programs_quota_72.aggregate(Sum("price"))['price__sum']
+        avrg_72 = sum_72 / programs_quota_72.count()
+    else:
+        sum_72 = 0
+        avrg_72 = 0
+    if (len(programs_quota_144) != 0):
+        sum_144 = programs_quota_144.aggregate(Sum("price"))['price__sum']
+        avrg_144 = sum_144 / programs_quota_144.count()
+    else:
+        sum_144 = 0
+        avrg_144 = 0
+    if (len(programs_quota_256) != 0):
+        sum_256 = programs_quota_256.aggregate(Sum("price"))['price__sum']
+        avrg_256 = sum_256 / programs_quota_256.count()
+    else:
+        sum_256 = 0
+        avrg_256 = 0
+    if (programs_quota.count() != 0):
+        avrg = (sum_72+sum_144+sum_256) / (programs_quota.count())
+    else: avrg = 0
+    if avrg_72 <= 27435 and avrg_144 <= 40920 and avrg_256 <= 61380 and avrg <= 48962 and avrg > 0:
+        conditions = True
+
+    programs_72 = EducationProgram.objects.filter(
+        ed_center=ed_center, duration__lte=72
+    )
+    programs_144 = EducationProgram.objects.filter(
+        ed_center=ed_center, duration__gt=72, duration__lte=144
+    )
+    programs_256 = EducationProgram.objects.filter(
+        ed_center=ed_center, duration__gt=144
+    )
+
+    return render(request, 'federal_empl_program/quota_center_request.html', {
+        'ed_center': ed_center,
+        'ed_center_request': ed_center_request,
+        'programs_quota_72': programs_quota_72,
+        'programs_quota_144': programs_quota_144,
+        'programs_quota_256': programs_quota_256,
+        'programs_72': programs_72,
+        'programs_144': programs_144,
+        'programs_256': programs_256,
+        'conditions': conditions
+    })

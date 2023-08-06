@@ -43,23 +43,52 @@
                     </select>
                     
                 </div>
-                <button type="submit" class="btn btn-primary" name="filter-events">Применить</button>
+                <button type="submit" class="btn btn-outline-primary" name="filter-events">Фильтровать</button>
             </form>
+            {% if user.is_superuser %}
+            <div class="action-panel">
+                <div class="form-floating mb-3 filter-selectpicker">
+                    <select class="selectpicker" data-width="100%" data-live-search="true" title="Сменить статус" id="stage-select">
+                        {% for stage in stages %}
+                        <option value="{{stage.0}}">{{stage.1}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" id="change-status-btn">Изменить</button>
+                <div class="row-count">Выбрано <span class="selected-row-count">0</span> из {{centers_project_year.count}}</div>
+            </div>
+            {% endif %}
         </div>
         <table class="table">
-            <tr style="background-color: white;" class="sticky-top"> 
-                <th scope="col">№</th>
+            <tr style="background-color: white;" class="sticky-top">
+                {% if user.is_superuser %}
+                    <th scope="col" id="CheckAll">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="">
+                        </div>
+                    </th>
+                {% else %}
+                    <th scope="col">№</th>
+                {% endif %}
                 <th scope="col">ЦО</th>
                 <th scope="col">Статус</th>
             </tr>
             {%for center in centers_project_year %}
-                <tr class="">
-                    <td scope="row">{{ forloop.counter }}</td>
+                <tr class="center-row">
+                    {% if user.is_superuser %}
+                        <td scope="row" class="check-td">
+                            <div class="form-check">
+                                <input class="form-check-input center-checkbox" type="checkbox" value="{{center.id}}">
+                            </div>
+                        </td>
+                    {% else %}
+                        <td scope="row">{{ forloop.counter }}</td>
+                    {% endif %}
                     <td scope="row">
                         {% if user.is_superuser %}
                         <a href="{% url 'ed_center_application' center.ed_center.id %}?p={{project}}" target="_blank">
-                                {{ center.ed_center.short_name }}
-                                {% if center.ed_center.short_name == "" %}{{center.ed_center.name}}{% endif %}
+                            {{ center.ed_center.short_name }}
+                            {% if center.ed_center.short_name == "" %}{{center.ed_center.name}}{% endif %}
                         </a> 
                        {% else %}
                             {{ center.ed_center.short_name }}

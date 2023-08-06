@@ -16,13 +16,25 @@ from easy_select2 import select2_modelform
 from django_admin_listfilter_dropdown.filters import  RelatedDropdownFilter, ChoiceDropdownFilter, RelatedOnlyDropdownFilter, DropdownFilter
 from field_history.models import FieldHistory
 
-from .models import Application, CitizenApplication, EdCenterEmployeePosition,CitizenCategory, \
-                    Grant, ProjectYear, Indicator, ProjectPosition
+from .models import Application, CitizenApplication, EdCenterEmployeePosition,CitizenCategory, EdCenterQuotaRequest, \
+                    Grant, ProgramQuotaRequest, ProjectYear, Indicator, ProjectPosition, QuotaRequest
 from education_centers.models import EducationCenter, EducationProgram
 from users.models import Group
 
 from datetime import datetime, timedelta
 
+
+@admin.register(QuotaRequest)
+class QuotaRequestAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(EdCenterQuotaRequest)
+class EdCenterQuotaAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(ProgramQuotaRequest)
+class ProgramQuotaRequestAdmin(admin.ModelAdmin):
+    pass
 
 @admin.register(CitizenApplication)
 class CitizenApplicationAdmin(admin.ModelAdmin):

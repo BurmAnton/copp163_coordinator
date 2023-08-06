@@ -1,0 +1,205 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}Заявка на квоту{% endblock %}
+{% block style %}
+        <link href="{% static 'federal_empl_program/css/quota_center_request.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+        <script src="{% static 'federal_empl_program/js/quota_center_request.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="page-hdr">
+        <h1>Запрос квоты. ФП «Содействие занятости»</h1>
+        <h2>Статус: {{ed_center_request.get_status_display}}</h2>
+    </div>
+    <div class="quota_72_table">
+        <div class="table-hdr">
+            <h3>Программы 72 часа</h3>
+            {% if ed_center_request.status != 'LCK'%}
+                <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
+                    <div class="form-floating mb-3 filter-selectpicker">
+                        <select class="selectpicker" data-width="100%" data-live-search="true" title="Программы" name="programs" multiple>
+                            {% for program in programs_72 %}
+                                <option value="{{program.id}}">{{program}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary" name="add-programs">Добавить</button>
+                </form>
+            {% endif %}
+        </div>
+        <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
+            <input style="display: none;" type="input" name="quota" value="72">
+            <table class="table table-72">
+                <tr>
+                    <th scope="col" class="th-hdr">Название программы</th>
+                    <th scope="col" class="th-hdr">Стоимость программы</th>
+                    <th scope="col" class="th-hdr">Запрашиваемая квота</th>
+                    <th scope="col" class="th-hdr">Сумма, руб.</th>
+                </tr>
+                {% for program_quota in programs_quota_72 %}
+                    <tr>
+                        <td scope="row">{{program_quota.program}}</td>
+                        <td scope="row"><input class="form-control program_price" style="width: 100px;" type="number" class="form-control" name="price_{{program_quota.id}}" value="{{program_quota.price}}"></td>
+                        <td scope="row"><input class=" form-control program_quota" style="width: 100px;" type="number" class="form-control" name="req_quota_{{program_quota.id}}" value="{{program_quota.req_quota}}"></td>
+                        <td scope="row" class="program_sum" id="program_sum_{{program_quota.id}}">0 руб</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td scope="row" class="none-alert" colspan="4">Не добавлено ни одной программы</td>
+                    </tr>
+                {% endfor %}
+                {% if programs_quota_72.count != 0 %}
+                    <tr class="btm-row">
+                        <th scope="row">Средняя стоимость (не должна превышать 27435 руб):</td>
+                        <th scope="row" class="average_cost">0 руб</td>
+                        <th scope="row" class="quota_count">0 квот</td>
+                        <th scope="row" class="bracket_sum">0 руб</td>
+                    </tr>
+                {% endif %}
+            </table>
+            {% if programs_quota_72.count != 0 and ed_center_request.status != 'LCK' %}
+                <div class="save-quota-btn">
+                    <button type="submit" class="btn btn-primary" name="set-quota">Сохранить квоту</button>
+                </div>
+            {% endif %}
+        </form>
+    </div>
+    <div class="quota_144_table">
+        <div class="table-hdr">
+            <h3>Программы 144 часа</h3>
+            {% if ed_center_request.status != 'LCK'%}
+                <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
+                    <div class="form-floating mb-3 filter-selectpicker">
+                        <select class="selectpicker" data-width="100%" data-live-search="true" title="Программы" name="programs" multiple>
+                            {% for program in programs_144 %}
+                                <option value="{{program.id}}">{{program}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary" name="add-programs">Добавить</button>
+                </form>
+            {% endif %}
+        </div>
+        <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
+            <input style="display: none;" type="input" name="quota" value="144">
+            <table class="table table-144">
+                <tr>
+                    <th scope="col" class="th-hdr">Название программы</th>
+                    <th scope="col" class="th-hdr">Стоимость программы</th>
+                    <th scope="col" class="th-hdr">Запрашиваемая квота</th>
+                    <th scope="col" class="th-hdr">Сумма, руб.</th>
+                </tr>
+                {% for program_quota in programs_quota_144 %}
+                    <tr>
+                        <td scope="row">{{program_quota.program}}</td>
+                        <td scope="row"><input class="form-control program_price" style="width: 100px;" type="number" class="form-control" name="price_{{program_quota.id}}" value="{{program_quota.price}}"></td>
+                        <td scope="row"><input class="form-control program_quota" style="width: 100px;" type="number" class="form-control" name="req_quota_{{program_quota.id}}" value="{{program_quota.req_quota}}"></td>
+                        <td scope="row" class="program_sum" id="program_sum_{{program_quota.id}}">0 руб</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td scope="row" class="none-alert" colspan="4">Не добавлено ни одной программы</td>
+                    </tr>
+                {% endfor %}
+                {% if programs_quota_144.count != 0 %}
+                    <tr class="btm-row">
+                        <th scope="row">Средняя стоимость (не должна превышать 40920 руб):</td>
+                        <th scope="row" class="average_cost">0 руб</td>
+                        <th scope="row" class="quota_count">0 квот</td>
+                        <th scope="row" class="bracket_sum">0 руб</td>
+                    </tr>
+                {% endif %}
+            </table>
+            {% if programs_quota_144.count != 0 and ed_center_request.status != 'LCK' %}
+                <div class="save-quota-btn">
+                    <button type="submit" class="btn btn-primary" name="set-quota">Сохранить квоту</button>
+                </div>
+            {% endif %}
+        </form>
+    </div>
+    <div class="quota_256_table">
+        <div class="table-hdr">
+            <h3>Программы 256 часа</h3>
+            {% if ed_center_request.status != 'LCK'%}
+                <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
+                    <div class="form-floating mb-3 filter-selectpicker">
+                        <select class="selectpicker" data-width="100%" data-live-search="true" title="Программы" name="programs" multiple>
+                            {% for program in programs_256 %}
+                                <option value="{{program.id}}">{{program}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary" name="add-programs">Добавить</button>
+                </form>
+            {% endif %}
+        </div>
+        <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
+            <input style="display: none;" type="input" name="quota" value="256">
+            <table class="table table-256">
+                <tr>
+                    <th scope="col" class="th-hdr">Название программы</th>
+                    <th scope="col" class="th-hdr">Стоимость программы</th>
+                    <th scope="col" class="th-hdr">Запрашиваемая квота</th>
+                    <th scope="col" class="th-hdr">Сумма, руб.</th>
+                </tr>
+                {% for program_quota in programs_quota_256 %}
+                    <tr>
+                        <td scope="row">{{program_quota.program}}</td>
+                        <td scope="row"><input class="form-control program_price" style="width: 100px;" type="number" class="form-control" name="price_{{program_quota.id}}" value="{{program_quota.price}}"></td>
+                        <td scope="row"><input class="form-control program_quota" style="width: 100px;" type="number" class="form-control" name="req_quota_{{program_quota.id}}" value="{{program_quota.req_quota}}"></td>
+                        <td scope="row" class="program_sum" id="program_sum_{{program_quota.id}}">0 руб</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td scope="row" class="none-alert" colspan="4">Не добавлено ни одной программы</td>
+                    </tr>
+                {% endfor %}
+                {% if programs_quota_256.count != 0 %}
+                    <tr class="btm-row">
+                        <th scope="row">Cредняя стоимость (не должна превышать 61380 руб):</td>
+                        <th scope="row" class="average_cost">0 руб</td>
+                        <th scope="row" class="quota_count">0 квот</td>
+                        <th scope="row" class="bracket_sum">0 руб</td>
+                    </tr>
+                {% endif %}
+            </table>
+            {% if programs_quota_256.count != 0 and ed_center_request.status != 'LCK' %}
+                <div class="save-quota-btn">
+                    <button type="submit" class="btn btn-primary" name="set-quota">Сохранить квоту</button>
+                </div>
+            {% endif %}
+        </form>
+    </div>
+    <div class="quota_result_table">
+        <div>
+            <h3>Итого</h3>
+        </div>
+        <table class="table">
+            <tr>
+                <th scope="col" style="text-align: center;" class="th-hdr">Cредняя стоимость (не должна превышать 48962 руб)</th>
+                <th scope="col" style="text-align: center;" class="th-hdr">Запрашиваемая квота</th>
+                <th scope="col" style="text-align: center;" class="th-hdr">Сумма, руб.</th>
+            </tr>
+            <tr class="btm-row">
+                <th scope="row" style="text-align: center;" class="average_cost_quota">0 руб</td>
+                <th scope="row" style="text-align: center;" class="quota_count_quota">0 квот</td>
+                <th scope="row" style="text-align: center;" class="bracket_sum_quota">0 руб</td>
+            </tr>
+        </table>
+        <div class="save-quota-btn">
+            {% if conditions == False %}
+                <div class="alert alert-warning w-90" role="alert">
+                    Для отправки запроса средняя стоимость программы в каждой из категорий (72ч, 144ч и 256ч) и средняя стоимость программы в заявке в целом должно быть ниже или равна указанным.
+                </div>
+            {% endif %}
+            {% if ed_center_request.status != 'LCK' %}
+                <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
+                    <button type="submit" class="btn btn-primary btn-request" name="send-request" {% if conditions == False %} disabled {% endif %}>Отправить запрос на проверку</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
