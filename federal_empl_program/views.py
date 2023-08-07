@@ -269,7 +269,7 @@ def quota_center_request(request, ed_center_id):
         programs = request.POST.getlist('programs')
         for program_id in programs:
             program = get_object_or_404(EducationProgram, id=program_id)
-            program_quota = ProgramQuotaRequest(
+            program_quota, is_new = ProgramQuotaRequest.objects.get_or_create(
                 ed_center_request=ed_center_request,
                 program=program,
             )
@@ -317,14 +317,14 @@ def quota_center_request(request, ed_center_id):
         conditions = True
 
     programs_72 = EducationProgram.objects.filter(
-        ed_center=ed_center, duration__lte=72
-    )
+        ed_center=ed_center, duration__lte=72,
+    ).exclude(quota_requests__in=programs_quota)
     programs_144 = EducationProgram.objects.filter(
         ed_center=ed_center, duration__gt=72, duration__lte=144
-    )
+    ).exclude(quota_requests__in=programs_quota)
     programs_256 = EducationProgram.objects.filter(
         ed_center=ed_center, duration__gt=144
-    )
+    ).exclude(quota_requests__in=programs_quota)
 
     return render(request, 'federal_empl_program/quota_center_request.html', {
         'ed_center': ed_center,

@@ -54,7 +54,7 @@ function getCookie(name) {
     })
     const data_stringify = JSON.stringify(data);
     console.log(data);
-    fetch('http://127.0.0.1:8000/education_centers/applications?p=zan', {
+    fetch('/education_centers/applications?p=zan', {
         method: 'POST',
         headers: {
             "X-CSRFToken": getCookie("csrftoken"),
