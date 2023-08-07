@@ -265,6 +265,10 @@ def quota_center_request(request, ed_center_id):
     if 'send-request' in request.POST:
         ed_center_request.status = 'LCK'
         ed_center_request.save()
+        programs_quota = ProgramQuotaRequest.objects.filter(
+            ed_center_request=ed_center_request)
+        programs_quota.filter(price=0).delete()
+        programs_quota.filter(req_quota=0).delete()
     if 'add-programs' in request.POST:
         programs = request.POST.getlist('programs')
         for program_id in programs:
@@ -336,4 +340,38 @@ def quota_center_request(request, ed_center_id):
         'programs_144': programs_144,
         'programs_256': programs_256,
         'conditions': conditions
+    })
+
+
+@csrf_exempt
+def quota_request(request):
+    project_year = get_object_or_404(ProjectYear, year=2023)
+    quota_request = QuotaRequest.objects.first()
+    ed_centers_requests = EdCenterQuotaRequest.objects.filter(
+        request=quota_request).exclude(status='DRFT')
+    
+    programs_quota = ProgramQuotaRequest.objects.filter(
+        ed_center_request__in=ed_centers_requests).exclude(price=0).exclude(
+        req_quota=0)
+    programs_quota_72 = programs_quota.filter(program__duration__lte=72)
+    programs_quota_144 = programs_quota.filter(
+        program__duration__gt=72, program__duration__lte=144
+    )
+    programs_quota_256 = programs_quota.filter(program__duration__gt=144)
+    
+    if 'set-quota' in request.POST:
+        quota = request.POST['quota']
+        if quota == '72': programs_quota = programs_quota_72
+        elif quota == '144': programs_quota = programs_quota_144
+        elif quota == '256': programs_quota = programs_quota_256
+        for program_quota in programs_quota:
+            program_quota.ro_quota = int(request.POST[f'req_quota_{program_quota.id}'])
+            program_quota.save()
+
+    return render(request, 'federal_empl_program/quota_request.html', {
+        'project_year': project_year,
+        'quota_request': quota_request,
+        'programs_quota_72': programs_quota_72,
+        'programs_quota_144': programs_quota_144,
+        'programs_quota_256': programs_quota_256,
     })

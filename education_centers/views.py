@@ -480,7 +480,7 @@ def ed_center_application(request, ed_center_id):
                 program.description = request.POST['description']
                 program.entry_requirements = request.POST['entry_requirements']
                 program.program_type = request.POST['program_type']
-                program.education_form = 'FLL'
+                program.education_form = request.POST['education_form']
                 program.duration = int(request.POST['duration'])
                 program.notes = request.POST['notes']
             program.save()
