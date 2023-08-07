@@ -6,6 +6,10 @@ from django.template.defaultfilters import stringfilter
 register = template.Library()
 
 @register.filter
+def get_full_price(price):
+    return round(price * 107, 2) / 100
+
+@register.filter
 def count_appl(applications, params):
     stage, grant = params[0], params[1]
     if grant == None:

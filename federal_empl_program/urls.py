@@ -16,6 +16,7 @@ urlpatterns = [
         views.quota_center_request, 
         name="quota_center_request"
     ),
+    path('quota/request', views.quota_request, name="quota_request"),
     #Applications
     path(
         'application/citizen/', 

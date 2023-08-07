@@ -152,7 +152,7 @@ class EdCenterQuotaRequest(models.Model):
         'Номер запроса', null=False, blank=False)
     
     def __str__(self):
-        return f'Запрос {self.ed_center_year.ed_center.short_name} №{self.request_number} ({self.status})'
+        return f'Запрос {self.ed_center_year.ed_center.short_name} №{self.request_number} ({self.get_status_display()})'
 
     class Meta:
         verbose_name = "Запрос квоты (ЦО)"
