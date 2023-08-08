@@ -7,7 +7,7 @@ register = template.Library()
 
 @register.filter
 def get_full_price(price):
-    return round(price * 107, 2) / 100
+    return round((price / 0.93 * 100), 0) / 100
 
 @register.filter
 def count_appl(applications, params):
