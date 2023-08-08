@@ -17,6 +17,7 @@ from django.db import IntegrityError
 
 from education_centers.models import Competence, EducationCenter, EducationProgram
 
+from . import exports
 from .forms import ImportDataForm
 from .imports import express_import
 
@@ -367,7 +368,11 @@ def quota_request(request):
         for program_quota in programs_quota:
             program_quota.ro_quota = int(request.POST[f'req_quota_{program_quota.id}'])
             program_quota.save()
-
+    if 'export-request' in request.POST:
+        quota_request.send_date = request.POST['send_date']
+        quota_request.status = 'SND'
+        return exports.quota_request(quota_request)
+    
     return render(request, 'federal_empl_program/quota_request.html', {
         'project_year': project_year,
         'quota_request': quota_request,
