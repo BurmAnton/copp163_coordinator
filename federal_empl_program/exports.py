@@ -23,7 +23,7 @@ def quota_request(request):
 
     for col_number, col_title in enumerate(col_titles, start=1):
         ws.cell(row=1, column=col_number, value=col_title)
-    
+
     row_number = 2
     for center_request in request.centers_requests.all():
         for center_request in request.centers_requests.all():

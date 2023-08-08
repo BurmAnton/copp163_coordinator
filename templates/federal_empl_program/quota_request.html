@@ -25,6 +25,7 @@
                     <th scope="col" class="th-hdr">Центр обучения</th>
                     <th scope="col" class="th-hdr">Название программы</th>
                     <th scope="col" class="th-hdr">Стоимость программы</th>
+                    <th scope="col" class="th-hdr">Квота от ЦО</th>
                     <th scope="col" class="th-hdr">Запрашиваемая квота</th>
                     <th scope="col" class="th-hdr">Сумма, руб.</th>
                 </tr>
@@ -33,18 +34,19 @@
                         <td scope="row">{{program_quota.ed_center_request.ed_center_year.ed_center.short_name}}</td>
                         <td scope="row">{{program_quota.program}}</td>
                         <td scope="row"><input class="form-control program_price" style="width: 100px;" disabled type="input" class="form-control" name="price_{{program_quota.id}}" value="{{program_quota.price|get_full_price}}"></td>
+                        <td scope="row"><input class="form-control" style="width: 100px;" disabled type="number" class="form-control" value="{{program_quota.req_quota}}"></td>
                         <td scope="row"><input class=" form-control program_quota" style="width: 100px;" type="number" class="form-control" name="req_quota_{{program_quota.id}}" value="{%if program_quota.ro_quota == 0 %}{{program_quota.req_quota}}{% else %}{{program_quota.ro_quota}}{% endif %}"></td>
                         <td scope="row" class="program_sum" id="program_sum_{{program_quota.id}}">0 руб</td>
                     </tr>
                 {% empty %}
                     <tr>
-                        <td scope="row" class="none-alert" colspan="5">Не добавлено ни одной программы</td>
+                        <td scope="row" class="none-alert" colspan="6">Не добавлено ни одной программы</td>
                     </tr>
                 {% endfor %}
                 {% if programs_quota_72.count != 0 %}
                     <tr class="btm-row">
                         <th scope="row" colspan="2">Средняя стоимость (не должна превышать 29500 руб):</td>
-                        <th scope="row" class="average_cost">0 руб</td>
+                        <th scope="row" colspan="2" class="average_cost">0 руб</td>
                         <th scope="row" class="quota_count">0 квот</td>
                         <th scope="row" class="bracket_sum">0 руб</td>
                     </tr>
@@ -68,6 +70,7 @@
                     <th scope="col" class="th-hdr">Центр обучения</th>
                     <th scope="col" class="th-hdr">Название программы</th>
                     <th scope="col" class="th-hdr">Стоимость программы</th>
+                    <th scope="col" class="th-hdr">Квота от ЦО</th>
                     <th scope="col" class="th-hdr">Запрашиваемая квота</th>
                     <th scope="col" class="th-hdr">Сумма, руб.</th>
                 </tr>
@@ -76,18 +79,19 @@
                         <td scope="row">{{program_quota.ed_center_request.ed_center_year.ed_center.short_name}}</td>
                         <td scope="row">{{program_quota.program}}</td>
                         <td scope="row"><input class="form-control program_price" style="width: 100px;" disabled type="input" class="form-control" name="price_{{program_quota.id}}" value="{{program_quota.price|get_full_price}}"></td>
+                        <td scope="row"><input class="form-control" style="width: 100px;" disabled type="number" class="form-control" value="{{program_quota.req_quota}}"></td>
                         <td scope="row"><input class="form-control program_quota" style="width: 100px;" type="number" class="form-control" name="req_quota_{{program_quota.id}}" value="{%if program_quota.ro_quota == 0 %}{{program_quota.req_quota}}{% else %}{{program_quota.ro_quota}}{% endif %}"></td>
                         <td scope="row" class="program_sum" id="program_sum_{{program_quota.id}}">0 руб</td>
                     </tr>
                 {% empty %}
                     <tr>
-                        <td scope="row" class="none-alert" colspan="5">Не добавлено ни одной программы</td>
+                        <td scope="row" class="none-alert" colspan="6">Не добавлено ни одной программы</td>
                     </tr>
                 {% endfor %}
                 {% if programs_quota_144.count != 0 %}
                     <tr class="btm-row">
                         <th scope="row" colspan="2">Средняя стоимость (не должна превышать 44000 руб):</td>
-                        <th scope="row" class="average_cost">0 руб</td>
+                        <th scope="row" colspan="2" class="average_cost">0 руб</td>
                         <th scope="row" class="quota_count">0 квот</td>
                         <th scope="row" class="bracket_sum">0 руб</td>
                     </tr>
@@ -111,6 +115,7 @@
                     <th scope="col" class="th-hdr">Центр обучения</th>
                     <th scope="col" class="th-hdr">Название программы</th>
                     <th scope="col" class="th-hdr">Стоимость программы</th>
+                    <th scope="col" class="th-hdr">Квота от ЦО</th>
                     <th scope="col" class="th-hdr">Запрашиваемая квота</th>
                     <th scope="col" class="th-hdr">Сумма, руб.</th>
                 </tr>
@@ -119,18 +124,19 @@
                         <td scope="row">{{program_quota.ed_center_request.ed_center_year.ed_center.short_name}}</td>
                         <td scope="row">{{program_quota.program}}</td>
                         <td scope="row"><input class="form-control program_price" style="width: 100px;" disabled type="input" class="form-control" name="price_{{program_quota.id}}" value="{{program_quota.price|get_full_price}}"></td>
+                        <td scope="row"><input class="form-control" style="width: 100px;" disabled type="number" class="form-control" value="{{program_quota.req_quota}}"></td>
                         <td scope="row"><input class="form-control program_quota" style="width: 100px;" type="number" class="form-control" name="req_quota_{{program_quota.id}}" value="{%if program_quota.ro_quota == 0 %}{{program_quota.req_quota}}{% else %}{{program_quota.ro_quota}}{% endif %}"></td>
                         <td scope="row" class="program_sum" id="program_sum_{{program_quota.id}}">0 руб</td>
                     </tr>
                 {% empty %}
                     <tr>
-                        <td scope="row" class="none-alert" colspan="5">Не добавлено ни одной программы</td>
+                        <td scope="row" class="none-alert" colspan="6">Не добавлено ни одной программы</td>
                     </tr>
                 {% endfor %}
                 {% if programs_quota_256.count != 0 %}
                     <tr class="btm-row">
                         <th scope="row" colspan="2">Cредняя стоимость (не должна превышать 66000 руб):</td>
-                        <th scope="row" class="average_cost">0 руб</td>
+                        <th scope="row" colspan="2" class="average_cost">0 руб</td>
                         <th scope="row" class="quota_count">0 квот</td>
                         <th scope="row" class="bracket_sum">0 руб</td>
                     </tr>

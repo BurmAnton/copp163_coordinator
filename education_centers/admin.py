@@ -118,7 +118,7 @@ class EducationProgramAdmin(admin.ModelAdmin):
         ('duration'),
         ('competence', RelatedOnlyDropdownFilter)
     )
-    search_fields = ['program_name',]
+    search_fields = ['program_name', 'ed_center__short_name', 'ed_center__name']
 
 ApplicationForm = select2_modelform(Application, attrs={'width': '400px'})
 
