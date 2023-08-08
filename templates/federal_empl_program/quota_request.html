@@ -165,5 +165,14 @@
                 <th scope="row" style="text-align: center;" class="bracket_sum_quota">0 руб</td>
             </tr>
         </table>
+        <div class="export-quota">
+            <form action="{% url 'quota_request' %}" method="post">
+                <div class="form-floating">
+                    <input type="date" class="form-control" id="SendDate" value="{{quota_request.send_date}}" name="send_date">
+                    <label for="SendDate">Дата отправки запроса</label>
+                </div>
+                <button type="submit" class="btn btn-primary" name="export-request">Экспортировать заявку</button>
+            </form>
+        </div>
     </div>
 {% endblock %}

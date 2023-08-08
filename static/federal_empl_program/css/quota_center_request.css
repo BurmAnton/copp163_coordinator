@@ -77,4 +77,13 @@ body .quota_72_table .save-quota-btn, body .quota_144_table .save-quota-btn, bod
   display: flex;
   justify-content: flex-end;
   flex-wrap: wrap;
+}
+body .quota_72_table .export-quota form, body .quota_144_table .export-quota form, body .quota_256_table .export-quota form, body .quota_result_table .export-quota form {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 31px;
+}
+body .quota_72_table .export-quota form .form-floating, body .quota_144_table .export-quota form .form-floating, body .quota_256_table .export-quota form .form-floating, body .quota_result_table .export-quota form .form-floating {
+  width: 225px;
 }/*# sourceMappingURL=quota_center_request.css.map */
