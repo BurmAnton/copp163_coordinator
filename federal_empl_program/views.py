@@ -297,26 +297,31 @@ def quota_center_request(request, ed_center_id):
             program_quota.req_quota = int(request.POST[f'req_quota_{program_quota.id}'])
             program_quota.save()
     
-    if (len(programs_quota_72) != 0):
-        sum_72 = programs_quota_72.aggregate(Sum("price"))['price__sum']
-        avrg_72 = sum_72 / programs_quota_72.count()
-    else:
-        sum_72 = 0
-        avrg_72 = 0
-    if (len(programs_quota_144) != 0):
-        sum_144 = programs_quota_144.aggregate(Sum("price"))['price__sum']
-        avrg_144 = sum_144 / programs_quota_144.count()
-    else:
-        sum_144 = 0
-        avrg_144 = 0
-    if (len(programs_quota_256) != 0):
-        sum_256 = programs_quota_256.aggregate(Sum("price"))['price__sum']
-        avrg_256 = sum_256 / programs_quota_256.count()
-    else:
-        sum_256 = 0
-        avrg_256 = 0
+    
+    sum_72 = 0
+    quota_72 = 0
+    for program_quota in programs_quota_72:
+        sum_72 += program_quota.price * program_quota.req_quota
+        quota_72 += program_quota.req_quota
+    if (sum_72 != 0 and quota_72 != 0):avrg_72 = sum_72 / quota_72
+    else: avrg_72 = 0
+    sum_144 = 0
+    quota_144 = 0
+    for program_quota in programs_quota_144:
+        sum_144 += program_quota.price * program_quota.req_quota
+        quota_144 += program_quota.req_quota
+    if (quota_144 != 0 and quota_144 != 0): avrg_144 = sum_144 / quota_144
+    else: avrg_144 = 0
+    sum_256 = 0
+    quota_256 = 0
+    for program_quota in programs_quota_256:
+        sum_256 += program_quota.price * program_quota.req_quota
+        quota_256 += program_quota.req_quota
+    if (sum_256 != 0 and quota_256 != 0): avrg_256 = sum_256 / quota_256
+    else: avrg_256 = 0
+
     if (programs_quota.count() != 0):
-        avrg = (sum_72+sum_144+sum_256) / (programs_quota.count())
+        avrg = (sum_72+sum_144+sum_256) / (quota_72 + quota_144 + quota_256)
     else: avrg = 0
     if avrg_72 <= 27435 and avrg_144 <= 40920 and avrg_256 <= 61380 and avrg <= 48962 and avrg > 0:
         conditions = True
