@@ -320,7 +320,7 @@ def quota_center_request(request, ed_center_id):
     if (sum_256 != 0 and quota_256 != 0): avrg_256 = sum_256 / quota_256
     else: avrg_256 = 0
 
-    if (programs_quota.count() != 0):
+    if ((quota_72 + quota_144 + quota_256) != 0):
         avrg = (sum_72+sum_144+sum_256) / (quota_72 + quota_144 + quota_256)
     else: avrg = 0
     if avrg_72 <= 27435 and avrg_144 <= 40920 and avrg_256 <= 61380 and avrg <= 48962 and avrg > 0:
