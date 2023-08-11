@@ -99,12 +99,15 @@
                         </div>
                     {% else %}
                         <div class="container container-fluid">
-                            <div class="navbar-nav">
+                            <div class="navbar-nav unauthorized-nav">
                                 <div class="nav-brand">
                                     <div class="navbar-logo">
                                         <img src="{% static 'layout/img/logo_compact.svg' %}" alt="Logo_compact" class="d-inline-block align-text-top">
                                     </div>
                                 </div>
+                                <a href="{% url 'login' %}" class="login-btn">
+                                    <button type="submit" class="btn btn-dark admin-button">Войти</button> 
+                                </a>
                             </div>
                         </div>
                     {% endif %}

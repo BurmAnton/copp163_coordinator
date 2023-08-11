@@ -84,6 +84,19 @@ body
         width: 100%
         margin: auto
 
+.unauthorized-nav
+    width: 100%
+    display: grid
+    justify-content: space-between
+    grid-template-columns: auto auto auto
+    .nav-brand
+        grid-column: 2
+        justify-content: center
+        .navbar-logo
+            margin: 0
+    a
+        grid-column: 3 
+        
 /*footer*/
 .wrap  
     display: flex
@@ -114,7 +127,7 @@ body
     a, a:hover
         color: #fff !important
         text-decoration: none
-    
+        
     .footer-logo
       height: auto
       @media (max-width: 806px)
