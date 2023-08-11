@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
+from .exports import schools
 from . import imports
 from education_centers.forms import ImportDataForm
 
@@ -19,3 +20,6 @@ def import_schools(request):
         'message': message,
         'form' : ImportDataForm(),
     })
+
+def export_schools(request):
+    return schools()
