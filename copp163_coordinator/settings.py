@@ -42,6 +42,7 @@ INTERNAL_IPS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'coverage',
     'debug_toolbar',
     'rest_framework',
     'field_history',

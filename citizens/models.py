@@ -75,7 +75,7 @@ class DisabilityType(models.Model):
         verbose_name_plural = "Инвалидности"
 
     def __str__(self):
-        return  f"{self.name}"
+        return self.name
 
 
 class Citizen(models.Model):
@@ -137,5 +137,5 @@ class Citizen(models.Model):
 
     def __str__(self):
         if self.middle_name is not None:
-            return  f'{self.last_name} {self.first_name} {self.middle_name}'
+            return f'{self.last_name} {self.first_name} {self.middle_name}'
         return f'{self.last_name} {self.first_name}'
