@@ -8,12 +8,27 @@ body
         margin: auto
         margin-top: 25px
         margin-bottom: 25px
-        width: 500px
+        max-width: 500px
         border-radius: 12px
         background-color: white
         box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078)
         padding: 25px 50px 25px 50px
+        @media (max-width: 500px)
+            margin: 0
+            border-radius: 0px
+            padding: 25px 20px 25px 20px
         .btn
             width: 100%
         .form-check
             margin-bottom: 15px
+        .filter-selectpicker
+            background-color: #e9ecf7
+            .filter-select
+                margin: 5px
+            .bootstrap-select
+                border: 1px solid #ced4da
+                border-radius: .25rem
+            .dropdown-toggle
+                background-color: #fff
+            .filter-option
+                color: #000

@@ -49,6 +49,7 @@ body .schools-applications .control-panel .table-search input {
 }
 body .schools-applications table .sticky-top {
   z-index: 100 !important;
+  background-color: white !important;
 }
 body .schools-applications table .disapear-TerAdminFilter, body .schools-applications table .disapear-ProjectCenter, body .schools-applications table .disapear-FedFilter, body .schools-applications table .disapear-SchoolsFilter {
   display: none !important;
