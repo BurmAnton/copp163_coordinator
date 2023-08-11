@@ -5,7 +5,7 @@ body .school-form {
   margin: auto;
   margin-top: 25px;
   margin-bottom: 25px;
-  width: 500px;
+  max-width: 500px;
   border-radius: 12px;
   background-color: white;
   box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
@@ -16,9 +16,32 @@ body .school-form h2 {
   text-align: center;
   margin-bottom: 25px;
 }
+@media (max-width: 500px) {
+  body .school-form {
+    margin: 0;
+    border-radius: 0px;
+    padding: 25px 20px 25px 20px;
+  }
+}
 body .school-form .btn {
   width: 100%;
 }
 body .school-form .form-check {
   margin-bottom: 15px;
+}
+body .school-form .filter-selectpicker {
+  background-color: #e9ecf7;
+}
+body .school-form .filter-selectpicker .filter-select {
+  margin: 5px;
+}
+body .school-form .filter-selectpicker .bootstrap-select {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+body .school-form .filter-selectpicker .dropdown-toggle {
+  background-color: #fff;
+}
+body .school-form .filter-selectpicker .filter-option {
+  color: #000;
 }/*# sourceMappingURL=schools_application.css.map */
