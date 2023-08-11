@@ -99,7 +99,11 @@ class TicketFullQuotaAdmin(admin.ModelAdmin):
 @admin.register(SchoolProjectYear)
 class SchoolProjectYearAdmin(admin.ModelAdmin):
     search_fields = [
-        'school__name', 
+        'school__name',
+        'resp_full_name',
+        'resp_position',
+        'phone',
+        'email',
     ]
     list_display = [
         'school', 

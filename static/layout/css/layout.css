@@ -111,6 +111,23 @@ body {
   margin: auto;
 }
 
+.unauthorized-nav {
+  width: 100%;
+  display: grid;
+  justify-content: space-between;
+  grid-template-columns: auto auto auto;
+}
+.unauthorized-nav .nav-brand {
+  grid-column: 2;
+  justify-content: center;
+}
+.unauthorized-nav .nav-brand .navbar-logo {
+  margin: 0;
+}
+.unauthorized-nav a {
+  grid-column: 3;
+}
+
 /*footer*/
 .wrap {
   display: flex;

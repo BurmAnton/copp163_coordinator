@@ -14,9 +14,11 @@
     <div class="schools-applications">
         <div class="header">
             <h2>Данные ответственных за реализацию мероприятий профминимума в образовательных организациях</h2>
-            <form action="{% url 'schools_applications' %}" method="post">
-                <input type="submit" class="btn btn-primary" value="Скачать">
-            </form>
+            {% if request.user.is_superuser %}
+                <form action="{% url 'schools_applications' %}" method="post">
+                    <input type="submit" class="btn btn-primary" value="Скачать">
+                </form>
+            {% endif %}
         </div>
         <div class="control-panel">
             <div class="input-group mb-3 table-search">
@@ -55,20 +57,28 @@
             <tr class="sticky-top">
                 <th scope="row">Школа</th>
                 <th scope="row">Тер. управление</th>
-                <th scope="row" class="center">ФИО</th>
+                {% if request.user.is_superuser %}
+                    <th scope="row" class="center">ФИО</th>
+                {% endif %}
                 <th scope="row" class="center">Должность</th>
-                <th scope="row" class="center">Email</th>
-                <th scope="row" class="center">Телефон</th>
+                {% if request.user.is_superuser %}
+                    <th scope="row" class="center">Email</th>
+                    <th scope="row" class="center">Телефон</th>
+                {% endif %}
                 <th scope="row" class="center">Приказ</th>
             </tr>
             {% for school in schools %}
             <tr>
                 <td scope="row">{{ school.school.name }}</td>
                 <td scope="row">{{ school.school.get_territorial_administration_display }}</td>
-                <td scope="row">{{ school.resp_full_name }}</td>
+                {% if request.user.is_superuser %}
+                    <td scope="row">{{ school.resp_full_name }}</td>
+                {% endif %}
                 <td scope="row">{{ school.resp_position }}</td>
-                <td scope="row">{{ school.email }}</td>
-                <td scope="row">{{ school.phone }}</td>
+                {% if request.user.is_superuser %}
+                    <td scope="row">{{ school.email }}</td>
+                    <td scope="row">{{ school.phone }}</td>
+                {% endif %}
                 <td scope="row">
                     <a href="{{school.resp_order.url}}" target="_blank">Приказ</a>
                 </td>
