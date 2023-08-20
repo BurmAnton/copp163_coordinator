@@ -779,7 +779,7 @@ def ed_center_application(request, ed_center_id):
 
     disability_types = DisabilityType.objects.all().values('id', 'name')
     age_groups = AgeGroup.objects.all()
-    breakpoint()
+
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
         'employees': employees,

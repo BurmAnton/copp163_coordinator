@@ -28,7 +28,7 @@
         </div>
         <form action="{% url 'schools_application' %}" method="post" enctype="multipart/form-data">
             <div class="form mb-3 filter-selectpicker">
-                <select class="selectpicker w-100" title="Школа" data-live-search="true" name="school" required>
+                <select class="selectpicker w-100" title="Выберите школу" data-live-search="true" name="school" required>
                     {% for school in schools.all %}
                         <option value="{{school.id}}">{{school}}</option>
                     {% endfor %}
