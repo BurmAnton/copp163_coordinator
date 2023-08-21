@@ -20,4 +20,5 @@ coverage==7.2.7
 djangorestframework==3.14.0
 django-admin-autocomplete-list-filter==1.0.1
 django-mathfilters==1.0.0
+coverage==7.3.0
 mysqlclient==2.0.3
