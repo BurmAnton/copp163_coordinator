@@ -98,6 +98,7 @@ body table td {
   width: 100%;
   display: flex;
   justify-content: space-between;
+  lex-wrap: wrap;
 }
 .steps .tabs-panel .tabs {
   display: flex;
@@ -285,6 +286,16 @@ body table td {
 }
 .steps .quota-step .profession-quota .form .dropdown {
   width: 500px !important;
+}
+.steps .scan-step .btn-outline-primary {
+  margin-bottom: 15px;
+  width: 220px;
+}
+.steps .scan-step form {
+  padding-left: 15px;
+}
+.steps .scan-step h3 {
+  margin-bottom: 5px;
 }
 
 #table-wrapper {

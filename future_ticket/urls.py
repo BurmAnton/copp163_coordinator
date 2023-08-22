@@ -44,5 +44,5 @@ urlpatterns = [
         'schools/applications', 
         views.schools_applications, 
         name='schools_applications'
-    )
+    ),
 ]

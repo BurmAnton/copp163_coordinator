@@ -1,8 +1,13 @@
 from django.contrib import admin
+from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter,\
+      DropdownFilter, ChoiceDropdownFilter
 
-from .models import AgeGroup, ProfEnviroment, ProgramAuthor, SchoolProjectYear, TicketFullQuota, TicketProfession, TicketProgram, TicketProjectYear, EducationCenterTicketProjectYear,\
-                    TicketProjectPosition, TicketEdCenterEmployeePosition,\
-                    TicketIndicator, EdCenterTicketIndicator, TicketQuota
+from .models import AgeGroup, ContractorsDocumentTicket, DocumentTypeTicket, \
+    ProfEnviroment, ProgramAuthor, SchoolProjectYear, TicketFullQuota, \
+    TicketProfession, TicketProgram, TicketProjectYear, \
+    EducationCenterTicketProjectYear, TicketProjectPosition, \
+    TicketEdCenterEmployeePosition, TicketIndicator, EdCenterTicketIndicator, \
+    TicketQuota
 # Register your models here.
 
 
@@ -125,3 +130,24 @@ class TicketQuotaAdmin(admin.ModelAdmin):
         'value',
         'quota'
     ]
+
+@admin.register(DocumentTypeTicket)
+class DocumentTypeAdmin(admin.ModelAdmin):
+    list_display = ['name', 'stage']
+
+@admin.register(ContractorsDocumentTicket)
+class ContractorsDocumentAdmin(admin.ModelAdmin):
+    search_fields = ['contractor__name',]
+    list_display = [
+        'doc_type',
+        'contractor', 
+        'parent_doc',
+        'register_number',
+        'doc_stage',
+
+    ]
+    list_filter = (
+        ('doc_type', RelatedOnlyDropdownFilter),
+        ('contractor', RelatedOnlyDropdownFilter),
+        ('doc_stage', ChoiceDropdownFilter)
+    )

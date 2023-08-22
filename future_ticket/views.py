@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 
-from future_ticket.models import EducationCenterTicketProjectYear, SchoolProjectYear,\
+from future_ticket.models import DocumentTypeTicket, EducationCenterTicketProjectYear, SchoolProjectYear,\
                                  TicketFullQuota, TicketProjectYear, TicketQuota
 
 from .forms import ImportDataForm

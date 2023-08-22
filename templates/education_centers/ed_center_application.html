@@ -1025,8 +1025,10 @@
                 <a data-step="5" class="step-btn btn {%if stage == 5%}btn-primary{%else%}btn-outline-primary{%endif%}">МТБ</a>
                 <a data-step="6" class="step-btn btn {%if stage == 6%}btn-primary{%else%}btn-outline-primary{%endif%}">Показатели</a>
                 <a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Квоты</a>
-                {% if project == 'bilet' and center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'DWNLD' %}
-                    <a data-step="8" class="step-btn btn {%if stage == 8%}btn-primary{%else%}btn-outline-primary{%endif%}">Заявка</a>
+                {% if project == 'bilet' and center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'DWNLD' or center_project_year.stage == 'FNSHD' %}
+                    <a data-step="8" class="step-btn btn {%if stage == 8%}btn-primary{%else%}btn-outline-primary{%endif%}">
+                        Документы
+                    </a>
                 {% endif %}
             </div>
             <div class="generate-form">
@@ -1783,17 +1785,17 @@
                 {% endif %}
             </form>
         </div>
-        {% if project == 'bilet' and center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'DWNLD' %}
+        {% if project == 'bilet' and center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'DWNLD'  or center_project_year.stage == 'FNSHD' %}
             <div class="scan-step step" data-step="8" {%if stage == 8%}style="display:block;"{%else%}style="display:none;"{%endif%}>
                 <div class="step-hdr">
                     <h2>
                         {% if center_project_year.step_8_check %}
                             <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon"> Подрузка заявки
                         {% else %}
-                            8. Подрузка заявки
+                            8. Заявка на ПКО{% if center_project_year.stage == 'FNSHD' %}и договор{% endif %}
                         {% endif %}
                     </h2>
-                    {% if user.is_superuser and center_project_year.step_8_check == False %}
+                    {% if user.is_superuser and center_project_year.step_8_check == False and center_project_year.stage != 'FNSHD' %}
                         <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                             <input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>
                             <input style="display: none;" type="input" name="step" value="8" required>
@@ -1801,29 +1803,54 @@
                         </form>
                     {% endif %}
                 </div>
-                <form action="{% url 'ed_center_application' ed_center.id %}" method="post" enctype="multipart/form-data">
-                    {% if center_project_year.stage == 'DWNLD' or center_project_year.stage == 'PRVD' %}
-                        <a href="{{center_project_year.application_file.url}}">Скан заявки</a></p>
+                {% if center_project_year.stage == 'DWNLD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'FNSHD' %}
+                    {% if center_project_year.application_file.url != None %}
+                        <a class="btn btn-outline-primary " href="{{center_project_year.application_file.url}}">Скачать скан заявки</a>
                     {% endif %}
-                    <div class="mb-3">
-                        {% csrf_token %}
-                        {{ form.non_field_errors }}
-                        {{ form.import_file.label_tag }} 
-                        {{ form.import_file.help_text }}
-                        {{ form.import_file.errors }}
-                        {{ form.import_file }}
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="input" class="form-control" id="ApplTrackNumber" name="appl_track_number" {% if center_project_year.appl_track_number != None %} value="{{center_project_year.appl_track_number}}"{% endif %} required>
-                        <label for="ApplTrackNumber">Трек номер</label>
-                    </div>
-                    <input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>
-                    {% if center_project_year.stage != 'PRVD' or user.is_superuser  %}
-                        <div class="submit">
-                            <input type="submit" class="btn btn-primary" name="upload-application" value="Сохранить">
+                {% endif %}
+                {% if center_project_year.stage != 'FNSHD' %}
+                    <h3>Загрузить скан заявки</h3>
+                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post" enctype="multipart/form-data">
+                        
+                        <div class="mb-3">
+                            {% csrf_token %}
+                            {{ form.non_field_errors }}
+                            {{ form.import_file.label_tag }} 
+                            {{ form.import_file.help_text }}
+                            {{ form.import_file.errors }}
+                            {{ form.import_file }}
                         </div>
-                    {% endif %}
-                </form>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" id="ApplTrackNumber" name="appl_track_number" {% if center_project_year.appl_track_number != None %} value="{{center_project_year.appl_track_number}}"{% endif %} required>
+                            <label for="ApplTrackNumber">Трек номер</label>
+                        </div>
+                        <input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>
+                        {% if center_project_year.stage != 'PRVD' or user.is_superuser  %}
+                            <div class="submit">
+                                <input type="submit" class="btn btn-primary" name="upload-application" value="Сохранить">
+                            </div>
+                        {% endif %}
+                    </form>
+                {% else %}
+                    <a class="btn btn-outline-primary" href="{{contract.doc_file.url}}">Скачать договор</a>
+                    <h3>Загрузить скан договора</h3>
+                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            {% csrf_token %}
+                            {{ form.non_field_errors }}
+                            {{ form.import_file.label_tag }} 
+                            {{ form.import_file.help_text }}
+                            {{ form.import_file.errors }}
+                            {{ form.import_file }}
+                        </div>
+                        <input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>
+                        {% if contract.doc_stage != 'SGNDAP' or user.is_superuser %}
+                            <div class="submit">
+                                <input type="submit" class="btn btn-primary" name="upload-contract" value="Загрузить скан договора">
+                            </div>
+                        {% endif %}
+                    </form>
+                {% endif %}
             </div>
         {% endif %}
     </div>
