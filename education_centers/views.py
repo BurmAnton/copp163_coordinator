@@ -14,7 +14,7 @@ from users.models import DisabilityType
 
 from . import imports
 from . import exports
-from .forms import ImportDataForm, ImportTicketDataForm
+from .forms import ImportDataForm, ImportTicketContractForm, ImportTicketDataForm
 from .contracts import create_document, combine_all_docx, create_application, create_ticket_application
 from .models import BankDetails, Competence, ContractorsDocument, DocumentType,\
                     EducationCenter, EducationProgram,Employee, Group,\
@@ -23,10 +23,11 @@ from federal_empl_program.models import EdCenterEmployeePosition,\
                                         EdCenterIndicator, EdCenterQuota,\
                                         EducationCenterProjectYear, Indicator,\
                                         ProjectPosition, ProjectYear
-from future_ticket.models import AgeGroup, ProfEnviroment, ProgramAuthor, TicketFullQuota, TicketProfession, TicketProgram, TicketProjectYear,TicketProjectPosition,\
+from future_ticket.models import AgeGroup, ContractorsDocumentTicket, DocumentTypeTicket, ProfEnviroment, ProgramAuthor, TicketFullQuota, TicketProfession, TicketProgram, TicketProjectYear,TicketProjectPosition,\
                                  EducationCenterTicketProjectYear, \
                                  TicketEdCenterEmployeePosition, \
                                  TicketIndicator, EdCenterTicketIndicator, TicketQuota
+from future_ticket.utils import generate_document_ticket
 
 # Create your views here.
 def index(request):
@@ -74,6 +75,7 @@ def applications(request):
             data = json.loads(request.body.decode("utf-8"))
             stage = data['stage']
             centers_list = data['centers_list']
+            project = data['project']
             for center_id in centers_list:
                 if project == 'bilet':
                     center_year = get_object_or_404(EducationCenterTicketProjectYear, id=center_id)
@@ -81,6 +83,7 @@ def applications(request):
                     center_year = get_object_or_404(EducationCenterProjectYear, id=center_id)
                 center_year.stage = stage
                 center_year.save()
+
             return JsonResponse({"message": "Centers stage changed successfully."}, status=201)
 
     return render(request, "education_centers/applications.html", {
@@ -103,11 +106,28 @@ def ed_center_application(request, ed_center_id):
     else: stage = 1
     ed_center = get_object_or_404(EducationCenter, id=ed_center_id)
     full_quota = None
+    contract = None
     if project == 'bilet':
         project_year = get_object_or_404(TicketProjectYear, year=project_year)
         center_project_year = EducationCenterTicketProjectYear.objects.get_or_create(
                 project_year=project_year,ed_center=ed_center)[0]
         full_quota = get_object_or_404(TicketFullQuota, project_year=project_year)
+        if center_project_year.stage == 'FNSHD':
+            form = ImportTicketContractForm()
+            if center_project_year.is_ndc:
+                contract_type = get_object_or_404(
+                DocumentTypeTicket, name="Договор с ЦО с НДС")
+            else:
+                contract_type = get_object_or_404(
+                    DocumentTypeTicket, name="Договор с ЦО без НДС")
+            contract = ContractorsDocumentTicket.objects.filter(
+                doc_type=contract_type,
+                contractor=ed_center
+            )
+            if len(contract) == 1: contract = contract[0]
+            else: 
+                contract = generate_document_ticket(
+                    center_project_year, contract_type)
     else:
         project_year = get_object_or_404(ProjectYear, year=project_year)
         center_project_year = EducationCenterProjectYear.objects.get_or_create(
@@ -676,11 +696,20 @@ def ed_center_application(request, ed_center_id):
                 center_project_year.application_file = request.FILES['import_file']
                 center_project_year.appl_track_number = request.POST['appl_track_number']
                 center_project_year.save()
+        elif 'upload-contract' in request.POST:
+            stage = 8
+            center_project_year.save()
+            form = ImportTicketDataForm(request.POST, request.FILES)
+            if form.is_valid():
+                contract.doc_file = request.FILES['import_file']
+                contract.save()
     approved_programs = None
     chosen_professions = None
     schools = None
     ticket_programs = None
     professions = None
+    
+    form = ImportTicketDataForm()
     if project == 'bilet':
         filled_positions = TicketEdCenterEmployeePosition.objects.filter(
             ed_center=ed_center,
@@ -723,6 +752,7 @@ def ed_center_application(request, ed_center_id):
             id__in=center_project_year.programs.all()
         )
         center_quota = TicketQuota.objects.filter(ed_center=ed_center)
+        
     else:
         filled_positions = EdCenterEmployeePosition.objects.filter(
             ed_center=ed_center,
@@ -804,7 +834,8 @@ def ed_center_application(request, ed_center_id):
         'project': project,
         'stage': stage,
         'ticket_programs': ticket_programs,
-        'form': ImportTicketDataForm()
+        'form': form,
+        'contract': contract
     })
 
 @csrf_exempt

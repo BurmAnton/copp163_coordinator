@@ -3,8 +3,9 @@ from transliterate import translit
 from django.db import models
 from django.db.models.deletion import DO_NOTHING, CASCADE
 from django.utils.translation import gettext_lazy as _
-from citizens.models import School
+from django.utils.timezone import now
 
+from citizens.models import School
 from education_centers.models import Competence, EducationProgram, \
                                      EducationCenter, Group, Employee, Workshop
 from users.models import DisabilityType
@@ -202,6 +203,7 @@ class EducationCenterTicketProjectYear(models.Model):
         ('FRMD', "сформирована"),
         ('DWNLD', "подгружена"),
         ('PRVD', "принята"),
+        ('FNSHD', "ПКО пройден"),
     ]
     stage = models.CharField("Работа с заявкой", max_length=5, 
                              default='FLLNG', choices=STAGES)
@@ -480,3 +482,104 @@ class SchoolProjectYear(models.Model):
     class Meta:
         verbose_name = "Школа (год проекта)"
         verbose_name_plural = "Школы (годы проекта)"
+
+
+class DocumentTypeTicket(models.Model):
+    project_year = models.ForeignKey(
+        TicketProjectYear, 
+        verbose_name="Год проекта (БВБ)",
+        related_name="docs_templates",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    name = models.CharField(
+        "Тип документа", 
+        max_length=150, 
+        null=True, 
+        blank=True
+    )
+    STAGES = [
+        ("GRMNT", "Договорные"),
+        ("CLS", "Закрывающие"),
+        ("PRV", "Подтверждающие"),
+    ]
+    stage = models.CharField(
+        "Этап", 
+        max_length=6, 
+        choices=STAGES,
+        null=False,
+        blank=False
+    )
+    def template_directory_path(instance, filename):
+        return 'media/doc_templates/ticket/{0}'.format(filename)
+    
+    template = models.FileField("Документ", upload_to=template_directory_path)
+
+    class Meta:
+        verbose_name = "Шаблон документов (БВБ)"
+        verbose_name_plural = "Шаблоны документов (БВБ)"
+
+    def __str__(self):
+        return f'{self.name}'
+    
+
+class ContractorsDocumentTicket(models.Model):
+    creation_date = models.DateTimeField("Дата создания", blank=True,
+                                          null=True, default=now)
+    contractor = models.ForeignKey(
+        EducationCenter, 
+        verbose_name='подрядчик', 
+        related_name='ticket_docs',
+        null=False,
+        blank=False,
+        on_delete=CASCADE
+    )
+    register_number = models.IntegerField(
+        'Номер в реестре',
+        null=False,
+        blank=False
+        )
+    parent_doc = models.ForeignKey(
+        "self", 
+        verbose_name="Родительский документ",
+        related_name="children_docs",
+        null=True, 
+        blank=True,
+        on_delete=CASCADE
+    )
+    STAGES = [
+        ("CRTD", "Создан"),
+        ("CHCKD", "Проверен"),
+        ("SGND", "Подписан"),
+        ("SGNDAP", "Подписан и проверен"),
+    ]
+    doc_stage = models.CharField(
+        "Стадия", 
+        max_length=6, 
+        choices=STAGES,
+        null=False,
+        blank=False,
+        default="CRTD"
+    )
+    doc_type = models.ForeignKey(
+        DocumentTypeTicket, 
+        verbose_name="Тип документа",
+        null=True,
+        blank=False,
+        on_delete=CASCADE
+    )
+
+    def doc_directory_path(instance, filename):
+        return 'media/documents/ticket/{0}/{1}'.format(
+            instance.contractor.id, filename
+        )
+    
+    doc_file = models.FileField("Документ", upload_to=doc_directory_path)
+
+    class Meta:
+        verbose_name = "Документ с подрядчиком (БВБ)"
+        verbose_name_plural = "Документы с подрядчиками (БВБ)"
+
+    def __str__(self):
+        return f'{self.doc_type} №{self.register_number} ({self.contractor.name})'

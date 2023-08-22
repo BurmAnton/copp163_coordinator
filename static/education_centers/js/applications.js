@@ -52,6 +52,7 @@ function getCookie(name) {
             data.centers_list.push(checkbox.value);
         }
     })
+    data.project = document.querySelector('h3').dataset.project;
     const data_stringify = JSON.stringify(data);
     console.log(data);
     fetch('/education_centers/applications?p=zan', {

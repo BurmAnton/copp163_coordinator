@@ -17,7 +17,7 @@
             <a data-project="bilet" href="{% url 'applications' %}?p=bilet" class="project-btn btn {%if project == 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Билет в будущее</a>
             <a data-project="zan" href="{% url 'applications' %}?p=zan" class="project-btn btn {%if project != 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Содействие занятости</a>
         </div>
-        <h3> 
+        <h3 {% if project == 'bilet' %}data-project="bilet"{% else%}data-project="zan"{% endif %}> 
             <b>Проект:</b> 
             {% if project == 'bilet' %}
                 Билет в будущее
