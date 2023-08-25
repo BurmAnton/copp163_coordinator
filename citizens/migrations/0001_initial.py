@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('education_centers', '__first__'),
+        ('education_centers', '0001_squashed_0049_auto_20230616_1519'),
         ('organizations', '__first__'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
