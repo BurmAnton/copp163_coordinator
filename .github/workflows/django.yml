@@ -27,4 +27,4 @@ jobs:
         pip install -r requirements.txt
     - name: Run Tests
       run: |
-        python3 manage.py test --keepdb vocational_guidance
+        python3 manage.py test --keepdb federal_empl_program
