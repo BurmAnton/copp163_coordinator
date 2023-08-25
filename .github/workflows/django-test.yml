@@ -16,9 +16,9 @@ jobs:
       mysql:
         image: mysql
         env:
-          POSTGRES_USER: ${{ env.DATABASE_USER }}
-          POSTGRES_PASSWORD: ${{ env.DATABASE_PASS }}
-          POSTGRES_DB: ${{ env.DATABASE_HOST }}
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin8888
+          POSTGRES_DB: copp163_coordinator
         ports:
           - 5432:5432
         options: >-
