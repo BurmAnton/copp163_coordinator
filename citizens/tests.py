@@ -78,3 +78,4 @@ class ViewsTest(TestCase):
 
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context['message'], None)
+    

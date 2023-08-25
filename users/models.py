@@ -148,7 +148,7 @@ class DistributionEmail(models.Model):
 class MailAttachFile(models.Model):
     name = models.CharField("Название файла", max_length=100, blank=False, null=False)
     attached_file = models.FileField("Прикреплённый файл", upload_to='media/email_attached/')
-    upload_date_time = models.DateTimeField("Дата и время загрузки", default=datetime.now(), blank=False, null=False)
+    upload_date_time = models.DateTimeField("Дата и время загрузки", blank=False, null=False)
 
     def __str__(self):
         if self.name == None:
