@@ -13,19 +13,14 @@ jobs:
 
     runs-on: ubuntu-latest
     services:
-      mysql:
-        image: mysql
-        env:
-          MYSQL_USER: admin
-          MYSQL_PASSWORD: admin8888
-          MYSQL_DB: copp163_coordinator
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready 
-          --health-interval 10s 
-          --health-timeout 5s 
-          --health-retries 5
+      db:
+        image: mysql:5.7
+        environment:
+          MYSQL_USER: 'root'
+          MYSQL_PASSWORD: 'password'
+          MYSQL_ROOT_PASSWORD: 'password'
+          MYSQL_DB: 'copp163_coordinator'
+        restart: always
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
