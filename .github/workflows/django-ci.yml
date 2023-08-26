@@ -39,7 +39,8 @@ jobs:
       env: 
         SECRET_KEY: y!*pq182!%5tt!f(0176(2fbf1qx^5-hl=6it!2fu3#gfv2_w+
         DATABASE_NAME: copp163_coordinator
-        DATABASE_USER: password
+        DATABASE_USER: root
+        DATABASE_PASS: password
         DATABASE_HOST: 127.0.0.1
         DATABASE_PORT: ''
         ALLOWED_HOSTS: "127.0.0.1 localhost"
@@ -52,7 +53,8 @@ jobs:
       env: 
         SECRET_KEY: y!*pq182!%5tt!f(0176(2fbf1qx^5-hl=6it!2fu3#gfv2_w+
         DATABASE_NAME: copp163_coordinator
-        DATABASE_USER: password
+        DATABASE_USER: root
+        DATABASE_PASS: password
         DATABASE_HOST: 127.0.0.1
         DATABASE_PORT: ''
         ALLOWED_HOSTS: "127.0.0.1 localhost"
