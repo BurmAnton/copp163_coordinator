@@ -26,10 +26,10 @@ jobs:
   
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python $
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: $
+        python-version: ${{ matrix.python-version }}
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
@@ -37,19 +37,25 @@ jobs:
     - name: Run Migrations
       run: python manage.py migrate
       env: 
-        DBENGINE: django.db.backends.mysql
-        DBNAME: mysql
-        DBUSER: root
-        DBPASSWORD: password
-        DBHOST: 127.0.0.1
-        DBPORT: $
+        SECRET_KEY: "y!*pq182!%5tt!f(0176(2fbf1qx^5-hl=6it!2fu3#gfv2_w+"
+        DATABASE_NAME: 'copp163_coordinator'
+        DATABASE_USER: 'admin'
+        DATABASE_PASS: 'admin8888'
+        DATABASE_HOST: 'localhost'
+        DATABASE_PORT: ${{ job.services.mysql.ports[3306] }}
+        ALLOWED_HOSTS: "127.0.0.1 localhost"
+        DEBUG: true
+        STATIC_URL: '/copp163_coordinator/static/'
     - name: Run Tests
       run: |
         python manage.py test
       env: 
-        DBENGINE: django.db.backends.mysql
-        DBNAME: mysql
-        DBUSER: root
-        DBPASSWORD: password
-        DBHOST: 127.0.0.1
-        DBPORT: $
+        SECRET_KEY: "y!*pq182!%5tt!f(0176(2fbf1qx^5-hl=6it!2fu3#gfv2_w+"
+        DATABASE_NAME: 'copp163_coordinator'
+        DATABASE_USER: 'admin'
+        DATABASE_PASS: 'admin8888'
+        DATABASE_HOST: 'localhost'
+        DATABASE_PORT: ${{ job.services.mysql.ports[3306] }}
+        ALLOWED_HOSTS: "127.0.0.1 localhost"
+        DEBUG: true
+        STATIC_URL: '/copp163_coordinator/static/'
