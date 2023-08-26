@@ -27,7 +27,7 @@ from .utils import get_applications_plot
 from users.models import User
 from citizens.models import Citizen
 from federal_empl_program.models import Application, CitizenApplication, EdCenterQuotaRequest, EducationCenterProjectYear, \
-                                        EdCenterQuota, Grant, ProgramQuotaRequest,  ProjectYear, QuotaRequest
+                                        Grant, ProgramQuotaRequest,  ProjectYear, QuotaRequest
 
 
 @login_required
@@ -90,28 +90,6 @@ def logout(request):
     if request.user.is_authenticated:
         auth.logout(request)
     return HttpResponseRedirect(reverse("login"))
-
-
-
-@csrf_exempt
-def quota_dashboard(request):
-    project_year = get_object_or_404(ProjectYear, year=2023)
-    ed_centers_year = EducationCenterProjectYear.objects.filter(
-        project_year=project_year
-    ) 
-    centers_quota = EdCenterQuota.objects.filter(
-        ed_center_year__in=ed_centers_year
-    ).order_by("-quota_72", "-quota_144", "-quota_256")
-    aggregated_quota = centers_quota.aggregate(
-        sum_quota72=Sum("quota_72"), 
-        sum_quota144=Sum("quota_144"), 
-        sum_quota256=Sum("quota_256")
-    )
-
-    return render(request, 'federal_empl_program/quota_dashboard.html', {
-        'centers_quota': centers_quota,
-        'aggregated_quota': aggregated_quota
-    })
 
 @csrf_exempt
 def citizen_application(request):

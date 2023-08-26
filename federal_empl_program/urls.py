@@ -10,7 +10,6 @@ urlpatterns = [
     re_path(r'^login/$', views.login, name="login"),
     path('logout/', views.logout, name="logout"),
     #Quotes
-    path('quota/dashboard/', views.quota_dashboard, name="quota_dashboard"),
     path(
         'quota/<int:ed_center_id>/request', 
         views.quota_center_request, 

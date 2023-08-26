@@ -20,7 +20,7 @@ from .models import BankDetails, Competence, ContractorsDocument, DocumentType,\
                     EducationCenter, EducationProgram,Employee, Group,\
                     Teacher, Workshop
 from federal_empl_program.models import EdCenterEmployeePosition,\
-                                        EdCenterIndicator, EdCenterQuota,\
+                                        EdCenterIndicator,\
                                         EducationCenterProjectYear, Indicator,\
                                         ProjectPosition, ProjectYear
 from future_ticket.models import AgeGroup, ContractorsDocumentTicket, DocumentTypeTicket, ProfEnviroment, ProgramAuthor, TicketFullQuota, TicketProfession, TicketProgram, TicketProjectYear,TicketProjectPosition,\
@@ -132,9 +132,7 @@ def ed_center_application(request, ed_center_id):
         project_year = get_object_or_404(ProjectYear, year=project_year)
         center_project_year = EducationCenterProjectYear.objects.get_or_create(
                 project_year=project_year, ed_center=ed_center)[0]
-        center_quota, is_new = EdCenterQuota.objects.get_or_create(
-            ed_center_year=center_project_year
-        )
+        center_quota = None
     
     if request.method == "POST":
         if 'add-employee' in request.POST:
