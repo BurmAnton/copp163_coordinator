@@ -155,8 +155,8 @@ USE_TZ = True
 STATIC_URL = os.environ.get("STATIC_URL")
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    BASE_DIR / "copp163_coordinator/static",
-    '/var/www/copp163_coordinator/static/',
+   # BASE_DIR / "copp163_coordinator/static",
+   # '/var/www/copp163_coordinator/static/',
 ]
 
 MEDIA_ROOT = BASE_DIR
