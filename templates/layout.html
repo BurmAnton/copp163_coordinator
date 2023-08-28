@@ -55,7 +55,6 @@
                                                     <li><a class="dropdown-item" href="{% url 'import_express' %}">Импорт с экспресса</a></li>
                                                     <li><a class="dropdown-item" href="{% url 'applications' %}?p=zen">Мониторинг заявок</a></li>
                                                 {% endif %}
-                                                <li><a class="dropdown-item" href="{% url 'quota_dashboard' %}">Распределение квоты</a></li>
                                             </ul>
                                         </li>
                                         {% if request.user.is_superuser %}
