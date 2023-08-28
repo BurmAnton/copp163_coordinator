@@ -57,28 +57,23 @@ def import_express(request):
 @csrf_exempt
 def login(request):
     message = None
-    if request.user.is_authenticated:
-        #Переадресация авторизованных пользователей
-        if request.user.role == 'CTZ':
-            ed_center_id = request.user.education_centers.first().id
-            return HttpResponseRedirect(reverse("applicant_profile", kwargs={'user_id': request.user.id}))
-        if request.user.role == 'CO':
-            ed_center_id = request.user.education_centers.first().id
-            return HttpResponseRedirect(reverse("ed_center_application", kwargs={'ed_center_id': ed_center_id}))
-        return HttpResponseRedirect(reverse("admin:index"))
-        
-    elif request.method == "POST":
+    if request.method == "POST":
         email = request.POST["email"]
         password = request.POST["password"]
         user = auth.authenticate(email=email, password=password)
         if user is not None:
             auth.login(request, user)
-            if request.user.role == 'CO':
-                ed_center_id = user.education_centers.first().id
-                return HttpResponseRedirect(reverse("ed_center_application", kwargs={'ed_center_id': ed_center_id}))
-            return HttpResponseRedirect(reverse("admin:index"))
-        else:
+        if user is None:
             message = "Неверный логин и/или пароль."
+
+    if request.user.is_authenticated:
+        if request.user.role == 'CO':
+            ed_center_id = request.user.education_centers.first().id
+            return HttpResponseRedirect(reverse(
+                "ed_center_application", 
+                kwargs={'ed_center_id': ed_center_id})
+            )
+        return HttpResponseRedirect(reverse("admin:index"))
 
     return render(request, "federal_empl_program/login.html", {
         "message": message,
@@ -111,11 +106,14 @@ def citizen_application(request):
             middle_name=middle_name,
             email=request.POST["email"],
             phone_number=request.POST["phone"],
-            birthday=request.POST["competence"],
+            competence=request.POST["competence"],
+            birthday=birthday,
             education_type=request.POST["education_type"],
             employment_status=request.POST["employment_status"],
             practice_time=request.POST["practice_time"],
-            planned_employment=request.POST["planned_employment"]
+            planned_employment=request.POST["planned_employment"],
+            consultation=consultation,
+            sex=sex
         )
         is_register = True
         
