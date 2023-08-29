@@ -291,7 +291,7 @@ class FedEmplSeleniumViewsTest(StaticLiveServerTestCase):
         options.headless = True
         driver = webdriver.Chrome(options=options)
 
-        driver.get('http://127.0.0.1:8000')
+        driver.get(self.live_server_url)
         assert "ЦОПП СО | Авторизация" in driver.title
 
         email_input = driver.find_element(By.NAME, 'email')
