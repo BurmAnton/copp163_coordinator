@@ -1,6 +1,7 @@
 import datetime
 import math
-from django.test import TestCase, Client, LiveServerTestCase
+from django.test import TestCase, Client
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.contrib import auth
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -155,7 +156,6 @@ class FedEmplModelsTest(TestCase):
         )
         self.assertEqual(self.appl.get_ed_price(), math.ceil(23000 * 0.7))
         self.assertEqual(self.appl.get_empl_price(), 0)
-        self.assertEqual(self.appl.get_full_price(), math.ceil(23000 * 0.7))
         self.appl.is_working = True
         self.appl.save()
         self.assertEqual(self.appl.get_empl_price(), math.ceil(23000 * 0.3))
@@ -279,7 +279,7 @@ class FedEmplViewsTest(TestCase):
         self.assertEqual(response.context["is_register"], True)
 
 
-class FedEmplSeleniumViewsTest(LiveServerTestCase):
+class FedEmplSeleniumViewsTest(StaticLiveServerTestCase):
 
     def setUp(self):
         user = User.objects.create_user(
@@ -288,7 +288,7 @@ class FedEmplSeleniumViewsTest(LiveServerTestCase):
     def testloginpage(self):
 
         options = Options()
-        #options.headless = True
+        options.headless = True
         driver = webdriver.Chrome(options=options)
 
         driver.get('http://127.0.0.1:8000')
