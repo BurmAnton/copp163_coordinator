@@ -22,7 +22,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: mysql
-        ports: ['3306:3306']
+        ports: ['8000:8000']
   
     steps:
     - uses: actions/checkout@v2
@@ -46,7 +46,7 @@ jobs:
         ALLOWED_HOSTS: "127.0.0.1 localhost"
         DEBUG: true
         STATIC_URL: '/copp163_coordinator/static/'
-        DBPORT: ${{ job.services.mysql.ports[3306] }}
+        DBPORT: ${{ job.services.mysql.ports[8000] }}
     - name: Run Tests
       run: |
         python manage.py test
@@ -60,4 +60,4 @@ jobs:
         ALLOWED_HOSTS: "127.0.0.1 localhost"
         DEBUG: true
         STATIC_URL: '/copp163_coordinator/static/'
-        DBPORT: ${{ job.services.mysql.ports[3306] }}
+        DBPORT: ${{ job.services.mysql.ports[8000] }}
