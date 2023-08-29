@@ -1,7 +1,11 @@
 import datetime
 import math
-from django.test import TestCase, Client
+from django.test import TestCase, Client, LiveServerTestCase
 from django.contrib import auth
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 
 from datetime import date
 from citizens.models import Citizen
@@ -273,3 +277,27 @@ class FedEmplViewsTest(TestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["is_register"], True)
+
+
+class FedEmplSeleniumViewsTest(LiveServerTestCase):
+
+    def setUp(self):
+        user = User.objects.create_user(
+            email='testuser@test.com', password='12345', is_staff=True)
+
+    def testloginpage(self):
+
+        options = Options()
+        options.headless = True
+        driver = webdriver.Chrome(options=options)
+
+        driver.get('http://127.0.0.1:8000')
+        assert "ЦОПП СО | Авторизация" in driver.title
+
+        email_input = driver.find_element(By.NAME, 'email')
+        password_input = driver.find_element(By.NAME,'password')
+        submit = driver.find_element(By.CLASS_NAME,'sign-button')
+        
+        email_input.send_keys('testuser@test.com')
+        password_input.send_keys('12345')
+        submit.send_keys(Keys.RETURN)
