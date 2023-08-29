@@ -288,7 +288,7 @@ class FedEmplSeleniumViewsTest(LiveServerTestCase):
     def testloginpage(self):
 
         options = Options()
-        options.headless = True
+        #options.headless = True
         driver = webdriver.Chrome(options=options)
 
         driver.get('http://127.0.0.1:8000')
