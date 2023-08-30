@@ -21,6 +21,7 @@ from .models import EdCenterQuotaRequest, Indicator, CitizenApplication,\
 
 # Models tests
 class FedEmplModelsTest(TestCase):
+
     def setUp(self):
         self.year = date.today().year
         self.req_num = 1
@@ -177,6 +178,7 @@ class FedEmplModelsTest(TestCase):
 
 # Views tests
 class FedEmplViewsTest(TestCase):
+
     def setUp(self):
         user = User.objects.create_user(
             email='testuser@test.com', password='12345', is_staff=True)
@@ -284,19 +286,17 @@ class FedEmplSeleniumViewsTest(StaticLiveServerTestCase):
     def setUp(self):
         user = User.objects.create_user(
             email='testuser@test.com', password='12345', is_staff=True)
-
-    def testloginpage(self):
-
         options = Options()
         options.headless = True
-        driver = webdriver.Chrome(options=options)
+        self.driver = webdriver.Chrome(options=options)
 
-        driver.get(self.live_server_url)
-        assert "ЦОПП СО | Авторизация" in driver.title
+    def test_login_page(self):
+        self.driver.get(self.live_server_url)
+        assert "ЦОПП СО | Авторизация" in self.driver.title
 
-        email_input = driver.find_element(By.NAME, 'email')
-        password_input = driver.find_element(By.NAME,'password')
-        submit = driver.find_element(By.CLASS_NAME,'sign-button')
+        email_input = self.driver.find_element(By.NAME, 'email')
+        password_input = self.driver.find_element(By.NAME,'password')
+        submit = self.driver.find_element(By.CLASS_NAME,'sign-button')
         
         email_input.send_keys('testuser@test.com')
         password_input.send_keys('12345')

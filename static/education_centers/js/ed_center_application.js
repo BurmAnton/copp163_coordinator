@@ -2,15 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.innerHTML = document.body.innerHTML.replace(/None/g, '');
     let stage = document.querySelector('.stage-h3').dataset.stage
     let user = document.querySelector('.stage-h3').dataset.user
-    if (stage != 'FLLNG' && stage != 'RWRK' && user === 'False') {
-        document.querySelectorAll('.modal-footer').forEach(footer =>{
-            if (stage == 'FNSHD' && footer.classList.contains('program-change')){
-                footer.querySelector('.btn-danger').remove();
-            }else{
-                footer.remove();
-            }
-        })
-    }
+
     window.history.replaceState(null, null, `?p=${document.querySelector('.project-btn.btn-primary').dataset.project}&s=${document.querySelector('.step-btn.btn-primary').dataset.step}`);
     document.querySelectorAll('.step-btn').forEach(step =>{
         step.addEventListener('click', (btn) => {

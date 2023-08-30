@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block body %}
-    {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
+    {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or center_project_year.stage == 'FNSHD' or user.is_superuser %}
         <div class="modal fade add-employee-modal" id="AddEmployeeModal" tabindex="-1" aria-labelledby="AddEmployeeModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -861,16 +861,20 @@
                                     <textarea class="form-control" id="NotesInput{{program.id}}" name="notes" rows="2">{{program.notes}}</textarea>
                                 </div>
                             </div>
-                            <div class="modal-footer program-change">
-                                <div class="d-grid gap-2">
-                                    <input style="display: block !important;" type="submit" class="btn btn-primary" name="change-program" value="Сохранить">
-                                </div>
-                            </form>
-                                <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
-                                    <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
-                                    <input type="submit" class="btn btn-danger" name="delete-program" value="Удалить">
+                            {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or center_project_year.stage == 'FNSHD' or user.is_superuser %}
+                                <div class="modal-footer program-change">
+                                    <div class="d-grid gap-2">
+                                        <input style="display: block !important;" type="submit" class="btn btn-primary" name="change-program" value="Сохранить">
+                                    </div>
                                 </form>
-                            </div>
+                                {% if center_project_year.stage != 'FNSHD' or user.is_superuser %}
+                                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                                        <input style="display: none;" type="input" name="program_id" value="{{program.id}}" required>
+                                        <input type="submit" class="btn btn-danger" name="delete-program" value="Удалить">
+                                    </form>
+                                {% endif %}
+                                </div>
+                            {% endif %}
                     </div>
                 </div>
             </div>
@@ -996,10 +1000,12 @@
                                     <input type="submit" class="btn btn-primary" name="change-workshop" value="Сохранить">
                                 </div>
                                 </form>
+                                {% if center_project_year.stage != 'FNSHD' or user.is_superuser %}
                                 <form action="" method="post">
                                     <input style="display: none;" type="input" name="workshop_id" value="{{workshop.id}}" required>
                                     <input type="submit" class="btn btn-danger" name="delete-workshop" value="Удалить">
                                 </form>
+                                {%endif%}
                             </div>
                     </div>
                 </div>
@@ -1024,11 +1030,13 @@
                 <a data-step="4" class="step-btn btn {%if stage == 4%}btn-primary{%else%}btn-outline-primary{%endif%}">Кадры</a>
                 <a data-step="5" class="step-btn btn {%if stage == 5%}btn-primary{%else%}btn-outline-primary{%endif%}">МТБ</a>
                 <a data-step="6" class="step-btn btn {%if stage == 6%}btn-primary{%else%}btn-outline-primary{%endif%}">Показатели</a>
-                <a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Квоты</a>
-                {% if project == 'bilet' and center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'DWNLD' or center_project_year.stage == 'FNSHD' %}
-                    <a data-step="8" class="step-btn btn {%if stage == 8%}btn-primary{%else%}btn-outline-primary{%endif%}">
-                        Документы
-                    </a>
+                {% if project == 'bilet' %}<a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Квоты</a>{% endif %}
+                {% if project == 'bilet' %}
+                    {% if center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'DWNLD' or center_project_year.stage == 'FNSHD'%}
+                        <a data-step="8" class="step-btn btn {%if stage == 8%}btn-primary{%else%}btn-outline-primary{%endif%}">
+                            Документы
+                        </a>
+                    {% endif %}
                 {% endif %}
             </div>
             <div class="generate-form">
@@ -1393,7 +1401,7 @@
                             <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                                 <button class="btn btn-outline-primary" name="export-programs">Скачать список программ в эксель</button>
                             </form>
-                            {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
+                            {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or center_project_year.stage == 'FNSHD' or user.is_superuser %}
                                 <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить программу</button>
                             {%endif%}
                         {%else%}
@@ -1507,7 +1515,7 @@
             <div class="collapse show" id="collapseTeachers">
                 <div class="table-hdr">
                     <h3>Список педагогов</h3>
-                    {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
+                    {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or center_project_year.stage == 'FNSHD' or user.is_superuser %}
                         <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddTeacherModal">Добавить педагога</button>
                     {% endif %}
                 </div>
@@ -1589,7 +1597,7 @@
             <div class="collapse show" id="collapseWorkshop">
                 <div class="table-hdr">
                     <h3>Список материально-технического обеспечения</h3>
-                    {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
+                    {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or center_project_year.stage == 'FNSHD' or user.is_superuser %}
                         <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddWorkshopModal">Добавить помещение</button>
                     {% endif %}
                 </div>
