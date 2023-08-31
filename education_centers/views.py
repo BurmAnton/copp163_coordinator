@@ -788,8 +788,8 @@ def ed_center_application(request, ed_center_id):
             )
         )
         programs = ed_center.programs.all().annotate(
-            num_teachers=Count('teachers'),
-            num_workshops=Count('workshops'),
+            num_teachers=Count('teachers', distinct=True),
+            num_workshops=Count('workshops', distinct=True),
         )
         
     workshops = Workshop.objects.filter(

@@ -9,7 +9,7 @@ from easy_select2 import select2_modelform
 from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter,\
       DropdownFilter, ChoiceDropdownFilter
 
-from .models import Workshop, EducationCenter, EducationProgram, Competence, \
+from .models import Teacher, Workshop, EducationCenter, EducationProgram, Competence, \
       Group, ContractorsDocument, DocumentType, BankDetails
 from federal_empl_program.models import Application, EducationCenterProjectYear, ProjectYear
 from citizens.models import Citizen, School
@@ -111,8 +111,8 @@ EducationProgramForm = select2_modelform(EducationProgram, attrs={'width': '400p
 @admin.register(EducationProgram)
 class EducationProgramAdmin(admin.ModelAdmin):
     form = EducationProgramForm
-    list_display = ['program_name', 'program_type', 'duration', 'competence']
-
+    list_display = ['program_name', 'program_type', 'duration', 'competence', 'ed_center']
+    filter_horizontal = ('teachers', 'workshops')
     list_filter = (
         ('program_type'),
         ('duration'),
