@@ -610,8 +610,9 @@ def ed_center_application(request, ed_center_id):
                 stage=6
             center_project_year.save()
         elif 'generate-application'in request.POST:
-           center_project_year.stage = 'FRMD'
-           center_project_year.save()
+           if center_project_year.stage != 'FNSHD':
+               center_project_year.stage = 'FRMD'
+               center_project_year.save()
            if 'bilet' in request.POST:
                doc_type = get_object_or_404(DocumentType, name="Заявка (БВБ)")
                old_applications = ContractorsDocument.objects.filter(
