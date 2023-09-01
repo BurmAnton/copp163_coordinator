@@ -1012,6 +1012,35 @@
             </div>
         {% endfor %}
     {% endif %}
+    <div class="modal fade generate-application-modal" id="GenerateApplicationModal" tabindex="-1" aria-labelledby="GenerateApplicationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="GenerateApplicationModalLabel">Генерация заявки</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                    <div class="modal-body">
+                        <div class="alert alert-warning w-90" role="alert">
+                            Если вы хотите сгенерировать заявку по всем программам, оставьте поле Программы пустым.
+                        </div>
+                        <div class="form mb-3 filter-selectpicker">
+                            <select class="selectpicker w-100" title="Программы" data-live-search="true" name="programs" multiple>
+                                {%for program in programs.all %}  
+                                    <option value="{{program.id}}">{{program.program_name}} ({{program.get_program_type_display}}, {{program.duration}}ч.)</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div> 
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <input type="submit" class="btn btn-primary" name="generate-application" value="Сохранить">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     
     <div class="page-hdr">
         <h1>Формирование заявки на ПКО</h1>
@@ -1042,16 +1071,19 @@
             <div class="generate-form">
                 <form action="{% url 'ed_center_application' ed_center.id %}" method="POST">
                     {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
-                    {% if user.is_superuser %}
+                    {% if user.is_superuser and project == 'bilet' %}
                         <input style="height: 100%;" type="submit" class="btn btn-primary" name="generate-application" value="Сгенерировать заявку">
                     {% else %}
                         {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' %}
                             <input style="height: 100%;" type="submit" class="btn btn-primary" name="send-application" value="Отправить на проверку">
-                        {% elif center_project_year.stage != 'FLLNG' and center_project_year.stage != 'RWRK' and center_project_year.stage != 'FLLD' %}
+                        {% elif project == 'bilet' and center_project_year.stage != 'FLLNG' and center_project_year.stage != 'RWRK' and center_project_year.stage != 'FLLD' %}
                             <input style="height: 100%;" type="submit" class="btn btn-primary" name="generate-application" value="Сгенерировать заявку">
                         {% endif %}
                     {% endif %}
                 </form>
+                {% if ser.is_superuser or project != 'bilet' and center_project_year.stage != 'FLLNG' and center_project_year.stage != 'RWRK' and center_project_year.stage != 'FLLD' %}
+                    <input style="height: 100%;" type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#GenerateApplicationModal" value="Сгенерировать заявку">
+                {% endif %}
             </div>
         </div>
         <div class="organization-step step" data-step="1" {% if stage == 1%}style="display:block;"{%else%}style="display:none;"{%endif%}>
