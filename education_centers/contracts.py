@@ -86,40 +86,66 @@ def combine_all_docx(filename_master,files_list, file_name):
         composer.append(doc_temp)
     composer.save(file_name)
 
-def create_application(center_project_year):
+def create_application(center_project_year, programs=None):
     ed_center = center_project_year.ed_center
-    contact_position = ProjectPosition.objects.get(position="Контактное лицо и администратор ЦО")
-    sign_position = ProjectPosition.objects.get(position="Должностное лицо, подписывающее договор")
-    resp_position = ProjectPosition.objects.get(position="Контакт, ответственный за заключение договора")
-    citizens_position = ProjectPosition.objects.get(position="Лицо, подписывающее договоры с гражданами")
-    programs_position =ProjectPosition.objects.get(position="Ответственный за формирование каталога программ")
-    programs = EducationProgram.objects.filter(ed_center=ed_center)
+    contact_position = ProjectPosition.objects.get(
+        position="Контактное лицо и администратор ЦО")
+    sign_position = ProjectPosition.objects.get(
+        position="Должностное лицо, подписывающее договор")
+    resp_position = ProjectPosition.objects.get(
+        position="Контакт, ответственный за заключение договора")
+    citizens_position = ProjectPosition.objects.get(
+        position="Лицо, подписывающее договоры с гражданами")
+    programs_position =ProjectPosition.objects.get(
+        position="Ответственный за формирование каталога программ")
+    if programs== None:
+        programs = EducationProgram.objects.filter(ed_center=ed_center)
     
     context = {
         'creation_date' : date_format(date.today(), 'd «E» Y г.'),
         'ed_center': ed_center,
         'is_federal': center_project_year.is_federal,
         'programs': programs,
-        'teachers': Teacher.objects.filter(organization=ed_center, programs__in=programs),
-        'contact_employee': EdCenterEmployeePosition.objects.get(ed_center=ed_center, position=contact_position),
-        'sign_employee': EdCenterEmployeePosition.objects.filter(ed_center=ed_center, position=sign_position).first(),
-        'resp_employee': EdCenterEmployeePosition.objects.get(ed_center=ed_center, position=resp_position),
-        'citizens_employee': EdCenterEmployeePosition.objects.get(ed_center=ed_center, position=citizens_position),
-        'programs_employee': EdCenterEmployeePosition.objects.filter(ed_center=ed_center, position=programs_position).first(),
-        'k1': EdCenterIndicator.objects.get(indicator__name="Общая численность лиц, прошедших обучение по программам ПО и/или ДПО, чел.", ed_center=ed_center),
-        'k2': EdCenterIndicator.objects.get(indicator__name="Из них численность лиц, занятых по виду деятельности и полученным трудовым функциям (профессиональным компетенциям) по завершению обучения, %.", ed_center=ed_center),
-        'k3': EdCenterIndicator.objects.filter(indicator__name="Количество реализованных программ ПО и/или ДПО организацией, осуществляющей образовательную деятельность, шт.", ed_center=ed_center).first(),
-        'k4': EdCenterIndicator.objects.get(indicator__name="Объем привлеченных средств, полученных от реализации программ ПО и/или ДПО, руб.", ed_center=ed_center),
-        'k5': EdCenterIndicator.objects.get(indicator__name="Опыт участия организации, осуществляющей образовательную деятельность в рамках Проекта, чел.", ed_center=ed_center),
-        'k6': EdCenterIndicator.objects.get(indicator__name="Опыт участия организации, осуществляющей образовательную деятельность в реализации мероприятий в федеральных, региональных проектах по профилю ПО и/или ДПО, в том числе в рамках Проекта, чел.", ed_center=ed_center),
-        'k7': EdCenterIndicator.objects.filter(indicator__name="Общая численность лиц, прошедших обучение с применением дистанционных образовательных технологий, чел.", ed_center=ed_center).first(),
-        'students': EdCenterIndicator.objects.get(indicator__name="Общая численность лиц, прошедших обучение по программам ПО и/или ДПО, чел.", ed_center=ed_center),
-        'count_programs': EdCenterIndicator.objects.filter(indicator__name="Количество реализованных программ ПО и/или ДПО организацией, осуществляющей образовательную деятельность, шт.", ed_center=ed_center).first(),
-        'distant': EdCenterIndicator.objects.filter(indicator__name="Общая численность лиц, прошедших обучение с применением дистанционных образовательных технологий, чел.", ed_center=ed_center).first(),
-        'partners': EdCenterIndicator.objects.get(indicator__name="Имеются соглашения о сотрудничестве с работодателями в рамках реализации программ профессионального обучения и дополнительного профессионального образования (укажите перечень индустриальных и(или) социальных партнёров):", ed_center=ed_center),
-        'experience_feds': EdCenterIndicator.objects.get(indicator__name="Имеется опыт участия организации в федеральных, региональных проектах по профилю профессионального обучения и дополнительного профессионального образования (укажите крупные проекты за 2021-2022 гг.):", ed_center=ed_center),
-        'experience_programs': EdCenterIndicator.objects.get(indicator__name="Имеется опыт участия организации в реализации программ профессионального обучения и дополнительного профессионального образования в сетевой форме (укажите перечень программ):", ed_center=ed_center),
-        'experience_other': EdCenterIndicator.objects.get(indicator__name="Укажите иную информацию по профилю профессионального обучения и дополнительного профессионального образования", ed_center=ed_center),
+        'teachers': Teacher.objects.filter(
+            organization=ed_center, programs__in=programs),
+        'contact_employee': EdCenterEmployeePosition.objects.get(
+            ed_center=ed_center, position=contact_position),
+        'sign_employee': EdCenterEmployeePosition.objects.filter(
+            ed_center=ed_center, position=sign_position).first(),
+        'resp_employee': EdCenterEmployeePosition.objects.get(
+            ed_center=ed_center, position=resp_position),
+        'citizens_employee': EdCenterEmployeePosition.objects.get(
+            ed_center=ed_center, position=citizens_position),
+        'programs_employee': EdCenterEmployeePosition.objects.filter(
+            ed_center=ed_center, position=programs_position).first(),
+        'k1': EdCenterIndicator.objects.get(
+            indicator__name="Общая численность лиц, прошедших обучение по программам ПО и/или ДПО, чел.", ed_center=ed_center),
+        'k2': EdCenterIndicator.objects.get(
+            indicator__name="Из них численность лиц, занятых по виду деятельности и полученным трудовым функциям (профессиональным компетенциям) по завершению обучения, %.", ed_center=ed_center),
+        'k3': EdCenterIndicator.objects.filter(
+            indicator__name="Количество реализованных программ ПО и/или ДПО организацией, осуществляющей образовательную деятельность, шт.", ed_center=ed_center).first(),
+        'k4': EdCenterIndicator.objects.get(
+            indicator__name="Объем привлеченных средств, полученных от реализации программ ПО и/или ДПО, руб.", ed_center=ed_center),
+        'k5': EdCenterIndicator.objects.get(
+            indicator__name="Опыт участия организации, осуществляющей образовательную деятельность в рамках Проекта, чел.", ed_center=ed_center),
+        'k6': EdCenterIndicator.objects.get(
+            indicator__name="Опыт участия организации, осуществляющей образовательную деятельность в реализации мероприятий в федеральных, региональных проектах по профилю ПО и/или ДПО, в том числе в рамках Проекта, чел.", ed_center=ed_center),
+        'k7': EdCenterIndicator.objects.filter(
+            indicator__name="Общая численность лиц, прошедших обучение с применением дистанционных образовательных технологий, чел.", ed_center=ed_center).first(),
+        'students': EdCenterIndicator.objects.get(
+            indicator__name="Общая численность лиц, прошедших обучение по программам ПО и/или ДПО, чел.", ed_center=ed_center),
+        'count_programs': EdCenterIndicator.objects.filter(
+            indicator__name="Количество реализованных программ ПО и/или ДПО организацией, осуществляющей образовательную деятельность, шт.", ed_center=ed_center).first(),
+        'distant': EdCenterIndicator.objects.filter(
+            indicator__name="Общая численность лиц, прошедших обучение с применением дистанционных образовательных технологий, чел.", ed_center=ed_center).first(),
+        'partners': EdCenterIndicator.objects.get(
+            indicator__name="Имеются соглашения о сотрудничестве с работодателями в рамках реализации программ профессионального обучения и дополнительного профессионального образования (укажите перечень индустриальных и(или) социальных партнёров):", ed_center=ed_center),
+        'experience_feds': EdCenterIndicator.objects.get(
+            indicator__name="Имеется опыт участия организации в федеральных, региональных проектах по профилю профессионального обучения и дополнительного профессионального образования (укажите крупные проекты за 2021-2022 гг.):", ed_center=ed_center),
+        'experience_programs': EdCenterIndicator.objects.get(
+            indicator__name="Имеется опыт участия организации в реализации программ профессионального обучения и дополнительного профессионального образования в сетевой форме (укажите перечень программ):", ed_center=ed_center),
+        'experience_other': EdCenterIndicator.objects.get(
+            indicator__name="Укажите иную информацию по профилю профессионального обучения и дополнительного профессионального образования", ed_center=ed_center),
     }
     
     doc_type = get_object_or_404(DocumentType, name="Заявка")

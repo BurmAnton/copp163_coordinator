@@ -610,26 +610,30 @@ def ed_center_application(request, ed_center_id):
                 stage=6
             center_project_year.save()
         elif 'generate-application'in request.POST:
-           if center_project_year.stage != 'FNSHD':
+            if center_project_year.stage != 'FNSHD':
                center_project_year.stage = 'FRMD'
                center_project_year.save()
-           if 'bilet' in request.POST:
+            if 'bilet' in request.POST:
                doc_type = get_object_or_404(DocumentType, name="Заявка (БВБ)")
                old_applications = ContractorsDocument.objects.filter(
                                         doc_type=doc_type, contractor=ed_center)
                old_applications.delete()
                document = create_ticket_application(center_project_year)
-           else:
-               doc_type = get_object_or_404(DocumentType, name="Заявка")
-               old_applications = ContractorsDocument.objects.filter(
-                                       doc_type=doc_type, contractor=ed_center)
-               old_applications.delete()
-               document = create_application(center_project_year)
-           
-           response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-           response['Content-Disposition'] = f'attachment; filename=zayavka_{date.today()}.docx'
-           document.save(response)
-           return response
+            else:
+                doc_type = get_object_or_404(DocumentType, name="Заявка")
+                programs = request.POST.getlist('programs')
+                old_applications = ContractorsDocument.objects.filter(
+                                    doc_type=doc_type, contractor=ed_center)
+                old_applications.delete()
+                if len(programs) == 0:
+                    document = create_application(center_project_year)
+                else:
+                    programs = EducationProgram.objects.filter(id__in=programs)
+                    document = create_application(center_project_year, programs)
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            response['Content-Disposition'] = f'attachment; filename=zayavka_{date.today()}.docx'
+            document.save(response)
+            return response
         elif 'set-quota' in request.POST:
             stage=7
             center_quota.quota_72 = request.POST['quota_72']
@@ -751,7 +755,6 @@ def ed_center_application(request, ed_center_id):
             id__in=center_project_year.programs.all()
         )
         center_quota = TicketQuota.objects.filter(ed_center=ed_center)
-        
     else:
         filled_positions = EdCenterEmployeePosition.objects.filter(
             ed_center=ed_center,
