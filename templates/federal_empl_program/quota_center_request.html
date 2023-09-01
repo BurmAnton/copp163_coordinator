@@ -17,18 +17,16 @@
     <div class="quota_72_table">
         <div class="table-hdr">
             <h3>Программы 72 часа</h3>
-            {% if ed_center_request.status != 'LCK'%}
-                <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
-                    <div class="form-floating mb-3 filter-selectpicker">
-                        <select class="selectpicker" data-width="100%" data-live-search="true" title="Программы" name="programs" multiple>
-                            {% for program in programs_72 %}
-                                <option value="{{program.id}}">{{program}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-outline-primary" name="add-programs">Добавить</button>
-                </form>
-            {% endif %}
+            <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
+                <div class="form-floating mb-3 filter-selectpicker">
+                    <select class="selectpicker" data-width="100%" data-live-search="true" title="Программы" name="programs" multiple>
+                        {% for program in programs_72 %}
+                            <option value="{{program.id}}">{{program}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-outline-primary" name="add-programs">Добавить</button>
+            </form>
         </div>
         <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
             <input style="display: none;" type="input" name="quota" value="72">
@@ -60,7 +58,7 @@
                     </tr>
                 {% endif %}
             </table>
-            {% if programs_quota_72.count != 0 and ed_center_request.status != 'LCK' %}
+            {% if programs_quota_72.count != 0 %}
                 <div class="save-quota-btn">
                     <button type="submit" class="btn btn-primary" name="set-quota">Сохранить квоту</button>
                 </div>
@@ -69,19 +67,17 @@
     </div>
     <div class="quota_144_table">
         <div class="table-hdr">
-            <h3>Программы 144 часа</h3>
-            {% if ed_center_request.status != 'LCK'%}
-                <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
-                    <div class="form-floating mb-3 filter-selectpicker">
-                        <select class="selectpicker" data-width="100%" data-live-search="true" title="Программы" name="programs" multiple>
-                            {% for program in programs_144 %}
-                                <option value="{{program.id}}">{{program}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-outline-primary" name="add-programs">Добавить</button>
-                </form>
-            {% endif %}
+        <h3>Программы 144 часа</h3>
+            <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
+                <div class="form-floating mb-3 filter-selectpicker">
+                    <select class="selectpicker" data-width="100%" data-live-search="true" title="Программы" name="programs" multiple>
+                        {% for program in programs_144 %}
+                            <option value="{{program.id}}">{{program}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-outline-primary" name="add-programs">Добавить</button>
+            </form>
         </div>
         <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
             <input style="display: none;" type="input" name="quota" value="144">
@@ -113,7 +109,7 @@
                     </tr>
                 {% endif %}
             </table>
-            {% if programs_quota_144.count != 0 and ed_center_request.status != 'LCK' %}
+            {% if programs_quota_144.count != 0 %}
                 <div class="save-quota-btn">
                     <button type="submit" class="btn btn-primary" name="set-quota">Сохранить квоту</button>
                 </div>
@@ -123,18 +119,16 @@
     <div class="quota_256_table">
         <div class="table-hdr">
             <h3>Программы 256 часа</h3>
-            {% if ed_center_request.status != 'LCK'%}
-                <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
-                    <div class="form-floating mb-3 filter-selectpicker">
-                        <select class="selectpicker" data-width="100%" data-live-search="true" title="Программы" name="programs" multiple>
-                            {% for program in programs_256 %}
-                                <option value="{{program.id}}">{{program}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-outline-primary" name="add-programs">Добавить</button>
-                </form>
-            {% endif %}
+            <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
+                <div class="form-floating mb-3 filter-selectpicker">
+                    <select class="selectpicker" data-width="100%" data-live-search="true" title="Программы" name="programs" multiple>
+                        {% for program in programs_256 %}
+                            <option value="{{program.id}}">{{program}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-outline-primary" name="add-programs">Добавить</button>
+            </form>
         </div>
         <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
             <input style="display: none;" type="input" name="quota" value="256">
@@ -166,7 +160,7 @@
                     </tr>
                 {% endif %}
             </table>
-            {% if programs_quota_256.count != 0 and ed_center_request.status != 'LCK' %}
+            {% if programs_quota_256.count != 0 %}
                 <div class="save-quota-btn">
                     <button type="submit" class="btn btn-primary" name="set-quota">Сохранить квоту</button>
                 </div>
@@ -194,11 +188,12 @@
                 <div class="alert alert-warning w-90" role="alert">
                     Для отправки запроса средняя стоимость программы в каждой из категорий (72ч, 144ч и 256ч) и средняя стоимость программы в заявке в целом должно быть ниже или равна указанным.
                 </div>
-            {% endif %}
-            {% if ed_center_request.status != 'LCK' %}
-                <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
-                    <button type="submit" class="btn btn-primary btn-request" name="send-request" {% if conditions == False %} disabled {% endif %}>Отправить запрос на проверку</button>
-                </form>
+            {% else %}
+                {% if ed_center_request.status != 'LCK' %}
+                    <form action="{% url 'quota_center_request' ed_center.id %}" method="post">
+                        <button type="submit" class="btn btn-primary btn-request" name="send-request" {% if conditions == False %} disabled {% endif %}>Отправить запрос на проверку</button>
+                    </form>
+                {% endif %}
             {% endif %}
         </div>
     </div>
