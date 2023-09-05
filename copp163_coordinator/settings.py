@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'djaa_list_filter',
     'mathfilters',
     'django_cleanup.apps.CleanupConfig'
 ]
