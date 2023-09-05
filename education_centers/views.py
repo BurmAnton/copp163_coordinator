@@ -56,13 +56,13 @@ def applications(request):
         project_year = get_object_or_404(TicketProjectYear, year=project_year)
         centers_project_year = EducationCenterTicketProjectYear.objects.filter(
             project_year=project_year,
-        )
+        ).select_related('ed_center')
         stages = EducationCenterTicketProjectYear.STAGES
     else:
         project_year = get_object_or_404(ProjectYear, year=project_year)
         centers_project_year = EducationCenterProjectYear.objects.filter(
             project_year=project_year
-        )
+        ).select_related('ed_center')
         project = 'zen'
         stages = EducationCenterProjectYear.STAGES
     
@@ -70,7 +70,9 @@ def applications(request):
     if request.method == "POST":
         if 'filter-events' in request.POST:
             chosen_stages = request.POST.getlist('stages')
-            centers_project_year = centers_project_year.filter(stage__in=chosen_stages)
+            if len(chosen_stages) != 0:
+                centers_project_year = centers_project_year.filter(
+                    stage__in=chosen_stages)
         else:
             data = json.loads(request.body.decode("utf-8"))
             stage = data['stage']

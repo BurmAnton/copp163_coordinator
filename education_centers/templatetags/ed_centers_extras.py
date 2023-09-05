@@ -4,6 +4,7 @@ from django.template.defaultfilters import stringfilter
 
 from education_centers.models import ContractorsDocument, DocumentType
 from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndicator
+from future_ticket.models import EducationCenterTicketProjectYear
 
 register = template.Library()
 

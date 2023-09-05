@@ -94,6 +94,9 @@ class TicketProgramAdmin(admin.ModelAdmin):
         'ed_center', 
         'education_form',
     ]
+    list_filter = (
+        ('status', ChoiceDropdownFilter),
+    )
 
     
 @admin.register(TicketFullQuota)
