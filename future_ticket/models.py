@@ -77,6 +77,8 @@ class AgeGroup(models.Model):
 
 
 class TicketProgram(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     ed_center = models.ForeignKey(
         EducationCenter, 
         verbose_name="Центр обучения", 

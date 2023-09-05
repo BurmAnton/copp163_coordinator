@@ -90,9 +90,11 @@ class TicketProgramAdmin(admin.ModelAdmin):
         'ed_center__short_name'
     ]
     list_display = [
-        'profession', 
+        'profession',
+        'updated_at', 
         'ed_center', 
         'education_form',
+        'created_at'
     ]
     list_filter = (
         ('status', ChoiceDropdownFilter),

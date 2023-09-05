@@ -9,9 +9,7 @@ from django.db import models
 
 from django.db.models import Sum, Avg
 from django.db.models.functions import Coalesce
-from djaa_list_filter.admin import (
-    AjaxAutocompleteListFilterModelAdmin,
-)
+
 from easy_select2 import select2_modelform
 from django_admin_listfilter_dropdown.filters import  RelatedDropdownFilter, ChoiceDropdownFilter, RelatedOnlyDropdownFilter, DropdownFilter
 from field_history.models import FieldHistory
@@ -101,7 +99,7 @@ class GrantAdmin(admin.ModelAdmin):
     ]
 
 @admin.register(Application)
-class ApplicationAdmin(AjaxAutocompleteListFilterModelAdmin):
+class ApplicationAdmin(admin.ModelAdmin):
     form = ApplicationForm
     
     readonly_fields = ['get_applicant', 'id', 'get_phone', 'get_email', 'get_city']
