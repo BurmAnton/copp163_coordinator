@@ -56,7 +56,7 @@ def applications(request):
         project_year = get_object_or_404(TicketProjectYear, year=project_year)
         centers_project_year = EducationCenterTicketProjectYear.objects.filter(
             project_year=project_year,
-        ).select_related('ed_center')
+        ).select_related('ed_center').annotate(centers_count = Count('id'))
         stages = EducationCenterTicketProjectYear.STAGES
     else:
         project_year = get_object_or_404(ProjectYear, year=project_year)
@@ -713,9 +713,14 @@ def ed_center_application(request, ed_center_id):
     schools = None
     ticket_programs = None
     professions = None
-    
+    workshops = Workshop.objects.filter(education_center=ed_center
+        ).exclude(name=None)
+    teachers = ed_center.teachers.all().annotate(
+        full_name=Concat('last_name', Value(' '), 'first_name', Value(' '), 'middle_name'))
     form = ImportTicketDataForm()
     if project == 'bilet':
+        workshops = workshops.prefetch_related('ticket_programs')
+        teachers = teachers.prefetch_related('ticket_programs')
         filled_positions = TicketEdCenterEmployeePosition.objects.filter(
             ed_center=ed_center,
         )
@@ -744,7 +749,12 @@ def ed_center_application(request, ed_center_id):
                 ).values('free_form_value')[:1]
             )
         )
-        programs = center_project_year.programs.all()
+        programs = center_project_year.programs.all(
+            ).prefetch_related('age_groups', 'disability_types'
+            ).select_related('author', 'author__teacher', 'profession', 'ed_center', 'profession__prof_enviroment').annotate(
+            author_name=Concat('author__teacher__last_name', Value(' '), 'author__teacher__first_name', Value(' '), 
+                            'author__teacher__middle_name')
+        )
         ticket_programs = programs.values('id', 'profession__name',)
         professions = TicketProfession.objects.all().values(
             'id', 'name', 'prof_enviroment__name')
@@ -755,9 +765,15 @@ def ed_center_application(request, ed_center_id):
         approved_programs = TicketProgram.objects.filter(status='PRWD')
         approved_programs = approved_programs.exclude(
             id__in=center_project_year.programs.all()
+        ).prefetch_related('age_groups', 'disability_types').select_related(
+            'author', 'profession', 'ed_center', 'profession__prof_enviroment').annotate(
+            author_name=Concat('author__teacher__last_name', Value(' '), 'author__teacher__first_name', Value(' '), 
+                            'author__teacher__middle_name')
         )
         center_quota = TicketQuota.objects.filter(ed_center=ed_center)
     else:
+        workshops = workshops.prefetch_related('programs')
+        teachers = teachers.prefetch_related('programs')
         filled_positions = EdCenterEmployeePosition.objects.filter(
             ed_center=ed_center,
         )
@@ -793,22 +809,18 @@ def ed_center_application(request, ed_center_id):
                 ).values('free_form_value')[:1]
             )
         )
-        programs = ed_center.programs.all().annotate(
-            num_teachers=Count('teachers', distinct=True),
-            num_workshops=Count('workshops', distinct=True),
-        )
+        programs = ed_center.programs.all().select_related(
+                'competence' 
+            ).annotate(
+                num_teachers=Count('teachers', distinct=True),
+                num_workshops=Count('workshops', distinct=True),
+            )
         
-    workshops = Workshop.objects.filter(
-        education_center=ed_center).exclude(name=None)
-    competencies = Competence.objects.filter(is_irpo=True)
+    competencies = Competence.objects.filter(is_irpo=True).values('id', 'title')
     employees = ed_center.employees.all().annotate(
             full_name=Concat('last_name', Value(' '), 'first_name', Value(' '), 
                             'middle_name')
         )
-    teachers = ed_center.teachers.all().annotate(
-        full_name=Concat('last_name', Value(' '), 'first_name', Value(' '), 
-                        'middle_name')
-    )
     prof_enviroments = ProfEnviroment.objects.all().values('id', 'name')
 
     disability_types = DisabilityType.objects.all().values('id', 'name')
