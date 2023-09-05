@@ -186,7 +186,7 @@
                                                     <td scope="row"><label for="BankProgram{{program.id}}">{{program.profession}}</label></td>
                                                     <td scope="row">{{program.profession.prof_enviroment}}</td>
                                                     <td scope="row">{{program.description}}</td>
-                                                    <td scope="row">{{program.author.teacher.last_name}} {{program.author.teacher.first_name}} {{program.author.teacher.middle_name}}</td>
+                                                    <td scope="row">{{program.author_name}}</td>
                                                     <td scope="row">
                                                         {% if program.program_link != None and program.program_link != "" %}
                                                             <a href="{{program.program_link}}" target="_blank">программа</a>
@@ -523,7 +523,7 @@
                                 </div>
                                 <div class="form mb-3 filter-selectpicker">
                                     <select class="selectpicker w-100" title="Автор" data-live-search="true" name="teacher_id" required>
-                                        <option selected value="{{program.author.teacher.id}}">{{program.author.teacher.first_name}} {{program.author.teacher.middle_name}} {{program.author.teacher.last_name}}</option>
+                                        <option selected value="{{program.author.teacher.id}}">{{program.author_name}}</option>
                                         {% for teacher in teachers %}
                                             <option value="{{teacher.id}}">{{teacher.full_name}}</option>
                                         {% endfor %}
