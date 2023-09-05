@@ -30,8 +30,9 @@ def quotas(request):
     if request.method == 'POST':
         for quota in TicketQuota.objects.exclude(value=0):
            approved_value = request.POST[f'{quota.id}']
-           quota.approved_value = approved_value
-           quota.save()
+           if int(approved_value) != quota.approved_value:
+                quota.approved_value = approved_value
+                quota.save()
     project_year = get_object_or_404(TicketProjectYear, year=2023)
     centers_project_year = EducationCenterTicketProjectYear.objects.filter(
         project_year=project_year
@@ -74,7 +75,9 @@ def quotas(request):
         quota_stat_all['approved_federal_quota'] += federal_quota['approved_value__sum']
         quota_stat_all['approved_none_federal_quota'] += none_federal_quota['approved_value__sum']
     full_quota = get_object_or_404(TicketFullQuota, project_year=project_year)
-    quotas = TicketQuota.objects.exclude(value=0)
+    quotas = TicketQuota.objects.exclude(value=0).select_related(
+        'quota', 'ed_center', 'school', 'profession'
+    )
     ed_centers = EducationCenter.objects.exclude(ticket_quotas=None)
     schools = School.objects.exclude(ticket_quotas=None)
 
