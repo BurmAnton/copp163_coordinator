@@ -3,7 +3,7 @@
 {% load fed_extras %}
 {% block title %}Заявка на квоту{% endblock %}
 {% block style %}
-        <link href="{% static 'federal_empl_program/css/quota_center_request.css' %}" rel="stylesheet">
+        <link href="{% static 'federal_empl_program/css/quota_request.css' %}" rel="stylesheet">
 {% endblock %}
 {% block script %}
         <script src="{% static 'federal_empl_program/js/quota_request.js' %}"></script>
@@ -14,6 +14,25 @@
         <h1>Запрос квоты. ФП «Содействие занятости»</h1>
         <h2>Статус: {{quota_request.get_status_display}}</h2>
     </div>
+    <div class="control-panel">
+        <div class="control-panel-hdr">
+            <h3>Фильтр</h3>
+        </div>
+        <div class="form mb-3">
+            <select class="selectpicker" title="Выберите ЦО" multiple data-width="100%" onchange="FilterFunction(0, 'centers')" data-live-search="true" name="center" id="centers" required>
+                {% for ed_center in ed_centers %}
+                    <option class="center" value="{{ed_center.ed_center__short_name}}">{{ed_center.ed_center__short_name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form mb-3">
+            <select class="selectpicker" title="Выберите программы" multiple data-width="100%" onchange="FilterFunction(1, 'programs')" data-live-search="true" name="program" id="programs" required>
+                {% for program in programs %}
+                    <option class="program" value="{{program}}">{{program}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
     <div class="quota_72_table">
         <div class="table-hdr">
             <h3>Программы 72 часа</h3>
@@ -21,7 +40,7 @@
         <form action="{% url 'quota_request' %}" method="post">
             <input style="display: none;" type="input" name="quota" value="72">
             <table class="table table-72">
-                <tr>
+                <tr class="sticky-top" style="background-color: white;"> 
                     <th scope="col" class="th-hdr">Центр обучения</th>
                     <th scope="col" class="th-hdr">Название программы</th>
                     <th scope="col" class="th-hdr">Стоимость программы</th>
@@ -66,7 +85,7 @@
         <form action="{% url 'quota_request' %}" method="post">
             <input style="display: none;" type="input" name="quota" value="144">
             <table class="table table-144">
-                <tr>
+                <tr class="sticky-top" style="background-color: white;">
                     <th scope="col" class="th-hdr">Центр обучения</th>
                     <th scope="col" class="th-hdr">Название программы</th>
                     <th scope="col" class="th-hdr">Стоимость программы</th>
@@ -111,7 +130,7 @@
         <form action="{% url 'quota_request' %}" method="post">
             <input style="display: none;" type="input" name="quota" value="256">
             <table class="table table-256">
-                <tr>
+                <tr class="sticky-top" style="background-color: white;">
                     <th scope="col" class="th-hdr">Центр обучения</th>
                     <th scope="col" class="th-hdr">Название программы</th>
                     <th scope="col" class="th-hdr">Стоимость программы</th>
