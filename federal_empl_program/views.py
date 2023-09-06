@@ -331,6 +331,9 @@ def quota_request(request):
     quota_request = QuotaRequest.objects.first()
     ed_centers_requests = EdCenterQuotaRequest.objects.filter(
         request=quota_request).exclude(status='DRFT')
+    ed_centers = EducationCenterProjectYear.objects.filter(
+        quota_requests__in=ed_centers_requests
+    ).distinct().values('ed_center__id', 'ed_center__short_name')
     
     programs_quota = ProgramQuotaRequest.objects.filter(
         ed_center_request__in=ed_centers_requests).exclude(price=0).exclude(
@@ -340,6 +343,9 @@ def quota_request(request):
         program__duration__gt=72, program__duration__lte=144
     )
     programs_quota_256 = programs_quota.filter(program__duration__gt=144)
+    programs = EducationProgram.objects.filter(
+        quota_requests__in=programs_quota
+    ).distinct()
     
     if 'set-quota' in request.POST:
         quota = request.POST['quota']
@@ -360,4 +366,6 @@ def quota_request(request):
         'programs_quota_72': programs_quota_72,
         'programs_quota_144': programs_quota_144,
         'programs_quota_256': programs_quota_256,
+        'ed_centers': ed_centers,
+        'programs': programs
     })
