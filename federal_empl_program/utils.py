@@ -1,8 +1,10 @@
+import os
 import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
 
 import numpy as np
+from openpyxl import Workbook, load_workbook
 
 def get_graph():
     buffer = BytesIO()
@@ -55,3 +57,35 @@ def get_applications_plot(month, applications):
     plt.tight_layout()
     graph = get_graph()
     return graph
+
+
+def count_levels(directory_path):
+    levels_values = []
+    for filename in os.listdir(directory_path):
+        f = os.path.join(directory_path, filename)
+        if '.xlsx' not in filename:
+            print(filename)
+        elif os.path.isfile(f):
+            workbook = load_workbook(f)
+            sheet = workbook.active
+            sheet_values = []
+            sheet_values.append(sheet.cell(row = 5, column = 3).value)
+            sheet_values.append(sheet.cell(row = 7, column = 3).value)
+            sheet_values.append(sheet.cell(row = 8, column = 3).value)
+            sheet_values.append(sheet.cell(row = 9, column = 3).value)
+            sheet_values.append(filename)
+            levels_values.append(sheet_values)
+            
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Сводная уровней школ"
+    ws.cell(row=1, column=1, value="Название школы")
+    ws.cell(row=1, column=2, value="Базовый")
+    ws.cell(row=1, column=3, value="Основной")
+    ws.cell(row=1, column=4, value="Продвинутый")
+    ws.cell(row=1, column=5, value="Название файла")
+    for row_number, sheet in enumerate(levels_values, start=2):
+        for col_number, value in enumerate(sheet, start=1):
+            ws.cell(row=row_number, column=col_number, value=value)
+    wb.save('Сводная уровней школ.xlsx')

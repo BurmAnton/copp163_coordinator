@@ -27,10 +27,10 @@ def equalize_quotas(request):
 
 @csrf_exempt
 def quotas(request):
-    if request.method == 'POST':
+    if 'save-quotas' in request.POST:
         for quota in TicketQuota.objects.exclude(value=0):
-           approved_value = request.POST[f'{quota.id}']
-           if int(approved_value) != quota.approved_value:
+            approved_value = request.POST[f'{quota.id}']
+        if int(approved_value) != quota.approved_value:
                 quota.approved_value = approved_value
                 quota.save()
     project_year = get_object_or_404(TicketProjectYear, year=2023)
@@ -78,6 +78,8 @@ def quotas(request):
     quotas = TicketQuota.objects.exclude(value=0).select_related(
         'quota', 'ed_center', 'school', 'profession'
     )
+    if 'export-quotas' in request.POST:
+           return exports.qoutas(quotas)
     ed_centers = EducationCenter.objects.exclude(ticket_quotas=None)
     schools = School.objects.exclude(ticket_quotas=None)
 

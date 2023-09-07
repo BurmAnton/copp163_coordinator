@@ -159,4 +159,43 @@ def schools_applications(applications):
         )
     return response
         
+
+def qoutas(quotas):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Программы"
     
+    col_titles = [
+        "ЦО", 
+        "Тер. управление",
+        "Фед?",
+        "Запрос",
+        "Одобрено",
+        "Школа",
+        "Профессия"
+    ]
+    for col_number, col_title in enumerate(col_titles, start=1):
+        ws.cell(row=1, column=col_number, value=col_title)
+
+    for row, quota in enumerate(quotas, start=2):
+        if quota.is_federal: is_federal = 'Да'
+        else: is_federal = 'Нет'
+        ws.cell(row=row, column=1, value=quota.ed_center.short_name)
+        ws.cell(row=row, column=2, value=quota.school.get_territorial_administration_display())
+        ws.cell(row=row, column=3, value=is_federal)
+        ws.cell(row=row, column=4, value=quota.value)
+        ws.cell(row=row, column=5, value=quota.approved_value)
+        ws.cell(row=row, column=6, value=quota.school.name)
+        ws.cell(row=row, column=7, value=quota.profession.name)
+
+    wb.template = False
+    response = HttpResponse(
+        content=save_virtual_workbook(wb), 
+        content_type='application/vnd.openxmlformats-\
+        officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = "attachment; filename=" + \
+        escape_uri_path(
+            f'quotas_{datetime.now().strftime("%d/%m/%y %H:%M")}.xlsx'
+        )
+    return response

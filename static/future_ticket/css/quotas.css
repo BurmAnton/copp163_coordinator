@@ -47,6 +47,10 @@ body .ter-stat .table-hdr, body .quota-table .table-hdr {
   display: flex;
   justify-content: space-between;
 }
+body .ter-stat .table-hdr .table-ctrl, body .quota-table .table-hdr .table-ctrl {
+  display: flex;
+  gap: 15px;
+}
 body .ter-stat table, body .quota-table table {
   z-index: 100;
 }

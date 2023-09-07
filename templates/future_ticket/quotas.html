@@ -42,12 +42,18 @@
         </table>
     </div>
     <div class="collapse show quota-table" id="collapseQuotas">
-        <form action="{% url 'quotas' %}" method="post">
-            <div class="table-hdr">
-                <h3>Общий список квот</h3>
-                {% if user.is_superuser %}
-                    <button class="btn btn-primary" name="save-quotas">Сохранить</button>
-                {% endif %}
+        <div class="table-hdr">
+            <h3>Общий список квот</h3>
+            <div class="table-ctrl">
+                <form action="{% url 'quotas' %}" method="post">
+                    <button class="btn btn-outline-primary" name="export-quotas">Экспорт квот</button>
+                </form>
+                <form action="{% url 'quotas' %}" method="post">
+                    
+                    {% if user.is_superuser %}
+                        <button class="btn btn-primary" name="save-quotas">Сохранить</button>
+                    {% endif %}
+            </div>
             </div>
             <div class="control-panel">
                 <div class="input-group mb-3 table-search">
