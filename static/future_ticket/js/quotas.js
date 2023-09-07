@@ -25,18 +25,22 @@ function FilterFunction(col, filter_id) {
     setTimeout(function() {
         var input, filter, table, tr, td, i, txtValue;
         input = document.querySelector("#"+filter_id).parentElement.querySelector('button');
-        filter = input.title.split(', ');
+        filter = input.parentElement.getElementsByClassName('selected');
+        options = [];
+        Array.from(filter).forEach(input =>{
+            options.push(input.querySelector('.text').innerHTML)
+        })
         table = document.querySelector(".quotas-table");
         tr = table.getElementsByTagName("tr");
         
-        if (!filter[0].includes('Выберите')){
+        if (options.length != 0){
             if (col === 6){
                 for (i = 1; i < tr.length; i++) {
                     let display = "none"
                     td = tr[i].getElementsByTagName("td")[col];
                     if (td) {
                         td.querySelectorAll('div').forEach(div =>{
-                            if (filter.includes(div.innerHTML)) {
+                            if (options.includes(div.innerHTML)) {
                                 tr[i].classList.remove('disapear-'+filter_id);
                             }else{
                                 tr[i].classList.add('disapear-'+filter_id);
@@ -50,7 +54,7 @@ function FilterFunction(col, filter_id) {
                     td = tr[i].getElementsByTagName("td")[col];
                     if (td) {
                         txtValue = td.textContent || td.innerText;
-                        if (filter.includes(txtValue)) {
+                        if (options.includes(txtValue)) {
                             tr[i].classList.remove('disapear-'+filter_id);
                         }else{
                             tr[i].classList.add('disapear-'+filter_id);
