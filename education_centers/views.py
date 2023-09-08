@@ -762,7 +762,8 @@ def ed_center_application(request, ed_center_id):
             programs__in=programs).distinct().values(
             'id', 'name', 'prof_enviroment__name')
         schools = School.objects.all().values('id', 'name')
-        approved_programs = TicketProgram.objects.filter(status='PRWD')
+        approved_programs = TicketProgram.objects.filter(
+            status='PRWD', profession__is_federal=True)
         approved_programs = approved_programs.exclude(
             id__in=center_project_year.programs.all()
         ).prefetch_related('age_groups', 'disability_types').select_related(
