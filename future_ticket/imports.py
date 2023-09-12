@@ -55,7 +55,9 @@ def change_professions(form):
         return ['Import', 'IndexError']
     
     #Требуемые поля таблицы
-    fields_names = {"ID", "Слияние", "Название", "Среда", "Федеральная?"}
+    fields_names = {
+        "ID", "Слияние", "Название", "Среда", "Федеральная?", "Удалить"
+    }
     
     cheak_col_names = cheak_col_match(sheet, fields_names)
     if cheak_col_names[0] != True:
@@ -66,24 +68,35 @@ def change_professions(form):
     missing_fields = []
     errors = []
     changed_professions_count = 0
+    delete = 0
     for row in range(len(sheet_dict['ID'])):
         profession = change_profession(sheet_dict, row)
         if profession[0] == 'OK':
             if profession[1]:
-                changed_professions_count += 1
+                if profession[2] == "Delete": delete += 1
+                else: changed_professions_count += 1
         elif profession[0] == 'MissingField':
             missing_fields.append(profession)
         else: errors.append(profession)
-    return ['OK', changed_professions_count, missing_fields, errors]
+    return ['OK', changed_professions_count, missing_fields, errors, delete]
 
 def change_profession(sheet, row):
     missing_fields = []
 
     profession_id = sheet["ID"][row]
     profession = TicketProfession.objects.filter(id=profession_id)
+
     if len(profession) != 0: 
         profession = profession[0]
-    else: missing_fields.append("ID")
+    else: 
+        missing_fields.append("ID")
+        return ['MissingField', missing_fields, row + 2]
+
+    if sheet["Удалить"][row] == '1':
+        if len(profession.programs.all()) == 0:
+            profession.delete()
+            return ['OK', True, "Delete", row + 2]
+        return ['ProgramsAttached', profession, row + 2]
 
     name = sheet["Название"][row]
     if name != "" and name != None: name = name.strip()

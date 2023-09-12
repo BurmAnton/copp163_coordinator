@@ -149,7 +149,7 @@ def merge_ticket_professions(request):
             data = imports.change_professions(form)
             message = data
     
-    return render(request, "future_ticket/merge_programs.html", {
+    return render(request, "future_ticket/merge_professions.html", {
         'message': message,
         'form' : ImportDataForm(),
     })

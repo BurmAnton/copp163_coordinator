@@ -13,11 +13,14 @@
 {% block body %}
     <div class="modal-body">
         <div class="import-form">
-            <h2>Слияние программ (БВБ)</h2>
+            <h2>Слияние профессий (БВБ)</h2>
             {% if message != None %}
                 <div class="alert alert-success" role="alert">
-                    Программ изменено: {{message.1}}
-                </div> 
+                    Профессий изменено: {{message.1}}
+                </div>
+                <div class="alert alert-warning" role="alert">
+                    Профессий удалено: {{message.4}}
+                </div>
             {% endif %}
             <form enctype="multipart/form-data" action="{% url 'merge_ticket_professions' %}" method="post">
                 <div class="mb-3">
@@ -39,6 +42,11 @@
                 {% if error.0 == 'FailedMerge' %}
                     <div class="alert alert-danger" role="alert">
                         В строке {{error.2}} ID для слияния не найдено.
+                    </div>
+                {% endif %}
+                {% if error.0 == 'ProgramsAttached' %}
+                    <div class="alert alert-danger" role="alert">
+                        Профессия в строке {{error.2}} не может быть удалена.
                     </div>
                 {% endif %}
             {% endfor %}
