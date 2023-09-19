@@ -114,19 +114,20 @@ def ed_center_application(request, ed_center_id):
         center_project_year = EducationCenterTicketProjectYear.objects.get_or_create(
                 project_year=project_year,ed_center=ed_center)[0]
         full_quota = get_object_or_404(TicketFullQuota, project_year=project_year)
+        if center_project_year.is_ndc:
+            contract_type = get_object_or_404(
+                DocumentTypeTicket, name="Договор с ЦО с НДС")
+        else:
+            contract_type = get_object_or_404(
+                DocumentTypeTicket, name="Договор с ЦО без НДС")
         if center_project_year.stage == 'FNSHD':
             form = ImportTicketContractForm()
-            if center_project_year.is_ndc:
-                contract_type = get_object_or_404(
-                DocumentTypeTicket, name="Договор с ЦО с НДС")
-            else:
-                contract_type = get_object_or_404(
-                    DocumentTypeTicket, name="Договор с ЦО без НДС")
             contract = ContractorsDocumentTicket.objects.filter(
                 doc_type=contract_type,
                 contractor=ed_center
             )
-            if len(contract) == 1: contract = contract[0]
+            if len(contract) == 1: 
+                contract = contract[0]
             else: 
                 contract = generate_document_ticket(
                     center_project_year, contract_type)
@@ -137,6 +138,15 @@ def ed_center_application(request, ed_center_id):
         center_quota = None
     
     if request.method == "POST":
+        if 'download-contract' in request.POST:
+                if contract != None:
+                    register_number = contract.register_number
+                else: register_number = None
+                document = generate_document_ticket(center_project_year, contract_type, register_number, True)
+                response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+                response['Content-Disposition'] = f'attachment; filename=zayavka_{date.today()}.docx'
+                document.save(response)
+                return response
         if 'add-employee' in request.POST:
             stage=2
             last_name = request.POST['last_name'].strip().capitalize()
@@ -187,7 +197,7 @@ def ed_center_application(request, ed_center_id):
                 position = get_object_or_404(ProjectPosition, id=position_id)
                 employee_position = EdCenterEmployeePosition(
                     position=position,
-                    ed_center=ed_center,
+                    ed_center=edownload-contractd_center,
                     employee=employee
                 )
             if position.is_basis_needed:

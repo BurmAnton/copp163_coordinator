@@ -21,15 +21,15 @@ def get_document_number(doc_type, contractor=None, parent_doc=None):
         #previous_docs = previous_docs.filter(parent_doc=parent_doc)
     return len(previous_docs) + 1
 
-def generate_document_ticket(center_year, doc_type):
+def generate_document_ticket(center_year, doc_type, register_number=None, download=False):
     project_year = center_year.project_year
     ed_center = center_year.ed_center
     sign_position = TicketProjectPosition.objects.get(
         position="Должностное лицо, подписывающее договор")
     sign_employee = TicketEdCenterEmployeePosition.objects.get(
         ed_center=ed_center, position=sign_position)
-    
-    register_number=get_document_number(doc_type)
+    if register_number == None:
+        register_number = get_document_number(doc_type)
     context = {
         'register_number': register_number,
         'ed_center': ed_center,
@@ -45,6 +45,9 @@ def generate_document_ticket(center_year, doc_type):
     if not os.path.exists(path): os.makedirs(path)
 
     contract_path = f'{path}/contract_bvb_№{register_number}.docx'
+    
+    if download:
+        return document
     document.save(contract_path)
 
     contract, is_new = ContractorsDocumentTicket.objects.get_or_create(
