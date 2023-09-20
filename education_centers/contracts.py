@@ -98,7 +98,7 @@ def create_application(center_project_year, programs=None):
         position="Лицо, подписывающее договоры с гражданами")
     programs_position =ProjectPosition.objects.get(
         position="Ответственный за формирование каталога программ")
-    if programs== None:
+    if programs == None:
         programs = EducationProgram.objects.filter(ed_center=ed_center)
     
     context = {
@@ -147,9 +147,13 @@ def create_application(center_project_year, programs=None):
         'experience_other': EdCenterIndicator.objects.get(
             indicator__name="Укажите иную информацию по профилю профессионального обучения и дополнительного профессионального образования", ed_center=ed_center),
     }
-    
-    doc_type = get_object_or_404(DocumentType, name="Заявка")
-    
+
+    if programs == None:
+        doc_type = get_object_or_404(DocumentType, name="Заявка")
+        document_name = "заявка_ПКО_СЗ"
+    else:
+        doc_type = get_object_or_404(DocumentType, name="Заявка на доп. программы")
+        document_name = "заявка_ПКО_СЗ_доп"
     document = DocxTemplate(doc_type.template)
     document.render(context)
 
@@ -157,7 +161,7 @@ def create_application(center_project_year, programs=None):
     isExist = os.path.exists(path)
     if not isExist:
         os.makedirs(path)
-    document_name = "заявка_ПКО_СЗ"
+    
     path_to_contract = f'{path}/{document_name}.docx'
     document.save(path_to_contract)
     contract = ContractorsDocument(
