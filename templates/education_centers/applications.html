@@ -72,6 +72,9 @@
                 {% endif %}
                 <th scope="col">ЦО</th>
                 <th scope="col">Статус</th>
+                {% if project == 'bilet' %}
+                    <th scope="col">Ссылка на упр. квотой</th>
+                {% endif %}
             </tr>
             {%for center in centers_project_year %}
                 <tr class="center-row">
@@ -96,6 +99,13 @@
                        {% endif %}
                     </td>
                     <td scope="row">{{ center.get_stage_display }}</td>
+                    {% if project == 'bilet' %}
+                    <td scope="row">
+                        <a href="{% url 'ticket_center_events' center.ed_center.id %}" target="_blank">
+                            Ссылка
+                        </a>  
+                    </td>
+                {% endif %}
                 </tr>
             {% endfor %}
         </table>

@@ -1878,6 +1878,7 @@
                     </form>
                     
                     <h3>Загрузить скан договора</h3>
+                    <a class="btn btn-outline-primary " href="{{contract.doc_file.url}}">Скачать скан договора</a>
                     <form action="{% url 'ed_center_application' ed_center.id %}" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             {% csrf_token %}
