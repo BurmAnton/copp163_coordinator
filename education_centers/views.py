@@ -1,5 +1,7 @@
 from datetime import date, datetime
 import json
+import unidecode
+
 from django.utils.formats import date_format
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
@@ -717,6 +719,7 @@ def ed_center_application(request, ed_center_id):
             form = ImportTicketDataForm(request.POST, request.FILES)
             if form.is_valid():
                 contract.doc_file = request.FILES['import_file']
+                contract.doc_file.name = unidecode.unidecode(contract.doc_file.name)
                 contract.save()
     approved_programs = None
     chosen_professions = None
