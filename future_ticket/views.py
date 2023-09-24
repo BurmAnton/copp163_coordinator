@@ -1,18 +1,20 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
+from django.forms import IntegerField
+import pandas
 from transliterate import translit
 
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from citizens.models import School
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Case, When
 from education_centers.forms import ImportSchoolOrderDataForm, ImportTicketDataForm
 from education_centers.models import EducationCenter
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 
-from future_ticket.models import DocumentTypeTicket, EducationCenterTicketProjectYear, SchoolProjectYear,\
-                                 TicketFullQuota, TicketProjectYear, TicketQuota
+from future_ticket.models import DocumentTypeTicket, EducationCenterTicketProjectYear, EventsCycle, QuotaEvent, SchoolProjectYear, TicketEvent,\
+                                 TicketFullQuota, TicketProfession, TicketProjectYear, TicketQuota
 
 from .forms import ImportDataForm
 from . import imports, exports
@@ -30,7 +32,7 @@ def quotas(request):
     if 'save-quotas' in request.POST:
         for quota in TicketQuota.objects.exclude(value=0):
             approved_value = request.POST[f'{quota.id}']
-        if int(approved_value) != quota.approved_value:
+            if int(approved_value) != quota.approved_value:
                 quota.approved_value = approved_value
                 quota.save()
     project_year = get_object_or_404(TicketProjectYear, year=2023)
@@ -210,3 +212,76 @@ def schools_applications(request):
     return render(request, "future_ticket/schools_applications.html", {
         'schools': schools
     })
+
+
+def events(request):
+    pass
+
+@csrf_exempt
+def center_events(request, ed_center_id):
+    project_year = datetime.now().year
+    project_year = get_object_or_404(TicketProjectYear, year=project_year)
+    center_year = get_object_or_404(
+        EducationCenterTicketProjectYear, 
+        ed_center=ed_center_id, project_year=project_year
+    )
+    if request.method == 'POST':
+        if 'add-event' in request.POST:
+            cycle = EventsCycle.objects.get(id=request.POST["cycle_id"])
+            profession = TicketProfession.objects.get(id=request.POST["profession_id"])
+            event_date = request.POST["event_date"]
+            TicketEvent.objects.create(
+                ed_center=center_year,
+                cycle=cycle,
+                profession=profession,
+                event_date=datetime.strptime(event_date, "%d.%m.%Y"),
+                status="CRTD"
+            )
+        if 'delete-event' in request.POST:
+            event = TicketEvent.objects.get(id=request.POST["event_id"])
+            event.delete()
+        if 'assign-quota' in request.POST:
+            event = TicketEvent.objects.get(id=request.POST["event_id"])
+            quota = TicketQuota.objects.get(id=request.POST["quota_id"])
+            reserved_quota = int(request.POST["reserved_quota"])
+            event_quota = QuotaEvent.objects.create(
+                event=event,
+                quota=quota,
+                reserved_quota=reserved_quota
+            )
+            quota.reserved_quota += reserved_quota
+            quota.save()
+            double_quotas = QuotaEvent.objects.filter(
+                event=event,
+                quota=quota,
+            ).exclude(id=event_quota.id)
+            if len(double_quotas) != 0:
+                reserved_quota = 0
+                for double_quota in double_quotas:
+                    reserved_quota += double_quota.reserved_quota
+                event_quota.reserved_quota += reserved_quota
+                quota.reserved_quota += reserved_quota
+                quota.save()
+                event_quota.save()
+                double_quota.delete()
+        return HttpResponseRedirect(reverse(
+            "ticket_center_events", args=[ed_center_id]))
+    cycles = EventsCycle.objects.filter(project_year=project_year).annotate(
+            center_events_count=Count(
+                Case(When(events__ed_center=center_year, then=1),
+                    output_field=IntegerField()),)
+    ).prefetch_related('events')
+    quotas = TicketQuota.objects.filter(ed_center=center_year.ed_center).exclude(
+        approved_value=0
+    )
+    professions = TicketProfession.objects.filter(
+        quotas__in=quotas
+    ).distinct()
+
+    return render(request, "future_ticket/center_events.html", {
+        'center_year': center_year,
+        'cycles': cycles,
+        'quotas': quotas,
+        'professions': professions,
+    })
+

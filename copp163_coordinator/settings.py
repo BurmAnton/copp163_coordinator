@@ -39,6 +39,10 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/1"
+CELERY_TIMEZONE = 'Europe/Samara'
+
 # Application definition
 
 INSTALLED_APPS = [

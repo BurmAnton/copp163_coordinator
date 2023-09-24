@@ -60,3 +60,4 @@ def generate_document_ticket(center_year, doc_type, register_number=None, downlo
     contract.save()
 
     return contract
+

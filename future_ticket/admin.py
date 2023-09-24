@@ -2,7 +2,7 @@ from django.contrib import admin
 from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter,\
       DropdownFilter, ChoiceDropdownFilter
 
-from .models import AgeGroup, ContractorsDocumentTicket, DocumentTypeTicket, \
+from .models import AgeGroup, ContractorsDocumentTicket, DocumentTypeTicket, EventsCycle, \
     ProfEnviroment, ProgramAuthor, SchoolProjectYear, TicketFullQuota, \
     TicketProfession, TicketProgram, TicketProjectYear, \
     EducationCenterTicketProjectYear, TicketProjectPosition, \
@@ -133,12 +133,16 @@ class TicketQuotaAdmin(admin.ModelAdmin):
         'profession', 
         'is_federal',
         'value',
-        'quota'
+        'approved_value',
+        'free_quota',
+        'quota',
+        
     ]
 
 @admin.register(DocumentTypeTicket)
 class DocumentTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'stage']
+
 
 @admin.register(ContractorsDocumentTicket)
 class ContractorsDocumentAdmin(admin.ModelAdmin):
@@ -156,3 +160,10 @@ class ContractorsDocumentAdmin(admin.ModelAdmin):
         ('contractor', RelatedOnlyDropdownFilter),
         ('doc_stage', ChoiceDropdownFilter)
     )
+
+
+@admin.register(EventsCycle)
+class EventsCycleAdmin(admin.ModelAdmin):
+    list_display = ['start_period_date', 'end_period_date', 'status', 'end_reg_date']
+
+    
