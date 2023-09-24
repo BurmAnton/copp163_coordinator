@@ -1,0 +1,205 @@
+body
+    background-color: #f2f2f28a
+    h2 
+        font-size: 24px
+        text-align: center
+    h3
+        font-size: 20px
+        padding-left: 10px
+        margin: 0
+    .disapear
+        display: none
+    .page-hdr
+        margin-top: 25px
+        display: grid
+        justify-content: center
+        justify-items: center
+    .cycle-info, .quotas-list
+        display: flex
+        flex-direction: column
+        justify-content: center
+        width: 85%
+        margin: auto
+        margin-top: 25px
+        margin-bottom: 25px
+        border-radius: 12px
+        background-color: white
+        box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078)
+        padding: 25px 50px 25px 50px
+    .cycle-info
+        .cycle-events-stat
+            display: flex
+            justify-content: space-between
+            align-items: center
+            p
+                margin: 0
+        .cycle-events
+            margin-top: 20px
+            display: flex
+            gap: 15px 25px
+            flex-wrap: wrap
+            .event-card
+                display: flex
+                flex-direction: column
+                justify-content: space-between
+                min-width: 300px
+                max-width: 500px
+                background-color: #f2f2f2
+                color: #394959
+                border-radius: 10px
+                .event-card-hdr, .event-card-body, .event-card-footer
+                    padding: 8px 15px
+                    p
+                        margin-bottom: 3px
+                    .field
+                        font-weight: 500
+                .event-card-body
+                    min-height: 100px
+                    height: 100%
+                .event-card-hdr
+                    display: flex
+                    justify-content: space-between
+                    font-size: 18px
+                    font-weight: 400
+                    border-bottom: 2px solid #394959
+                    .edit-icon
+                        width: 30px
+                        height: 30px
+                        border-radius: 100px
+                        background-color: #e3e3e3
+                        display: flex
+                        align-items: center
+                        justify-content: center
+                        img
+                            width: 21px
+                    .edit-icon.selected
+                        background-color: white
+                .event-card-footer
+                    display: flex
+                    flex-direction: column
+                    gap: 15px
+                    border-top: 1px solid #394959
+                    .btn
+                        width: 100%
+                        background-color: white
+                        font-weight: 500
+    .quotas-list, .cycle-events
+        table
+            th
+                color: #394959
+                font-weight: 400 !important
+                font-size: 16px
+                line-height: 20px
+                border-top: 0
+                border-bottom: 2px solid #394959
+            .sticky-top
+                z-index: 100 !important
+            td
+                color: #394959
+                font-weight: 300 !important
+                max-width: 250px
+                word-wrap: break-word
+            .th-cetner, .td-center
+                text-align: center
+            .th-rigth, .td-rigth
+                text-align: right
+        .quotas-table
+            th
+                vertical-align: middle
+            .quota-hdr-th
+                border: 0
+
+.timeline
+    list-style-type: none
+    display: flex
+    align-items: flex-start
+    justify-content: center
+.li
+    transition: all 200ms ease-in
+.registration, .start, .action
+    .timestamp
+        align-items: flex-end
+        padding: 0
+        .date
+           transform: translateX(20px)
+    .status
+        display: grid
+        grid-template-columns: auto auto auto
+        justify-content: space-between
+        padding: 15px 0px
+        .first
+            grid-column: 2
+        .second
+            grid-column: 3
+.registration
+    width: 40%
+    margin-right: 13px
+.start
+    width: 18%
+    margin-right: 13px
+.action
+    width: 35%
+
+.timestamp
+    margin-bottom: 20px
+    padding: 0px 40px
+    display: flex
+    flex-direction: column
+    align-items: center
+    font-weight: 300
+.status
+    padding: 15px 40px
+    display: flex
+    justify-content: center
+    border-top: 2px solid #e3e3e3
+    position: relative
+    transition: all 200ms ease-in  
+    span
+        font-weight: 400
+    &:before
+        content: ''
+        width: 25px
+        height: 25px
+        background-color: white
+        border-radius: 25px
+        border: 1px solid #ddd
+        position: absolute
+        top: -15px
+        left: 100%
+        transform: translateX(-12px)
+        transition: all 200ms ease-in 
+.li.in-progress
+    .status
+        border-top: 2px solid #394959
+        &:before
+            border: 2px solid #394959
+            transition: all 200ms ease-in 
+        span
+            color: #394959
+            font-weight: 400
+.li.complete
+    .status
+            border-top: 2px solid #394959
+            &:before
+                background-color: #394959
+                border: none
+                transition: all 200ms ease-in 
+            span
+                color: #394959
+                font-weight: 500
+
+@media (min-device-width: 320px) and (max-device-width: 700px)
+  .timeline
+        list-style-type: none
+        display: block
+  .li
+        transition: all 200ms ease-in
+        display: flex
+        width: inherit
+  .timestamp
+        width: 100px
+  .status
+        &:before
+            left: -8%
+            top: 30%
+            transition: all 200ms ease-in

@@ -1,11 +1,18 @@
+from datetime import date
+from django.utils import timezone
+import datetime
 from transliterate import translit
 
 from django.db import models
 from django.db.models.deletion import DO_NOTHING, CASCADE
 from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
+from django.db.models import Sum
 
 from citizens.models import School
+from copp163_coordinator import settings
 from education_centers.models import Competence, EducationProgram, \
                                      EducationCenter, Group, Employee, Workshop
 from users.models import DisabilityType
@@ -437,6 +444,18 @@ class TicketQuota(models.Model):
     is_federal = models.BooleanField("Федеральная?", default=False)
     value = models.IntegerField("Квота", default=0)
     approved_value = models.IntegerField("Одобренная квота", default=0)
+    reserved_quota = models.IntegerField("Зарезервированая квота", default=0)
+    completed_quota = models.IntegerField("Выполненная квота", default=0)
+    free_quota = models.IntegerField("Свободная квота", null=False, blank=True)
+
+    def __init__(self, *args, **kwargs):
+        super(TicketQuota, self).__init__(*args, **kwargs)
+        self.free_quota = self.approved_value - self.completed_quota\
+                        - self.reserved_quota
+
+    def save(self, *args, **kwargs):
+        self.free_quota = int(self.approved_value) - self.completed_quota - self.reserved_quota
+        super(TicketQuota, self).save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.profession} ({self.ed_center}, {self.school})'
@@ -585,3 +604,184 @@ class ContractorsDocumentTicket(models.Model):
 
     def __str__(self):
         return f'{self.doc_type} №{self.register_number} ({self.contractor.name})'
+
+
+class StudentBVB(models.Model):
+    bvb_id = models.IntegerField(
+        "ID БВБ", blank=False, null=False, db_index=True)
+    is_double = models.BooleanField("Дубликат?", default=False)
+    is_hidden = models.BooleanField("Скрыт?", default=False)
+    is_attend = models.BooleanField("Присутствовал?", default=False)
+
+    first_name = models.CharField(
+        "Имя", max_length=50, blank=False, null=False)
+    last_name = models.CharField(
+        "Фамилия", max_length=50, blank=False, null=False)
+    middle_name = models.CharField(
+        "Отчество", max_length=50, blank=True, null=True)
+    grade = models.CharField(
+        "Класс", max_length=50, blank=False, null=False)
+    school = models.ForeignKey(
+        School,
+        verbose_name="Школа", 
+        on_delete=CASCADE,
+        blank=False,
+        null=False
+    )
+    
+    class Meta:
+        verbose_name = "Студент"
+        verbose_name_plural = "Студенты"
+
+    def __str__(self):
+        return f'{self.bvb_id}'
+
+
+
+class EventsCycle(models.Model):
+    project_year = models.ForeignKey(
+        TicketProjectYear, 
+        verbose_name="Год проекта (БВБ)",
+        related_name="events_cycles",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    end_reg_date = models.DateField(
+        "Дата окончания регистрации", blank=False, null=False
+    )
+    start_period_date = models.DateField(
+        "Старт проведения мероприятий", blank=False, null=False
+    )
+    end_period_date = models.DateField(
+        "Конец проведения мероприятий", blank=False, null=False
+    )
+    STATUSES = [
+        ("REG", "Регистрация"),
+        ("CHCK", "Проверка и коррекция"),
+        ("HSTNG", "В процессе"),
+        ("END", "Завершено"),
+    ]
+    status = models.CharField(
+        "Статус", 
+        max_length=6, 
+        choices=STATUSES,
+        null=False,
+        blank=False,
+        default="REG"
+    )
+    def save(self, *args, **kwargs):
+        today = date.today()
+        if self.end_reg_date >= today: self.status = 'REG'
+        elif self.end_reg_date < today and self.start_period_date > today:
+            self.status = 'CHCK'
+        elif self.start_period_date <= today and self.end_period_date >= today:
+            self.status = 'HSTNG'
+        elif self.end_period_date < today: self.status='END'
+        super(EventsCycle, self).save(*args, **kwargs)
+    
+    class Meta:
+        verbose_name = "Цикл проб"
+        verbose_name_plural = "Циклы проб"
+
+    def __str__(self):
+        return f'{self.start_period_date} - {self.end_period_date}'
+
+
+class TicketEvent(models.Model):
+    ed_center = models.ForeignKey(
+        EducationCenterTicketProjectYear,
+        verbose_name="Центр обучения",
+        related_name="events",
+        on_delete=CASCADE,
+        blank=False,
+        null=False
+    )
+    profession = models.ForeignKey(
+        TicketProfession,
+        verbose_name="Профессия",
+        related_name="events",
+        on_delete=CASCADE,
+        blank=False,
+        null=False
+    )
+    cycle = models.ForeignKey(
+        EventsCycle,
+        verbose_name="Цикл",
+        related_name="events",
+        on_delete=CASCADE,
+        blank=False,
+        null=False
+    )
+    event_date = models.DateTimeField(
+        "Дата проведения", blank=False, null=False
+    )
+    participants_limit = models.IntegerField(
+        "Колво участников", blank=False, null=False, default=0
+    )
+    participants = models.ManyToManyField(
+        StudentBVB,
+        verbose_name="Участники",
+        related_name="events",
+        blank=True
+    )
+    STATUSES = [
+        ("CRTD", "Создана"),
+        ("LOAD", "Участники загружены"),
+        ("HSTD", "Проведенна"),
+        ("CHCKD", "Проверенна"),
+    ]
+    status = models.CharField(
+        "Статус", 
+        max_length=6, 
+        choices=STATUSES,
+        null=False,
+        blank=False,
+        default="CRTD"
+    )
+
+    class Meta:
+        verbose_name = "Профпроба"
+        verbose_name_plural = "Профпробы"
+
+    def __str__(self):
+        return f'{self.ed_center} ({self.profession}, {self.event_date})'
+    
+
+class QuotaEvent(models.Model):
+    quota = models.ForeignKey(
+        TicketQuota,
+        verbose_name="Квота",
+        related_name="events",
+        on_delete=CASCADE,
+        blank=False,
+        null=False
+    )
+    event = models.ForeignKey(
+        TicketEvent,
+        verbose_name="Квота",
+        related_name="quotas",
+        on_delete=CASCADE,
+        blank=False,
+        null=False
+    )
+    reserved_quota = models.IntegerField(
+        "Колво участников", blank=False, null=False
+    )
+
+    def save(self, *args, **kwargs):
+        super(QuotaEvent, self).save(*args, **kwargs)
+        participants_limit = QuotaEvent.objects.filter(event=self.event
+            ).aggregate(participants_limit=Sum("reserved_quota")
+            )['participants_limit']
+        self.event.participants_limit = participants_limit
+        self.event.save()
+
+@receiver(pre_delete, sender=QuotaEvent, dispatch_uid='quotaEvent_delete_signal')
+def change_quota(sender, instance, using, **kwargs):
+    quota = instance.quota
+    quota.reserved_quota -= instance.reserved_quota
+    quota.save()
+    event = instance.event
+    event.participants_limit -= instance.reserved_quota
+    event.save()

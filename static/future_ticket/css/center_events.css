@@ -1,0 +1,257 @@
+body {
+  background-color: rgba(242, 242, 242, 0.5411764706);
+}
+body h2 {
+  font-size: 24px;
+  text-align: center;
+}
+body h3 {
+  font-size: 20px;
+  padding-left: 10px;
+  margin: 0;
+}
+body .disapear {
+  display: none;
+}
+body .page-hdr {
+  margin-top: 25px;
+  display: grid;
+  justify-content: center;
+  justify-items: center;
+}
+body .cycle-info, body .quotas-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 85%;
+  margin: auto;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
+  padding: 25px 50px 25px 50px;
+}
+body .cycle-info .cycle-events-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+body .cycle-info .cycle-events-stat p {
+  margin: 0;
+}
+body .cycle-info .cycle-events {
+  margin-top: 20px;
+  display: flex;
+  gap: 15px 25px;
+  flex-wrap: wrap;
+}
+body .cycle-info .cycle-events .event-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 300px;
+  max-width: 500px;
+  background-color: #f2f2f2;
+  color: #394959;
+  border-radius: 10px;
+}
+body .cycle-info .cycle-events .event-card .event-card-hdr, body .cycle-info .cycle-events .event-card .event-card-body, body .cycle-info .cycle-events .event-card .event-card-footer {
+  padding: 8px 15px;
+}
+body .cycle-info .cycle-events .event-card .event-card-hdr p, body .cycle-info .cycle-events .event-card .event-card-body p, body .cycle-info .cycle-events .event-card .event-card-footer p {
+  margin-bottom: 3px;
+}
+body .cycle-info .cycle-events .event-card .event-card-hdr .field, body .cycle-info .cycle-events .event-card .event-card-body .field, body .cycle-info .cycle-events .event-card .event-card-footer .field {
+  font-weight: 500;
+}
+body .cycle-info .cycle-events .event-card .event-card-body {
+  min-height: 100px;
+  height: 100%;
+}
+body .cycle-info .cycle-events .event-card .event-card-hdr {
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  font-weight: 400;
+  border-bottom: 2px solid #394959;
+}
+body .cycle-info .cycle-events .event-card .event-card-hdr .edit-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 100px;
+  background-color: #e3e3e3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body .cycle-info .cycle-events .event-card .event-card-hdr .edit-icon img {
+  width: 21px;
+}
+body .cycle-info .cycle-events .event-card .event-card-hdr .edit-icon.selected {
+  background-color: white;
+}
+body .cycle-info .cycle-events .event-card .event-card-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border-top: 1px solid #394959;
+}
+body .cycle-info .cycle-events .event-card .event-card-footer .btn {
+  width: 100%;
+  background-color: white;
+  font-weight: 500;
+}
+body .quotas-list table th, body .cycle-events table th {
+  color: #394959;
+  font-weight: 400 !important;
+  font-size: 16px;
+  line-height: 20px;
+  border-top: 0;
+  border-bottom: 2px solid #394959;
+}
+body .quotas-list table .sticky-top, body .cycle-events table .sticky-top {
+  z-index: 100 !important;
+}
+body .quotas-list table td, body .cycle-events table td {
+  color: #394959;
+  font-weight: 300 !important;
+  max-width: 250px;
+  word-wrap: break-word;
+}
+body .quotas-list table .th-cetner, body .quotas-list table .td-center, body .cycle-events table .th-cetner, body .cycle-events table .td-center {
+  text-align: center;
+}
+body .quotas-list table .th-rigth, body .quotas-list table .td-rigth, body .cycle-events table .th-rigth, body .cycle-events table .td-rigth {
+  text-align: right;
+}
+body .quotas-list .quotas-table th, body .cycle-events .quotas-table th {
+  vertical-align: middle;
+}
+body .quotas-list .quotas-table .quota-hdr-th, body .cycle-events .quotas-table .quota-hdr-th {
+  border: 0;
+}
+
+.timeline {
+  list-style-type: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.li {
+  transition: all 200ms ease-in;
+}
+
+.registration .timestamp, .start .timestamp, .action .timestamp {
+  align-items: flex-end;
+  padding: 0;
+}
+.registration .timestamp .date, .start .timestamp .date, .action .timestamp .date {
+  transform: translateX(20px);
+}
+.registration .status, .start .status, .action .status {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  justify-content: space-between;
+  padding: 15px 0px;
+}
+.registration .status .first, .start .status .first, .action .status .first {
+  grid-column: 2;
+}
+.registration .status .second, .start .status .second, .action .status .second {
+  grid-column: 3;
+}
+
+.registration {
+  width: 40%;
+  margin-right: 13px;
+}
+
+.start {
+  width: 18%;
+  margin-right: 13px;
+}
+
+.action {
+  width: 35%;
+}
+
+.timestamp {
+  margin-bottom: 20px;
+  padding: 0px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 300;
+}
+
+.status {
+  padding: 15px 40px;
+  display: flex;
+  justify-content: center;
+  border-top: 2px solid #e3e3e3;
+  position: relative;
+  transition: all 200ms ease-in;
+}
+.status span {
+  font-weight: 400;
+}
+.status:before {
+  content: "";
+  width: 25px;
+  height: 25px;
+  background-color: white;
+  border-radius: 25px;
+  border: 1px solid #ddd;
+  position: absolute;
+  top: -15px;
+  left: 100%;
+  transform: translateX(-12px);
+  transition: all 200ms ease-in;
+}
+
+.li.in-progress .status {
+  border-top: 2px solid #394959;
+}
+.li.in-progress .status:before {
+  border: 2px solid #394959;
+  transition: all 200ms ease-in;
+}
+.li.in-progress .status span {
+  color: #394959;
+  font-weight: 400;
+}
+
+.li.complete .status {
+  border-top: 2px solid #394959;
+}
+.li.complete .status:before {
+  background-color: #394959;
+  border: none;
+  transition: all 200ms ease-in;
+}
+.li.complete .status span {
+  color: #394959;
+  font-weight: 500;
+}
+
+@media (min-device-width: 320px) and (max-device-width: 700px) {
+  .timeline {
+    list-style-type: none;
+    display: block;
+  }
+  .li {
+    transition: all 200ms ease-in;
+    display: flex;
+    width: inherit;
+  }
+  .timestamp {
+    width: 100px;
+  }
+  .status:before {
+    left: -8%;
+    top: 30%;
+    transition: all 200ms ease-in;
+  }
+}/*# sourceMappingURL=center_events.css.map */

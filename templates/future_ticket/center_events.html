@@ -1,0 +1,220 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load ticket_extras %}
+
+{% block title %}Управление мероприятиями{% endblock %}
+{% block style %}
+    <link href="{% static 'future_ticket/css/center_events.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'future_ticket/js/center_events.js' %}" rel="stylesheet"></script>
+{% endblock %}
+
+{% block body %}
+    <!-- #Modals -->
+    {% for cycle in cycles %}
+        <div class="modal fade add-event-modal" id="AddEventModal{{cycle.id}}" tabindex="-1" aria-labelledby="#AddEventModal{{cycle.id}}Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="#AddEventModal{{cycle.id}}Label">Добавить мероприятие</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post">
+                        <div class="modal-body">
+                            <input style="display: none;" type="text" name="cycle_id" value="{{cycle.id}}">
+                            <div class="form mb-3 filter-selectpicker">
+                                <label for="DurationInput">Дата проведения</label>
+                                <select class="selectpicker w-100" title="Дата проведения" data-live-search="true" name="event_date" required>
+                                    {% for available_date in cycle|get_available_dates %}
+                                        <option value='{{available_date|date:"d.m.Y"}}'>{{available_date|date:"d.m.Y"}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form mb-3 filter-selectpicker">
+                                <label for="DurationInput">Профессия</label>
+                                <select class="selectpicker w-100" title="Профессия" data-live-search="true" name="profession_id" required>
+                                    {% for profession in professions %}
+                                        <option value='{{profession.id}}'>{{profession.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="d-grid gap-2">
+                                <input type="submit" class="btn btn-primary" name="add-event" value="Добавить">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% for event in cycle.events.all|filter_events:center_year %}
+            <div class="modal fade assign-quota-modal" id="AssignQuotaModal{{event.id}}" tabindex="-1" aria-labelledby="#AssignQuotaModal{{event.id}}Label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="#AssignQuotaModal{{event.id}}Label">Добавить мероприятие</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post">
+                            <div class="modal-body">
+                                <input style="display: none;" type="text" name="event_id" value="{{event.id}}">
+                                <div class="form mb-3 filter-selectpicker">
+                                    <select class="selectpicker w-100 select-quota-profession" title="Квота" data-live-search="true" name="quota_id" required>
+                                        {% for quota in quotas|get_event_quota:event %}
+                                            <option value='{{quota.id}}' data-quota="{{quota.free_quota}}">{{quota.school.name}} ({{quota.free_quota}}/{{quota.approved_value}})</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form mb-3" >
+                                    <label for="reserved_quota{{event.id}}" class="form-label">Квота</label>
+                                    <input type="number" name="reserved_quota" class="reserved_quota form-control" id="reserved_quota{{event.id}}" min="1" max="1" data-limit="{{15|subtract:event.participants_limit}}" readonly required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="d-grid gap-2">
+                                    <input type="submit" class="btn btn-primary" name="assign-quota" value="Добавить" disabled> 
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <!-- #EndModals -->
+
+    <div class="page-hdr">
+        <h1>Управление мероприятиями</h1>
+    </div>
+    <div class="quotas-list">
+        <div class="table-hdr">
+            <h2>Выполнение квоты</h2>
+        </div>
+        <table class="table quotas-table">
+            <tr class="">
+                <th scope="row" rowspan="2">Профессия</th>
+                <th scope="row" rowspan="2">Школа</th>
+                <th scope="row" colspan="4" class="quota-hdr-th th-cetner">Квота</th>
+            </tr>
+            <tr>
+                <th scope="row" class="th-cetner">Всего</th>
+                <th scope="row" class="th-cetner">Зарезервировано</th>
+                <th scope="row" class="th-cetner">Выполнено</th>
+                <th scope="row" class="th-cetner">Свободно</th>
+            </tr>
+            {% for quota in quotas %}
+                <tr>
+                    <td scope="row">{{ quota.profession }}</td>
+                    <td scope="row">{{ quota.school.name }}</td>
+                    <td scope="row" class="td-center">{{ quota.approved_value }}</td>
+                    <td scope="row" class="td-center">{{ quota.reserved_quota }}</td>
+                    <td scope="row" class="td-center">{{ quota.completed_quota }}</td>
+                    <td scope="row" class="td-center">{{ quota.free_quota }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td scope="row" class="none-alert" colspan="6">Нет одобренной квоты</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="cycles-list">
+        <div class="table-hdr">
+            <h2>Циклы проб</h2>
+        </div>
+        {% for cycle in cycles %}
+        <div class="cycle-info">
+            <h3>Цикл №{{cycle.id}}</h3>
+            <div>
+                <ul class="timeline" id="timeline">
+                    <li class="li  registration {% if cycle.status == 'REG' %} in-progress {% else %} complete {% endif %}">
+                      <div class="timestamp">
+                        <span class="date">{{cycle.end_reg_date|date:"d.m"}}<span>
+                      </div>
+                      <div class="status">
+                        <span class="first" style="transform: translate(35px, -55px)">Регистрация</span>
+                        <span class="second"style="transform: translate(35px, 0px)">Проверка</span>
+                      </div>
+                    </li>
+                    <li class="li start {% if cycle.status == 'CHCK' %} in-progress {% elif cycle.status == 'REG' %} {% else %} complete {% endif %}">
+                      <div class="timestamp">
+                        <span class="date">{{cycle.start_period_date|date:"d.m"}}<span>
+                      </div>
+                      <div class="status">
+                        <span class="first" style="transform: translate(21px, -55px)">Исправление</span>
+                        <span class="second" style="transform: translate(26px, 0px)">Начало</span>
+                      </div>
+                    </li>
+                    <li class="li action {% if cycle.status == 'HSTNG' %} in-progress {% elif cycle.status == 'END' %} complete {% endif %}">
+                      <div class="timestamp">
+                        <span class="date">{{cycle.end_period_date|date:"d.m"}}<span>
+                      </div>
+                      <div class="status">
+                        <span class="first" style="transform: translate(23px, -55px)">Проведение профпроб</span>
+                        <span class="second" style="transform: translate(23px, 0px)">Окончание</span>
+                      </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="schedule"></div>
+            <div class="cycle-events-stat">
+                
+                <p>Мероприятий запланировано: {{ cycle.center_events_count }}</p>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddEventModal{{cycle.id}}">
+                    Запланировать мероприятия
+                </button>
+            </div>
+            <div class="cycle-events">
+                {% for event in cycle.events.all|filter_events:center_year %}
+                    <div class="event-card">
+                        <div class="event-card-hdr">
+                            <span style="max-width: 90%;">{{event.profession}}</span>
+                            <div class="edit-icon">
+                                <img src="{% static 'federal_empl_program/img/edit-icon.svg' %}" alt="">
+                            </div>
+                        </div>
+                        <div class="event-card-body">
+                            <p><span class="field">Статус:</span> {{event.get_status_display }}</p>
+                            <p><span class="field">Дата проведения:</span> {{event.event_date|date:"d.m.Y" }}</p>
+                            <p><span class="field">Лимит участников:</span> {{event.participants_limit }}</p>
+                            <table class="table quota-event-table">
+                                <tr class="">
+                                    <th scope="row">Школа</th>
+                                    <th scope="row" class="th-rigth">Квота</th>
+                                </tr>
+                                {% for event_quota in event.quotas.all %}
+                                    <tr>
+                                        <td scope="row">{{ event_quota.quota.school.name }}</td>
+                                        <td scope="row">{{ event_quota.reserved_quota }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td scope="row" class="none-alert" colspan="5">Нет добавленной квоты</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                        <div class="event-card-footer">
+                            {% if event.participants_limit < 15 %}
+                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#AssignQuotaModal{{event.id}}">
+                                Добавить квоту
+                            </button>
+                            {% endif %}
+                            <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post">
+                                <input style="display: none;" type="text" name="event_id" value="{{event.id}}">
+                                <button class="btn btn-sm btn-outline-danger disapear" name="delete-event">
+                                    Удалить
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+            </div>
+        </div>
+        {% empty %}
+            <div class="none-alert">Нет ни одного цикла</div>
+        {% endfor %}
+    </div>
+{% endblock %}

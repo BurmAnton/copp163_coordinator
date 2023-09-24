@@ -4,6 +4,21 @@ from . import views
 
 urlpatterns = [
     path(
+        'events/', 
+        views.events, 
+        name='ticket_events'
+    ),
+    path(
+        'events/<int:ed_center_id>/', 
+        views.center_events, 
+        name='ticket_center_events'
+    ),
+    path(
+        'events/<>/applications', 
+        views.schools_applications, 
+        name='schools_applications'
+    ),
+    path(
         'professions/import/', 
         views.import_ticket_professions, 
         name='import_ticket_professions'

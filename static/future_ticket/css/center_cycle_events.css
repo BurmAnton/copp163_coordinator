@@ -1,0 +1,30 @@
+body {
+  background-color: rgba(242, 242, 242, 0.5411764706);
+}
+body h2 {
+  font-size: 24px;
+}
+body h3 {
+  font-size: 20px;
+  padding-left: 10px;
+  margin: 0;
+}
+body .page-hdr {
+  margin-top: 25px;
+  display: grid;
+  justify-content: center;
+  justify-items: center;
+}
+body .cycle-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 85%;
+  margin: auto;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
+  padding: 25px 50px 25px 50px;
+}/*# sourceMappingURL=center_cycle_events.css.map */
