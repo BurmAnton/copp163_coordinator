@@ -113,7 +113,7 @@
                 </tr>
                 {% for quota in quotas %}
                     <tr>
-                        <td scope="row">{{ quota.ed_center.short_name }}</td>
+                        <td scope="row"><a href="{% url 'admin:future_ticket_ticketquota_change' quota.id %}" target="_blank" rel="noopener noreferrer">{{ quota.ed_center.short_name }}</a></td>
                         <td scope="row">{{ quota.school.get_territorial_administration_display }}</td>
                         <td scope="row" class="center">{% if quota.is_federal %}Да{% else %}Нет{% endif %}</td>
                         <td scope="row" class="center">{{ quota.value }}</td>
