@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter,\
       DropdownFilter, ChoiceDropdownFilter
+from easy_select2 import select2_modelform
 
 from .models import AgeGroup, ContractorsDocumentTicket, DocumentTypeTicket, EventsCycle, \
     ProfEnviroment, ProgramAuthor, SchoolProjectYear, TicketFullQuota, \
@@ -125,8 +126,11 @@ class SchoolProjectYearAdmin(admin.ModelAdmin):
     ]
 
 
+TicketQuotaForm = select2_modelform(TicketQuota, attrs={'width': '600px'})
+
 @admin.register(TicketQuota)
 class TicketQuotaAdmin(admin.ModelAdmin):
+    form = TicketQuotaForm
     list_display = [
         'ed_center', 
         'school', 
