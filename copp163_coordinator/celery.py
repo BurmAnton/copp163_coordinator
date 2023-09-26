@@ -20,7 +20,7 @@ app.autodiscover_tasks(lambda: [n.name for n in apps.get_app_configs()])
 @app.on_after_configure.connect()
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
-        crontab(minute='*/1'),
+        crontab(minute=0, hour=0),
         update_events_cycles_statuses,
         name='update_events_cycles_statuses_everyday'
     )
