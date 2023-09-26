@@ -672,7 +672,12 @@ class EventsCycle(models.Model):
     )
     def save(self, *args, **kwargs):
         today = date.today()
-
+        if self.end_reg_date >= today: self.status = 'REG'
+        elif self.end_reg_date < today and self.start_period_date > today:
+            self.status = 'CHCK'
+        elif self.start_period_date <= today and self.end_period_date >= today:
+            self.status = 'HSTNG'
+        elif self.end_period_date < today: self.status='END'
         super(EventsCycle, self).save(*args, **kwargs)
     
     class Meta:
