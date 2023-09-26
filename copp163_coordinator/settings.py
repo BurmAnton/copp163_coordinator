@@ -46,6 +46,7 @@ CELERY_TIMEZONE = 'Europe/Samara'
 # Application definition
 
 INSTALLED_APPS = [
+    'celery',
     'coverage',
     'debug_toolbar',
     'rest_framework',
@@ -66,7 +67,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'mathfilters',
     'django_cleanup.apps.CleanupConfig',
-    'celery'
+    
 ]
 
 AUTH_USER_MODEL = 'users.User'
