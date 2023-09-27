@@ -13,8 +13,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(limit, quota, )
                 if (parseInt(limit) > parseInt(quota)) {
                     quota_input.setAttribute('max', quota);
+                    quota_input.parentElement.querySelector('.form-label').innerHTML = `Квота (Лимит: ${quota})`
                 }else{
                     quota_input.setAttribute('max', limit);
+                    quota_input.parentElement.querySelector('.form-label').innerHTML = `Квота (Лимит: ${limit})`
                 }
                 select.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.btn-primary').removeAttribute('disabled');
             }
