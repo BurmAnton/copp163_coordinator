@@ -113,7 +113,7 @@
                         </div>
                         <div class="modal-footer">
                             <div class="d-grid gap-2">
-                                <input type="submit" class="btn btn-primary" name="change-quota" value="Изменить"> 
+                                <input type="submit" class="btn btn-primary" name="change-quota" value="Изменить" {% if quota.free_quota == 0 %} disabled {% endif %}> 
                             </div>
                         </div>
                     </form>
