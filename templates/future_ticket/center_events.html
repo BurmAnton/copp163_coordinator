@@ -83,6 +83,40 @@
             </div>
         {% endfor %}
     {% endfor %}
+    {% for quota in quotas %}
+        <div class="modal fade assign-quota-modal" id="ChangeSchoolModal{{quota.id}}" tabindex="-1" aria-labelledby="#ChangeSchoolModal{{quota.id}}Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="#ChangeSchoolModal{{quota.id}}Label">Изменить школу</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post">
+                        <div class="modal-body">
+                            <input style="display: none;" type="text" name="quota_id" value="{{quota.id}}">
+                            <div class="form mb-3">
+                                <label for="reserved_quota{{event.id}}" class="form-label">Тер. управление</label>
+                                <input type="input" name="reserved_quota" class="form-control" value="{{quota.school.get_territorial_administration_display}}" id="change_school_terr{{quota.id}}" readonly>
+                            </div>
+                            <div class="form mb-3 filter-selectpicker">
+                                <select class="selectpicker w-100 select-quota-profession" title="Школа" data-live-search="true" name="school_id" required>
+                                    <option selected value='{{quota.school.id}}'>{{quota.school.name}}</option>
+                                    {% for school in schools|quota_filter_school:quota.school.territorial_administration %}
+                                        <option value='{{school.id}}'>{{school.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="d-grid gap-2">
+                                <input type="submit" class="btn btn-primary" name="change-school" value="Изменить"> 
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
     <!-- #EndModals -->
 
     <div class="page-hdr">
@@ -107,7 +141,7 @@
             {% for quota in quotas %}
                 <tr>
                     <td scope="row">{{ quota.profession }}</td>
-                    <td scope="row">{{ quota.school.name }}</td>
+                    <td scope="row"><a href="" data-bs-toggle="modal" data-bs-target="#ChangeSchoolModal{{quota.id}}">{{ quota.school.name }}</a></td>
                     <td scope="row" class="td-center">{{ quota.approved_value }}</td>
                     <td scope="row" class="td-center">{{ quota.reserved_quota }}</td>
                     <td scope="row" class="td-center">{{ quota.completed_quota }}</td>
