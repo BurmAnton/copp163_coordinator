@@ -88,7 +88,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="#ChangeSchoolModal{{quota.id}}Label">Изменить школу</h5>
+                        <h5 class="modal-title" id="#ChangeSchoolModal{{quota.id}}Label">Перераспределить квоту</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post">
@@ -99,17 +99,21 @@
                                 <input type="input" name="reserved_quota" class="form-control" value="{{quota.school.get_territorial_administration_display}}" id="change_school_terr{{quota.id}}" readonly>
                             </div>
                             <div class="form mb-3 filter-selectpicker">
-                                <select class="selectpicker w-100 select-quota-profession" title="Школа" data-live-search="true" name="school_id" required>
+                                <select class="selectpicker w-100" title="Школа" data-live-search="true" name="school_id" required>
                                     <option selected value='{{quota.school.id}}'>{{quota.school.name}}</option>
                                     {% for school in schools|quota_filter_school:quota.school.territorial_administration %}
                                         <option value='{{school.id}}'>{{school.name}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
+                            <div class="form mb-3" >
+                                <label for="reserved_quota{{event.id}}" class="form-label">Квота</label>
+                                <input type="number" name="transfered_quota" class="reserved_quota form-control" id="approved_value{{quota.id}}" min="1" max="{{ quota.free_quota }}"  value="{{ quota.free_quota }}" required>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <div class="d-grid gap-2">
-                                <input type="submit" class="btn btn-primary" name="change-school" value="Изменить"> 
+                                <input type="submit" class="btn btn-primary" name="change-quota" value="Изменить"> 
                             </div>
                         </div>
                     </form>

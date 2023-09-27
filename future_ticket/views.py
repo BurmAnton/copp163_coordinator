@@ -288,11 +288,26 @@ def center_events(request, ed_center_id):
                 quota.save()
                 event_quota.save()
                 double_quota.delete()
-        if 'change-school' in request.POST:
+        if 'change-quota' in request.POST:
             quota = TicketQuota.objects.get(id=request.POST["quota_id"])
             school = School.objects.get(id=request.POST["school_id"])
-            quota.school = school
-            quota.save()
+            transfered_quota = int(request.POST["transfered_quota"])
+            new_quota = TicketQuota.objects.create(
+                quota=quota.quota,
+                ed_center=quota.ed_center,
+                school=school,
+                profession=quota.profession,
+                is_federal=quota.is_federal,
+                value=transfered_quota,
+                approved_value=transfered_quota
+            )
+            if transfered_quota == quota.approved_value and quota.reserved_quota\
+             == 0 and quota.completed_quota == 0:
+                quota.delete()
+            else:
+                quota.value = quota.value - transfered_quota
+                quota.approved_value = quota.approved_value - transfered_quota
+                quota.save()
         return HttpResponseRedirect(reverse(
             "ticket_center_events", args=[ed_center_id]))
     cycles = EventsCycle.objects.filter(project_year=project_year).annotate(
