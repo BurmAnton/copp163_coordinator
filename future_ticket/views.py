@@ -292,15 +292,20 @@ def center_events(request, ed_center_id):
             quota = TicketQuota.objects.get(id=request.POST["quota_id"])
             school = School.objects.get(id=request.POST["school_id"])
             transfered_quota = int(request.POST["transfered_quota"])
-            new_quota = TicketQuota.objects.create(
+            new_quota, is_new  = TicketQuota.objects.get_or_create(
                 quota=quota.quota,
                 ed_center=quota.ed_center,
                 school=school,
                 profession=quota.profession,
-                is_federal=quota.is_federal,
-                value=transfered_quota,
-                approved_value=transfered_quota
+                is_federal=quota.is_federal
             )
+            if is_new:
+                new_quota.value=transfered_quota
+                new_quota.approved_value=transfered_quota
+            else:
+                new_quota.value= new_quota.value + transfered_quota
+                new_quota.approved_value= new_quota.approved_value + transfered_quota
+            new_quota.save()
             if transfered_quota == quota.approved_value and quota.reserved_quota\
              == 0 and quota.completed_quota == 0:
                 quota.delete()
