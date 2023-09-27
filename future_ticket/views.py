@@ -47,28 +47,46 @@ def quotas(request):
     quota_stat_all['approved_full_qouta'] = 0
     quota_stat_all['approved_federal_quota'] = 0
     quota_stat_all['approved_none_federal_quota'] = 0
+    quota_stat_all['reserved_full_qouta'] = 0
+    quota_stat_all['reserved_federal_quota'] = 0
+    quota_stat_all['reserved_none_federal_quota'] = 0
+    quota_stat_all['completed_full_qouta'] = 0
+    quota_stat_all['completed_federal_quota'] = 0
+    quota_stat_all['completed_none_federal_quota'] = 0
     for ter_admin in School.TER_CHOICES:
         quota_stat[ter_admin[1]] = dict()
         ter_admin_schools = School.objects.filter(territorial_administration=ter_admin[0])
         schools_quota = TicketQuota.objects.filter(school__in=ter_admin_schools).distinct()
         
-        federal_quota = schools_quota.filter(is_federal=True).distinct().aggregate(Sum("approved_value"), Sum("value"))
+        federal_quota = schools_quota.filter(is_federal=True).distinct().aggregate(Sum("approved_value"), Sum("value"), Sum("reserved_quota"), Sum("completed_quota"))
         if federal_quota['value__sum'] == None: federal_quota['value__sum'] = 0
         if federal_quota['approved_value__sum'] == None: federal_quota['approved_value__sum'] = 0
+        if federal_quota['reserved_quota__sum'] == None: federal_quota['reserved_quota__sum'] = 0
+        if federal_quota['completed_quota__sum'] == None: federal_quota['completed_quota__sum'] = 0
         quota_stat[ter_admin[1]]['approved_federal_quota'] = federal_quota['approved_value__sum']
         quota_stat[ter_admin[1]]['federal_quota'] = federal_quota['value__sum']
+        quota_stat[ter_admin[1]]['reserved_federal_quota'] = federal_quota['reserved_quota__sum']
+        quota_stat[ter_admin[1]]['completed_federal_quota'] = federal_quota['completed_quota__sum']
         
-        none_federal_quota = schools_quota.filter(is_federal=False).distinct().aggregate(Sum("approved_value"), Sum("value"))
+        none_federal_quota = schools_quota.filter(is_federal=False).distinct().aggregate(Sum("approved_value"), Sum("value"), Sum("reserved_quota"), Sum("completed_quota"))
         if none_federal_quota['value__sum'] == None: none_federal_quota['value__sum'] = 0
         if none_federal_quota['approved_value__sum'] == None: none_federal_quota['approved_value__sum'] = 0
+        if none_federal_quota['reserved_quota__sum'] == None: none_federal_quota['reserved_quota__sum'] = 0
+        if none_federal_quota['completed_quota__sum'] == None: none_federal_quota['completed_quota__sum'] = 0
         quota_stat[ter_admin[1]]['none_federal_quota'] = none_federal_quota['value__sum']
         quota_stat[ter_admin[1]]['approved_none_federal_quota'] = none_federal_quota['approved_value__sum']
+        quota_stat[ter_admin[1]]['reserved_none_federal_quota'] = none_federal_quota['reserved_quota__sum']
+        quota_stat[ter_admin[1]]['completed_none_federal_quota'] = none_federal_quota['completed_quota__sum']
         
-        full_quota = schools_quota.distinct().aggregate(Sum("approved_value"), Sum("value"))
+        full_quota = schools_quota.distinct().aggregate(Sum("approved_value"), Sum("value"), Sum("reserved_quota"), Sum("completed_quota"))
         if full_quota['value__sum'] == None: full_quota['value__sum'] = 0
         if full_quota['approved_value__sum'] == None: full_quota['approved_value__sum'] = 0
+        if full_quota['reserved_quota__sum'] == None: full_quota['reserved_quota__sum'] = 0
+        if full_quota['completed_quota__sum'] == None: full_quota['completed_quota__sum'] = 0
         quota_stat[ter_admin[1]]['full_quota'] = full_quota['value__sum']
         quota_stat[ter_admin[1]]['approved_full_quota'] = full_quota['approved_value__sum']
+        quota_stat[ter_admin[1]]['reserved_full_quota'] = full_quota['reserved_quota__sum']
+        quota_stat[ter_admin[1]]['completed_full_quota'] = full_quota['completed_quota__sum']
         
         quota_stat_all['full_qouta'] += full_quota['value__sum']
         quota_stat_all['federal_quota'] += federal_quota['value__sum']
@@ -76,6 +94,12 @@ def quotas(request):
         quota_stat_all['approved_full_qouta'] += full_quota['approved_value__sum']
         quota_stat_all['approved_federal_quota'] += federal_quota['approved_value__sum']
         quota_stat_all['approved_none_federal_quota'] += none_federal_quota['approved_value__sum']
+        quota_stat_all['reserved_full_qouta'] += full_quota['reserved_quota__sum']
+        quota_stat_all['reserved_federal_quota'] += federal_quota['reserved_quota__sum']
+        quota_stat_all['reserved_none_federal_quota'] += none_federal_quota['reserved_quota__sum']
+        quota_stat_all['completed_full_qouta'] += full_quota['completed_quota__sum']
+        quota_stat_all['completed_federal_quota'] += federal_quota['completed_quota__sum']
+        quota_stat_all['completed_none_federal_quota'] += none_federal_quota['completed_quota__sum']
     full_quota = get_object_or_404(TicketFullQuota, project_year=project_year)
     quotas = TicketQuota.objects.exclude(value=0).select_related(
         'quota', 'ed_center', 'school', 'profession'
