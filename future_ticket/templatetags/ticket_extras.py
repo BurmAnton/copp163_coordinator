@@ -24,3 +24,7 @@ def get_available_dates(cycle):
 @register.filter()
 def get_event_quota(quota, event):
     return quota.filter(profession=event.profession).exclude(free_quota=0)
+
+@register.filter()
+def quota_filter_school(schools, ter_admin):
+    return schools.filter(territorial_administration=ter_admin)
