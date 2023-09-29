@@ -46,6 +46,7 @@ jobs:
         ALLOWED_HOSTS: "127.0.0.1 localhost"
         DEBUG: true
         STATIC_URL: '/copp163_coordinator/static/'
+        MEDIA_URL: '/copp163_coordinator/media/'
         DBPORT: ${{ job.services.mysql.ports[3306] }}
     - name: Run Tests
       run: |
@@ -60,4 +61,5 @@ jobs:
         ALLOWED_HOSTS: "127.0.0.1 localhost"
         DEBUG: true
         STATIC_URL: '/copp163_coordinator/static/'
+        MEDIA_URL: '/copp163_coordinator/media/'
         DBPORT: ${{ job.services.mysql.ports[3306] }}
