@@ -41,7 +41,6 @@
                             {% endif %}
                         {% endfor %}
                     </select>
-                    
                 </div>
                 <button type="submit" class="btn btn-outline-primary" name="filter-events">Фильтровать</button>
             </form>
@@ -55,7 +54,7 @@
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary" id="change-status-btn">Изменить</button>
-                <div class="row-count">Выбрано <span class="selected-row-count">0</span> из {{centers_project_year.centers_count}}</div>
+                <div class="row-count">Выбрано <span class="selected-row-count">0</span> из {{centers_project_year.count}}</div>
             </div>
             {% endif %}
         </div>
