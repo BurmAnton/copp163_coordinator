@@ -58,7 +58,7 @@ def applications(request):
         project_year = get_object_or_404(TicketProjectYear, year=project_year)
         centers_project_year = EducationCenterTicketProjectYear.objects.filter(
             project_year=project_year,
-        ).select_related('ed_center').annotate(centers_count = Count('id'))
+        ).select_related('ed_center')
         stages = EducationCenterTicketProjectYear.STAGES
     else:
         project_year = get_object_or_404(ProjectYear, year=project_year)
@@ -67,7 +67,7 @@ def applications(request):
         ).select_related('ed_center')
         project = 'zen'
         stages = EducationCenterProjectYear.STAGES
-    
+
     chosen_stages = None
     if request.method == "POST":
         if 'filter-events' in request.POST:
