@@ -95,8 +95,12 @@
                         <div class="modal-body">
                             <input style="display: none;" type="text" name="quota_id" value="{{quota.id}}">
                             <div class="form mb-3">
-                                <label for="reserved_quota{{event.id}}" class="form-label">Тер. управление</label>
-                                <input type="input" name="reserved_quota" class="form-control" value="{{quota.school.get_territorial_administration_display}}" id="change_school_terr{{quota.id}}" readonly>
+                                <label for="quota_prof{{quota.id}}" class="form-label">Профессия</label>
+                                <input type="input" name="reserved_quota" class="form-control" value="{{quota.profession.name}}" id="quota_prof{{quota.id}}" readonly>
+                            </div>
+                            <div class="form mb-3">
+                                <label for="quota_ter_adm{{quota.id}}" class="form-label">Тер. управление</label>
+                                <input type="input" name="quota_ter_adm" class="form-control" value="{{quota.school.get_territorial_administration_display}}" id="quota_ter_adm{{quota.id}}" readonly>
                             </div>
                             <div class="form mb-3 filter-selectpicker">
                                 <select class="selectpicker w-100" title="Школа" data-live-search="true" name="school_id" required>

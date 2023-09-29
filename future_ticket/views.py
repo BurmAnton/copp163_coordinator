@@ -63,8 +63,8 @@ def quotas(request):
         if federal_quota['approved_value__sum'] == None: federal_quota['approved_value__sum'] = 0
         if federal_quota['reserved_quota__sum'] == None: federal_quota['reserved_quota__sum'] = 0
         if federal_quota['completed_quota__sum'] == None: federal_quota['completed_quota__sum'] = 0
-        quota_stat[ter_admin[1]]['approved_federal_quota'] = federal_quota['approved_value__sum']
         quota_stat[ter_admin[1]]['federal_quota'] = federal_quota['value__sum']
+        quota_stat[ter_admin[1]]['approved_federal_quota'] = federal_quota['approved_value__sum']
         quota_stat[ter_admin[1]]['reserved_federal_quota'] = federal_quota['reserved_quota__sum']
         quota_stat[ter_admin[1]]['completed_federal_quota'] = federal_quota['completed_quota__sum']
         
@@ -101,9 +101,9 @@ def quotas(request):
         quota_stat_all['completed_federal_quota'] += federal_quota['completed_quota__sum']
         quota_stat_all['completed_none_federal_quota'] += none_federal_quota['completed_quota__sum']
     full_quota = get_object_or_404(TicketFullQuota, project_year=project_year)
-    quotas = TicketQuota.objects.exclude(value=0).select_related(
-        'quota', 'ed_center', 'school', 'profession'
-    )
+    quotas = TicketQuota.objects.exclude(
+        value=0, approved_value=0,  reserved_quota=0, completed_quota=0
+        ).select_related('quota', 'ed_center', 'school', 'profession')
     if 'export-quotas' in request.POST:
            return exports.qoutas(quotas)
     ed_centers = EducationCenter.objects.exclude(ticket_quotas=None)
@@ -291,28 +291,31 @@ def center_events(request, ed_center_id):
         if 'change-quota' in request.POST:
             quota = TicketQuota.objects.get(id=request.POST["quota_id"])
             school = School.objects.get(id=request.POST["school_id"])
-            transfered_quota = int(request.POST["transfered_quota"])
-            new_quota, is_new  = TicketQuota.objects.get_or_create(
-                quota=quota.quota,
-                ed_center=quota.ed_center,
-                school=school,
-                profession=quota.profession,
-                is_federal=quota.is_federal
-            )
-            if is_new:
-                new_quota.value=transfered_quota
-                new_quota.approved_value=transfered_quota
-            else:
-                new_quota.value= new_quota.value + transfered_quota
-                new_quota.approved_value= new_quota.approved_value + transfered_quota
-            new_quota.save()
-            if transfered_quota == quota.approved_value and quota.reserved_quota\
-             == 0 and quota.completed_quota == 0:
-                quota.delete()
-            else:
-                quota.value = quota.value - transfered_quota
-                quota.approved_value = quota.approved_value - transfered_quota
-                quota.save()
+            if quota.school != school:
+                transfered_quota = int(request.POST["transfered_quota"])
+                new_quota, is_new = TicketQuota.objects.get_or_create(
+                    quota=quota.quota,
+                    ed_center=quota.ed_center,
+                    school=school,
+                    profession=quota.profession,
+                    is_federal=quota.is_federal
+                )
+                if is_new:
+                    new_quota.value=transfered_quota
+                    new_quota.approved_value=transfered_quota
+                else:
+                    new_quota.value= new_quota.value + transfered_quota
+                    new_quota.approved_value= new_quota.approved_value\
+                                                + transfered_quota
+                new_quota.save()
+                if transfered_quota == quota.approved_value and\
+                quota.reserved_quota == 0 and quota.completed_quota == 0:
+                    quota.delete()
+                else:
+                    quota.value = quota.value - transfered_quota
+                    quota.approved_value = quota.approved_value \
+                                           - transfered_quota
+                    quota.save()
         return HttpResponseRedirect(reverse(
             "ticket_center_events", args=[ed_center_id]))
     cycles = EventsCycle.objects.filter(project_year=project_year).annotate(
