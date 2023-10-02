@@ -8,10 +8,114 @@
 {% endblock %}
 {% block script %}
     <script src="{% static 'future_ticket/js/center_events.js' %}" rel="stylesheet"></script>
+    <script type="text/javascript">
+        $(window).on('load', function() {
+            $('#ImportResultModal').modal('show');
+        });
+    </script>
 {% endblock %}
 
 {% block body %}
     <!-- #Modals -->
+    {% if import_output != None %}
+        <div class="modal fade import-result-modal" id="ImportResultModal" tabindex="-1" aria-labelledby="#ImportResultModalLabel" aria-hidden="false">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="#ImportResultModalLabel">Результат импорта участников</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                <div class="modal-body">
+                    {% if import_output == "FormError" %}
+                    <div class="alert alert-danger w-90" role="alert">
+                        Ошибка загрузки данных! Попробуйте повторить загрузку или обратитесь в тех. поддержку.
+                    </div>
+                    {% elif import_output.1 == 'MissingFieldsError' %}
+                    <div class="alert alert-danger w-90" role="alert">
+                        В таблице отсутствует часть полей:
+                        <ul>
+                            {% for missing_field in import_output.2 %}
+                                <li>{{missing_field}}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% elif import_output.0 == 'Error' %}
+                    <div class="alert alert-danger w-90" role="alert">
+                        Ошибка загрузки данных! Попробуйте повторить загрузку или обратитесь в тех. поддержку.
+                    </div>
+                    {% elif import_output.0 == 'OK' %}
+                        <p style="font-size: 20px;font-weight: 300;">Участников добавлено: {{import_output.5}}</p>
+                        <div class="modal-body participant-table">
+                            <table class="table">
+                                <tr class="">
+                                    <th scope="row">№</th>
+                                    <th scope="row">ФИО</th>
+                                    <th scope="row" class="th-center">Школа</th>
+                                </tr>
+                                {% for participant in import_output.6 %}
+                                    <tr>
+                                        <td scope="row">{{forloop.counter}}</td>
+                                        <td scope="row">{{ participant.full_name }}</td>
+                                        <td scope="row" class="td-center">{{ participant.school.name }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td scope="row" class="none-alert" colspan="7">Нет участников</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                        {% if import_output.4|length != 0 or import_output.2|length != 0 or import_output.3|length != 0 %}
+                            <h3 style="margin-bottom: 15px; text-align: center;">Проблемы</h3>
+                        {% endif %}
+                        {% if import_output.4|length != 0 %}
+                            <div class="alert alert-warning w-90" role="alert">
+                                Часть школ отсутствует в квоте мероприятия:
+                                <ul>
+                                    {% for school in import_output.4 %}
+                                        <li>{{school}}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                        {% if import_output.2|length != 0 %}
+                            <div class="alert alert-warning w-90" role="alert">
+                                Часть школ не найдены на платформе:
+                                <ul>
+                                    {% for school in import_output.2 %}
+                                        <li>{{school}}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                        {% if import_output.3|length != 0 %}
+                            <p style="font-size: 20px;font-weight: 300;">Следующие участники не добавленны:</p>
+                                {% for missing_fields in import_output.3 %}
+                                    <div class="alert alert-warning w-90" role="alert">
+                                        В строке №{{missing_fields.2}} не хватает следующих данных:
+                                        {% for field in missing_fields.1 %}
+                                            {% if forloop.last %}
+                                                {{field}}
+                                            {% else %}
+                                                {{field}}, 
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% endfor %}
+                        {% endif %}
+                    {% endif %}
+                    </div>
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <input type="submit" class="btn btn-primary" data-bs-dismiss="modal" value="Понятно">
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+    {% endif %}
     {% for cycle in cycles %}
         <div class="modal fade add-event-modal" id="AddEventModal{{cycle.id}}" tabindex="-1" aria-labelledby="#AddEventModal{{cycle.id}}Label" aria-hidden="true">
             <div class="modal-dialog">
@@ -54,7 +158,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="#AssignQuotaModal{{event.id}}Label">Добавить мероприятие</h5>
+                            <h5 class="modal-title" id="#AssignQuotaModal{{event.id}}Label">Добавить квоту</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post">
@@ -78,6 +182,54 @@
                                 </div>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade participants" id="ParticipantsModal{{event.id}}" tabindex="-1" aria-labelledby="#ParticipantsModal{{event.id}}Label" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="#ParticipantsModal{{event.id}}Label">Список участников</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body participant-table">
+                            <table class="table">
+                                <tr class="">
+                                    <th scope="row">№</th>
+                                    <th scope="row">ID</th>
+                                    <th scope="row">ФИО</th>
+                                    <th scope="row" class="th-center">Школа</th>
+                                    <th scope="row" class="th-center">Посещаемость</th>
+                                    <th scope="row" class="th-center">Дубликат?</th>
+                                    <th scope="row" class="th-center">Удалить?</th>
+                                </tr>
+                                {% for participant in event.participants.all %}
+                                    <tr>
+                                        <td scope="row">{{forloop.counter}}</td>
+                                        <td scope="row">{{ participant.bvb_id }}</td>
+                                        <td scope="row">{{ participant.full_name }}</td>
+                                        <td scope="row" class="td-center">{{ participant.school.name }}</td>
+                                        <td scope="row" class="td-center"><input class="form-check-input" type="checkbox" {% if participant.is_attend %}checked{% endif %} disabled></td>
+                                        <td scope="row" class="td-center"><input class="form-check-input" type="checkbox" {% if participant.is_double %}checked{% endif %} disabled></td>
+                                        <td scope="row" class="td-center">
+                                            <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post">
+                                                <input type="input" style="display: none;" name="participant_id" value="{{participant.id}}">
+                                                <button class="btn btn-outline-danger btn-sm" name="delete-participant">Удалить</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td scope="row" class="none-alert" colspan="7">Нет участников</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="d-grid gap-2">
+                                <input type="submit" class="btn btn-primary" data-bs-dismiss="modal" value="Закрыть">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -125,6 +277,46 @@
             </div>
         </div>
     {% endfor %}
+    <div class="modal fade import-participants-modal" id="ImportParticModal" tabindex="-1" aria-labelledby="#ImportParticModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="#ImportParticModalLabel">Импорт участников</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <input style="display: none;" type="text" id="event_id" name="event_id">
+                        <div class="form mb-3">
+                            <label for="quota_profession" class="form-label">Профессия</label>
+                            <input type="input" name="reserved_quota" class="form-control" value="{{quota.profession.name}}" id="quota_profession" readonly>
+                        </div>
+                        <div class="form mb-3">
+                            <label for="quota_event_date" class="form-label">Дата проведения</label>
+                            <input type="input" name="quota_ter_adm" class="form-control" value="{{quota.event_date}}" id="quota_event_date" readonly>
+                        </div>
+                        <div class="form mb-3" >
+                            <label for="participants_limit" class="form-label">Лимит участников</label>
+                            <input type="number" name="transfered_quota" class="reserved_quota form-control" id="participants_limit" value="{{ quota.participants_limit }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            {% csrf_token %}
+                            {{ participants_form.non_field_errors }}
+                            {{ participants_form.import_file.label_tag }} 
+                            {{ participants_form.import_file.help_text }}
+                            {{ participants_form.import_file.errors }}
+                            {{ participants_form.import_file }}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <input type="submit" class="btn btn-primary" name="import-participants" value="Импортировать"> 
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <!-- #EndModals -->
 
     <div class="page-hdr">
@@ -138,13 +330,13 @@
             <tr class="">
                 <th scope="row" rowspan="2">Профессия</th>
                 <th scope="row" rowspan="2">Школа</th>
-                <th scope="row" colspan="4" class="quota-hdr-th th-cetner">Квота</th>
+                <th scope="row" colspan="4" class="quota-hdr-th th-center">Квота</th>
             </tr>
             <tr>
-                <th scope="row" class="th-cetner">Всего</th>
-                <th scope="row" class="th-cetner">Зарезервировано</th>
-                <th scope="row" class="th-cetner">Выполнено</th>
-                <th scope="row" class="th-cetner">Свободно</th>
+                <th scope="row" class="th-center">Всего</th>
+                <th scope="row" class="th-center">Зарезервировано</th>
+                <th scope="row" class="th-center">Выполнено</th>
+                <th scope="row" class="th-center">Свободно</th>
             </tr>
             {% for quota in quotas %}
                 <tr>
@@ -210,17 +402,22 @@
             </div>
             <div class="cycle-events">
                 {% for event in cycle.events.all|filter_events:center_year %}
-                    <div class="event-card">
+                    <div class="event-card" data-event_date={{event.event_date|date:"d/m/Y" }} data-limit="{{event.participants_limit }}" data-event_id="{{event.id }}">
                         <div class="event-card-hdr">
-                            <span style="max-width: 90%;">{{event.profession}}</span>
+                            <div class="profession-hdr">
+                                {{event.profession}} 
+                                <span class="tooltiptext">{{event.profession}}</span>
+                            </div>
                             <div class="edit-icon">
                                 <img src="{% static 'federal_empl_program/img/edit-icon.svg' %}" alt="">
                             </div>
+                            
                         </div>
                         <div class="event-card-body">
                             <p><span class="field">Статус:</span> {{event.get_status_display }}</p>
                             <p><span class="field">Дата проведения:</span> {{event.event_date|date:"d.m.Y" }}</p>
                             <p><span class="field">Лимит участников:</span> {{event.participants_limit }}</p>
+                            <p><span class="field" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#ParticipantsModal{{event.id}}"><u>Участников загружено:</span> {{event.participants.all.count }}</u></p>
                             <table class="table quota-event-table">
                                 <tr class="">
                                     <th scope="row">Школа</th>
@@ -233,7 +430,7 @@
                                     </tr>
                                 {% empty %}
                                     <tr>
-                                        <td scope="row" class="none-alert" colspan="5">Нет добавленной квоты</td>
+                                        <td scope="row" class="none-alert" colspan="2">Нет добавленной квоты</td>
                                     </tr>
                                 {% endfor %}
                             </table>
@@ -243,6 +440,11 @@
                             <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#AssignQuotaModal{{event.id}}">
                                 Добавить квоту
                             </button>
+                            {% endif %}
+                            {% if event.participants_limit > 0 %}
+                                <button class="btn btn-sm btn-primary import-btn" data-bs-toggle="modal" data-bs-target="#ImportParticModal">
+                                    Импортировать участников
+                                </button>
                             {% endif %}
                             <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post">
                                 <input style="display: none;" type="text" name="event_id" value="{{event.id}}">

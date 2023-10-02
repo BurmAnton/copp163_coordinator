@@ -4,13 +4,17 @@ from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter,\
 from easy_select2 import select2_modelform
 
 from .models import AgeGroup, ContractorsDocumentTicket, DocumentTypeTicket, EventsCycle, \
-    ProfEnviroment, ProgramAuthor, SchoolProjectYear, TicketFullQuota, \
+    ProfEnviroment, ProgramAuthor, SchoolProjectYear, StudentBVB, TicketFullQuota, \
     TicketProfession, TicketProgram, TicketProjectYear, \
     EducationCenterTicketProjectYear, TicketProjectPosition, \
     TicketEdCenterEmployeePosition, TicketIndicator, EdCenterTicketIndicator, \
     TicketQuota
 # Register your models here.
 
+
+@admin.register(StudentBVB)
+class StudentBVBAdmin(admin.ModelAdmin):
+    pass
 
 @admin.register(TicketProjectYear)
 class TicketProjectYearAdmin(admin.ModelAdmin):

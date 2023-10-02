@@ -4,7 +4,7 @@ from openpyxl import load_workbook
 from citizens.models import School
 from education_centers.models import EducationCenter, Teacher
 
-from future_ticket.models import AgeGroup, ProfEnviroment, ProgramAuthor, TicketProfession, TicketProgram
+from future_ticket.models import AgeGroup, ProfEnviroment, ProgramAuthor, StudentBVB, TicketProfession, TicketProgram, TicketQuota
 
 
 def get_sheet(form):
@@ -29,9 +29,9 @@ def cheak_col_match(sheet, fields_names_set):
             if field not in sheet_fields:
                 missing_fields.append(field)
         if len(missing_fields) != 0:
-            return ['Import', 'MissingFieldsError', missing_fields]
+            return ['Error', 'MissingFieldsError', missing_fields]
     except IndexError:
-            return ['Import', 'IndexError']
+            return ['Error', 'IndexError']
     return [True, sheet_col]
 
 def load_worksheet_dict(sheet, fields_names_set):
@@ -47,6 +47,67 @@ def load_worksheet_dict(sheet, fields_names_set):
                 except (ValueError, TypeError): pass
                 sheet_dict[fields_names_set[col]].append(cell_value)
     return sheet_dict
+
+def import_participants(form, event):
+    try:
+        sheet = get_sheet(form)
+    except IndexError:
+        return ['Error', 'IndexError']
+    
+    #Требуемые поля таблицы
+    fields_names = {"№", "ФИО", "Школа", "Посетил", "Класс"}
+    cheak_col_names = cheak_col_match(sheet, fields_names)
+    if cheak_col_names[0] != True:
+        return cheak_col_names
+    
+    sheet_dict = load_worksheet_dict(sheet, cheak_col_names[1])
+    quotas = TicketQuota.objects.filter(events__in=event.quotas.all()).distinct()
+    quotas_schools = School.objects.filter(ticket_quotas__in=quotas).distinct()
+    
+    missing_fields = []
+    missing_schools = set()
+    missing_schools_quota = set()
+    count_added = 0
+    added_participants = []
+    for row in range(len(sheet_dict['№'])):
+        school_name = sheet_dict["Школа"][row]
+        school = School.objects.filter(name=school_name)
+        if len(school) == 0:
+            missing_schools.add(school_name)
+        else:
+            school = school[0]
+            if school not in quotas_schools:
+                missing_schools_quota.add(school)
+            else:
+                participant = add_participant(sheet_dict, row, school, event)
+                if participant[0] == 'OK' and participant[1]:
+                    count_added += 1
+                    added_participants.append(participant[2])
+                if participant[0] == 'MissingField':
+                    missing_fields.append(participant)
+    return ['OK', event, list(missing_schools), missing_fields, list(missing_schools_quota), count_added, added_participants]
+
+def add_participant(sheet, row, school, event):
+    missing_fields = []
+    bvb_id = sheet["№"][row]
+    if bvb_id != "" and bvb_id != None: bvb_id = bvb_id.strip()
+    else: missing_fields.append("№")
+    full_name = sheet["ФИО"][row]
+    if full_name == "" or full_name == None: missing_fields.append("ФИО")
+    grade = sheet["Класс"][row]
+    if grade == "" or grade == None: missing_fields.append("Класс")
+    
+    if len(missing_fields) == 0:
+        participant, is_new = StudentBVB.objects.get_or_create(
+            bvb_id=bvb_id,
+            full_name=full_name,
+            school=school,
+            grade=grade,
+            event=event
+        )
+        return ['OK', is_new, participant]
+    return ['MissingField', missing_fields, row + 2]
+
 
 def change_professions(form):
     try:

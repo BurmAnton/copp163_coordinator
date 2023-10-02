@@ -30,8 +30,10 @@ body
         .cycle-events-stat
             display: flex
             justify-content: space-between
-            align-items: center
+            align-items: flex-start
             p
+                font-size: 18px
+                font-weight: 300
                 margin: 0
         .cycle-events
             margin-top: 20px
@@ -57,11 +59,36 @@ body
                     min-height: 100px
                     height: 100%
                 .event-card-hdr
+                    position: relative
                     display: flex
                     justify-content: space-between
                     font-size: 18px
                     font-weight: 400
                     border-bottom: 2px solid #394959
+                    .profession-hdr
+                        
+                        display: inline-block
+                        width: 270px
+                        white-space: nowrap
+                        overflow: hidden !important
+                        text-overflow: ellipsis
+                        .tooltiptext
+                            visibility: hidden
+                            max-width: 300px
+                            background-color: #394959e6
+                            color: #fff
+                            text-align: center
+                            border-radius: 6px
+                            padding: 5px 9px
+                            position: absolute
+                            z-index: 1
+                            top: 90%
+                            left: 10%
+                            text-wrap: wrap
+                        &:hover
+                            cursor: pointer
+                            .tooltiptext
+                                visibility: visible
                     .edit-icon
                         width: 30px
                         height: 30px
@@ -83,31 +110,31 @@ body
                         width: 100%
                         background-color: white
                         font-weight: 500
-    .quotas-list, .cycle-events
-        table
-            th
-                color: #394959
-                font-weight: 400 !important
-                font-size: 16px
-                line-height: 20px
-                border-top: 0
-                border-bottom: 2px solid #394959
-            .sticky-top
-                z-index: 100 !important
-            td
-                color: #394959
-                font-weight: 300 !important
-                max-width: 250px
-                word-wrap: break-word
-            .th-cetner, .td-center
-                text-align: center
-            .th-rigth, .td-rigth
-                text-align: right
-        .quotas-table
-            th
-                vertical-align: middle
-            .quota-hdr-th
-                border: 0
+.quotas-list, .cycle-events, .participant-table
+    table
+        th
+            color: #394959
+            font-weight: 400 !important
+            font-size: 16px
+            line-height: 20px
+            border-top: 0
+            border-bottom: 2px solid #394959
+        .sticky-top
+            z-index: 100 !important
+        td
+            color: #394959
+            font-weight: 300 !important
+            max-width: 250px
+            word-wrap: break-word
+        .th-center, .td-center
+            text-align: center
+        .th-rigth, .td-rigth
+            text-align: right
+    .quotas-table
+        th
+            vertical-align: middle
+        .quota-hdr-th
+            border: 0
 
 .timeline
     list-style-type: none
