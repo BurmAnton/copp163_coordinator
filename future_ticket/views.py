@@ -7,13 +7,15 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from citizens.models import School
 from django.db.models import Sum, Count, Case, When
-from education_centers.forms import ImportSchoolOrderDataForm, ImportTicketDataForm
+from education_centers.forms import ImportSchoolOrderDataForm,\
+                                    ImportTicketDataForm
+from .forms import ImportParticipantsForm
 from education_centers.models import EducationCenter
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 
-from future_ticket.models import DocumentTypeTicket, EducationCenterTicketProjectYear, EventsCycle, QuotaEvent, SchoolProjectYear, TicketEvent,\
+from future_ticket.models import DocumentTypeTicket, EducationCenterTicketProjectYear, EventsCycle, QuotaEvent, SchoolProjectYear, StudentBVB, TicketEvent,\
                                  TicketFullQuota, TicketProfession, TicketProjectYear, TicketQuota
 
 from .forms import ImportDataForm
@@ -250,6 +252,7 @@ def center_events(request, ed_center_id):
         EducationCenterTicketProjectYear, 
         ed_center=ed_center_id, project_year=project_year
     )
+    import_output = None
     if request.method == 'POST':
         if 'add-event' in request.POST:
             cycle = EventsCycle.objects.get(id=request.POST["cycle_id"])
@@ -262,10 +265,10 @@ def center_events(request, ed_center_id):
                 event_date=datetime.strptime(event_date, "%d.%m.%Y"),
                 status="CRTD"
             )
-        if 'delete-event' in request.POST:
+        elif 'delete-event' in request.POST:
             event = TicketEvent.objects.get(id=request.POST["event_id"])
             event.delete()
-        if 'assign-quota' in request.POST:
+        elif 'assign-quota' in request.POST:
             event = TicketEvent.objects.get(id=request.POST["event_id"])
             quota = TicketQuota.objects.get(id=request.POST["quota_id"])
             reserved_quota = int(request.POST["reserved_quota"])
@@ -289,7 +292,7 @@ def center_events(request, ed_center_id):
                 quota.save()
                 event_quota.save()
                 double_quota.delete()
-        if 'change-quota' in request.POST:
+        elif 'change-quota' in request.POST:
             quota = TicketQuota.objects.get(id=request.POST["quota_id"])
             school = School.objects.get(id=request.POST["school_id"])
             if quota.school != school:
@@ -317,8 +320,18 @@ def center_events(request, ed_center_id):
                     quota.approved_value = quota.approved_value \
                                            - transfered_quota
                     quota.save()
-        return HttpResponseRedirect(reverse(
-            "ticket_center_events", args=[ed_center_id]))
+        elif 'delete-participant' in request.POST:
+            participant = StudentBVB.objects.get(id=request.POST["participant_id"])
+            participant.delete()
+        if 'import-participants' in request.POST:
+            form = ImportParticipantsForm(request.POST, request.FILES)
+            if form.is_valid():
+                event = TicketEvent.objects.get(id=request.POST["event_id"])
+                import_output = imports.import_participants(form, event)
+            else: import_output = "FormError"
+        else:
+            return HttpResponseRedirect(reverse(
+                "ticket_center_events", args=[ed_center_id]))
     cycles = EventsCycle.objects.filter(project_year=project_year).annotate(
             center_events_count=Count(
                 Case(When(events__ed_center=center_year, then=1),
@@ -330,12 +343,14 @@ def center_events(request, ed_center_id):
     professions = TicketProfession.objects.filter(
         quotas__in=quotas
     ).distinct()
-
+    
     return render(request, "future_ticket/center_events.html", {
         'center_year': center_year,
         'cycles': cycles,
         'quotas': quotas,
         'professions': professions,
-        'schools': School.objects.all()
+        'schools': School.objects.all(),
+        'participants_form': ImportParticipantsForm(),
+        'import_output': import_output
     })
 

@@ -606,38 +606,6 @@ class ContractorsDocumentTicket(models.Model):
         return f'{self.doc_type} №{self.register_number} ({self.contractor.name})'
 
 
-class StudentBVB(models.Model):
-    bvb_id = models.IntegerField(
-        "ID БВБ", blank=False, null=False, db_index=True)
-    is_double = models.BooleanField("Дубликат?", default=False)
-    is_hidden = models.BooleanField("Скрыт?", default=False)
-    is_attend = models.BooleanField("Присутствовал?", default=False)
-
-    first_name = models.CharField(
-        "Имя", max_length=50, blank=False, null=False)
-    last_name = models.CharField(
-        "Фамилия", max_length=50, blank=False, null=False)
-    middle_name = models.CharField(
-        "Отчество", max_length=50, blank=True, null=True)
-    grade = models.CharField(
-        "Класс", max_length=50, blank=False, null=False)
-    school = models.ForeignKey(
-        School,
-        verbose_name="Школа", 
-        on_delete=CASCADE,
-        blank=False,
-        null=False
-    )
-    
-    class Meta:
-        verbose_name = "Студент"
-        verbose_name_plural = "Студенты"
-
-    def __str__(self):
-        return f'{self.bvb_id}'
-
-
-
 class EventsCycle(models.Model):
     project_year = models.ForeignKey(
         TicketProjectYear, 
@@ -719,12 +687,7 @@ class TicketEvent(models.Model):
     participants_limit = models.IntegerField(
         "Колво участников", blank=False, null=False, default=0
     )
-    participants = models.ManyToManyField(
-        StudentBVB,
-        verbose_name="Участники",
-        related_name="events",
-        blank=True
-    )
+    
     STATUSES = [
         ("CRTD", "Создана"),
         ("LOAD", "Участники загружены"),
@@ -746,7 +709,42 @@ class TicketEvent(models.Model):
 
     def __str__(self):
         return f'{self.ed_center} ({self.profession}, {self.event_date})'
+
+
+class StudentBVB(models.Model):
+    bvb_id = models.IntegerField(
+        "ID БВБ", blank=False, null=False, db_index=True)
+    is_double = models.BooleanField("Дубликат?", default=False)
+    is_hidden = models.BooleanField("Скрыт?", default=False)
+    is_attend = models.BooleanField("Присутствовал?", default=False)
+
+    full_name = models.CharField(
+        "Имя", max_length=200, blank=False, null=False)
+    grade = models.CharField(
+        "Класс", max_length=50, blank=False, null=False)
+    school = models.ForeignKey(
+        School,
+        verbose_name="Школа", 
+        on_delete=CASCADE,
+        blank=False,
+        null=False
+    )
+    event = models.ForeignKey(
+        TicketEvent,
+        verbose_name="Мероприятие",
+        related_name="participants",
+        on_delete=CASCADE,
+        blank=False,
+        null=False
+    )
     
+    class Meta:
+        verbose_name = "Студент"
+        verbose_name_plural = "Студенты"
+
+    def __str__(self):
+        return f'{self.bvb_id}'
+
 
 class QuotaEvent(models.Model):
     quota = models.ForeignKey(

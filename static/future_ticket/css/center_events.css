@@ -35,9 +35,11 @@ body .cycle-info, body .quotas-list {
 body .cycle-info .cycle-events-stat {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
 }
 body .cycle-info .cycle-events-stat p {
+  font-size: 18px;
+  font-weight: 300;
   margin: 0;
 }
 body .cycle-info .cycle-events {
@@ -70,11 +72,39 @@ body .cycle-info .cycle-events .event-card .event-card-body {
   height: 100%;
 }
 body .cycle-info .cycle-events .event-card .event-card-hdr {
+  position: relative;
   display: flex;
   justify-content: space-between;
   font-size: 18px;
   font-weight: 400;
   border-bottom: 2px solid #394959;
+}
+body .cycle-info .cycle-events .event-card .event-card-hdr .profession-hdr {
+  display: inline-block;
+  width: 270px;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+body .cycle-info .cycle-events .event-card .event-card-hdr .profession-hdr .tooltiptext {
+  visibility: hidden;
+  max-width: 300px;
+  background-color: rgba(57, 73, 89, 0.9019607843);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 9px;
+  position: absolute;
+  z-index: 1;
+  top: 90%;
+  left: 10%;
+  text-wrap: wrap;
+}
+body .cycle-info .cycle-events .event-card .event-card-hdr .profession-hdr:hover {
+  cursor: pointer;
+}
+body .cycle-info .cycle-events .event-card .event-card-hdr .profession-hdr:hover .tooltiptext {
+  visibility: visible;
 }
 body .cycle-info .cycle-events .event-card .event-card-hdr .edit-icon {
   width: 30px;
@@ -102,7 +132,8 @@ body .cycle-info .cycle-events .event-card .event-card-footer .btn {
   background-color: white;
   font-weight: 500;
 }
-body .quotas-list table th, body .cycle-events table th {
+
+.quotas-list table th, .cycle-events table th, .participant-table table th {
   color: #394959;
   font-weight: 400 !important;
   font-size: 16px;
@@ -110,25 +141,25 @@ body .quotas-list table th, body .cycle-events table th {
   border-top: 0;
   border-bottom: 2px solid #394959;
 }
-body .quotas-list table .sticky-top, body .cycle-events table .sticky-top {
+.quotas-list table .sticky-top, .cycle-events table .sticky-top, .participant-table table .sticky-top {
   z-index: 100 !important;
 }
-body .quotas-list table td, body .cycle-events table td {
+.quotas-list table td, .cycle-events table td, .participant-table table td {
   color: #394959;
   font-weight: 300 !important;
   max-width: 250px;
   word-wrap: break-word;
 }
-body .quotas-list table .th-cetner, body .quotas-list table .td-center, body .cycle-events table .th-cetner, body .cycle-events table .td-center {
+.quotas-list table .th-center, .quotas-list table .td-center, .cycle-events table .th-center, .cycle-events table .td-center, .participant-table table .th-center, .participant-table table .td-center {
   text-align: center;
 }
-body .quotas-list table .th-rigth, body .quotas-list table .td-rigth, body .cycle-events table .th-rigth, body .cycle-events table .td-rigth {
+.quotas-list table .th-rigth, .quotas-list table .td-rigth, .cycle-events table .th-rigth, .cycle-events table .td-rigth, .participant-table table .th-rigth, .participant-table table .td-rigth {
   text-align: right;
 }
-body .quotas-list .quotas-table th, body .cycle-events .quotas-table th {
+.quotas-list .quotas-table th, .cycle-events .quotas-table th, .participant-table .quotas-table th {
   vertical-align: middle;
 }
-body .quotas-list .quotas-table .quota-hdr-th, body .cycle-events .quotas-table .quota-hdr-th {
+.quotas-list .quotas-table .quota-hdr-th, .cycle-events .quotas-table .quota-hdr-th, .participant-table .quotas-table .quota-hdr-th {
   border: 0;
 }
 
