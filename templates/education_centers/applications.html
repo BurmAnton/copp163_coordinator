@@ -71,7 +71,7 @@
                 {% endif %}
                 <th scope="col">ЦО</th>
                 <th scope="col">Статус</th>
-                {% if project == 'bilet' %}
+                {% if project == 'bilet' and user.is_superuser %}
                     <th scope="col">Ссылка на упр. квотой</th>
                 {% endif %}
             </tr>
@@ -98,7 +98,7 @@
                        {% endif %}
                     </td>
                     <td scope="row">{{ center.get_stage_display }}</td>
-                    {% if project == 'bilet' %}
+                    {% if project == 'bilet' and user.is_superuser %}
                     <td scope="row">
                         <a href="{% url 'ticket_center_events' center.ed_center.id %}" target="_blank">
                             Ссылка
