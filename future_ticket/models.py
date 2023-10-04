@@ -716,7 +716,7 @@ class StudentBVB(models.Model):
         "ID БВБ", blank=False, null=False, db_index=True)
     is_double = models.BooleanField("Дубликат?", default=False)
     is_hidden = models.BooleanField("Скрыт?", default=False)
-    is_attend = models.BooleanField("Присутствовал?", default=False)
+    is_attend = models.BooleanField("Присутствовал?", default=True)
 
     full_name = models.CharField(
         "Имя", max_length=200, blank=False, null=False)
