@@ -119,7 +119,7 @@
                         </select>
                     </div>
                     <div class="form mb-3">
-                        <select class="selectpicker" title="Выберите школы" multiple data-width="100%" onchange="FilterFunction(5, 'SchoolsFilter')" data-live-search="true" name="schools" id="SchoolsFilter">
+                        <select class="selectpicker" title="Выберите школы" multiple data-width="100%" onchange="FilterFunction(7, 'SchoolsFilter')" data-live-search="true" name="schools" id="SchoolsFilter">
                             {% for school in schools %}
                                 <option class="school" value="{{ school.name }}">{{ school.name }}</option>
                             {% endfor %}
