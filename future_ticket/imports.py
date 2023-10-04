@@ -1,3 +1,4 @@
+from datetime import date
 import math
 from django.shortcuts import get_object_or_404
 from openpyxl import load_workbook
@@ -85,6 +86,7 @@ def import_participants(form, event):
                     added_participants.append(participant[2])
                 if participant[0] == 'MissingField':
                     missing_fields.append(participant)
+    breakpoint()
     return ['OK', event, list(missing_schools), missing_fields, list(missing_schools_quota), count_added, added_participants]
 
 def add_participant(sheet, row, school, event):
@@ -105,6 +107,9 @@ def add_participant(sheet, row, school, event):
             grade=grade,
             event=event
         )
+        if sheet["Посетил"][row] != 'Да':
+            participant.is_attend == False
+            participant.save()
         return ['OK', is_new, participant]
     return ['MissingField', missing_fields, row + 2]
 
