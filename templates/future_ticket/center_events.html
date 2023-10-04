@@ -233,6 +233,32 @@
                     </div>
                 </div>
             </div>
+            {% for event_quota in event.quotas.all %}
+                <div class="modal fade change-event-quota-modal" id="EventQuotaChangeModal{{event_quota.id}}" tabindex="-1" aria-labelledby="#EventQuotaChangeModal{{event_quota.id}}Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="#EventQuotaChangeModal{{event_quota.id}}Label">Уменьшить квоту</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post">
+                                <div class="modal-body">
+                                    <input style="display: none;" type="text" name="event_quota_id" value="{{event_quota.id}}">
+                                    <div class="form mb-3">
+                                        <label for="minus_quota{{event_quota.id}}" class="form-label">На сколько уменьшить квоту?</label>
+                                        <input type="number" name="minus_quota" class="minus_quota form-control" id="minus_quota{{event_quota.id}}" min="0" max="{{ event_quota.reserved_quota }}" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="d-grid gap-2">
+                                        <input type="submit" class="btn btn-primary" name="change-event-quota" value="Изменить"> 
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         {% endfor %}
     {% endfor %}
     {% for quota in quotas %}
@@ -426,7 +452,7 @@
                                 {% for event_quota in event.quotas.all %}
                                     <tr>
                                         <td scope="row">{{ event_quota.quota.school.name }}</td>
-                                        <td scope="row">{{ event_quota.reserved_quota }}</td>
+                                        <td scope="row" data-bs-toggle="modal" data-bs-target="#EventQuotaChangeModal{{event_quota.id}}"><u>{{ event_quota.reserved_quota }} квота</u></td>
                                     </tr>
                                 {% empty %}
                                     <tr>

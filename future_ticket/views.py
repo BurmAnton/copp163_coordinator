@@ -321,8 +321,22 @@ def center_events(request, ed_center_id):
                                            - transfered_quota
                     quota.save()
         elif 'delete-participant' in request.POST:
-            participant = StudentBVB.objects.get(id=request.POST["participant_id"])
+            participant = StudentBVB.objects.get(
+                                        id=request.POST["participant_id"])
             participant.delete()
+        elif 'change-event-quota' in request.POST:
+            quota_event = QuotaEvent.objects.get(
+                                        id=request.POST["event_quota_id"])
+            minus_quota = int(request.POST["minus_quota"])
+            if minus_quota < quota_event.reserved_quota:
+                new_quota_event = QuotaEvent.objects.create(
+                    quota = quota_event.quota,
+                    event = quota_event.event,
+                    reserved_quota = quota_event.reserved_quota - minus_quota
+                )
+                new_quota_event.quota.reserved_quota += new_quota_event.reserved_quota
+                new_quota_event.quota.save()
+            quota_event.delete()
         if 'import-participants' in request.POST:
             form = ImportParticipantsForm(request.POST, request.FILES)
             if form.is_valid():
