@@ -346,6 +346,29 @@ class Grant(models.Model):
         verbose_name_plural = "Гранты"
 
 
+class FlowStatus(models.Model):
+    off_name = models.CharField("Название с flow", max_length=100, null=False)
+    name = models.CharField("Название", max_length=100, null=False)
+    action = models.TextField("Что делать?", null=False, blank=False)
+    is_parent = models.BooleanField("Верхнеуровневый статус", default=False)
+    is_rejected = models.BooleanField("Отказной статус", default=False)
+    parent_status = models.ForeignKey(
+        "self", 
+        verbose_name="Родительский статус",
+        related_name="children_statuses",
+        null=True, 
+        blank=True,
+        on_delete=CASCADE
+    )
+
+    def __str__(self):
+        return f'{self.name} ({self.off_name})'
+
+    class Meta:
+        verbose_name = "Статус flow"
+        verbose_name_plural = "Статусы flow"
+
+
 class Application(models.Model):
     project_year = models.ForeignKey(
         ProjectYear, 
@@ -355,8 +378,19 @@ class Application(models.Model):
         blank=False,
         on_delete=models.CASCADE
     )
+    flow_id = models.IntegerField('Номер заявки', null=True, blank=True)
+    flow_status = models.ForeignKey(
+        FlowStatus,
+        verbose_name="Статус (2023)",
+        related_name="applications",
+        null=True,
+        blank=True,
+        on_delete=CASCADE
+    )
     applicant = models.ForeignKey(Citizen, verbose_name="Заявитель", on_delete=CASCADE, related_name='POE_applications')
     creation_date = models.DateTimeField("Дата создания", blank=True, null=True, default=now)
+    expiration_date = models.DateField("Дата истечения заявки", blank=True, null=True)
+    csn_prv_date = models.DateField("Дата одобрения ЦЗН", blank=True, null=True)
     APPL_STATUS_CHOICES = [
         ('NEW', "Новая заявка"),
         ('ADM', "Допущен"),
@@ -374,14 +408,16 @@ class Application(models.Model):
     education_center = models.ForeignKey(EducationCenter, verbose_name="Центр обучения", on_delete=CASCADE, related_name='edcenter_applicants', blank=True, null=True)
     group = models.ForeignKey(Group, verbose_name="Группа", on_delete=CASCADE, related_name='students', blank=True, null=True)
     CONTR_TYPE_CHOICES = [
-        ('OLD', "Трехсторонний договор со старым работодателем"),
-        ('NEW', "Трехсторонний договор с новым работодателем"),
-        ('SELF', "Двухсторонный договор"),
+        ('OLD', "Трёхсторонний со старым работодателем"),
+        ('NEW', "Трёхсторонний с новым работодателем"),
+        ('THR', "Трёхсторонний"),
+        ('CZN', "Трёхсторонний с ЦЗН"),
+        ('SELF', "Двусторонний"),
         ('NOT', 'Без договора'),
         ('–', '-')
     ]
     contract_type = models.CharField("Тип контракта", max_length=4, choices=CONTR_TYPE_CHOICES, default='–')
-   
+    contract_date = models.DateTimeField("Дата последней смены статуса", null=True, blank=False)
     is_working = models.BooleanField("Трудоустроен", default=False)
     PAYMENT_OPTIONS = [
         ('DP', 'Не оплачен'),

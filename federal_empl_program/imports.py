@@ -10,7 +10,22 @@ from django.utils import timezone
 from citizens.models import Citizen, School
 from education_centers.models import EducationProgram, EducationCenter, \
                                      Workshop, Competence
-from .models import Application, Group, CitizenCategory, ProjectYear
+from .models import Application, FlowStatus, Group, CitizenCategory, ProjectYear
+
+
+CONTR_TYPE_CHOICES = {
+     "Трёхсторонний с работодателем": 'THR',
+     "Трёхсторонний с ЦЗН": 'CZN',
+     "Двусторонний": 'SELF'
+}
+EDUCATION_CHOICES = {
+    "Высшее образование – бакалавриат": 'SPVO',
+    "Среднее профессиональное образование - техникум, колледж": 'SPVO',
+    "Высшее образование – специалитет, магистратура": 'SPVO',
+    "Высшее образование – подготовка кадров высшей квалификации": 'SPVO',
+    "Среднее общее образование - 11 классов": 'SCHL',
+    "Основное общее образование - 9 классов": 'SCHL',
+}
 
 def get_sheet(form):
     workbook = load_workbook(form.cleaned_data['import_file'])
@@ -23,7 +38,7 @@ def cheak_col_match(sheet, fields_names_set):
     sheet_fields = []
     sheet_col = {}
     if sheet[f"A2"].value is None:
-        return ['EmptySheet', ]
+        return ['Import', 'EmptySheet']
     try:
         for col_header in range(1, col_count+1):
             if sheet.cell(row=1,column=col_header).value is not None:
@@ -34,9 +49,9 @@ def cheak_col_match(sheet, fields_names_set):
             if field not in sheet_fields:
                 missing_fields.append(field)
         if len(missing_fields) != 0:
-            return ['MissingFieldsError', missing_fields]
+            return ['Error', 'MissingFieldsError', missing_fields]
     except IndexError:
-            return ['IndexError', ]
+            return ['Error', 'IndexError']
     return [True, sheet_col]
 
 def load_worksheet_dict(sheet, fields_names_set):
@@ -54,207 +69,150 @@ def load_worksheet_dict(sheet, fields_names_set):
     return sheet_dict
 
 
-def express_import(form):
-    try:
-        sheet = get_sheet(form)
-    except IndexError:
-        return ['Import', 'IndexError']
-   
+def import_applications(form, year):
+    try: sheet = get_sheet(form)
+    except IndexError: return ['Error', 'IndexError']
+    
     #Требуемые поля таблицы
-    fields_names = [
-        "Фамилия", "Имя", "Отчество", "Пол", "Дата рождения", "СНИЛС",
-        "Email", "Телефон", "Категория слушателя", "Город проживания", 
-        "Регион проживания", "Компетенция","Выбранное место обучения", 
-        "Адрес выбранного место обучения", "Статус заявки", "Группа",
-        "Дата создания заявки","Дата начала обучения", 
-        "Дата окончания обучения", "Программа обучения"
-    ]
-
+    fields_names = {
+        "Номер заявки", "Фамилия", "Имя", "Отчество", "СНИЛС", "Телефон",
+        "Пол гражданина","Уровень образования с портала РР", "Email",
+        "Регион", "Статус заявки", "Дата одобрения ЦЗН", "Категория",
+        "Тип договора", "Образовательный партнёр", "Начало обучения",
+        "Окончание обучения", "Дата создания заявки", "Идентификатор потока",
+        "Программа", "Идентификатор образовательной программы", 
+        "Дата рождения гражданина", "Срок истечения заявки",
+        "Дата заключения договора со слушателем"
+    }
     cheak_col_names = cheak_col_match(sheet, fields_names)
     if cheak_col_names[0] != True:
         return cheak_col_names
     
-    sheet_dict = load_worksheet_dict(sheet, cheak_col_names[1])
-
+    sheet = load_worksheet_dict(sheet, cheak_col_names[1])
     missing_fields = []
-    errors = []
-    added_users = 0
-    added_applications = 0
-    for row in range(len(sheet_dict['СНИЛС'])):
-        citizen = load_citizen(sheet_dict, row)
-        if citizen[0] == 'MissingField':
-            missing_fields.append(citizen)
+    citizen_added = 0
+    citizen_updated = 0
+    application_added = 0
+    application_updated = 0
+    group_added = 0
+    group_updated = 0
+    project_year = ProjectYear.objects.get(year=year)
+
+    for row in range(len(sheet['Номер заявки'])):
+        citizen_input = create_citizen(sheet, row)
+        if citizen_input[0] != True:
+            missing_fields.append(citizen_input)
         else:
-            if citizen[2] == True: added_users += 1
-            citizen = citizen[1]
-            application = load_application(citizen, sheet_dict, row)
-            if application[0] == 'MissingField':
-                missing_fields.append(citizen)
+            citizen = citizen_input[1]
+            if citizen_input[2]: citizen_added += 1
+            else: citizen_updated += 1
+            application_input = create_application(sheet, row, citizen, project_year)
+            if application_input[0] != True:
+                missing_fields.append(application_input)
             else:
-                added_applications += 1
-                application = application[1]
-    return ['OK', added_applications, missing_fields, errors]
+                application = application_input[1]
+                if application_input[2]: application_added += 1
+                else: application_updated += 1
+                if sheet["Идентификатор потока"][row] != "" \
+                    and sheet["Идентификатор потока"][row] != None:
+                    group_input = create_group(sheet, row, application)
+                    if group_input[0] != True:
+                        missing_fields.append(group_input)
+                    else:
+                        if group_input[2]: group_added += 1
+                        else: group_updated += 1
+    return ['OK', missing_fields, citizen_added, citizen_updated,
+             application_added, application_updated, group_added, group_updated]
 
-def load_citizen(sheet, row):
-    missing_fields = []
-
+def create_citizen(sheet, row):
     snils_number = sheet["СНИЛС"][row]
-    if snils_number != "": snils_number = snils_number.strip().title()
-    else: missing_fields.append("СНИЛС")
-    last_name = sheet["Фамилия"][row]
-    if last_name != "": last_name = last_name.strip().title()
-    else: missing_fields.append("Фамилия")
-    first_name = sheet["Имя"][row]
-    if first_name != "": first_name = first_name.strip().title()
-    else: missing_fields.append("Имя")
-    middle_name = sheet["Отчество"][row]
-    if middle_name != "" and middle_name != None:
-        middle_name = middle_name.strip().title()
-    else: middle_name = None
+    if snils_number == "" or None:
+        return ["SnilsMissing", "СНИЛС", row+2]
+    citizen, is_new = Citizen.objects.get_or_create(
+        snils_number=snils_number
+    )
+    citizen.last_name = sheet["Фамилия"][row]
+    citizen.first_name = sheet["Имя"][row]
+    citizen.middle_name = sheet["Отчество"][row]
+    citizen.phone_number = sheet["Телефон"][row]
+    citizen.email = sheet["Email"][row]
+    citizen.res_region = sheet["Регион"][row]
+    citizen.birthday = datetime.strptime(sheet["Дата рождения гражданина"][row], "%d.%m.%Y")
+    if sheet["Пол гражданина"][row] == "Мужской": citizen.sex = 'M'
+    elif sheet["Пол гражданина"][row] == "Женский": citizen.sex = 'F'
+    education_type = sheet["Уровень образования с портала РР"][row]
+    if education_type in EDUCATION_CHOICES:
+        citizen.education_type = EDUCATION_CHOICES[education_type]
+    citizen.save()
 
-    sex = sheet["Пол"][row]
-    if sex == "м": sex = 'M'
-    elif sex == "ж": sex = 'F'
-    else: sex = None
-    birthday = sheet["Дата рождения"][row]
-    if birthday != "":
-        birthday = datetime.strptime(birthday, "%Y-%m-%d")
-    else: birthday = None
-    
-    email = sheet["Email"][row]
-    if email != "": email = email.strip()
-    else: email = None
-    phone_number = sheet["Телефон"][row]
-    if phone_number != "": phone_number = phone_number.strip()
-    else: phone_number = None
-    res_city = sheet["Город проживания"][row]
-    if res_city != "": res_city = res_city.strip()
-    else: res_city = None
-    res_region = sheet["Регион проживания"][row]
-    if res_region != "": res_region = res_region.strip()
-    else: res_region = None
+    return [True, citizen, is_new]
 
-    if len(missing_fields) == 0:
-        citizen, is_new = Citizen.objects.get_or_create(
-             snils_number=snils_number
-        )
-        citizen.last_name = last_name
-        citizen.first_name = first_name
-        citizen.middle_name = middle_name
-        citizen.sex = sex
-        citizen.birthday = birthday
-        citizen.email = email
-        citizen.phone_number = phone_number
-        citizen.res_city = res_city
-        citizen.res_region = res_region
-        citizen.save()
-        return ['OK', citizen, is_new]
-    return ['MissingField', missing_fields, row + 2]
-
-def load_application(citizen, sheet, row):
-    missing_fields = []
-
-    application_date = sheet["Дата создания заявки"][row]
-    if application_date != "": 
-        application_date = datetime.strptime(
-            application_date, "%Y-%m-%d %H:%M:%S"
-        )
-        application_date = timezone.make_aware(application_date)
-        application_date.astimezone(pytz.timezone('Europe/Samara'))
-    else: missing_fields.append("Дата создания заявки")
-    project_year, is_new = ProjectYear.objects.get_or_create(
-        year=application_date.year
-    )
-    appl_status = None
-    for status in Application.APPL_STATUS_CHOICES:
-        if sheet["Статус заявки"][row] == status[1]:
-            appl_status = status[0]
-    if appl_status == None: missing_fields.append("Статус заявки")
-    citizen_category_name = sheet["Категория слушателя"][row]
-    citizen_category = CitizenCategory.objects.filter(
-        official_name=citizen_category_name,
-        project_year=project_year
-    )
-    if len(citizen_category) == 0:
-        missing_fields.append("Категория слушателя")
-    else: citizen_category = citizen_category[0]
-    competence = sheet["Компетенция"][row]
-    competence, is_new = Competence.objects.get_or_create(
-        title = competence,
-        is_worldskills=True
-    )
-    education_program = sheet["Программа обучения"][row]
-    if education_program == "нет":
-        education_program = None
-    else:
-        education_program = load_EducationProgram(sheet, row, competence)
-    education_center = sheet["Выбранное место обучения"][row].strip()
-    education_center, is_new = EducationCenter.objects.get_or_create(
-        name=education_center
-    )
-    workshop, is_new = Workshop.objects.get_or_create(
-        competence=competence,
-        education_center=education_center,
-        adress=sheet["Адрес выбранного место обучения"][row]
-    )
-    group, is_new = Group.objects.get_or_create(
-        name=sheet["Группа"][row].strip(),
-        workshop=workshop,
-        education_program=education_program,
-        start_date=sheet["Дата начала обучения"][row],
-        end_date=sheet["Дата окончания обучения"][row],
-        group_status='COMP'
-    )
+def create_application(sheet, row, citizen, project_year):
+    flow_id = sheet["Номер заявки"][row].replace('=HYPERLINK("https://flow.firpo.info/Requests/Card/', '')
+    flow_id = sheet["Номер заявки"][row].replace(')', '')
+    flow_id = int(flow_id.split()[1])
     application, is_new = Application.objects.get_or_create(
+        flow_id=flow_id,
         project_year=project_year,
-        creation_date=application_date,
-        competence=competence,
-        applicant=citizen,
-        education_center=education_center,
-        appl_status='COMP',
-        citizen_category=citizen_category,
-        group=group
+        applicant=citizen
     )
-    return ['OK', application, is_new]
+    flow_status = sheet["Статус заявки"][row]
+    application.flow_status = FlowStatus.objects.get(off_name=flow_status)
+    application.creation_date = datetime.strptime(sheet["Дата создания заявки"][row], "%d.%m.%Y")
+    if sheet["Срок истечения заявки"][row] != None:
+        application.expiration_date = datetime.strptime(sheet["Срок истечения заявки"][row], "%d.%m.%Y")
+    if sheet["Дата одобрения ЦЗН"][row] != None:
+        csn_prv_date = datetime.strptime(sheet["Дата одобрения ЦЗН"][row], "%d.%m.%Y")
+        if csn_prv_date == "": csn_prv_date = None
+        application.csn_prv_date = csn_prv_date
+    citizen_category = sheet["Категория"][row]
+    application.citizen_category = CitizenCategory.objects.get(
+            official_name=citizen_category, project_year=project_year)
+    contract_type = sheet["Тип договора"][row]
+    if contract_type in CONTR_TYPE_CHOICES:
+        application.contract_type = CONTR_TYPE_CHOICES[contract_type]
+        if sheet["Дата заключения договора со слушателем"][row] != None:
+            application.contract_date = datetime.strptime(sheet[
+                "Дата заключения договора со слушателем"][row], "%d.%m.%Y")
+    else: application.contract_type = "–"
 
-def load_EducationProgram(sheet_dict, row, competence):
-    program_name=sheet_dict["Программа обучения"][row]
-    program_type = set_program_type(program_name)
-    duration = set_program_duration(program_name)
-    program_name = set_program_name(program_name)
-    education_program, is_new = EducationProgram.objects.get_or_create(
-        program_name=program_name,
-        competence=competence,
-        program_type=program_type,
-        duration=duration
+    flow_name = sheet["Образовательный партнёр"][row]
+    education_center = EducationCenter.objects.filter(
+        flow_name=flow_name
     )
-    return education_program
+    if len(education_center) == 0:
+        return ["EdCenterMissing", flow_name, row+2]
+    application.education_center = education_center[0]
+    application.save()
+    return [True, application, is_new]
 
-def set_program_type(program_name):
-    program_types = (
-        ('DPOPK', 'ДПО ПК', 'Дополнительная профессиональная программа повышения квалификации'),
-        ('DPOPP', 'ДПО ПП', 'Дополнительная профессиональная программа профессиональной переподготовки'),
-        ('POP', 'ПО П', '(профессиональная подготовка)'),
-        ('POPP', 'ПО ПП', '(переподготовка)'),
-        ('POPK', 'ПО ПК', '(повышение квалификации)'),
+def create_group(sheet, row, application):
+    flow_id = sheet["Идентификатор потока"][row]
+    group, is_new = Group.objects.get_or_create(flow_id=flow_id)
+    if sheet["Начало обучения"][row] != None:
+        group.start_date = datetime.strptime(sheet["Начало обучения"][row], "%d.%m.%Y")
+    if sheet["Окончание обучения"][row] != None:
+        group.end_date = datetime.strptime(sheet["Окончание обучения"][row], "%d.%m.%Y")
+    
+    program_name = sheet["Программа"][row]
+    program_flow_id = sheet["Идентификатор образовательной программы"][row]
+    group.education_program = get_education_program(
+        program_name, program_flow_id, application.education_center
     )
-    program_type = 'DPOPK'
-    for prog_type in program_types:
-        if prog_type[2] in program_name:
-            program_type = prog_type[0]
-    return program_type
-
-def set_program_duration(program_name):
-    if "72" in program_name:
-        duration = 72
-    elif "144" in program_name:
-        duration = 144
-    elif "256" in program_name:
-        duration = 256
-    return duration
-
-def set_program_name(program_name):
-    program_name = program_name.split('"', 1)[1]
-    program_name = program_name.split('(', 1)[0]
-    program_name = program_name.replace('" ', '')
-    return program_name
+    if group.education_program == None:
+        return ["EdProgramMissing", program_flow_id, row+2]
+    group.save()
+    return [True, group, is_new]
+    
+def get_education_program(program_name, program_flow_id, education_center):
+    education_program = EducationProgram.objects.filter(
+        flow_id=program_flow_id)
+    if len(education_program) != 0: return education_program[0]
+    education_program = EducationProgram.objects.filter(
+        program_name=program_name, ed_center=education_center)
+    if len(education_program) != 0: 
+        education_program[0].flow_id = program_flow_id
+        education_program[0].save()
+        return education_program[0]
+    
+    return None

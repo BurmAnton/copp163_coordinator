@@ -16,10 +16,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
 
 from education_centers.models import Competence, EducationCenter, EducationProgram
+from federal_empl_program.imports import import_applications
 
 from . import exports
 from .forms import ImportDataForm
-from .imports import express_import
 
 from pysendpulse.pysendpulse import PySendPulse
 
@@ -36,23 +36,20 @@ def index(request):
 
 @login_required
 @csrf_exempt
-def import_express(request):
+def import_flow(request):
+    form = ImportDataForm()
+    message = None
     if request.method == "POST":
         form = ImportDataForm(request.POST, request.FILES)
         if form.is_valid():
-            message = express_import(form)
+            message = import_applications(form, 2023)
         else:
             data = form.errors
-        form = ImportDataForm()
-        return render(request, "federal_empl_program/import_express.html",{
-            'form': form,
-            'message': message
-        })
-    else:
-        form = ImportDataForm()
-        return render(request, "federal_empl_program/import_express.html",{
-            'form': form
-        })
+    
+    return render(request, "federal_empl_program/import_flow.html",{
+        'form': form,
+        'message': message
+    })
 
 @csrf_exempt
 def login(request):

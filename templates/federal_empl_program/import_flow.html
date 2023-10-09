@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}Импорт данных | ФП «Содействие занятости»{% endblock %}
+{% block style %}
+    <link href="{% static 'future_ticket/css/import_programs.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'federal_empl_program/js/citizens.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="modal-body">
+        <div class="import-form">
+            <h2>Импорт заявок (flow)!</h2>
+            {% if message != None %}
+                <div class="alert alert-success" role="alert">
+                    <p>Слушателей добавлено: {{message.2}}</p>
+                    <p>Слушателей изменено: {{message.3}}</p>
+                    <p>Заявок добавлено: {{message.4}}</p>
+                    <p>Заявок изменено: {{message.5}}</p>
+                    <p>Групп добавлено: {{message.6}}</p>
+                    <p>Групп изменено: {{message.7}}</p>
+                </div> 
+            {% endif %}
+            <form enctype="multipart/form-data" action="{% url 'import_flow' %}" method="post">
+                <div class="mb-3">
+                    {{ form }}
+                </div>
+                <button type="submit" class="btn btn-primary" name="import-participants">Импортировать</button>
+            </form>
+            {% for missing_field in message.1 %}
+                {% if missing_field.0 == "SnilsMissing" %}
+                    <div class="alert alert-danger" role="alert">
+                        В {{missing_field.2}} строке отсутсвует СНИЛС.
+                    </div>
+                {% elif missing_field.0 == "EdCenterMissing" %}
+                    <div class="alert alert-danger" role="alert">
+                        Центр {{missing_field.1}} не найден на платформе.
+                    </div>
+                {% elif missing_field.0 == "EdProgramMissing" %}
+                    <div class="alert alert-danger" role="alert">
+                        Программа с flow_id "{{missing_field.1}}" не найден на платформе.
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
