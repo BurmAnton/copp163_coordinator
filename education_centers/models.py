@@ -26,6 +26,7 @@ class EducationCenter(models.Model):
     name = models.CharField("Название организации", max_length=500)
     short_name = models.CharField("Краткое название организации", max_length=500, null=True, blank=True, default="")
     short_name_r = models.CharField("Краткое название организации (род.)", max_length=500, null=True, blank=True, default="")
+    flow_name = models.CharField("Название на flow", max_length=500, null=True, blank=True, default="")
 
     contact_person = models.ForeignKey(User, verbose_name="Контактное лицо", related_name="education_centers", on_delete=DO_NOTHING, blank=True, null=True)
     home_city = models.CharField("Город", max_length=150, null=True, blank=True, default="")
@@ -83,7 +84,8 @@ class EducationProgram(models.Model):
         blank=True
     )
     program_name = models.CharField("Название программы", max_length=500)
-
+    flow_id = models.IntegerField('Идентификатор flow', null=True, blank=True) 
+    
     competence = models.ForeignKey(Competence, verbose_name="Компетенция", on_delete=CASCADE, related_name='programs')
     PROGRAM_TYPES = (
         ('DPOPK', 'ДПО ПК'),
@@ -318,6 +320,7 @@ class Workshop(models.Model):
 
 class Group(models.Model):
     name = models.CharField("Номер группы", max_length=50)
+    flow_id = models.IntegerField('Идентификатор flow', null=True, blank=True) 
     workshop = models.ForeignKey(Workshop, verbose_name="мастерская", on_delete=CASCADE, related_name='groups', blank=True, null=True)
     education_program = models.ForeignKey(EducationProgram, verbose_name="Программа обучения", on_delete=CASCADE, related_name='groups', blank=True, null=True)
     start_date = models.DateField("Дата начала обучения", blank=True, null=True)

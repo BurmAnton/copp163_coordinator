@@ -5,7 +5,7 @@ from . import views
 urlpatterns = [
     path('',views.index, name='index'),
     #Import
-    path('import/express/', views.import_express, name='import_express'),
+    path('import/flow/', views.import_flow, name='import_flow'),
     #Auth
     re_path(r'^login/$', views.login, name="login"),
     path('logout/', views.logout, name="logout"),
