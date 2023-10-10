@@ -5,6 +5,8 @@ from datetime import date
 from celery import Celery
 from celery.schedules import crontab
 from django.apps import apps
+
+from future_ticket.task import find_participants_dublicates
 # Set the default Django settings module for the 'celery' program.
 # "sample_app" is name of the root app
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'copp163_coordinator.settings')
@@ -20,7 +22,7 @@ app.autodiscover_tasks(lambda: [n.name for n in apps.get_app_configs()])
 @app.on_after_configure.connect()
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
-        crontab(minute=0, hour=0),
+        crontab(minute="*/1"),
         update_events_cycles_statuses,
         name='update_events_cycles_statuses_everyday'
     )
@@ -41,6 +43,8 @@ def update_events_cycles_statuses():
         start_period_date__gt=today
     )
     cycles_check.update(status='CHCK')
+    for cycle in cycles_check:
+        find_participants_dublicates.delay(cycle.id)
     #В процессе
     cycles_in_progress = EventsCycle.objects.filter(
         start_period_date__lte=today,

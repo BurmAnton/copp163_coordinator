@@ -272,26 +272,27 @@ def center_events(request, ed_center_id):
             event = TicketEvent.objects.get(id=request.POST["event_id"])
             quota = TicketQuota.objects.get(id=request.POST["quota_id"])
             reserved_quota = int(request.POST["reserved_quota"])
-            event_quota = QuotaEvent.objects.create(
-                event=event,
-                quota=quota,
-                reserved_quota=reserved_quota
-            )
-            quota.reserved_quota += reserved_quota
-            quota.save()
-            double_quotas = QuotaEvent.objects.filter(
-                event=event,
-                quota=quota,
-            ).exclude(id=event_quota.id)
-            if len(double_quotas) != 0:
-                reserved_quota = 0
-                for double_quota in double_quotas:
-                    reserved_quota += double_quota.reserved_quota
-                event_quota.reserved_quota += reserved_quota
+            if quota.free_quota >= reserved_quota:
+                event_quota = QuotaEvent.objects.create(
+                    event=event,
+                    quota=quota,
+                    reserved_quota=reserved_quota
+                )
                 quota.reserved_quota += reserved_quota
                 quota.save()
-                event_quota.save()
-                double_quota.delete()
+                double_quotas = QuotaEvent.objects.filter(
+                    event=event,
+                    quota=quota,
+                ).exclude(id=event_quota.id)
+                if len(double_quotas) != 0:
+                    reserved_quota = 0
+                    for double_quota in double_quotas:
+                        reserved_quota += double_quota.reserved_quota
+                    event_quota.reserved_quota += reserved_quota
+                    quota.reserved_quota += reserved_quota
+                    quota.save()
+                    event_quota.save()
+                    double_quota.delete()
         elif 'change-quota' in request.POST:
             quota = TicketQuota.objects.get(id=request.POST["quota_id"])
             school = School.objects.get(id=request.POST["school_id"])

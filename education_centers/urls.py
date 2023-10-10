@@ -12,8 +12,8 @@ urlpatterns = [
         name='ed_center_groups'
     ),
     path(
-        '<int:ed_center_id>/application', 
-        views.ed_center_application, 
+        '<int:ed_center_id>/application',
+        views.ed_center_application,
         name='ed_center_application'
     ),
     path('applications', views.applications, name='applications'),
