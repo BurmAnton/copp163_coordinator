@@ -86,7 +86,6 @@ def import_participants(form, event):
                     added_participants.append(participant[2])
                 if participant[0] == 'MissingField':
                     missing_fields.append(participant)
-    breakpoint()
     return ['OK', event, list(missing_schools), missing_fields, list(missing_schools_quota), count_added, added_participants]
 
 def add_participant(sheet, row, school, event):

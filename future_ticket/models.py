@@ -15,6 +15,7 @@ from citizens.models import School
 from copp163_coordinator import settings
 from education_centers.models import Competence, EducationProgram, \
                                      EducationCenter, Group, Employee, Workshop
+from future_ticket.task import find_participants_dublicates
 from users.models import DisabilityType
 from education_centers.models import Teacher
 
