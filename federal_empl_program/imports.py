@@ -166,8 +166,12 @@ def create_application(sheet, row, citizen, project_year):
         if csn_prv_date == "": csn_prv_date = None
         application.csn_prv_date = csn_prv_date
     citizen_category = sheet["Категория"][row]
-    application.citizen_category = CitizenCategory.objects.get(
+    citizen_category = CitizenCategory.objects.filter(
             official_name=citizen_category, project_year=project_year)
+    if len(citizen_category) == 0:
+        application.delete()
+        return ["CategoryMissing", citizen_category, row+2]
+    application.citizen_category = citizen_category[0]
     contract_type = sheet["Тип договора"][row]
     if contract_type in CONTR_TYPE_CHOICES:
         application.contract_type = CONTR_TYPE_CHOICES[contract_type]
@@ -181,6 +185,7 @@ def create_application(sheet, row, citizen, project_year):
         flow_name=flow_name
     )
     if len(education_center) == 0:
+        application.delete()
         return ["EdCenterMissing", flow_name, row+2]
     application.education_center = education_center[0]
     application.save()
@@ -200,7 +205,9 @@ def create_group(sheet, row, application):
         program_name, program_flow_id, application.education_center
     )
     if group.education_program == None:
+        group.delete()
         return ["EdProgramMissing", program_flow_id, row+2]
+    group.students.add(application)
     group.save()
     return [True, group, is_new]
     

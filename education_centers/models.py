@@ -348,7 +348,7 @@ class Group(models.Model):
         return group_price
 
     def __str__(self):
-        return  f"{self.name}"
+        return  f"{self.flow_id}"
 
 
 class DocumentType(models.Model):

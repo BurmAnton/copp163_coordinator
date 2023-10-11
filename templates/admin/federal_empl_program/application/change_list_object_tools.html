@@ -10,8 +10,8 @@
     </li>
     {% if request.user.is_superuser %}
       <li>
-        <a href="{% url 'import_express' %}" class="addlink">
-          Импорт экспресс
+        <a href="{% url 'import_flow' %}" class="addlink">
+          Импорт flow
         </a>
       </li>
     {% endif %}

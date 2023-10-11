@@ -36,11 +36,15 @@
                     </div>
                 {% elif missing_field.0 == "EdCenterMissing" %}
                     <div class="alert alert-danger" role="alert">
-                        Центр {{missing_field.1}} не найден на платформе.
+                        {{missing_field.1}} не найден на платформе.
                     </div>
                 {% elif missing_field.0 == "EdProgramMissing" %}
                     <div class="alert alert-danger" role="alert">
                         Программа с flow_id "{{missing_field.1}}" не найден на платформе.
+                    </div>
+                {% elif missing_field.0 == "CategoryMissing" %}
+                    <div class="alert alert-danger" role="alert">
+                        Категория "{{missing_field.1}}" не найден на платформе (строка {{missing_field.2}}).
                     </div>
                 {% endif %}
             {% endfor %}
