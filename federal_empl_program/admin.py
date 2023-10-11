@@ -22,15 +22,15 @@ from users.models import Group
 from datetime import datetime, timedelta
 
 
-@admin.register(QuotaRequest)
+#@admin.register(QuotaRequest)
 class QuotaRequestAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(EdCenterQuotaRequest)
+#@admin.register(EdCenterQuotaRequest)
 class EdCenterQuotaAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(ProgramQuotaRequest)
+#@admin.register(ProgramQuotaRequest)
 class ProgramQuotaRequestAdmin(admin.ModelAdmin):
     pass
 
@@ -58,12 +58,12 @@ class CitizenApplicationAdmin(admin.ModelAdmin):
         'competence',
     ]
 
-@admin.register(EdCenterEmployeePosition)
+#@admin.register(EdCenterEmployeePosition)
 class EdCenterEmployeePositionnAdmin(admin.ModelAdmin):
     list_display = ['position', 'ed_center']
     search_fields = ['ed_center__name']
 
-@admin.register(ProjectPosition)
+#@admin.register(ProjectPosition)
 class ProjectPositionAdmin(admin.ModelAdmin):
     pass
 
@@ -77,7 +77,7 @@ class ProjectYearAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Indicator)
+#@admin.register(Indicator)
 class IndicatorAdmin(admin.ModelAdmin):
     pass
 
@@ -88,11 +88,14 @@ class CitizenCategoryAdmin(admin.ModelAdmin):
         "short_name",
         "official_name"
     )
+    list_filter = (
+        ('project_year', RelatedOnlyDropdownFilter),
+    )
 
 ApplicationForm = select2_modelform(Application, attrs={'width': '400px'})
 
 
-@admin.register(Grant)
+#@admin.register(Grant)
 class GrantAdmin(admin.ModelAdmin):
     list_display = [
         'project_year', 
@@ -117,10 +120,6 @@ class ApplicationAdmin(admin.ModelAdmin):
                         'competence', 'education_program', 'education_center',
                         'group'
                     ),
-        }),
-        ('Работа по трудоустройству', {
-            'classes': ('collapse',),
-            'fields': ('contract_type', 'is_working', 'find_work'),
         }),
     )
 
@@ -147,17 +146,27 @@ class ApplicationAdmin(admin.ModelAdmin):
         return city
     get_city.short_description='Город'
 
+    def get_center(self, application):
+        if application.education_center == None:
+            return "-"
+        center_url = reverse("admin:education_centers_educationcenter_change",
+                              args=[application.education_center.id])
+        flow_name = application.education_center.flow_name
+        enter_link = f'<a href="{center_url}">{flow_name}</a>'
+        return mark_safe(enter_link)
+    get_center.short_description = 'ЦО'
+    get_center.admin_order_field = 'education_center__flow_name'
+
     search_fields = ['applicant__phone_number','applicant__email','applicant__snils_number',
     'applicant__first_name','applicant__middle_name','applicant__last_name', 'id']
     
 
     list_display = [
         'applicant',
-        'is_working',
-        'payment',
-        'payment_amount',
+        'citizen_category',
+        'flow_status',
         'group',
-        'grant'
+        'get_center'
     ]
     list_totals = ['payment_amount',]
     def get_form(self, request, obj=None, **kwargs):
@@ -172,17 +181,16 @@ class ApplicationAdmin(admin.ModelAdmin):
         return form
     autocomplete_list_filter = ('education_center', 'education_program', 'group', 'competence')
     list_filter = (
-        ('group__start_date', DropdownFilter),
-        ('group__end_date', DropdownFilter),
-        ('appl_status', ChoiceDropdownFilter),
+        ('project_year', RelatedOnlyDropdownFilter),
+        ('flow_status', RelatedOnlyDropdownFilter),
         ('citizen_category', RelatedOnlyDropdownFilter)
     )
     
-    actions = ['allow_applications', 'get_job', 'get_jobless', 'get_paid', 'get_paid_part', 'cancel_payment']
+    #actions = ['allow_applications', 'get_job', 'get_jobless', 'get_paid', 'get_paid_part', 'cancel_payment']
     def allow_applications(self, request, queryset):
         queryset.update(appl_status='ADM')
     allow_applications.short_description='Изменить статус на допущен к обучению'
-
+    
     def get_job(self, request, queryset):
         queryset.update(is_working=True)
     get_job.short_description='Трудоустроить'
