@@ -47,6 +47,9 @@ class EducationCenterProjectYear(models.Model):
         blank=False,
         on_delete=models.CASCADE
     )
+    quota_72 = models.IntegerField("Квота 72", default=0)
+    quota_144 = models.IntegerField("Квота 144", default=0)
+    quota_256 = models.IntegerField("Квота 256", default=0)
     STAGES = [
         ('FLLNG', "заполнение"),
         ('FLLD', "на проверке"),

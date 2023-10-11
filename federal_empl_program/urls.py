@@ -23,8 +23,13 @@ urlpatterns = [
         name="citizen_application"
     ),
     path(
-        'applications/dashboard/<int:year>', 
+        'dashboard/applications/<int:year>', 
         views.applications_dashboard, 
         name="applications_dashboard"
+    ),
+    path(
+        'dashboard/applications/flow/<int:year>', 
+        views.flow_appls_dashboard, 
+        name="flow_appls_dashboard"
     ),
 ]

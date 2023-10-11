@@ -218,8 +218,26 @@ def applications_dashboard(request, year=2023):
             education_program__duration=144, appl_status='COMP'),
         'duration_256': applications.filter(
             education_program__duration=256, appl_status='COMP'),
-
     })
+
+def flow_appls_dashboard(request, year=2023):
+    project_year = get_object_or_404(ProjectYear, year=year)
+    ed_centers_year = EducationCenterProjectYear.objects.filter(
+        project_year=project_year, stage="FNSHD")
+    ed_centers = EducationCenter.objects.filter(
+        project_years__in=ed_centers_year)
+    applications = Application.objects.filter(
+        education_center__in=ed_centers,
+        project_year=project_year,
+        flow_status__is_rejected=False
+    )
+
+    return render(request, 'federal_empl_program/flow_appls_dashboard.html', {
+        'project_year': project_year,
+        'ed_centers': ed_centers_year,
+        'applications': applications
+    })
+    
 
 @csrf_exempt
 def quota_center_request(request, ed_center_id):

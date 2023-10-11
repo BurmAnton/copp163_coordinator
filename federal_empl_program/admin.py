@@ -14,7 +14,7 @@ from easy_select2 import select2_modelform
 from django_admin_listfilter_dropdown.filters import  RelatedDropdownFilter, ChoiceDropdownFilter, RelatedOnlyDropdownFilter, DropdownFilter
 from field_history.models import FieldHistory
 
-from .models import Application, CitizenApplication, EdCenterEmployeePosition,CitizenCategory, EdCenterQuotaRequest, FlowStatus, \
+from .models import Application, CitizenApplication, EdCenterEmployeePosition,CitizenCategory, EdCenterQuotaRequest, EducationCenterProjectYear, FlowStatus, \
                     Grant, ProgramQuotaRequest, ProjectYear, Indicator, ProjectPosition, QuotaRequest
 from education_centers.models import EducationCenter, EducationProgram
 from users.models import Group
@@ -69,12 +69,16 @@ class ProjectPositionAdmin(admin.ModelAdmin):
 
 @admin.register(FlowStatus)
 class FlowStatusAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['off_name', 'is_rejected']
 
 
 @admin.register(ProjectYear)
 class ProjectYearAdmin(admin.ModelAdmin):
     pass
+
+@admin.register(EducationCenterProjectYear)
+class EducationCenterProjectYearAdmin(admin.ModelAdmin):
+    search_fields = ['ed_center__name', 'ed_center__flow_name', 'ed_center__short_name']
 
 
 #@admin.register(Indicator)
