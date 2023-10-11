@@ -1,0 +1,53 @@
+.body {
+  background-color: #F2F2F2;
+  padding-bottom: 40px;
+  font-family: "Roboto", sans-serif;
+}
+.body h1 {
+  padding-top: 35px;
+  text-align: center;
+}
+.body h3 {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.body .table {
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  width: 90%;
+  box-shadow: 1px 0px 5px 2px rgba(0, 0, 0, 0.2);
+}
+.body .table th {
+  color: #394959;
+  font-weight: 400 !important;
+  font-size: 16px;
+  line-height: 20px;
+  border-top: 0;
+  border-bottom: 2px solid #394959;
+}
+@media (max-width: 600px) {
+  .body .table {
+    width: 100%;
+  }
+}
+.body .table .sticky-top {
+  background-color: #394959 !important;
+  color: white !important;
+}
+.body .table .table-striped {
+  background-color: #e9ecf7 !important;
+}
+.body .table td {
+  text-align: center;
+  border-top: 0px solid #dee2e6;
+}
+.body .table th {
+  text-align: center;
+}
+.body tbody, .body td, .body tfoot, .body th, .body thead, .body tr {
+  border-color: inherit;
+  border-style: none;
+  border-width: 0;
+}/*# sourceMappingURL=flow_appls_dashboard.css.map */

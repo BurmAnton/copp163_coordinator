@@ -188,6 +188,14 @@ def create_application(sheet, row, citizen, project_year):
         application.delete()
         return ["EdCenterMissing", flow_name, row+2]
     application.education_center = education_center[0]
+    program_name = sheet["Программа"][row]
+    program_flow_id = sheet["Идентификатор образовательной программы"][row]
+    application.education_program = get_education_program(
+        program_name, program_flow_id, application.education_center
+    )
+    if application.education_program == None:
+        application.delete()
+        return ["EdProgramMissing", program_flow_id, row+2]
     application.save()
     return [True, application, is_new]
 
