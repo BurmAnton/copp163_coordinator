@@ -223,7 +223,9 @@ def applications_dashboard(request, year=2023):
 def flow_appls_dashboard(request, year=2023):
     project_year = get_object_or_404(ProjectYear, year=year)
     ed_centers_year = EducationCenterProjectYear.objects.filter(
-        project_year=project_year, stage="FNSHD")
+        project_year=project_year, stage="FNSHD").exclude(
+            quota_72=0, quota_144=0, quota_256=0
+        )
     ed_centers = EducationCenter.objects.filter(
         project_years__in=ed_centers_year)
     applications = Application.objects.filter(

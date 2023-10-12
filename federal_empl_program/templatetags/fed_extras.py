@@ -1,10 +1,75 @@
 from django import template
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import stringfilter
-
+from django.db.models import Sum, F
 
 register = template.Library()
 
+
+@register.filter
+def count_quota(ed_centers, duration=None):
+    if duration == None:
+        return ed_centers.aggregate(quota_sum=Sum(
+                F('quota_72') + F('quota_144') + F('quota_256')
+            ))['quota_sum']
+    return ed_centers.aggregate(quota_sum=Sum(f'quota_{duration}'))['quota_sum']
+
+@register.filter
+def filter_appl(applications, duration=None):
+    if duration == None:
+        return len(applications)
+    elif duration == 72:
+        return len(applications.filter(education_program__duration__lte=72))
+    elif duration == 144:
+        return len(applications.filter(education_program__duration__gt=72,
+                                        education_program__duration__lt=256))
+    elif duration == 256:
+        return len(applications.filter(education_program__duration__gte=256))
+    
+@register.filter
+def filter_prvvd_appl(applications, duration=None):
+    if duration == None:
+        return len(applications.exclude(csn_prv_date=None))
+    elif duration == 72:
+        return len(applications.filter(education_program__duration__lte=72
+                                       ).exclude(csn_prv_date=None))
+    elif duration == 144:
+        return len(applications.filter(education_program__duration__gt=72,
+                                        education_program__duration__lt=256
+                                        ).exclude(csn_prv_date=None))
+    elif duration == 256:
+        return len(applications.filter(education_program__duration__gte=256
+                                       ).exclude(csn_prv_date=None))
+@register.filter
+def count_procent_all(applications, ed_centers):
+    quota_sum = ed_centers.aggregate(quota_sum=Sum(
+                F('quota_72') + F('quota_144') + F('quota_256')
+            ))['quota_sum']
+    applications_count = len(applications.exclude(csn_prv_date=None))
+    return f'{round(applications_count / quota_sum * 100, 2)}%'
+
+
+@register.filter
+def count_procent_all_72(applications, ed_centers):
+    quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_72'))['quota_sum']
+    applications_count = len(applications.filter(
+        education_program__duration__lte=72).exclude(csn_prv_date=None))
+    return f'{round(applications_count / quota_sum * 100, 2)}%'
+
+@register.filter
+def count_procent_all_144(applications, ed_centers):
+    quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_144'))['quota_sum']
+    applications_count = len(applications.filter(
+        education_program__duration__gt=72,
+        education_program__duration__lt=256).exclude(csn_prv_date=None))
+    return f'{round(applications_count / quota_sum * 100, 2)}%'
+
+@register.filter
+def count_procent_all_256(applications, ed_centers):
+    quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_256'))['quota_sum']
+    applications_count = len(applications.filter(
+            education_program__duration__gte=256).exclude(csn_prv_date=None))
+    return f'{round(applications_count / quota_sum * 100, 2)}%'
 
 @register.filter
 def filter_prvvd(applications, ed_center):

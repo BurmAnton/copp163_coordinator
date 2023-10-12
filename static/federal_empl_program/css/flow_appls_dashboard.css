@@ -12,6 +12,10 @@
   margin-bottom: 20px;
   text-align: center;
 }
+.body .instrument-panel {
+  margin: auto;
+  width: 90%;
+}
 .body .table {
   margin: auto;
   margin-top: 10px;
@@ -45,6 +49,12 @@
 }
 .body .table th {
   text-align: center;
+}
+.body .table .hide-col {
+  display: none;
+}
+.body .table .show-col {
+  display: table-cell !important;
 }
 .body tbody, .body td, .body tfoot, .body th, .body thead, .body tr {
   border-color: inherit;
