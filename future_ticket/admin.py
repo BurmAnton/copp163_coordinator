@@ -14,7 +14,10 @@ from .models import AgeGroup, ContractorsDocumentTicket, DocumentTypeTicket, Eve
 
 @admin.register(StudentBVB)
 class StudentBVBAdmin(admin.ModelAdmin):
-    pass
+    search_fields = [ 'bvb_id', 'full_name', 'school__name', 'event__id']
+    list_display = [
+        'bvb_id', 'full_name', 'is_double', 'is_attend', 'school', 'event'
+    ]
 
 @admin.register(TicketProjectYear)
 class TicketProjectYearAdmin(admin.ModelAdmin):
