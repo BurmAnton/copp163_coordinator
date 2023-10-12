@@ -60,4 +60,9 @@
   border-color: inherit;
   border-style: none;
   border-width: 0;
+}
+.body .table-darkblue td {
+  background-color: #394959 !important;
+  color: white;
+  font-weight: bold;
 }/*# sourceMappingURL=flow_appls_dashboard.css.map */
