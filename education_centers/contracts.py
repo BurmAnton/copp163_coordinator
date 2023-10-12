@@ -12,7 +12,6 @@ from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndica
 from future_ticket.models import EdCenterTicketIndicator, TicketEdCenterEmployeePosition, TicketProfession, TicketProjectPosition
 from .models import ContractorsDocument, DocumentType, EducationProgram, Teacher, Workshop
 
-from docxcompose.composer import Composer
 
 def get_document_number(doc_type, contractor, parent_doc=None):
     previous_docs = ContractorsDocument.objects.filter(
