@@ -608,6 +608,7 @@ class ContractorsDocumentTicket(models.Model):
 
 
 class EventsCycle(models.Model):
+    cycle_number = models.IntegerField("№ цикла", default=1)
     project_year = models.ForeignKey(
         TicketProjectYear, 
         verbose_name="Год проекта (БВБ)",
@@ -654,7 +655,10 @@ class EventsCycle(models.Model):
         verbose_name_plural = "Циклы проб"
 
     def __str__(self):
-        return f'{self.start_period_date} - {self.end_period_date}'
+        return f'Цикл №{self.cycle_number}'
+    
+    def save(self, *args, **kwargs):
+        super(EventsCycle, self).save(*args, **kwargs)
 
 
 class TicketEvent(models.Model):

@@ -1,8 +1,23 @@
 from datetime import timedelta
 from django import template
+from django.db.models import Count
 import pandas
 
+from future_ticket.models import StudentBVB, TicketEvent
+
+
 register = template.Library()
+
+@register.filter
+def count_participants(quota):
+    events = TicketEvent.objects.filter(quotas__in=quota.events.all())
+    participants_count = StudentBVB.objects.filter(
+        event__in=events, 
+        school=quota.school,
+        is_double=False,
+        is_attend=True
+    ).count()
+    return participants_count
 
 @register.filter
 def get_item(dictionary, key):

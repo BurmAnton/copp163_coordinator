@@ -8,7 +8,7 @@ from docxcompose.composer import Composer
 from docx import Document as Document_compose
 from docxtpl import DocxTemplate
 
-from .models import EdCenterTicketIndicator, TicketEdCenterEmployeePosition, \
+from .models import EdCenterTicketIndicator, EventsCycle, TicketEdCenterEmployeePosition, \
       TicketProfession, TicketProjectPosition,ContractorsDocumentTicket, \
       DocumentTypeTicket
 
@@ -61,3 +61,8 @@ def generate_document_ticket(center_year, doc_type, register_number=None, downlo
 
     return contract
 
+def number_cycles():
+    cycles = EventsCycle.objects.all().order_by('end_reg_date')
+    for cycle_number, cycle in enumerate(cycles, start=1):
+        cycle.cycle_number = cycle_number
+        cycle.save()
