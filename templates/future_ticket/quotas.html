@@ -26,18 +26,21 @@
                 <th scope="col" class="center" colspan="4" style="border: 0;">Всего</th>
             </tr>
             <tr>
-                <th scope="col">Запрос</th>
-                <th scope="col">Одобрено</th>
+                <th scope="col" class="center">Запрос</th>
+                <th scope="col" class="center">Одобрено</th>
                 <th scope="row" class="center">Бронь</th>
-                <th scope="row" class="center">Выполнено</th>
-                <th scope="col">Запрос</th>
-                <th scope="col">Одобрено</th>
+                <th scope="col" class="center">Участников</th>
+                <!--<th scope="row" class="center">Выполнено</th>-->
+                <th scope="col" class="center">Запрос</th>
+                <th scope="col" class="center">Одобрено</th>
                 <th scope="row" class="center">Бронь</th>
-                <th scope="row" class="center">Выполнено</th>
-                <th scope="col">Запрос</th>
-                <th scope="col">Одобрено</th>
+                <th scope="col" class="center">Участников</th>
+                <!--<th scope="row" class="center">Выполнено</th>-->
+                <th scope="col" class="center">Запрос</th>
+                <th scope="col" class="center">Одобрено</th>
                 <th scope="row" class="center">Бронь</th>
-                <th scope="row" class="center">Выполнено</th>
+                <th scope="col" class="center">Участников</th>
+                <!--<th scope="row" class="center">Выполнено</th>-->
             </tr>
             {% for key, value in quota_stat.items %}
                 <tr>
@@ -45,15 +48,18 @@
                     <td scope="row" class="center">{{ value|get_item:'federal_quota' }}</td>
                     <td scope="row" class="center">{{ value|get_item:'approved_federal_quota' }}</td>
                     <td scope="row" class="center">{{ value|get_item:'reserved_federal_quota' }}</td>
-                    <td scope="row" class="center">{{ value|get_item:'completed_federal_quota' }}</td>
+                    <td scope="row" class="center">{{ value|get_item:'partic_federal_quota' }}</td>
+                   <!-- <td scope="row" class="center">{{ value|get_item:'completed_federal_quota' }}</td>-->
                     <td scope="row" class="center">{{ value|get_item:'none_federal_quota' }}</td>
                     <td scope="row" class="center">{{ value|get_item:'approved_none_federal_quota' }}</td>
                     <td scope="row" class="center">{{ value|get_item:'reserved_none_federal_quota' }}</td>
-                    <td scope="row" class="center">{{ value|get_item:'completed_none_federal_quota' }}</td>
+                    <td scope="row" class="center">{{ value|get_item:'partic_none_federal_quota' }}</td>
+                    <!--<td scope="row" class="center">{{ value|get_item:'completed_none_federal_quota' }}</td>-->
                     <td scope="row" class="center">{{ value|get_item:'full_quota' }}</td>
                     <td scope="row" class="center">{{ value|get_item:'approved_full_quota' }}</td>
                     <td scope="row" class="center">{{ value|get_item:'reserved_full_quota' }}</td>
-                    <td scope="row" class="center">{{ value|get_item:'completed_full_quota' }}</td>
+                    <td scope="row" class="center">{{ value|get_item:'partic_full_quota' }}</td>
+                    <!--<td scope="row" class="center">{{ value|get_item:'completed_full_quota' }}</td>-->
                 </tr>
             {% endfor %}
             <tr>
@@ -61,15 +67,18 @@
                 <th scope="row" class="center">{{ quota_stat_all|get_item:'federal_quota' }}</th>
                 <th scope="row" class="center">{{ quota_stat_all|get_item:'approved_federal_quota' }}</th>
                 <th scope="row" class="center">{{ quota_stat_all|get_item:'reserved_federal_quota' }}</th>
-                <th scope="row" class="center">{{ quota_stat_all|get_item:'completed_federal_quota' }}/{{ full_quota.federal_quota }}</th>
+                <th scope="row" class="center">{{ quota_stat_all|get_item:'partic_federal_quota' }}</th>
+                <!--<th scope="row" class="center">{{ quota_stat_all|get_item:'completed_federal_quota' }}/{{ full_quota.federal_quota }}</th>-->
                 <th scope="row" class="center">{{ quota_stat_all|get_item:'none_federal_quota' }}</th>
                 <th scope="row" class="center">{{ quota_stat_all|get_item:'approved_none_federal_quota' }}</th>
                 <th scope="row" class="center">{{ quota_stat_all|get_item:'reserved_none_federal_quota' }}</th>
-                <th scope="row" class="center">{{ quota_stat_all|get_item:'completed_none_federal_quota' }}/{{ full_quota.full_quota|subtract:full_quota.federal_quota }}</th>
+                <th scope="row" class="center">{{ quota_stat_all|get_item:'partic_none_federal_quota' }}</th>
+                <!--<th scope="row" class="center">{{ quota_stat_all|get_item:'completed_none_federal_quota' }}/{{ full_quota.full_quota|subtract:full_quota.federal_quota }}</th>-->
                 <th scope="row" class="center">{{ quota_stat_all|get_item:'full_qouta' }}</th>
                 <th scope="row" class="center">{{ quota_stat_all|get_item:'approved_full_qouta' }}</th>
                 <th scope="row" class="center">{{ quota_stat_all|get_item:'reserved_full_qouta' }}</th>
-                <th scope="row" class="center">{{ quota_stat_all|get_item:'completed_full_qouta' }}/{{ full_quota.full_quota }}</th>
+                <th scope="row" class="center">{{ quota_stat_all|get_item:'partic_full_qouta' }}</th>
+                <!--<th scope="row" class="center">{{ quota_stat_all|get_item:'completed_full_qouta' }}/{{ full_quota.full_quota }}</th>-->
             </tr>
         </table>
     </div>
@@ -141,7 +150,8 @@
                     <th scope="row" class="center">Запрос</th>
                     <th scope="row" class="center">Одобрено</th>
                     <th scope="row" class="center">Бронь</th>
-                    <th scope="row" class="center">Выполнено</th>
+                    <th scope="row" class="center">Участников</th>
+                    <!--<th scope="row" class="center">Выполнено</th>-->
                     <th scope="row">Школа</th>
                     <th scope="row">Профессия</th>
                 </tr>
@@ -150,10 +160,11 @@
                         <td scope="row"><a href="{% url 'admin:future_ticket_ticketquota_change' quota.id %}" target="_blank" rel="noopener noreferrer">{{ quota.ed_center.short_name }}</a></td>
                         <td scope="row">{{ quota.school.get_territorial_administration_display }}</td>
                         <td scope="row" class="center">{% if quota.is_federal %}Да{% else %}Нет{% endif %}</td>
-                        <td scope="row" class="center">{{ quota.value }}</td>
                         <td scope="row" class="center"><input type="number" style="text-align: center;" name="{{quota.id}}" value="{{ quota.approved_value }}" required></td>
+                        <td scope="row" class="center">{{ quota.value }}</td>
                         <td scope="row" class="center">{{ quota.reserved_quota }}</td>
-                        <td scope="row" class="center">{{ quota.completed_quota }}/{{ quota.approved_value }}</td>
+                        <td scope="row" class="center">{{ quota|count_participants }}</td>
+                        <!--<td scope="row" class="center">{{ quota.completed_quota }}/{{ quota.approved_value }}</td>-->
                         <td scope="row">{{ quota.school.name }}</td>
                         <td scope="row">{{ quota.profession }}</td>
                     </tr>

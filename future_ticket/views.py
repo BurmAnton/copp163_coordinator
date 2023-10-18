@@ -50,6 +50,9 @@ def quotas(request):
     quota_stat_all['approved_full_qouta'] = 0
     quota_stat_all['approved_federal_quota'] = 0
     quota_stat_all['approved_none_federal_quota'] = 0
+    quota_stat_all['partic_full_qouta'] = 0
+    quota_stat_all['partic_federal_quota'] = 0
+    quota_stat_all['partic_none_federal_quota'] = 0
     quota_stat_all['reserved_full_qouta'] = 0
     quota_stat_all['reserved_federal_quota'] = 0
     quota_stat_all['reserved_none_federal_quota'] = 0
@@ -61,33 +64,49 @@ def quotas(request):
         ter_admin_schools = School.objects.filter(territorial_administration=ter_admin[0])
         schools_quota = TicketQuota.objects.filter(school__in=ter_admin_schools).distinct()
         
+        
         federal_quota = schools_quota.filter(is_federal=True).distinct().aggregate(Sum("approved_value"), Sum("value"), Sum("reserved_quota"), Sum("completed_quota"))
+        quota_event = QuotaEvent.objects.filter(quota__in=schools_quota.filter(is_federal=True))
+        events = TicketEvent.objects.filter(quotas__in=quota_event)
         if federal_quota['value__sum'] == None: federal_quota['value__sum'] = 0
         if federal_quota['approved_value__sum'] == None: federal_quota['approved_value__sum'] = 0
         if federal_quota['reserved_quota__sum'] == None: federal_quota['reserved_quota__sum'] = 0
         if federal_quota['completed_quota__sum'] == None: federal_quota['completed_quota__sum'] = 0
         quota_stat[ter_admin[1]]['federal_quota'] = federal_quota['value__sum']
         quota_stat[ter_admin[1]]['approved_federal_quota'] = federal_quota['approved_value__sum']
+        quota_stat[ter_admin[1]]['partic_federal_quota'] = StudentBVB.objects.filter(
+            event__in=events, school__in=ter_admin_schools, is_double=False, is_attend=True
+        ).count()
         quota_stat[ter_admin[1]]['reserved_federal_quota'] = federal_quota['reserved_quota__sum']
         quota_stat[ter_admin[1]]['completed_federal_quota'] = federal_quota['completed_quota__sum']
         
         none_federal_quota = schools_quota.filter(is_federal=False).distinct().aggregate(Sum("approved_value"), Sum("value"), Sum("reserved_quota"), Sum("completed_quota"))
+        quota_event = QuotaEvent.objects.filter(quota__in=schools_quota.filter(is_federal=False))
+        events = TicketEvent.objects.filter(quotas__in=quota_event)
         if none_federal_quota['value__sum'] == None: none_federal_quota['value__sum'] = 0
         if none_federal_quota['approved_value__sum'] == None: none_federal_quota['approved_value__sum'] = 0
         if none_federal_quota['reserved_quota__sum'] == None: none_federal_quota['reserved_quota__sum'] = 0
         if none_federal_quota['completed_quota__sum'] == None: none_federal_quota['completed_quota__sum'] = 0
         quota_stat[ter_admin[1]]['none_federal_quota'] = none_federal_quota['value__sum']
         quota_stat[ter_admin[1]]['approved_none_federal_quota'] = none_federal_quota['approved_value__sum']
+        quota_stat[ter_admin[1]]['partic_none_federal_quota'] = StudentBVB.objects.filter(
+            event__in=events, school__in=ter_admin_schools, is_double=False, is_attend=True
+        ).count()
         quota_stat[ter_admin[1]]['reserved_none_federal_quota'] = none_federal_quota['reserved_quota__sum']
         quota_stat[ter_admin[1]]['completed_none_federal_quota'] = none_federal_quota['completed_quota__sum']
         
         full_quota = schools_quota.distinct().aggregate(Sum("approved_value"), Sum("value"), Sum("reserved_quota"), Sum("completed_quota"))
+        quota_event = QuotaEvent.objects.filter(quota__in=schools_quota)
+        events = TicketEvent.objects.filter(quotas__in=quota_event)
         if full_quota['value__sum'] == None: full_quota['value__sum'] = 0
         if full_quota['approved_value__sum'] == None: full_quota['approved_value__sum'] = 0
         if full_quota['reserved_quota__sum'] == None: full_quota['reserved_quota__sum'] = 0
         if full_quota['completed_quota__sum'] == None: full_quota['completed_quota__sum'] = 0
         quota_stat[ter_admin[1]]['full_quota'] = full_quota['value__sum']
         quota_stat[ter_admin[1]]['approved_full_quota'] = full_quota['approved_value__sum']
+        quota_stat[ter_admin[1]]['partic_full_quota'] = StudentBVB.objects.filter(
+            event__in=events, school__in=ter_admin_schools, is_double=False, is_attend=True
+        ).count()
         quota_stat[ter_admin[1]]['reserved_full_quota'] = full_quota['reserved_quota__sum']
         quota_stat[ter_admin[1]]['completed_full_quota'] = full_quota['completed_quota__sum']
         
@@ -97,6 +116,9 @@ def quotas(request):
         quota_stat_all['approved_full_qouta'] += full_quota['approved_value__sum']
         quota_stat_all['approved_federal_quota'] += federal_quota['approved_value__sum']
         quota_stat_all['approved_none_federal_quota'] += none_federal_quota['approved_value__sum']
+        quota_stat_all['partic_full_qouta'] += quota_stat[ter_admin[1]]['partic_full_quota']
+        quota_stat_all['partic_federal_quota'] += quota_stat[ter_admin[1]]['partic_federal_quota']
+        quota_stat_all['partic_none_federal_quota'] += quota_stat[ter_admin[1]]['partic_none_federal_quota']
         quota_stat_all['reserved_full_qouta'] += full_quota['reserved_quota__sum']
         quota_stat_all['reserved_federal_quota'] += federal_quota['reserved_quota__sum']
         quota_stat_all['reserved_none_federal_quota'] += none_federal_quota['reserved_quota__sum']
@@ -347,7 +369,8 @@ def center_events(request, ed_center_id):
         else:
             return HttpResponseRedirect(reverse(
                 "ticket_center_events", args=[ed_center_id]))
-    cycles = EventsCycle.objects.filter(project_year=project_year).annotate(
+    cycles = EventsCycle.objects.filter(project_year=project_year).order_by(
+        'cycle_number').annotate(
             center_events_count=Count(
                 Case(When(events__ed_center=center_year, then=1),
                     output_field=IntegerField()),)

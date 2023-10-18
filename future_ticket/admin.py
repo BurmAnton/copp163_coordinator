@@ -4,12 +4,11 @@ from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter,\
 from easy_select2 import select2_modelform
 
 from .models import AgeGroup, ContractorsDocumentTicket, DocumentTypeTicket, EventsCycle, \
-    ProfEnviroment, ProgramAuthor, SchoolProjectYear, StudentBVB, TicketFullQuota, \
+    ProfEnviroment, ProgramAuthor, SchoolProjectYear, StudentBVB, TicketEvent, TicketFullQuota, \
     TicketProfession, TicketProgram, TicketProjectYear, \
     EducationCenterTicketProjectYear, TicketProjectPosition, \
     TicketEdCenterEmployeePosition, TicketIndicator, EdCenterTicketIndicator, \
     TicketQuota
-# Register your models here.
 
 
 @admin.register(StudentBVB)
@@ -19,23 +18,23 @@ class StudentBVBAdmin(admin.ModelAdmin):
         'bvb_id', 'full_name', 'is_double', 'is_attend', 'school', 'event'
     ]
 
-@admin.register(TicketProjectYear)
+#@admin.register(TicketProjectYear)
 class TicketProjectYearAdmin(admin.ModelAdmin):
     list_display = ['year']
 
 
-@admin.register(EducationCenterTicketProjectYear)
+#@admin.register(EducationCenterTicketProjectYear)
 class EducationCenterTicketProjectYearAdmin(admin.ModelAdmin):
     list_display = ['ed_center', 'project_year']
 
 
-@admin.register(TicketProjectPosition)
+#@admin.register(TicketProjectPosition)
 class TicketProjectPositionAdmin(admin.ModelAdmin):
     search_fields = ['position',]
     list_display = ['position', 'is_basis_needed', 'project_year']
 
 
-@admin.register(TicketEdCenterEmployeePosition)
+#@admin.register(TicketEdCenterEmployeePosition)
 class TicketEdCenterEmployeePositionAdmin(admin.ModelAdmin):
     search_fields = [
         'position__position', 
@@ -45,13 +44,13 @@ class TicketEdCenterEmployeePositionAdmin(admin.ModelAdmin):
     list_display = ['employee', 'position', 'ed_center']
 
 
-@admin.register(TicketIndicator)
+#@admin.register(TicketIndicator)
 class TicketIndicatorAdmin(admin.ModelAdmin):
     search_fields = ['name',]
     list_display = ['name', 'project_year', 'is_free_form']
 
 
-@admin.register(EdCenterTicketIndicator)
+#@admin.register(EdCenterTicketIndicator)
 class EdCenterTicketIndicatorAdmin(admin.ModelAdmin):
     search_fields = [
         'indicator_name',
@@ -80,7 +79,7 @@ class TicketProfessionAdmin(admin.ModelAdmin):
     list_display = ['name', 'prof_enviroment', 'is_federal']
 
 
-@admin.register(ProgramAuthor)
+#@admin.register(ProgramAuthor)
 class ProgramAuthorAdmin(admin.ModelAdmin):
     list_display = ['teacher', 'phone', 'email']
 
@@ -114,7 +113,7 @@ class TicketFullQuotaAdmin(admin.ModelAdmin):
     list_display = ['project_year', 'full_quota', 'federal_quota']
 
 
-@admin.register(SchoolProjectYear)
+#@admin.register(SchoolProjectYear)
 class SchoolProjectYearAdmin(admin.ModelAdmin):
     search_fields = [
         'school__name',
@@ -150,12 +149,12 @@ class TicketQuotaAdmin(admin.ModelAdmin):
         
     ]
 
-@admin.register(DocumentTypeTicket)
+#@admin.register(DocumentTypeTicket)
 class DocumentTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'stage']
 
 
-@admin.register(ContractorsDocumentTicket)
+#@admin.register(ContractorsDocumentTicket)
 class ContractorsDocumentAdmin(admin.ModelAdmin):
     search_fields = ['contractor__name',]
     list_display = [
@@ -177,4 +176,29 @@ class ContractorsDocumentAdmin(admin.ModelAdmin):
 class EventsCycleAdmin(admin.ModelAdmin):
     list_display = ['start_period_date', 'end_period_date', 'status', 'end_reg_date']
 
+
+@admin.register(TicketEvent)
+class TicketEventAdmin(admin.ModelAdmin):
+    list_display = [
+        'profession', 
+        'get_short_name', 
+        'cycle', 
+        'event_date', 
+        'participants_count'
+    ]
+
+    list_filter = (
+        ('cycle', RelatedOnlyDropdownFilter),
+        ('profession', RelatedOnlyDropdownFilter),
+        ('ed_center', RelatedOnlyDropdownFilter)
+    )
+
+    def participants_count(self, event):
+        return event.participants.filter(
+            is_double=False, is_attend=True).count()
+    participants_count.short_description = 'Колво участников'
     
+    def get_short_name(self, event):
+        return event.ed_center.ed_center.short_name
+    get_short_name.short_description = 'ЦО'
+    get_short_name.admin_order_field = 'ed_center__ed_center__short_name'
