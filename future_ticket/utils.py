@@ -8,12 +8,11 @@ from docxcompose.composer import Composer
 from docx import Document as Document_compose
 from docxtpl import DocxTemplate
 
-from .models import EdCenterTicketIndicator, EventsCycle, TicketEdCenterEmployeePosition, \
-      TicketProfession, TicketProjectPosition,ContractorsDocumentTicket, \
-      DocumentTypeTicket
+ 
 
 
 def get_document_number(doc_type, contractor=None, parent_doc=None):
+    from .models import ContractorsDocumentTicket
     previous_docs = ContractorsDocumentTicket.objects.all()
     #if contractor is not None:
         #previous_docs = previous_docs.filter(contractor=contractor)
@@ -22,6 +21,9 @@ def get_document_number(doc_type, contractor=None, parent_doc=None):
     return len(previous_docs) + 1
 
 def generate_document_ticket(center_year, doc_type, register_number=None, download=False):
+    from .models import EdCenterTicketIndicator, EventsCycle, TicketEdCenterEmployeePosition, \
+                        TicketProfession, TicketProjectPosition,DocumentTypeTicket, \
+                        ContractorsDocumentTicket
     project_year = center_year.project_year
     ed_center = center_year.ed_center
     sign_position = TicketProjectPosition.objects.get(
@@ -62,7 +64,11 @@ def generate_document_ticket(center_year, doc_type, register_number=None, downlo
     return contract
 
 def number_cycles():
-    cycles = EventsCycle.objects.all().order_by('end_reg_date')
+    from .models import EventsCycle
+    cycles = EventsCycle.objects.all().order_by(
+            'end_reg_date', 'start_period_date', 'end_period_date'
+        )
     for cycle_number, cycle in enumerate(cycles, start=1):
-        cycle.cycle_number = cycle_number
-        cycle.save()
+        if cycle_number != cycle.cycle_number:
+            cycle.cycle_number = cycle_number
+            cycle.save(cycle_number=True)
