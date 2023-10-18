@@ -107,8 +107,8 @@ def add_participant(sheet, row, school, event):
             event=event
         )
         if sheet["Посетил"][row] != 'Да':
-            participant.is_attend == False
-            participant.save()
+            participant.is_attend = False
+        participant.save()
         return ['OK', is_new, participant]
     return ['MissingField', missing_fields, row + 2]
 
