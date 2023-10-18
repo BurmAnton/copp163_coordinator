@@ -11,92 +11,96 @@
 {% endblock %}
 
 {% block body %}
-    <div class="stat">
-            <div class="text-center">
-                <h1>Федеральный проект «Содействие занятости»</h1>
-            </div>
-            <div class="qouta_table">
-                <div><h3>Статистика заявок ЦО на flow</h3></div>
-                <div class="instrument-panel">
-                    <button class="btn btn-primary show-appls">Показать все заявки</button>
-                    <button class="btn btn-primary hide-appls" style="display: none;">Скрыть не одобреные заявки</button>
-                </div>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th rowspan="2" style="text-align: left;">ЦО</th>
-                            <th class="qouta-duration" colspan="3" style="border:0;">72 часа</th>
-                            <th class="qouta-duration" colspan="3" style="border:0;">144 часа</th>
-                            <th class="qouta-duration" colspan="3" style="border:0;">256 часа</th>
-                            <th class="qouta-duration" colspan="3" style="border:0;">Всего</th>
-                        </tr>
-                        <tr>
-                            <th>Квота</th>
-                            <th class="hide-col">Заявок</th>
-                            <th>Одобрено ЦЗН</th>
-                            <th>%</th>
-                            <th>Квота</th>
-                            <th class="hide-col">Заявок</th>
-                            <th>Одобрено ЦЗН</th>
-                            <th>%</th>
-                            <th>Квота</th>
-                            <th class="hide-col">Заявок</th>
-                            <th>Одобрено ЦЗН</th>
-                            <th>%</th>
-                            <th>Квота</th>
-                            <th class="hide-col">Заявок</th>
-                            <th>Одобрено ЦЗН</th>
-                            <th>%</th>
-                        </tr>
-                    </thead>
-                    {% for ed_center in ed_centers %}
-                    <tr>
-                        {% if ed_center.ed_center.flow_name != "" %}
-                            <td style="text-align: left;">{{ed_center.ed_center.flow_name}}</td>
-                        {% elif ed_center.ed_center.short_name != "" %}
-                            <td style="text-align: left;">{{ed_center.ed_center.short_name}}</td>
-                        {% else %}
-                        <td style="text-align: left;">{{ed_center.ed_center.name}}</td>
-                        {% endif %}
-                        <td>{{ed_center.quota_72}}</td>
-                        <td class="hide-col">{{applications|filter_center_72:ed_center.ed_center}}</td>
-                        <td>{{applications|filter_prvvd_72:ed_center.ed_center}}</td>
-                        <td>{{applications|count_procent_72:ed_center}}</td>
-                        <td>{{ed_center.quota_144}}</td>
-                        <td class="hide-col">{{applications|filter_center_144:ed_center.ed_center}}</td>
-                        <td>{{applications|filter_prvvd_144:ed_center.ed_center}}</td>
-                        <td>{{applications|count_procent_144:ed_center}}</td>
-                        <td>{{ed_center.quota_256}}</td>
-                        <td class="hide-col">{{applications|filter_center_256:ed_center.ed_center}}</td>
-                        <td>{{applications|filter_prvvd_256:ed_center.ed_center}}</td>
-                        <td>{{applications|count_procent_256:ed_center}}</td>
-                        <td>{{ed_center.quota_72|add:ed_center.quota_144|add:ed_center.quota_256}}</td>
-                        <td class="hide-col">{{applications|filter_center:ed_center.ed_center}}</td>
-                        <td>{{applications|filter_prvvd:ed_center.ed_center}}</td>
-                        <td>{{applications|count_procent:ed_center}}</td>
-                    </tr>
-                    {% endfor %}
-                    <tr class='table-darkblue'>
-                        <td style="font-weight: bold">Итого</td>
-                        <td style="font-weight: bold">{{ed_centers|count_quota:72}}</td>
-                        <td class="hide-col" style="font-weight: bold">{{applications|filter_appl:72}}</td>
-                        <td style="font-weight: bold">{{applications|filter_prvvd_appl:72}}</td>
-                        <td style="font-weight: bold">{{applications|count_procent_all_72:ed_centers}}</td>
-                        <td style="font-weight: bold">{{ed_centers|count_quota:144}}</td>
-                        <td class="hide-col" style="font-weight: bold">{{applications|filter_appl:144}}</td>
-                        <td style="font-weight: bold">{{applications|filter_prvvd_appl:144}}</td>
-                        <td style="font-weight: bold">{{applications|count_procent_all_144:ed_centers}}</td>
-                        <td style="font-weight: bold">{{ed_centers|count_quota:256}}</td>
-                        <td class="hide-col" style="font-weight: bold">{{applications|filter_appl:256}}</td>
-                        <td style="font-weight: bold">{{applications|filter_prvvd_appl:256}}</td>
-                        <td style="font-weight: bold">{{applications|count_procent_all_256:ed_centers}}</td>
-                        <td style="font-weight: bold">{{ed_centers|count_quota}}</td>
-                        <td class="hide-col" style="font-weight: bold">{{applications|filter_appl}}</td>
-                        <td style="font-weight: bold">{{applications|filter_prvvd_appl}}</td>
-                        <td style="font-weight: bold">{{applications|count_procent_all:ed_centers}}</td>
-                    </tr>
-                </table>
-            </div>
+    <div class="text-center">
+        <h1>Федеральный проект «Содействие занятости»</h1>
+    </div>
+    <div>
+        <div><h3>Статистика по заявкам</h3></div>
+        <div class="graphic">
+            <img src='data:image/png;base64, {{chart|safe}}'>
         </div>
+    </div>
+    <div class="qouta_table">
+        <div><h3>Статистика заявок ЦО на flow</h3></div>
+        <div class="instrument-panel">
+            <button class="btn btn-primary show-appls">Показать все заявки</button>
+            <button class="btn btn-primary hide-appls" style="display: none;">Скрыть не одобреные заявки</button>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th rowspan="2" style="text-align: left;">ЦО</th>
+                    <th class="qouta-duration" colspan="3" style="border:0;">72 часа</th>
+                    <th class="qouta-duration" colspan="3" style="border:0;">144 часа</th>
+                    <th class="qouta-duration" colspan="3" style="border:0;">256 часа</th>
+                    <th class="qouta-duration" colspan="3" style="border:0;">Всего</th>
+                </tr>
+                <tr>
+                    <th>Квота</th>
+                    <th class="hide-col">Заявок</th>
+                    <th>Одобрено ЦЗН</th>
+                    <th>%</th>
+                    <th>Квота</th>
+                    <th class="hide-col">Заявок</th>
+                    <th>Одобрено ЦЗН</th>
+                    <th>%</th>
+                    <th>Квота</th>
+                    <th class="hide-col">Заявок</th>
+                    <th>Одобрено ЦЗН</th>
+                    <th>%</th>
+                    <th>Квота</th>
+                    <th class="hide-col">Заявок</th>
+                    <th>Одобрено ЦЗН</th>
+                    <th>%</th>
+                </tr>
+            </thead>
+            {% for ed_center in ed_centers %}
+            <tr>
+                {% if ed_center.ed_center.flow_name != "" %}
+                    <td style="text-align: left;">{{ed_center.ed_center.flow_name}}</td>
+                {% elif ed_center.ed_center.short_name != "" %}
+                    <td style="text-align: left;">{{ed_center.ed_center.short_name}}</td>
+                {% else %}
+                <td style="text-align: left;">{{ed_center.ed_center.name}}</td>
+                {% endif %}
+                <td>{{ed_center.quota_72}}</td>
+                <td class="hide-col">{{applications|filter_center_72:ed_center.ed_center}}</td>
+                <td>{{applications|filter_prvvd_72:ed_center.ed_center}}</td>
+                <td>{{applications|count_procent_72:ed_center}}</td>
+                <td>{{ed_center.quota_144}}</td>
+                <td class="hide-col">{{applications|filter_center_144:ed_center.ed_center}}</td>
+                <td>{{applications|filter_prvvd_144:ed_center.ed_center}}</td>
+                <td>{{applications|count_procent_144:ed_center}}</td>
+                <td>{{ed_center.quota_256}}</td>
+                <td class="hide-col">{{applications|filter_center_256:ed_center.ed_center}}</td>
+                <td>{{applications|filter_prvvd_256:ed_center.ed_center}}</td>
+                <td>{{applications|count_procent_256:ed_center}}</td>
+                <td>{{ed_center.quota_72|add:ed_center.quota_144|add:ed_center.quota_256}}</td>
+                <td class="hide-col">{{applications|filter_center:ed_center.ed_center}}</td>
+                <td>{{applications|filter_prvvd:ed_center.ed_center}}</td>
+                <td>{{applications|count_procent:ed_center}}</td>
+            </tr>
+            {% endfor %}
+            <tr class='table-darkblue'>
+                <td style="font-weight: bold">Итого</td>
+                <td style="font-weight: bold">{{ed_centers|count_quota:72}}</td>
+                <td class="hide-col" style="font-weight: bold">{{applications|filter_appl:72}}</td>
+                <td style="font-weight: bold">{{applications|filter_prvvd_appl:72}}</td>
+                <td style="font-weight: bold">{{applications|count_procent_all_72:ed_centers}}</td>
+                <td style="font-weight: bold">{{ed_centers|count_quota:144}}</td>
+                <td class="hide-col" style="font-weight: bold">{{applications|filter_appl:144}}</td>
+                <td style="font-weight: bold">{{applications|filter_prvvd_appl:144}}</td>
+                <td style="font-weight: bold">{{applications|count_procent_all_144:ed_centers}}</td>
+                <td style="font-weight: bold">{{ed_centers|count_quota:256}}</td>
+                <td class="hide-col" style="font-weight: bold">{{applications|filter_appl:256}}</td>
+                <td style="font-weight: bold">{{applications|filter_prvvd_appl:256}}</td>
+                <td style="font-weight: bold">{{applications|count_procent_all_256:ed_centers}}</td>
+                <td style="font-weight: bold">{{ed_centers|count_quota}}</td>
+                <td class="hide-col" style="font-weight: bold">{{applications|filter_appl}}</td>
+                <td style="font-weight: bold">{{applications|filter_prvvd_appl}}</td>
+                <td style="font-weight: bold">{{applications|count_procent_all:ed_centers}}</td>
+            </tr>
+        </table>
+    </div>
 
 {% endblock %}

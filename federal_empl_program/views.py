@@ -23,7 +23,7 @@ from .forms import ImportDataForm
 
 from pysendpulse.pysendpulse import PySendPulse
 
-from .utils import get_applications_plot
+from .utils import get_applications_plot, get_flow_applications_plot
 from users.models import User
 from citizens.models import Citizen
 from federal_empl_program.models import Application, CitizenApplication, EdCenterQuotaRequest, EducationCenterProjectYear, \
@@ -233,11 +233,40 @@ def flow_appls_dashboard(request, year=2023):
         project_year=project_year,
         flow_status__is_rejected=False
     )
+    #chart
+    week_now = date.today().isocalendar().week
+    weeks = []
+    weeks_stat = {}
+    weeks_stat['Новые'] = []
+    weeks_stat['Одобрены ЦЗН'] = []
+    weeks_stat['Начали обучение'] = []
+    for week in range(6, -1, -1):
+        week_dates={}
+        start_date = f'{year}-{week_now - week}-1'
+        end_date = f'{year}-{week_now - week}-6'
+        week_dates['start_date'] = datetime.strptime(start_date, '%Y-%U-%w')
+        week_dates['end_date'] = datetime.strptime(end_date, '%Y-%U-%w')\
+                                + timedelta(1)
+        weeks_stat['Новые'].append(Application.objects.filter(
+            creation_date__gte=week_dates['start_date'],
+            creation_date__lte=week_dates['end_date'],
+        ).count())
+        weeks_stat['Одобрены ЦЗН'].append(Application.objects.filter(
+            csn_prv_date__gte=week_dates['start_date'],
+            csn_prv_date__lte=week_dates['end_date'],
+        ).count())
+        weeks_stat['Начали обучение'].append(Application.objects.filter(
+            group__start_date__gte=week_dates['start_date'],
+            group__start_date__lte=week_dates['end_date'],
+        ).count())
+        weeks.append(f'{week_dates["start_date"].strftime("%d/%m")}-{week_dates["end_date"].strftime("%d/%m")}')
+    chart = get_flow_applications_plot(weeks, weeks_stat)
 
     return render(request, 'federal_empl_program/flow_appls_dashboard.html', {
         'project_year': project_year,
         'ed_centers': ed_centers_year,
-        'applications': applications
+        'applications': applications,
+        'chart': chart,
     })
     
 
