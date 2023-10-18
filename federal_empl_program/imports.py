@@ -6,6 +6,7 @@ from openpyxl import load_workbook
 
 from datetime import datetime, tzinfo
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 
 from citizens.models import Citizen, School
 from education_centers.models import EducationProgram, EducationCenter, \
@@ -89,7 +90,7 @@ def import_applications(form, year):
         return cheak_col_names
     
     sheet = load_worksheet_dict(sheet, cheak_col_names[1])
-    missing_fields = []
+    missing_fields = list()
     citizen_added = 0
     citizen_updated = 0
     application_added = 0
@@ -100,34 +101,38 @@ def import_applications(form, year):
 
     for row in range(len(sheet['Номер заявки'])):
         citizen_input = create_citizen(sheet, row)
-        if citizen_input[0] != True:
-            missing_fields.append(citizen_input)
+        if citizen_input['status'] != True:
+            if citizen_input not in missing_fields:
+                missing_fields.append(citizen_input)
         else:
-            citizen = citizen_input[1]
-            if citizen_input[2]: citizen_added += 1
+            citizen = citizen_input['value']
+            if citizen_input['is_new']: citizen_added += 1
             else: citizen_updated += 1
             application_input = create_application(sheet, row, citizen, project_year)
-            if application_input[0] != True:
-                missing_fields.append(application_input)
+            if application_input['status'] != True:
+                if application_input not in missing_fields:
+                    missing_fields.append(application_input)
             else:
-                application = application_input[1]
-                if application_input[2]: application_added += 1
+                application = application_input['value']
+                if application_input['is_new']: application_added += 1
                 else: application_updated += 1
                 if sheet["Идентификатор потока"][row] != "" \
                     and sheet["Идентификатор потока"][row] != None:
                     group_input = create_group(sheet, row, application)
-                    if group_input[0] != True:
-                        missing_fields.append(group_input)
+                    if group_input['status'] != True:
+                        if group_input not in missing_fields:
+                            missing_fields.append(group_input)
                     else:
-                        if group_input[2]: group_added += 1
+                        if group_input['is_new']: group_added += 1
                         else: group_updated += 1
+    missing_fields = sorted(missing_fields, key=lambda d: d['status']) 
     return ['OK', missing_fields, citizen_added, citizen_updated,
              application_added, application_updated, group_added, group_updated]
 
 def create_citizen(sheet, row):
     snils_number = sheet["СНИЛС"][row]
     if snils_number == "" or None:
-        return ["SnilsMissing", "СНИЛС", row+2]
+        return {"status": "SnilsMissing", "value": row+2}
     citizen, is_new = Citizen.objects.get_or_create(
         snils_number=snils_number
     )
@@ -145,7 +150,7 @@ def create_citizen(sheet, row):
         citizen.education_type = EDUCATION_CHOICES[education_type]
     citizen.save()
 
-    return [True, citizen, is_new]
+    return {"status": True, "value": citizen, "is_new": is_new}
 
 def create_application(sheet, row, citizen, project_year):
     flow_id = sheet["Номер заявки"][row].replace('=HYPERLINK("https://flow.firpo.info/Requests/Card/', '')
@@ -157,7 +162,10 @@ def create_application(sheet, row, citizen, project_year):
         applicant=citizen
     )
     flow_status = sheet["Статус заявки"][row]
-    application.flow_status = FlowStatus.objects.get(off_name=flow_status)
+    try:
+        application.flow_status = FlowStatus.objects.get(off_name=flow_status)
+    except ObjectDoesNotExist:
+        return {"status": "FlowStatusMissing", "value": flow_status}
     application.creation_date = datetime.strptime(sheet["Дата создания заявки"][row], "%d.%m.%Y")
     if sheet["Срок истечения заявки"][row] != None:
         application.expiration_date = datetime.strptime(sheet["Срок истечения заявки"][row], "%d.%m.%Y")
@@ -170,7 +178,7 @@ def create_application(sheet, row, citizen, project_year):
             official_name=citizen_category, project_year=project_year)
     if len(citizen_category) == 0:
         application.delete()
-        return ["CategoryMissing", citizen_category, row+2]
+        return {"status": "CategoryMissing", "value": sheet["Категория"][row]}
     application.citizen_category = citizen_category[0]
     contract_type = sheet["Тип договора"][row]
     if contract_type in CONTR_TYPE_CHOICES:
@@ -186,7 +194,7 @@ def create_application(sheet, row, citizen, project_year):
     )
     if len(education_center) == 0:
         application.delete()
-        return ["EdCenterMissing", flow_name, row+2]
+        return {"status": "EdCenterMissing", "value": flow_name}
     application.education_center = education_center[0]
     program_name = sheet["Программа"][row]
     program_flow_id = sheet["Идентификатор образовательной программы"][row]
@@ -195,9 +203,9 @@ def create_application(sheet, row, citizen, project_year):
     )
     if application.education_program == None:
         application.delete()
-        return ["EdProgramMissing", program_flow_id, row+2]
+        {"status": "EdProgramMissing", "value": program_flow_id}
     application.save()
-    return [True, application, is_new]
+    return {"status": True, "value": application, "is_new": is_new}
 
 def create_group(sheet, row, application):
     flow_id = sheet["Идентификатор потока"][row]
@@ -214,10 +222,10 @@ def create_group(sheet, row, application):
     )
     if group.education_program == None:
         group.delete()
-        return ["EdProgramMissing", program_flow_id, row+2]
+        return {"status": "EdProgramMissing", "value": program_flow_id}
     group.students.add(application)
     group.save()
-    return [True, group, is_new]
+    return {"status": True, "value": group, "is_new": is_new}
     
 def get_education_program(program_name, program_flow_id, education_center):
     education_program = EducationProgram.objects.filter(
