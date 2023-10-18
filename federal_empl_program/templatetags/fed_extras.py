@@ -7,6 +7,10 @@ register = template.Library()
 
 
 @register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
+
+@register.filter
 def count_quota(ed_centers, duration=None):
     if duration == None:
         return ed_centers.aggregate(quota_sum=Sum(
