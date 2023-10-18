@@ -16,12 +16,24 @@
     </div>
     <div>
         <div><h3>Статистика по заявкам</h3></div>
+        <div class="day-stats">
+            <div class="day-stat" style="background-color: #426cf8;">
+                <h5>Новых заявок: {{day_stats|get_item:'Новые'}}</h5>
+            </div>
+            <div class="day-stat" style="background-color: #02509e;">
+                <h5>Одобрено ЦЗН: {{day_stats|get_item:'Одобрено ЦЗН'}}</h5>
+            </div>
+            <div class="day-stat">
+                <h5>Начали обучение: {{day_stats|get_item:'Начали обучение'}}</h5>
+            </div>
+        </div>
         <div class="graphic">
             <img src='data:image/png;base64, {{chart|safe}}'>
         </div>
     </div>
     <div class="qouta_table">
         <div><h3>Статистика заявок ЦО на flow</h3></div>
+        
         <div class="instrument-panel">
             <button class="btn btn-primary show-appls">Показать все заявки</button>
             <button class="btn btn-primary hide-appls" style="display: none;">Скрыть не одобреные заявки</button>
