@@ -62,7 +62,7 @@ def get_flow_applications_plot(weeks, weeks_stat):
     plt.switch_backend('AGG')
 
     x = np.arange(len(weeks))
-    width = 0.3 # the width of the bars
+    width = 0.2 # the width of the bars
     multiplier = 0
 
     fig, ax = plt.subplots(layout='constrained')
@@ -78,7 +78,7 @@ def get_flow_applications_plot(weeks, weeks_stat):
         ax.bar_label(rects, padding=2)
         multiplier += 1
     
-    fig.set_figwidth(15)
+    fig.set_figwidth(12)
     fig.set_figheight(5)
     fig.set_facecolor('#F2F2F2')
     ax.set_facecolor('#F2F2F2')
@@ -90,9 +90,9 @@ def get_flow_applications_plot(weeks, weeks_stat):
 
     ax.set_ylabel('Заявки')
     ax.set_xticks(x + width, weeks)
-    ax.legend(loc='upper left', ncols=4)
-    ax.legend(ncols=4, bbox_to_anchor=(0, 1),
-              loc='lower left')
+   # ax.legend(loc='upper left', ncols=4)
+    #ax.legend(ncols=4, bbox_to_anchor=(0, 1),
+    #          loc='lower left')
     plt.tight_layout()
     graph = get_graph()
     return graph

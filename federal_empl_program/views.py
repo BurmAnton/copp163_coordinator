@@ -233,38 +233,46 @@ def flow_appls_dashboard(request, year=2023):
         project_year=project_year,
         flow_status__is_rejected=False
     )
+    day_stats = {}
+    today = date.today()
+    day_stats['Новые'] = applications.filter(creation_date=today).count()
+    day_stats['Одобрено ЦЗН'] = applications.filter(csn_prv_date=today).count()
+    day_stats['Начали обучение'] = applications.filter(group__start_date=today).count()
     #chart
+    week_now = date.today().isocalendar().week
     weeks = []
     weeks_stat = {}
     weeks_stat['Новые'] = []
     weeks_stat['Одобрены ЦЗН'] = []
     weeks_stat['Начали обучение'] = []
-    for inteval in range(30, -1, -3):
+    for week in range(5, -1, -1):
         week_dates={}
-        end_date = date.today() - timedelta(inteval)
-        start_date = end_date - timedelta(2)
-        week_dates['start_date'] = start_date
-        week_dates['end_date'] = end_date
+        start_date = f'{year}-{week_now - week}-1'
+        end_date = f'{year}-{week_now - week}-6'
+        week_dates['start_date'] = datetime.strptime(start_date, '%Y-%U-%w')
+        week_dates['end_date'] = datetime.strptime(end_date, '%Y-%U-%w')\
+                                + timedelta(1)
         weeks_stat['Новые'].append(applications.filter(
-            creation_date__gte=start_date,
-            creation_date__lte=end_date
+            creation_date__gte=week_dates['start_date'],
+            creation_date__lte=week_dates['end_date']
         ).count())
         weeks_stat['Одобрены ЦЗН'].append(applications.filter(
-            csn_prv_date__gte=start_date,
-            csn_prv_date__lte=end_date
+            csn_prv_date__gte=week_dates['start_date'],
+            csn_prv_date__lte=week_dates['end_date']
         ).count())
         weeks_stat['Начали обучение'].append(applications.filter(
-            group__start_date__gte=start_date,
-            group__start_date__lte=end_date
+            group__start_date__gte=week_dates['start_date'],
+            group__start_date__lte=week_dates['end_date']
         ).count())
-        weeks.append(f'{start_date.strftime("%d/%m")}-{week_dates["end_date"].strftime("%d/%m")}')
+        weeks.append(f'{week_dates["start_date"].strftime("%d/%m")}-{week_dates["end_date"].strftime("%d/%m")}')
     chart = get_flow_applications_plot(weeks, weeks_stat)
 
     return render(request, 'federal_empl_program/flow_appls_dashboard.html', {
         'project_year': project_year,
         'ed_centers': ed_centers_year,
-        'applications': applications,
         'chart': chart,
+        'day_stats': day_stats,
+        'applications': applications,
     })
     
 
