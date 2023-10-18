@@ -234,7 +234,7 @@ def flow_appls_dashboard(request, year=2023):
         flow_status__is_rejected=False
     )
     day_stats = {}
-    today = date.today()
+    today = date.today() - timedelta(1)
     day_stats['Новые'] = applications.filter(creation_date=today).count()
     day_stats['Одобрено ЦЗН'] = applications.filter(csn_prv_date=today).count()
     day_stats['Начали обучение'] = applications.filter(group__start_date=today).count()
