@@ -247,20 +247,17 @@ def flow_appls_dashboard(request, year=2023):
         week_dates['start_date'] = datetime.strptime(start_date, '%Y-%U-%w')
         week_dates['end_date'] = datetime.strptime(end_date, '%Y-%U-%w')\
                                 + timedelta(1)
-        weeks_stat['Новые'].append(Application.objects.filter(
+        weeks_stat['Новые'].append(applications.filter(
             creation_date__gte=week_dates['start_date'],
-            creation_date__lte=week_dates['end_date'],
-            flow_status__is_rejected=False
+            creation_date__lte=week_dates['end_date']
         ).count())
-        weeks_stat['Одобрены ЦЗН'].append(Application.objects.filter(
+        weeks_stat['Одобрены ЦЗН'].append(applications.filter(
             csn_prv_date__gte=week_dates['start_date'],
-            csn_prv_date__lte=week_dates['end_date'],
-            flow_status__is_rejected=False
+            csn_prv_date__lte=week_dates['end_date']
         ).count())
-        weeks_stat['Начали обучение'].append(Application.objects.filter(
+        weeks_stat['Начали обучение'].append(applications.filter(
             group__start_date__gte=week_dates['start_date'],
-            group__start_date__lte=week_dates['end_date'],
-            flow_status__is_rejected=False
+            group__start_date__lte=week_dates['end_date']
         ).count())
         weeks.append(f'{week_dates["start_date"].strftime("%d/%m")}-{week_dates["end_date"].strftime("%d/%m")}')
     chart = get_flow_applications_plot(weeks, weeks_stat)
