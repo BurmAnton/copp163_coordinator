@@ -7,7 +7,7 @@ from django.db import models
 from django.db.models.deletion import DO_NOTHING, CASCADE
 from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_delete
 from django.dispatch import receiver
 from django.db.models import Sum
 
@@ -16,6 +16,7 @@ from copp163_coordinator import settings
 from education_centers.models import Competence, EducationProgram, \
                                      EducationCenter, Group, Employee, Workshop
 from future_ticket.task import find_participants_dublicates
+from future_ticket.utils import number_cycles
 from users.models import DisabilityType
 from education_centers.models import Teacher
 
@@ -657,9 +658,14 @@ class EventsCycle(models.Model):
     def __str__(self):
         return f'Цикл №{self.cycle_number}'
     
-    def save(self, *args, **kwargs):
+    def save(self, cycle_number=False, *args, **kwargs):
         super(EventsCycle, self).save(*args, **kwargs)
+        if cycle_number == False:
+            number_cycles()
 
+@receiver(post_delete, sender=EventsCycle, dispatch_uid='EventsCycle_delete_signal')
+def change_number_cycles(sender, instance, using, **kwargs):
+    number_cycles()
 
 class TicketEvent(models.Model):
     ed_center = models.ForeignKey(

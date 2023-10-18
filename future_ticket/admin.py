@@ -174,7 +174,14 @@ class ContractorsDocumentAdmin(admin.ModelAdmin):
 
 @admin.register(EventsCycle)
 class EventsCycleAdmin(admin.ModelAdmin):
-    list_display = ['start_period_date', 'end_period_date', 'status', 'end_reg_date']
+    list_display = [
+        'cycle_number', 
+        'end_reg_date',
+        'start_period_date',
+        'end_period_date', 
+        'status', 
+        
+    ]
 
 
 @admin.register(TicketEvent)
