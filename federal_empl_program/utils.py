@@ -58,6 +58,42 @@ def get_applications_plot(month, applications):
     graph = get_graph()
     return graph
 
+def get_flow_applications_plot(weeks, weeks_stat):
+    plt.switch_backend('AGG')
+
+    x = np.arange(len(weeks))
+    width = 0.2 # the width of the bars
+    multiplier = 0
+
+    fig, ax = plt.subplots(layout='constrained')
+    for attribute, measurement in weeks_stat.items():
+        offset = width * multiplier
+        if attribute == 'Новые':
+            color = '#426cf8'
+        elif attribute == 'Одобрены ЦЗН':
+            color = '#02509e'
+        else:
+            color = '#394959'
+        rects = ax.bar(x + offset, measurement, width, label=attribute, color=color)
+        ax.bar_label(rects, padding=2)
+        multiplier += 1.2
+    
+    fig.set_figwidth(15)
+    fig.set_figheight(5)
+    fig.set_facecolor('#F2F2F2')
+    ax.set_facecolor('#F2F2F2')
+    ax.spines[['right', 'top']].set_visible(False)
+    bar_labels = weeks
+
+    ax.set_ylabel('Количество заявок')
+    ax.set_title('')
+
+    ax.set_ylabel('Заявки')
+    ax.set_xticks(x + width, weeks)
+    ax.legend(loc='upper left', ncols=4)
+    plt.tight_layout()
+    graph = get_graph()
+    return graph
 
 def count_levels(directory_path):
     levels_values = []

@@ -12,6 +12,10 @@
   margin-bottom: 20px;
   text-align: center;
 }
+.body .graphic {
+  display: flex;
+  justify-content: center;
+}
 .body .instrument-panel {
   margin: auto;
   width: 90%;
@@ -46,9 +50,11 @@
 .body .table td {
   text-align: center;
   border-top: 0px solid #dee2e6;
+  background-color: white;
 }
 .body .table th {
   text-align: center;
+  background-color: white;
 }
 .body .table .hide-col {
   display: none;

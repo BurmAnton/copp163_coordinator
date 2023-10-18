@@ -111,14 +111,27 @@ EducationProgramForm = select2_modelform(EducationProgram, attrs={'width': '400p
 @admin.register(EducationProgram)
 class EducationProgramAdmin(admin.ModelAdmin):
     form = EducationProgramForm
-    list_display = ['program_name', 'program_type', 'duration', 'competence', 'ed_center']
+    list_display = ['program_name', 'flow_id', 'program_type', 'duration', 'flow_name', 'competence']
     filter_horizontal = ('teachers', 'workshops')
     list_filter = (
         ('program_type'),
         ('duration'),
         ('competence', RelatedOnlyDropdownFilter)
     )
-    search_fields = ['program_name', 'ed_center__short_name', 'ed_center__name']
+    search_fields = ['program_name', 'ed_center__short_name', 'ed_center__name', 'ed_center__flow_name']
+
+    def flow_name(self, program):
+        if program.ed_center == None:
+            return "-"
+        if program.ed_center.flow_name == "":
+            return program.ed_center.short_name
+        return program.ed_center.flow_name
+    flow_name.short_description = 'ЦО'
+    flow_name.admin_order_field = 'ed_center__id'
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.exclude(ed_center=None)
 
 ApplicationForm = select2_modelform(Application, attrs={'width': '400px'})
 
