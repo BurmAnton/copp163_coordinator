@@ -250,14 +250,17 @@ def flow_appls_dashboard(request, year=2023):
         weeks_stat['Новые'].append(Application.objects.filter(
             creation_date__gte=week_dates['start_date'],
             creation_date__lte=week_dates['end_date'],
+            flow_status__is_rejected=False
         ).count())
         weeks_stat['Одобрены ЦЗН'].append(Application.objects.filter(
             csn_prv_date__gte=week_dates['start_date'],
             csn_prv_date__lte=week_dates['end_date'],
+            flow_status__is_rejected=False
         ).count())
         weeks_stat['Начали обучение'].append(Application.objects.filter(
             group__start_date__gte=week_dates['start_date'],
             group__start_date__lte=week_dates['end_date'],
+            flow_status__is_rejected=False
         ).count())
         weeks.append(f'{week_dates["start_date"].strftime("%d/%m")}-{week_dates["end_date"].strftime("%d/%m")}')
     chart = get_flow_applications_plot(weeks, weeks_stat)

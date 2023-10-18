@@ -162,15 +162,16 @@ class ApplicationAdmin(admin.ModelAdmin):
     get_center.admin_order_field = 'education_center__flow_name'
 
     search_fields = ['applicant__phone_number','applicant__email','applicant__snils_number',
-    'applicant__first_name','applicant__middle_name','applicant__last_name', 'id']
+    'applicant__first_name','applicant__middle_name','applicant__last_name', 'id', 'education_center__flow_name', 'flow_id']
     
 
     list_display = [
         'applicant',
-        'citizen_category',
         'flow_status',
+        'get_center',
+        'citizen_category',
         'group',
-        'get_center'
+        
     ]
     list_totals = ['payment_amount',]
     def get_form(self, request, obj=None, **kwargs):
