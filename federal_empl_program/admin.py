@@ -167,6 +167,7 @@ class ApplicationAdmin(admin.ModelAdmin):
 
     list_display = [
         'applicant',
+        'csn_prv_date',
         'flow_status',
         'get_center',
         'citizen_category',
