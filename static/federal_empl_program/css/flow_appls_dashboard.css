@@ -69,6 +69,7 @@
   text-align: center;
   border-top: 0px solid #dee2e6;
   background-color: white;
+  vertical-align: middle;
 }
 .body .table td p {
   padding-left: 15px;
