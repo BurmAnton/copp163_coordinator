@@ -65,13 +65,25 @@
   background-color: #e9ecf7 !important;
 }
 .body .table td {
+  width: 200px;
   text-align: center;
   border-top: 0px solid #dee2e6;
   background-color: white;
 }
+.body .table td p {
+  padding-left: 15px;
+  margin: auto;
+  width: 120px;
+  text-align: left;
+}
 .body .table th {
   text-align: center;
   background-color: white;
+}
+.body .table th p {
+  margin: auto;
+  width: 120px;
+  text-align: left;
 }
 .body .table .hide-col {
   display: none;
@@ -96,4 +108,11 @@
   background-color: #394959 !important;
   color: white;
   font-weight: bold;
+}
+.body .table-darkblue td p {
+  font-weight: bold;
+  padding-left: 15px;
+  margin: auto;
+  width: 120px;
+  text-align: left;
 }/*# sourceMappingURL=flow_appls_dashboard.css.map */
