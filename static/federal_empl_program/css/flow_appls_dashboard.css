@@ -92,7 +92,7 @@
   display: table-cell !important;
 }
 .body .table .right-border {
-  border-right: 2px solid #394959 !important;
+  border-right: 2px solid #394959;
 }
 .body .table .ed_center-col {
   max-width: 320px;
