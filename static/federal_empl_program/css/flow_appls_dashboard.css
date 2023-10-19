@@ -65,7 +65,6 @@
   background-color: #e9ecf7 !important;
 }
 .body .table td {
-  width: 200px;
   text-align: center;
   border-top: 0px solid #dee2e6;
   background-color: white;
@@ -96,7 +95,7 @@
   border-right: 2px solid #394959;
 }
 .body .table .ed_center-col {
-  max-width: 320px;
+  max-width: 500px;
   white-space: wrap;
 }
 .body tbody, .body td, .body tfoot, .body th, .body thead, .body tr {
