@@ -390,7 +390,7 @@
             <h3>Цикл №{{cycle.cycle_number}}</h3>
             <div>
                 <ul class="timeline" id="timeline">
-                    <li class="li  registration {% if cycle.status == 'REG' %} in-progress {% else %} complete {% endif %}">
+                    <li class="li registration {% if cycle.status == 'REG' %} in-progress {% else %} complete {% endif %}">
                       <div class="timestamp">
                         <span class="date">{{cycle.end_reg_date|date:"d.m"}}<span>
                       </div>
@@ -441,6 +441,11 @@
                             
                         </div>
                         <div class="event-card-body">
+                            {% if event|check_double %}
+                                <div class="alert alert-danger w-90" role="alert">
+                                    Есть дубликаты!
+                                </div>
+                            {% endif %}
                             <p><span class="field">ID мероприятия:</span> {{event.id }}</p>
                             <p><span class="field">Статус:</span> {{event.get_status_display }}</p>
                             <p><span class="field">Дата проведения:</span> {{event.event_date|date:"d.m.Y" }}</p>
