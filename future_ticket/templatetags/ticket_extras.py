@@ -9,6 +9,14 @@ from future_ticket.models import StudentBVB, TicketEvent
 register = template.Library()
 
 @register.filter
+def check_double(event):
+    double = StudentBVB.objects.filter(event=event, is_double=True)
+    if len(double) > 0:
+        return True
+    return False
+
+
+@register.filter
 def count_participants(quota):
     events = TicketEvent.objects.filter(quotas__in=quota.events.all())
     participants_count = StudentBVB.objects.filter(

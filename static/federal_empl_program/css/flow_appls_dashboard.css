@@ -50,7 +50,7 @@
   font-size: 16px;
   line-height: 20px;
   border-top: 0;
-  border-bottom: 2px solid #394959;
+  border-bottom: 3px solid #394959;
 }
 @media (max-width: 600px) {
   .body .table {
@@ -78,6 +78,9 @@
 }
 .body .table .show-col {
   display: table-cell !important;
+}
+.body .table .right-border {
+  border-right: 2px solid #394959 !important;
 }
 .body tbody, .body td, .body tfoot, .body th, .body thead, .body tr {
   border-color: inherit;

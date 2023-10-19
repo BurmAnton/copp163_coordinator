@@ -42,28 +42,24 @@
             <thead>
                 <tr>
                     <th rowspan="2" style="text-align: left;">ЦО</th>
-                    <th class="qouta-duration" colspan="3" style="border:0;">72 часа</th>
-                    <th class="qouta-duration" colspan="3" style="border:0;">144 часа</th>
-                    <th class="qouta-duration" colspan="3" style="border:0;">256 часа</th>
-                    <th class="qouta-duration" colspan="3" style="border:0;">Всего</th>
+                    <th class="qouta-duration right-border" colspan="1" style="border:0;">72 часа</th>
+                    <th class="qouta-duration right-border" colspan="1" style="border:0;">144 часа</th>
+                    <th class="qouta-duration right-border" colspan="1" style="border:0;">256 часа</th>
+                    <th class="qouta-duration" colspan="1" style="border:0;">Всего</th>
                 </tr>
                 <tr>
-                    <th>Квота</th>
                     <th class="hide-col">Заявок</th>
-                    <th>Одобрено ЦЗН</th>
-                    <th>%</th>
-                    <th>Квота</th>
+                    <th class="hide-col">Начали обучение</th>
+                    <th class="right-border">Одобрено ЦЗН</th>
                     <th class="hide-col">Заявок</th>
-                    <th>Одобрено ЦЗН</th>
-                    <th>%</th>
-                    <th>Квота</th>
+                    <th class="hide-col">Начали обучение</th>
+                    <th class="right-border">Одобрено ЦЗН</th>
                     <th class="hide-col">Заявок</th>
-                    <th>Одобрено ЦЗН</th>
-                    <th>%</th>
-                    <th>Квота</th>
+                    <th class="hide-col">Начали обучение</th>
+                    <th class="right-border">Одобрено ЦЗН</th>
                     <th class="hide-col">Заявок</th>
+                    <th class="hide-col">Начали обучение</th>
                     <th>Одобрено ЦЗН</th>
-                    <th>%</th>
                 </tr>
             </thead>
             {% for ed_center in ed_centers %}
@@ -75,42 +71,34 @@
                 {% else %}
                 <td style="text-align: left;">{{ed_center.ed_center.name}}</td>
                 {% endif %}
-                <td>{{ed_center.quota_72}}</td>
                 <td class="hide-col">{{applications|filter_center_72:ed_center.ed_center}}</td>
-                <td>{{applications|filter_prvvd_72:ed_center.ed_center}}</td>
-                <td>{{applications|count_procent_72:ed_center}}</td>
-                <td>{{ed_center.quota_144}}</td>
+                <td class="hide-col">{{applications|filter_strt_center_72:ed_center.ed_center}}</td>
+                <td class="right-border">{{applications|filter_prvvd_72:ed_center.ed_center}}/{{ed_center.quota_72}} ({{applications|count_procent_72:ed_center}})</td>
                 <td class="hide-col">{{applications|filter_center_144:ed_center.ed_center}}</td>
-                <td>{{applications|filter_prvvd_144:ed_center.ed_center}}</td>
-                <td>{{applications|count_procent_144:ed_center}}</td>
-                <td>{{ed_center.quota_256}}</td>
+                <td class="hide-col">{{applications|filter_strt_center_144:ed_center.ed_center}}</td>
+                <td class="right-border">{{applications|filter_prvvd_144:ed_center.ed_center}}/{{ed_center.quota_144}} ({{applications|count_procent_144:ed_center}})</td>
                 <td class="hide-col">{{applications|filter_center_256:ed_center.ed_center}}</td>
-                <td>{{applications|filter_prvvd_256:ed_center.ed_center}}</td>
-                <td>{{applications|count_procent_256:ed_center}}</td>
-                <td>{{ed_center.quota_72|add:ed_center.quota_144|add:ed_center.quota_256}}</td>
+                <td class="hide-col">{{applications|filter_strt_center_256:ed_center.ed_center}}</td>
+                <td class="right-border">{{applications|filter_prvvd_256:ed_center.ed_center}}/{{ed_center.quota_256}} ({{applications|count_procent_256:ed_center}})</td>
                 <td class="hide-col">{{applications|filter_center:ed_center.ed_center}}</td>
-                <td>{{applications|filter_prvvd:ed_center.ed_center}}</td>
-                <td>{{applications|count_procent:ed_center}}</td>
+                <td class="hide-col">{{applications|filter_strt_center:ed_center.ed_center}}</td>
+                <td>{{applications|filter_prvvd:ed_center.ed_center}}/{{ed_center.quota_72|add:ed_center.quota_144|add:ed_center.quota_256}} ({{applications|count_procent:ed_center}})</td>
             </tr>
             {% endfor %}
             <tr class='table-darkblue'>
                 <td style="font-weight: bold">Итого</td>
-                <td style="font-weight: bold">{{ed_centers|count_quota:72}}</td>
                 <td class="hide-col" style="font-weight: bold">{{applications|filter_appl:72}}</td>
-                <td style="font-weight: bold">{{applications|filter_prvvd_appl:72}}</td>
-                <td style="font-weight: bold">{{applications|count_procent_all_72:ed_centers}}</td>
-                <td style="font-weight: bold">{{ed_centers|count_quota:144}}</td>
+                <td class="hide-col">{{applications|filter_strt_center_all:72}}</td>
+                <td style="font-weight: bold">{{applications|filter_prvvd_appl:72}}/{{ed_centers|count_quota:72}} ({{applications|count_procent_all_72:ed_centers}})</td>
                 <td class="hide-col" style="font-weight: bold">{{applications|filter_appl:144}}</td>
-                <td style="font-weight: bold">{{applications|filter_prvvd_appl:144}}</td>
-                <td style="font-weight: bold">{{applications|count_procent_all_144:ed_centers}}</td>
-                <td style="font-weight: bold">{{ed_centers|count_quota:256}}</td>
+                <td class="hide-col">{{applications|filter_strt_center_all:144}}</td>
+                <td style="font-weight: bold">{{applications|filter_prvvd_appl:144}}/{{ed_centers|count_quota:144}} ({{applications|count_procent_all_144:ed_centers}})</td>
                 <td class="hide-col" style="font-weight: bold">{{applications|filter_appl:256}}</td>
-                <td style="font-weight: bold">{{applications|filter_prvvd_appl:256}}</td>
-                <td style="font-weight: bold">{{applications|count_procent_all_256:ed_centers}}</td>
-                <td style="font-weight: bold">{{ed_centers|count_quota}}</td>
+                <td class="hide-col">{{applications|filter_strt_center_all:256}}</td>
+                <td style="font-weight: bold">{{applications|filter_prvvd_appl:256}}/{{ed_centers|count_quota:256}} ({{applications|count_procent_all_256:ed_centers}})</td>
                 <td class="hide-col" style="font-weight: bold">{{applications|filter_appl}}</td>
-                <td style="font-weight: bold">{{applications|filter_prvvd_appl}}</td>
-                <td style="font-weight: bold">{{applications|count_procent_all:ed_centers}}</td>
+                <td class="hide-col">{{applications|filter_strt_center_all}}</td>
+                <td style="font-weight: bold">{{applications|filter_prvvd_appl}}/{{ed_centers|count_quota}} ({{applications|count_procent_all:ed_centers}})</td>
             </tr>
         </table>
     </div>

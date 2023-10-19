@@ -1,3 +1,4 @@
+from datetime import date
 from django import template
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import stringfilter
@@ -17,6 +18,48 @@ def count_quota(ed_centers, duration=None):
                 F('quota_72') + F('quota_144') + F('quota_256')
             ))['quota_sum']
     return ed_centers.aggregate(quota_sum=Sum(f'quota_{duration}'))['quota_sum']
+
+@register.filter
+def filter_strt_center(applications, ed_center):
+    return len(applications.filter(
+            education_center=ed_center,
+            group__start_date__lte=date.today(),
+        ).exclude(csn_prv_date=None))
+
+@register.filter
+def filter_strt_center_72(applications, ed_center):
+    return len(applications.filter(
+            education_center=ed_center,
+            education_program__duration__lte=72,
+            group__start_date__lte=date.today(),
+        ).exclude(csn_prv_date=None))
+
+@register.filter
+def filter_strt_center_144(applications, ed_center):
+    return len(applications.filter(
+            education_center=ed_center,
+            education_program__duration__lte=144,
+            group__start_date__lte=date.today(),
+        ).exclude(csn_prv_date=None))
+
+@register.filter
+def filter_strt_center_256(applications, ed_center):
+    return len(applications.filter(
+            education_center=ed_center,
+            education_program__duration__lte=256,
+            group__start_date__lte=date.today(),
+        ).exclude(csn_prv_date=None))
+
+@register.filter
+def filter_strt_center_all(applications, duration=None):
+    if duration is None:
+        return len(applications.filter(
+            group__start_date__lte=date.today(),
+        ).exclude(csn_prv_date=None))
+    return len(applications.filter(
+            education_program__duration__lte=int(duration),
+            group__start_date__lte=date.today(),
+        ).exclude(csn_prv_date=None))
 
 @register.filter
 def filter_appl(applications, duration=None):
@@ -75,6 +118,8 @@ def count_procent_all_256(applications, ed_centers):
             education_program__duration__gte=256).exclude(csn_prv_date=None))
     return f'{round(applications_count / quota_sum * 100, 2)}%'
 
+
+
 @register.filter
 def filter_prvvd(applications, ed_center):
     return len(applications.filter(education_center=ed_center).exclude(csn_prv_date=None))
@@ -91,7 +136,7 @@ def count_procent(applications, ed_center):
         ).exclude(csn_prv_date=None))
     if quota != 0 and prvd_quota != 0:
         return f'{round(prvd_quota / quota *100, 2)}%'
-    return "-"
+    return "0%"
 
 @register.filter
 def filter_prvvd_72(applications, ed_center):
@@ -116,7 +161,7 @@ def count_procent_72(applications, ed_center):
         ).exclude(csn_prv_date=None))
     if quota != 0 and prvd_quota != 0:
         return f'{round(prvd_quota / quota *100, 2)}%'
-    return "-"
+    return "0%"
 
 @register.filter
 def filter_prvvd_144(applications, ed_center):
@@ -144,7 +189,7 @@ def count_procent_144(applications, ed_center):
         ).exclude(csn_prv_date=None))
     if quota != 0 and prvd_quota != 0:
         return f'{round(prvd_quota / quota *100, 2)}%'
-    return "-"
+    return "0%"
 
 @register.filter
 def filter_prvvd_256(applications, ed_center):
@@ -169,7 +214,7 @@ def count_procent_256(applications, ed_center):
         ).exclude(csn_prv_date=None))
     if quota != 0 and prvd_quota != 0:
         return f'{round(prvd_quota / quota *100, 2)}%'
-    return "-"
+    return "0%"
 
 @register.filter
 def get_full_price(price):
