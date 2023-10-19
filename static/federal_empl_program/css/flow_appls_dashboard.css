@@ -82,10 +82,15 @@
 .body .table .right-border {
   border-right: 2px solid #394959 !important;
 }
+.body .table .ed_center-col {
+  max-width: 320px;
+  white-space: wrap;
+}
 .body tbody, .body td, .body tfoot, .body th, .body thead, .body tr {
   border-color: inherit;
   border-style: none;
   border-width: 0;
+  white-space: nowrap;
 }
 .body .table-darkblue td {
   background-color: #394959 !important;
