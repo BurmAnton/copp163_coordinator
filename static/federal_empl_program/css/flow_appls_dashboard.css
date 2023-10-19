@@ -73,7 +73,7 @@
 .body .table td p {
   padding-left: 15px;
   margin: auto;
-  width: 120px;
+  width: 140px;
   text-align: left;
 }
 .body .table th {
@@ -82,7 +82,7 @@
 }
 .body .table th p {
   margin: auto;
-  width: 120px;
+  width: 140px;
   text-align: left;
 }
 .body .table .hide-col {
@@ -113,6 +113,6 @@
   font-weight: bold;
   padding-left: 15px;
   margin: auto;
-  width: 120px;
+  width: 140px;
   text-align: left;
 }/*# sourceMappingURL=flow_appls_dashboard.css.map */
