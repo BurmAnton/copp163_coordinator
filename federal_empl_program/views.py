@@ -6,7 +6,7 @@ import string
 import random
 import json
 
-from django.db.models import Q, Count, Sum
+from django.db.models import Q, Count, Sum, Case, When, IntegerField
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -92,7 +92,7 @@ def citizen_application(request):
         birthday = request.POST["birthday"]
         birthday = datetime.strptime(birthday, "%Y-%m-%d")
         sex = request.POST.getlist("GenderOptions")
-        if 'male' in sex: sex = 'M'
+        if 'male' in sex: sex = 'M', Case, When, IntegerField
         else: sex = 'F'
         consultation = request.POST.getlist("consultation")
         if len(consultation) == 0: consultation = False
@@ -223,15 +223,41 @@ def applications_dashboard(request, year=2023):
 def flow_appls_dashboard(request, year=2023):
     project_year = get_object_or_404(ProjectYear, year=year)
     ed_centers_year = EducationCenterProjectYear.objects.filter(
-        project_year=project_year, stage="FNSHD").exclude(
+        project_year=project_year).exclude(
             quota_72=0, quota_144=0, quota_256=0
-        )
+        ).select_related('ed_center')
     ed_centers = EducationCenter.objects.filter(
         project_years__in=ed_centers_year)
     applications = Application.objects.filter(
         education_center__in=ed_centers,
         project_year=project_year,
         flow_status__is_rejected=False
+    ).select_related('education_center', 'education_program', 'group')
+    appls_stat = applications.aggregate(
+        appls_count=Count('id'),
+        appls_count_72=Count(Case(
+            When(education_program__duration__lte=72, then=1),
+            output_field=IntegerField())),
+        appls_count_144=Count(Case(
+            When(Q(education_program__duration__gt=72) & 
+                 Q(education_program__duration__lt=256), then=1),
+            output_field=IntegerField())),
+        appls_count_256=Count(Case(
+            When(education_program__duration__gte=256, then=1),
+            output_field=IntegerField())),
+    )
+    prvd_appls_stat = applications.exclude(csn_prv_date=None).aggregate(
+        appls_count=Count('id'),
+        appls_count_72=Count(Case(
+            When(education_program__duration__lte=72, then=1),
+            output_field=IntegerField())),
+        appls_count_144=Count(Case(
+            When(Q(education_program__duration__gt=72) & 
+                 Q(education_program__duration__lt=256), then=1),
+            output_field=IntegerField())),
+        appls_count_256=Count(Case(
+            When(education_program__duration__gte=256, then=1),
+            output_field=IntegerField())),
     )
     day_stats = {}
     today = date.today() - timedelta(1)
@@ -263,16 +289,18 @@ def flow_appls_dashboard(request, year=2023):
         weeks_stat['Начали обучение'].append(applications.filter(
             group__start_date__gte=week_dates['start_date'],
             group__start_date__lte=week_dates['end_date']
-        ).count())
+        ).exclude(csn_prv_date=None).count())
         weeks.append(f'{week_dates["start_date"].strftime("%d/%m")}-{week_dates["end_date"].strftime("%d/%m")}')
     chart = get_flow_applications_plot(weeks, weeks_stat)
 
     return render(request, 'federal_empl_program/flow_appls_dashboard.html', {
         'project_year': project_year,
-        'ed_centers': ed_centers_year,
+        'ed_centers': ed_centers,
         'chart': chart,
         'day_stats': day_stats,
         'applications': applications,
+        'appls_stat': appls_stat,
+        'prvd_appls_stat': prvd_appls_stat
     })
     
 
