@@ -43,7 +43,7 @@ def update_events_cycles_statuses():
         start_period_date__gt=today
     )
     cycles_check.update(status='CHCK')
-    for cycle in cycles_check:
+    for cycle in  EventsCycle.objects.all():
         find_participants_dublicates.delay(cycle.id)
     #В процессе
     cycles_in_progress = EventsCycle.objects.filter(
