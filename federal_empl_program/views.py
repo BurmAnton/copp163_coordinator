@@ -225,14 +225,15 @@ def flow_appls_dashboard(request, year=2023):
     ed_centers_year = EducationCenterProjectYear.objects.filter(
         project_year=project_year).exclude(
             quota_72=0, quota_144=0, quota_256=0
-        ).select_related('ed_center')
+        ).order_by('-quota_256', '-quota_144', '-quota_72'
+                   ).select_related( 'ed_center')
     ed_centers = EducationCenter.objects.filter(
         project_years__in=ed_centers_year)
     applications = Application.objects.filter(
         education_center__in=ed_centers,
         project_year=project_year,
         flow_status__is_rejected=False
-    ).values()
+    )
     appls_stat = applications.aggregate(
         appls_count=Count('id'),
         appls_count_72=Count(Case(
@@ -259,6 +260,15 @@ def flow_appls_dashboard(request, year=2023):
             When(education_program__duration__gte=256, then=1),
             output_field=IntegerField())),
     )
+    ed_centers_year = ed_centers_year.values(
+        'quota_72', 'quota_144', 'quota_256', 'ed_center__flow_name', 
+        'ed_center__id', 'ed_center__name', 'ed_center__short_name'
+    )
+    applications = applications.values(
+        "education_center__id", "group__start_date",
+        "education_program__duration", "csn_prv_date"
+    )
+
     day_stats = {}
     today = date.today() - timedelta(1)
     day_stats['Новые'] = applications.filter(creation_date=today).count()
@@ -295,7 +305,7 @@ def flow_appls_dashboard(request, year=2023):
 
     return render(request, 'federal_empl_program/flow_appls_dashboard.html', {
         'project_year': project_year,
-        'ed_centers': ed_centers,
+        'ed_centers': ed_centers_year,
         'chart': chart,
         'day_stats': day_stats,
         'applications': applications,

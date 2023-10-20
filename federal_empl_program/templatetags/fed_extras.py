@@ -24,14 +24,14 @@ def count_quota(ed_centers, duration=None):
 @register.filter
 def filter_strt_center(applications, ed_center):
     return applications.filter(
-            education_center=ed_center,
+            education_center__id=ed_center['ed_center__id'],
             group__start_date__lte=date.today(),
         ).exclude(csn_prv_date=None).count()
 
 @register.filter
 def filter_strt_center_72(applications, ed_center):
     return applications.filter(
-            education_center=ed_center,
+            education_center__id=ed_center['ed_center__id'],
             education_program__duration__lte=72,
             group__start_date__lte=date.today(),
         ).exclude(csn_prv_date=None).count()
@@ -39,7 +39,7 @@ def filter_strt_center_72(applications, ed_center):
 @register.filter
 def filter_strt_center_144(applications, ed_center):
     return applications.filter(
-            education_center=ed_center,
+            education_center__id=ed_center['ed_center__id'],
             education_program__duration__gt=72,
             education_program__duration__lt=256,
             group__start_date__lte=date.today(),
@@ -48,7 +48,7 @@ def filter_strt_center_144(applications, ed_center):
 @register.filter
 def filter_strt_center_256(applications, ed_center):
     return applications.filter(
-            education_center=ed_center,
+            education_center__id=ed_center['ed_center__id'],
             education_program__duration__gte=256,
             group__start_date__lte=date.today(),
         ).exclude(csn_prv_date=None).count()
@@ -90,9 +90,7 @@ def filter_appl(applications, duration=None):
     
 @register.filter
 def count_procent_all(applications, ed_centers):
-    project_year_center = EducationCenterProjectYear.objects.filter(
-        ed_center__in=ed_centers)
-    quota_sum = project_year_center.aggregate(quota_sum=Sum(
+    quota_sum = ed_centers.aggregate(quota_sum=Sum(
                 F('quota_72') + F('quota_144') + F('quota_256')
             ))['quota_sum']
     applications_count = applications.exclude(csn_prv_date=None).count()
@@ -101,18 +99,14 @@ def count_procent_all(applications, ed_centers):
 
 @register.filter
 def count_procent_all_72(applications, ed_centers):
-    project_year_center = EducationCenterProjectYear.objects.filter(
-        ed_center__in=ed_centers)
-    quota_sum = project_year_center.aggregate(quota_sum=Sum('quota_72'))['quota_sum']
+    quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_72'))['quota_sum']
     applications_count = applications.filter(
         education_program__duration__lte=72).exclude(csn_prv_date=None).count()
     return f'{applications_count}/{quota_sum} ({round(applications_count / quota_sum * 100, 2)}%)'
 
 @register.filter
 def count_procent_all_144(applications, ed_centers):
-    project_year_center = EducationCenterProjectYear.objects.filter(
-        ed_center__in=ed_centers)
-    quota_sum = project_year_center.aggregate(quota_sum=Sum('quota_144'))['quota_sum']
+    quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_144'))['quota_sum']
     applications_count = applications.filter(
         education_program__duration__gt=72,
         education_program__duration__lt=256).exclude(csn_prv_date=None).count()
@@ -120,9 +114,7 @@ def count_procent_all_144(applications, ed_centers):
 
 @register.filter
 def count_procent_all_256(applications, ed_centers):
-    project_year_center = EducationCenterProjectYear.objects.filter(
-        ed_center__in=ed_centers)
-    quota_sum = project_year_center.aggregate(quota_sum=Sum('quota_256'))['quota_sum']
+    quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_256'))['quota_sum']
     applications_count = applications.filter(
             education_program__duration__gte=256).exclude(csn_prv_date=None).count()
     return f'{applications_count}/{quota_sum} ({round(applications_count / quota_sum * 100, 2)}%)'
@@ -131,19 +123,18 @@ def count_procent_all_256(applications, ed_centers):
 
 @register.filter
 def filter_prvvd(applications, ed_center):
-    return applications.filter(education_center=ed_center).exclude(csn_prv_date=None).count()
+    return applications.filter(education_center__id=ed_center['ed_center__id']).exclude(csn_prv_date=None).count()
 
 @register.filter
 def filter_center(applications, ed_center):
-    return applications.filter(education_center=ed_center).count()
+    return applications.filter(education_center__id=ed_center['ed_center__id']).count()
 
 @register.filter
 def count_procent(applications, ed_center):
-    ed_center = EducationCenterProjectYear.objects.get(
-        ed_center=ed_center)
-    quota = ed_center.quota_72 + ed_center.quota_144 + ed_center.quota_256
+    quota = ed_center['quota_72'] + ed_center['quota_144']\
+                                  + ed_center['quota_256']
     prvd_quota = applications.filter(
-            education_center=ed_center.ed_center
+            education_center__id=ed_center['ed_center__id']
         ).exclude(csn_prv_date=None).count()
     if quota != 0 and prvd_quota != 0:
         return f'{prvd_quota}/{quota} ({round(prvd_quota / quota *100, 2)}%)'
@@ -152,17 +143,15 @@ def count_procent(applications, ed_center):
 @register.filter
 def filter_center_72(applications, ed_center):
     return applications.filter(
-            education_center=ed_center,
+            education_center__id=ed_center['ed_center__id'],
             education_program__duration__lte=72
         ).count()
 
 @register.filter
 def count_procent_72(applications, ed_center):
-    ed_center = EducationCenterProjectYear.objects.get(
-        ed_center=ed_center)
-    quota = ed_center.quota_72
+    quota = ed_center['quota_72']
     prvd_quota = applications.filter(
-            education_center=ed_center.ed_center,
+            education_center__id=ed_center['ed_center__id'],
             education_program__duration__lte=72
         ).exclude(csn_prv_date=None).count()
     if quota != 0 and prvd_quota != 0:
@@ -172,18 +161,16 @@ def count_procent_72(applications, ed_center):
 @register.filter
 def filter_center_144(applications, ed_center):
     return applications.filter(
-            education_center=ed_center,
+            education_center__id=ed_center['ed_center__id'],
             education_program__duration__gt=72,
             education_program__duration__lt=256,
         ).count()
 
 @register.filter
 def count_procent_144(applications, ed_center):
-    ed_center = EducationCenterProjectYear.objects.get(
-        ed_center=ed_center)
-    quota = ed_center.quota_144
+    quota = ed_center['quota_144']
     prvd_quota = applications.filter(
-            education_center=ed_center.ed_center,
+            education_center__id=ed_center['ed_center__id'],
             education_program__duration__gt=72,
             education_program__duration__lt=256,
         ).exclude(csn_prv_date=None).count()
@@ -194,17 +181,15 @@ def count_procent_144(applications, ed_center):
 @register.filter
 def filter_center_256(applications, ed_center):
     return applications.filter(
-            education_center=ed_center,
+            education_center__id=ed_center['ed_center__id'],
             education_program__duration__gte=256
         ).count()
 
 @register.filter
 def count_procent_256(applications, ed_center):
-    ed_center = EducationCenterProjectYear.objects.get(
-        ed_center=ed_center)
-    quota = ed_center.quota_256
+    quota = ed_center['quota_256']
     prvd_quota = applications.filter(
-            education_center=ed_center.ed_center,
+            education_center__id=ed_center['ed_center__id'],
             education_program__duration__gte=256
         ).exclude(csn_prv_date=None).count()
     if quota != 0 and prvd_quota != 0:
