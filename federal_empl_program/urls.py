@@ -1,4 +1,4 @@
-from django.urls import path, re_path
+from django.urls import path
 
 from . import views
 
@@ -7,7 +7,7 @@ urlpatterns = [
     #Import
     path('import/flow/', views.import_flow, name='import_flow'),
     #Auth
-    re_path(r'^login/$', views.login, name="login"),
+    path('login/', views.login, name="login"),
     path('logout/', views.logout, name="logout"),
     #Quotes
     path(

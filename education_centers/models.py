@@ -6,7 +6,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
 
-#from federal_empl_program.models import ProjectYear
 from users.models import User
 
 class Competence(models.Model):

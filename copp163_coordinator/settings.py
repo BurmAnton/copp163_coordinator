@@ -121,6 +121,17 @@ DATABASES = {
     }
 }
 
+#Caches
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://localhost:6379',
+        'OPTIONS': {
+            'db': '2',
+        }
+    }
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -149,7 +160,6 @@ TIME_ZONE = 'Europe/Samara'
 
 USE_I18N = True
 
-USE_L10N = True
 
 USE_TZ = True
 

@@ -232,7 +232,7 @@ def flow_appls_dashboard(request, year=2023):
         education_center__in=ed_centers,
         project_year=project_year,
         flow_status__is_rejected=False
-    ).select_related('education_center', 'education_program', 'group')
+    ).values()
     appls_stat = applications.aggregate(
         appls_count=Count('id'),
         appls_count_72=Count(Case(
