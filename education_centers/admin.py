@@ -61,17 +61,16 @@ class EducationCentersAdmin(admin.ModelAdmin):
     form = EducationCentersForm
     
     list_display = ['name', 'short_name', 'get_status', 'contact_person']
-    filter_horizontal = ('competences',)
-    inlines = [
-        WorkshopInline
-    ]
+
     search_fields = ['name', 'short_name', 'contact_person__last_name']
 
-    def reg_link(self, group):
-        reg_link = f"https://copp63-coordinator.ru/registration/1?c={group.id}"
-        return reg_link
-    reg_link.short_description = 'Ссылка на рег.'
-
+    fieldsets = (
+        (None, {
+            "fields": (
+                'name', 'short_name', 'flow_name', 'contact_person'
+            ),
+        }),
+    )
 
     def get_status(self, center):
         application_url = reverse("ed_center_application", args=[center.id])
