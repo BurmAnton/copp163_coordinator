@@ -13,7 +13,9 @@ from django.urls import reverse
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.cache import cache_page
 from django.db import IntegrityError
+from django.core.cache import cache
 
 from education_centers.models import Competence, EducationCenter, EducationProgram
 from federal_empl_program.imports import import_applications
@@ -43,9 +45,10 @@ def import_flow(request):
         form = ImportDataForm(request.POST, request.FILES)
         if form.is_valid():
             message = import_applications(form, 2023)
+            cache.clear()
         else:
             data = form.errors
-    
+
     return render(request, "federal_empl_program/import_flow.html",{
         'form': form,
         'message': message
@@ -220,6 +223,7 @@ def applications_dashboard(request, year=2023):
             education_program__duration=256, appl_status='COMP'),
     })
 
+@cache_page(None, key_prefix="flow")
 def flow_appls_dashboard(request, year=2023):
     project_year = get_object_or_404(ProjectYear, year=year)
     ed_centers_year = EducationCenterProjectYear.objects.filter(

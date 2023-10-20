@@ -43,8 +43,6 @@ def update_events_cycles_statuses():
         start_period_date__gt=today
     )
     cycles_check.update(status='CHCK')
-    for cycle in  EventsCycle.objects.all():
-        find_participants_dublicates.delay(cycle.id)
     #В процессе
     cycles_in_progress = EventsCycle.objects.filter(
         start_period_date__lte=today,
@@ -56,3 +54,6 @@ def update_events_cycles_statuses():
         end_period_date__lt=today
     )
     cycles_end.update(status='END')
+    #Проверяем дубликатов
+    for cycle in EventsCycle.objects.all():
+        find_participants_dublicates.delay(cycle.id)
