@@ -44,7 +44,7 @@ jobs:
         DATABASE_HOST: 127.0.0.1
         DATABASE_PORT: ''
         ALLOWED_HOSTS: "127.0.0.1 localhost"
-        CSRF_TRUSTED_ORIGINS: 'https://copp63-coordinator.ru '
+        CSRF_TRUSTED_ORIGINS: 'https://copp63-coordinator.ru http://127.0.0.1'
         DEBUG: true
         STATIC_URL: '/copp163_coordinator/static/'
         MEDIA_URL: '/copp163_coordinator/media/'
