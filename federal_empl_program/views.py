@@ -86,40 +86,6 @@ def logout(request):
         auth.logout(request)
     return HttpResponseRedirect(reverse("login"))
 
-@csrf_exempt
-def citizen_application(request):
-    is_register = False
-    if request.method == "POST":
-        middle_name = request.POST["middle_name"]
-        if middle_name == '': middle_name = None
-        birthday = request.POST["birthday"]
-        birthday = datetime.strptime(birthday, "%Y-%m-%d")
-        sex = request.POST.getlist("GenderOptions")
-        if 'male' in sex: sex = 'M', Case, When, IntegerField
-        else: sex = 'F'
-        consultation = request.POST.getlist("consultation")
-        if len(consultation) == 0: consultation = False
-        else: consultation = True
-        citizen_application = CitizenApplication.objects.get_or_create(
-            last_name=request.POST["last_name"],
-            first_name=request.POST["first_name"],
-            middle_name=middle_name,
-            email=request.POST["email"],
-            phone_number=request.POST["phone"],
-            competence=request.POST["competence"],
-            birthday=birthday,
-            education_type=request.POST["education_type"],
-            employment_status=request.POST["employment_status"],
-            practice_time=request.POST["practice_time"],
-            planned_employment=request.POST["planned_employment"],
-            consultation=consultation,
-            sex=sex
-        )
-        is_register = True
-        
-    return render(request, 'federal_empl_program/citizen_application.html', {
-        'is_register': is_register
-    })
 
 def applications_dashboard(request, year=2023):
     project_year = get_object_or_404(ProjectYear, year=year)
@@ -462,4 +428,39 @@ def quota_request(request):
         'programs_quota_256': programs_quota_256,
         'ed_centers': ed_centers,
         'programs': programs
+    })
+
+@csrf_exempt
+def citizen_application(request):
+    is_register = False
+    if request.method == "POST":
+        middle_name = request.POST["middle_name"]
+        if middle_name == '': middle_name = None
+        birthday = request.POST["birthday"]
+        birthday = datetime.strptime(birthday, "%Y-%m-%d")
+        sex = request.POST.getlist("GenderOptions")
+        if 'male' in sex: sex = 'M'
+        else: sex = 'F'
+        consultation = request.POST.getlist("consultation")
+        if len(consultation) == 0: consultation = False
+        else: consultation = True
+        citizen_application = CitizenApplication.objects.get_or_create(
+            last_name=request.POST["last_name"],
+            first_name=request.POST["first_name"],
+            middle_name=middle_name,
+            email=request.POST["email"],
+            phone_number=request.POST["phone"],
+            competence=request.POST["competence"],
+            birthday=birthday,
+            education_type=request.POST["education_type"],
+            employment_status=request.POST["employment_status"],
+            practice_time=request.POST["practice_time"],
+            planned_employment=request.POST["planned_employment"],
+            consultation=consultation,
+            sex=sex
+        )
+        is_register = True
+        
+    return render(request, 'federal_empl_program/citizen_application.html', {
+        'is_register': is_register
     })
