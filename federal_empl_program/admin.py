@@ -78,6 +78,7 @@ class ProjectYearAdmin(admin.ModelAdmin):
 
 @admin.register(EducationCenterProjectYear)
 class EducationCenterProjectYearAdmin(admin.ModelAdmin):
+    list_display = ['ed_center', 'is_federal']
     search_fields = ['ed_center__name', 'ed_center__flow_name', 'ed_center__short_name']
 
 
