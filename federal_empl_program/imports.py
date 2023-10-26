@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from citizens.models import Citizen, School
 from education_centers.models import EducationProgram, EducationCenter, \
                                      Workshop, Competence
-from .models import Application, FlowStatus, Group, CitizenCategory, ProjectYear
+from .models import Application, EducationCenterProjectYear, FlowStatus, Group, CitizenCategory, ProjectYear
 
 
 CONTR_TYPE_CHOICES = {
@@ -111,7 +111,8 @@ def import_applications(form, year):
             application_input = create_application(sheet, row, citizen, project_year)
             if application_input['status'] != True:
                 if application_input not in missing_fields:
-                    missing_fields.append(application_input)
+                    if application_input['status'] != 'EdProgramMissingFed':
+                        missing_fields.append(application_input)
             else:
                 application = application_input['value']
                 if application_input['is_new']: application_added += 1
@@ -119,12 +120,8 @@ def import_applications(form, year):
                 if sheet["Идентификатор потока"][row] != "" \
                     and sheet["Идентификатор потока"][row] != None:
                     group_input = create_group(sheet, row, application)
-                    if group_input['status'] != True:
-                        if group_input not in missing_fields:
-                            missing_fields.append(group_input)
-                    else:
-                        if group_input['is_new']: group_added += 1
-                        else: group_updated += 1
+                    if group_input['is_new']: group_added += 1
+                    else: group_updated += 1
     missing_fields = sorted(missing_fields, key=lambda d: d['status']) 
     return ['OK', missing_fields, citizen_added, citizen_updated,
              application_added, application_updated, group_added, group_updated]
@@ -196,14 +193,16 @@ def create_application(sheet, row, citizen, project_year):
         application.delete()
         return {"status": "EdCenterMissing", "value": flow_name}
     application.education_center = education_center[0]
-    program_name = sheet["Программа"][row]
     program_flow_id = sheet["Идентификатор образовательной программы"][row]
-    application.education_program = get_education_program(
-        program_name, program_flow_id, application.education_center
-    )
+    application.education_program = get_education_program(program_flow_id)
     if application.education_program == None:
         application.delete()
-        {"status": "EdProgramMissing", "value": program_flow_id}
+        education_center_year = EducationCenterProjectYear.objects.get(
+            ed_center=education_center[0], project_year=project_year
+        )
+        if education_center_year.is_federal:
+            return {"status": "EdProgramMissingFed", "value": program_flow_id}
+        return {"status": "EdProgramMissing", "value": program_flow_id}
     application.save()
     return {"status": True, "value": application, "is_new": is_new}
 
@@ -214,28 +213,14 @@ def create_group(sheet, row, application):
         group.start_date = datetime.strptime(sheet["Начало обучения"][row], "%d.%m.%Y")
     if sheet["Окончание обучения"][row] != None:
         group.end_date = datetime.strptime(sheet["Окончание обучения"][row], "%d.%m.%Y")
-    
-    program_name = sheet["Программа"][row]
-    program_flow_id = sheet["Идентификатор образовательной программы"][row]
-    group.education_program = get_education_program(
-        program_name, program_flow_id, application.education_center
-    )
-    if group.education_program == None:
-        group.delete()
-        return {"status": "EdProgramMissing", "value": program_flow_id}
+    group.education_program = application.education_program
     group.students.add(application)
     group.save()
     return {"status": True, "value": group, "is_new": is_new}
     
-def get_education_program(program_name, program_flow_id, education_center):
+def get_education_program(program_flow_id):
     education_program = EducationProgram.objects.filter(
         flow_id=program_flow_id)
-    if len(education_program) != 0: return education_program[0]
-    education_program = EducationProgram.objects.filter(
-        program_name=program_name, ed_center=education_center)
     if len(education_program) != 0: 
-        education_program[0].flow_id = program_flow_id
-        education_program[0].save()
         return education_program[0]
-    
     return None
