@@ -113,6 +113,9 @@ def import_applications(form, year):
                 if application_input not in missing_fields:
                     if application_input['status'] != 'EdProgramMissingFed':
                         missing_fields.append(application_input)
+                    else:
+                        if citizen_input['is_new']: citizen_added -= 1
+                        else: citizen_updated -= 1
             else:
                 application = application_input['value']
                 if application_input['is_new']: application_added += 1
@@ -201,6 +204,7 @@ def create_application(sheet, row, citizen, project_year):
             ed_center=education_center[0], project_year=project_year
         )
         if education_center_year.is_federal:
+            citizen.delete()
             return {"status": "EdProgramMissingFed", "value": program_flow_id}
         return {"status": "EdProgramMissing", "value": program_flow_id}
     application.save()
