@@ -189,7 +189,7 @@ def applications_dashboard(request, year=2023):
             education_program__duration=256, appl_status='COMP'),
     })
 
-@cache_page(None, key_prefix="flow")
+#@cache_page(None, key_prefix="flow")
 def flow_appls_dashboard(request, year=2023):
     project_year = get_object_or_404(ProjectYear, year=year)
     ed_centers_year = EducationCenterProjectYear.objects.filter(
@@ -262,6 +262,8 @@ def flow_appls_dashboard(request, year=2023):
         week_dates['start_date'] = datetime.strptime(start_date, '%Y-%U-%w')
         week_dates['end_date'] = datetime.strptime(end_date, '%Y-%U-%w')\
                                 + timedelta(1)
+        if week_dates['end_date'] > datetime.now():
+            week_dates['end_date'] = datetime.now()
         weeks_stat['Новые'].append(applications.filter(
             creation_date__gte=week_dates['start_date'],
             creation_date__lte=week_dates['end_date']
