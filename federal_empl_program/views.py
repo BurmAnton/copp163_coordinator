@@ -189,7 +189,7 @@ def applications_dashboard(request, year=2023):
             education_program__duration=256, appl_status='COMP'),
     })
 
-@cache_page(None, key_prefix="flow")
+#@cache_page(None, key_prefix="flow")
 def flow_appls_dashboard(request, year=2023):
     project_year = get_object_or_404(ProjectYear, year=year)
     ed_centers_year = EducationCenterProjectYear.objects.filter(
@@ -251,6 +251,10 @@ def flow_appls_dashboard(request, year=2023):
     weeks_stat['Новые'] = []
     weeks_stat['Одобрены ЦЗН'] = []
     weeks_stat['Начали обучение'] = []
+    cumulative_weeks_stat = {}
+    cumulative_weeks_stat['Новые'] = []
+    cumulative_weeks_stat['Одобрены ЦЗН'] = []
+    cumulative_weeks_stat['Начали обучение'] = []
     for week in range(5, -1, -1):
         week_dates={}
         start_date = f'{year}-{week_now - week}-1'
@@ -270,13 +274,24 @@ def flow_appls_dashboard(request, year=2023):
             group__start_date__gte=week_dates['start_date'],
             group__start_date__lte=week_dates['end_date']
         ).exclude(csn_prv_date=None).count())
+        cumulative_weeks_stat['Новые'].append(applications.filter(
+            creation_date__lte=week_dates['end_date']
+        ).count())
+        cumulative_weeks_stat['Одобрены ЦЗН'].append(applications.filter(
+            csn_prv_date__lte=week_dates['end_date']
+        ).count())
+        cumulative_weeks_stat['Начали обучение'].append(applications.filter(
+            group__start_date__lte=week_dates['end_date']
+        ).exclude(csn_prv_date=None).count())
         weeks.append(f'{week_dates["start_date"].strftime("%d/%m")}-{week_dates["end_date"].strftime("%d/%m")}')
     chart = get_flow_applications_plot(weeks, weeks_stat)
+    cumulative_chart = get_flow_applications_plot(weeks, cumulative_weeks_stat)
 
     return render(request, 'federal_empl_program/flow_appls_dashboard.html', {
         'project_year': project_year,
         'ed_centers': ed_centers_year,
         'chart': chart,
+        'cumulative_chart': cumulative_chart,
         'day_stats': day_stats,
         'applications': applications,
         'appls_stat': appls_stat,

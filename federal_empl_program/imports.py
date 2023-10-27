@@ -4,7 +4,7 @@ import math
 from users.models import User
 from openpyxl import load_workbook
 
-from datetime import datetime, tzinfo
+from datetime import date, datetime, tzinfo
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -98,6 +98,8 @@ def import_applications(form, year):
     group_added = 0
     group_updated = 0
     project_year = ProjectYear.objects.get(year=year)
+    project_year.appls_last_update = datetime.now()
+    project_year.save()
 
     for row in range(len(sheet['Номер заявки'])):
         citizen_input = create_citizen(sheet, row)

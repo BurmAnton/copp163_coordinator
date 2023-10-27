@@ -12,7 +12,20 @@
   margin-bottom: 20px;
   text-align: center;
 }
-.body .graphic {
+.body .appls-last-update {
+  font-size: 19px;
+  text-align: center;
+}
+.body .graphic-control {
+  display: flex;
+  justify-content: space-between;
+  width: 1070px;
+  margin: auto;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  align-items: flex-end;
+}
+.body .graphic, .body .cumulative-graphic {
   display: flex;
   justify-content: center;
 }
