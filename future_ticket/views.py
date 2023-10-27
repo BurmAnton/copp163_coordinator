@@ -315,6 +315,12 @@ def center_events(request, ed_center_id):
                     quota.save()
                     event_quota.save()
                     double_quota.delete()
+        elif 'add-link' in request.POST:
+            event = TicketEvent.objects.get(id=request.POST["event_id"])
+            photo_link = request.POST["photo_link"]
+            event.photo_link = photo_link
+            event.status = 'LOAD'
+            event.save()
         elif 'change-quota' in request.POST:
             quota = TicketQuota.objects.get(id=request.POST["quota_id"])
             school = School.objects.get(id=request.POST["school_id"])

@@ -15,7 +15,7 @@ from citizens.models import School
 from copp163_coordinator import settings
 from education_centers.models import Competence, EducationProgram, \
                                      EducationCenter, Group, Employee, Workshop
-from future_ticket.task import find_participants_dublicates
+from future_ticket.tasks import find_participants_dublicates
 from future_ticket.utils import number_cycles
 from users.models import DisabilityType
 from education_centers.models import Teacher
@@ -452,11 +452,10 @@ class TicketQuota(models.Model):
 
     def __init__(self, *args, **kwargs):
         super(TicketQuota, self).__init__(*args, **kwargs)
-        self.free_quota = self.approved_value - self.completed_quota\
-                        - self.reserved_quota
+        self.free_quota = self.approved_value - self.reserved_quota
 
     def save(self, *args, **kwargs):
-        self.free_quota = int(self.approved_value) - self.completed_quota - self.reserved_quota
+        self.free_quota = int(self.approved_value) - self.reserved_quota
         super(TicketQuota, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -698,12 +697,13 @@ class TicketEvent(models.Model):
     participants_limit = models.IntegerField(
         "Колво участников", blank=False, null=False, default=0
     )
+    photo_link = models.CharField(
+        "Фото с профпробы", max_length=500, null=True, blank=True
+    )
     
     STATUSES = [
         ("CRTD", "Создана"),
-        ("LOAD", "Участники загружены"),
-        ("HSTD", "Проведенна"),
-        ("CHCKD", "Проверенна"),
+        ("LOAD", "Фото и видеоматериалы загружены"),
     ]
     status = models.CharField(
         "Статус", 

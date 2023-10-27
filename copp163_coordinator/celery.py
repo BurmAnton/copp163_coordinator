@@ -6,7 +6,8 @@ from celery import Celery
 from celery.schedules import crontab
 from django.apps import apps
 
-from future_ticket.task import find_participants_dublicates
+from future_ticket.tasks import find_participants_dublicates,\
+                                update_completed_quota
 # Set the default Django settings module for the 'celery' program.
 # "sample_app" is name of the root app
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'copp163_coordinator.settings')
@@ -57,3 +58,4 @@ def update_events_cycles_statuses():
     #Проверяем дубликатов
     for cycle in EventsCycle.objects.all():
         find_participants_dublicates.delay(cycle.id)
+    update_completed_quota()

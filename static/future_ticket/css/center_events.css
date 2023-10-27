@@ -10,6 +10,12 @@ body h3 {
   padding-left: 10px;
   margin: 0;
 }
+body .link {
+  color: #394959 !important;
+}
+body .link:hover {
+  color: #28313a !important;
+}
 body .disapear {
   display: none;
 }
