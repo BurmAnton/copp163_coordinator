@@ -21,6 +21,8 @@ class ProjectYear(models.Model):
         related_name="project_years",
         blank=True
     )
+    appls_last_update = models.DateTimeField(
+        "Дата последнего обновления заявок", blank=True, null=True)
 
     def __str__(self):
         return  str(self.year)
