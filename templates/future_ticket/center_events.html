@@ -185,6 +185,30 @@
                     </div>
                 </div>
             </div>
+            <div class="modal fade assign-quota-modal" id="AddLink{{event.id}}" tabindex="-1" aria-labelledby="#AddLink{{event.id}}Label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="#AddLink{{event.id}}Label">Добавить ссылку на фото и видеоматериалы</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post">
+                            <div class="modal-body">
+                                <input style="display: none;" type="text" name="event_id" value="{{event.id}}">
+                                <div class="form mb-3" >
+                                    <label for="photo_link{{event.id}}" class="form-label">Ссылка на фото и видеоматериалы с профпробы</label>
+                                    <input type="url" name="photo_link" class="form-control" id="photo_link{{event.id}}" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="d-grid gap-2">
+                                    <input type="submit" class="btn btn-primary" name="add-link" value="Добавить"> 
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
             <div class="modal fade participants" id="ParticipantsModal{{event.id}}" tabindex="-1" aria-labelledby="#ParticipantsModal{{event.id}}Label" aria-hidden="true">
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
@@ -450,7 +474,10 @@
                             <p><span class="field">Статус:</span> {{event.get_status_display }}</p>
                             <p><span class="field">Дата проведения:</span> {{event.event_date|date:"d.m.Y" }}</p>
                             <p><span class="field">Лимит участников:</span> {{event.participants_limit }}</p>
-                            <p><span class="field" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#ParticipantsModal{{event.id}}"><u>Участников загружено:</span> {{event.participants.all.count }}</u></p>
+                            <p><span class="field link" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#ParticipantsModal{{event.id}}"><u>Участников загружено:</span> {{event.participants.all.count }}</u></p>
+                            {% if event.photo_link is not None %}
+                                <p><span class="field"><a class="link" href="{{event.photo_link}}" target="_blank"><u>Фото и видеоматериалы</u></a></p>
+                            {% endif %}
                             <table class="table quota-event-table">
                                 <tr class="">
                                     <th scope="row">Школа</th>
@@ -477,6 +504,15 @@
                             {% if event.participants_limit > 0 %}
                                 <button class="btn btn-sm btn-primary import-btn" data-bs-toggle="modal" data-bs-target="#ImportParticModal">
                                     Импортировать участников
+                                </button>
+                            {% endif %}
+                            {% if event.photo_link is None %}
+                                <button class="btn btn-sm btn-primary link-upload-btn" data-bs-toggle="modal" data-bs-target="#AddLink{{event.id}}">
+                                    Добавить ссылку на фото и видеоматериалы
+                                </button>
+                            {% else %}
+                                <button class="btn btn-sm btn-outline-primary link-update-btn" data-bs-toggle="modal" data-bs-target="#AddLink{{event.id}}">
+                                    Заменить ссылку на фото и видеоматериалы
                                 </button>
                             {% endif %}
                             <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post">
