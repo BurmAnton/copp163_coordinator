@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import stringfilter
 from django.db.models import Sum, F
 
-from federal_empl_program.models import EducationCenterProjectYear
+from federal_empl_program.models import ProjectYear
 
 register = template.Library()
 
@@ -14,13 +14,121 @@ def get_item(dictionary, key):
     return dictionary.get(key)
 
 @register.filter
+def money_format(number):
+     return "{:,.2f} ₽".format(number).replace(',', ' ')
+
+@register.filter
+def multiply(factor_1, factor_2):
+    return "{:,.2f} ₽".format(factor_1 * factor_2).replace(',', ' ')
+
+@register.filter
+def count_budget(ed_center, project_year):
+    return "{:,.2f} ₽".format(
+            ed_center['quota_72'] * project_year.price_72 +\
+            ed_center['quota_144'] * project_year.price_144 +\
+            ed_center['quota_256'] * project_year.price_256).replace(',', ' ')
+
+@register.filter
+def count_budget_remainder(ed_centers):
+    project_year = ProjectYear.objects.get(year=2023)
+    quota_72 = ed_centers.aggregate(quota_sum=Sum('quota_72'))['quota_sum']
+    quota_144 = ed_centers.aggregate(quota_sum=Sum('quota_144'))['quota_sum']
+    quota_256 = ed_centers.aggregate(quota_sum=Sum('quota_256'))['quota_sum']
+    budget = quota_72 * project_year.price_72 +\
+            quota_144 * project_year.price_144 +\
+            quota_256 * project_year.price_256
+    return "{:,.2f} ₽".format(project_year.full_budget - budget).replace(',', ' ')
+
+@register.filter
+def count_budget_summary(ed_centers, duration=None):
+    project_year = ProjectYear.objects.get(year=2023)
+    if duration == None:
+        quota_72 = ed_centers.aggregate(quota_sum=Sum('quota_72'))['quota_sum']
+        quota_144 = ed_centers.aggregate(quota_sum=Sum('quota_144'))['quota_sum']
+        quota_256 = ed_centers.aggregate(quota_sum=Sum('quota_256'))['quota_sum']
+        budget = quota_72 * project_year.price_72 +\
+                quota_144 * project_year.price_144 +\
+                quota_256 * project_year.price_256
+    elif duration == 72:
+        budget = ed_centers.aggregate(quota_sum=Sum('quota_72'))['quota_sum'] * project_year.price_72
+    elif duration == 144:
+        budget = ed_centers.aggregate(quota_sum=Sum('quota_144'))['quota_sum'] * project_year.price_144
+    elif duration == 256:
+        budget = ed_centers.aggregate(quota_sum=Sum('quota_256'))['quota_sum'] * project_year.price_256
+    return "{:,.2f} ₽".format(budget).replace(',', ' ')
+
+@register.filter
+def count_appl_budget_summary(applications, duration=None):
+    project_year = ProjectYear.objects.get(year=2023)
+    if duration == None:
+        budget = applications.aggregate(price_sum=Sum('price'))['price_sum']
+    elif duration == 72:
+        budget = applications.filter(
+            education_program__duration__lte=72,
+        ).aggregate(price_sum=Sum('price'))['price_sum']
+    elif duration == 144:
+        budget = applications.filter(
+            education_program__duration__gt=72,
+            education_program__duration__lt=256,
+        ).aggregate(price_sum=Sum('price'))['price_sum']
+    elif duration == 256:
+        budget = applications.filter(
+            education_program__duration__gte=256,
+        ).aggregate(price_sum=Sum('price'))['price_sum']
+    return "{:,.2f} ₽".format(budget).replace(',', ' ')
+
+@register.filter
+def count_appl_budget_72(applications, ed_center):
+    project_year = ProjectYear.objects.get(year=2023)
+    price_sum = applications.filter(
+            education_center__id=ed_center['ed_center__id'],
+            education_program__duration__lte=72,
+        ).aggregate(price_sum=Sum('price'))['price_sum']
+    if price_sum == None:
+        return "0.00 ₽"
+    return "{:,.2f} ₽".format(price_sum).replace(',', ' ')
+
+@register.filter
+def count_appl_budget_144(applications, ed_center):
+    project_year = ProjectYear.objects.get(year=2023)
+    price_sum = applications.filter(
+            education_center__id=ed_center['ed_center__id'],
+            education_program__duration__gt=72,
+            education_program__duration__lt=256,
+        ).aggregate(price_sum=Sum('price'))['price_sum']
+    if price_sum == None:
+        return "0.00 ₽"
+    return "{:,.2f} ₽".format(price_sum).replace(',', ' ')
+
+@register.filter
+def count_appl_budget_256(applications, ed_center):
+    project_year = ProjectYear.objects.get(year=2023)
+    price_sum = applications.filter(
+            education_center__id=ed_center['ed_center__id'],
+            education_program__duration__gte=256,
+        ).aggregate(price_sum=Sum('price'))['price_sum']
+    if price_sum == None:
+        return "0.00 ₽"
+    return "{:,.2f} ₽".format(price_sum).replace(',', ' ')
+
+@register.filter
+def count_appl_budget_all(applications, ed_center):
+    project_year = ProjectYear.objects.get(year=2023)
+    price_sum = applications.filter(
+            education_center__id=ed_center['ed_center__id'],
+        ).aggregate(price_sum=Sum('price'))['price_sum']
+    if price_sum == None:
+        return "0.00 ₽"
+    return "{:,.2f} ₽".format(price_sum).replace(',', ' ')
+
+@register.filter
 def count_quota(ed_centers, duration=None):
     if duration == None:
         return ed_centers.aggregate(quota_sum=Sum(
                 F('quota_72') + F('quota_144') + F('quota_256')
             ))['quota_sum']
     return ed_centers.aggregate(quota_sum=Sum(f'quota_{duration}'))['quota_sum']
-
+    
 @register.filter
 def filter_strt_center(applications, ed_center):
     return applications.filter(

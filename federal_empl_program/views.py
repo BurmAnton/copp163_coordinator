@@ -6,7 +6,7 @@ import string
 import random
 import json
 
-from django.db.models import Q, Count, Sum, Case, When, IntegerField
+from django.db.models import Q, Count, Sum, Case, When, IntegerField, Avg
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -189,7 +189,7 @@ def applications_dashboard(request, year=2023):
             education_program__duration=256, appl_status='COMP'),
     })
 
-#@cache_page(None, key_prefix="flow")
+@cache_page(None, key_prefix="flow")
 def flow_appls_dashboard(request, year=2023):
     project_year = get_object_or_404(ProjectYear, year=year)
     ed_centers_year = EducationCenterProjectYear.objects.filter(
@@ -204,6 +204,11 @@ def flow_appls_dashboard(request, year=2023):
         project_year=project_year,
         flow_status__is_rejected=False
     )
+    price_256 = applications.filter(
+        education_program__duration__gte=256).aggregate(
+            avg_price=Avg('price'))['avg_price']
+    project_year.price_256 = price_256
+    project_year.save()
     appls_stat = applications.aggregate(
         appls_count=Count('id'),
         appls_count_72=Count(Case(

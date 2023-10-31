@@ -83,7 +83,8 @@ def import_applications(form, year):
         "Окончание обучения", "Дата создания заявки", "Идентификатор потока",
         "Программа", "Идентификатор образовательной программы", 
         "Дата рождения гражданина", "Срок истечения заявки",
-        "Дата заключения договора со слушателем"
+        "Дата заключения договора со слушателем", 
+        "Стоимость договора гражданина"
     }
     cheak_col_names = cheak_col_match(sheet, fields_names)
     if cheak_col_names[0] != True:
@@ -127,7 +128,7 @@ def import_applications(form, year):
                     group_input = create_group(sheet, row, application)
                     if group_input['is_new']: group_added += 1
                     else: group_updated += 1
-    missing_fields = sorted(missing_fields, key=lambda d: d['status']) 
+    missing_fields = sorted(missing_fields, key=lambda d: d['status'])
     return ['OK', missing_fields, citizen_added, citizen_updated,
              application_added, application_updated, group_added, group_updated]
 
@@ -151,7 +152,7 @@ def create_citizen(sheet, row):
     if education_type in EDUCATION_CHOICES:
         citizen.education_type = EDUCATION_CHOICES[education_type]
     citizen.save()
-
+    
     return {"status": True, "value": citizen, "is_new": is_new}
 
 def create_application(sheet, row, citizen, project_year):
@@ -209,6 +210,10 @@ def create_application(sheet, row, citizen, project_year):
             citizen.delete()
             return {"status": "EdProgramMissingFed", "value": program_flow_id}
         return {"status": "EdProgramMissing", "value": program_flow_id}
+    price = sheet["Стоимость договора гражданина"][row]
+    if price == "" or price == None: price = 0
+    else: price = price.split(".")[0]
+    application.price = int(price)
     application.save()
     return {"status": True, "value": application, "is_new": is_new}
 
