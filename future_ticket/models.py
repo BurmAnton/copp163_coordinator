@@ -502,8 +502,8 @@ class SchoolProjectYear(models.Model):
         return f'{self.resp_full_name} ({self.school})'
      
     class Meta:
-        verbose_name = "Школа (год проекта)"
-        verbose_name_plural = "Школы (годы проекта)"
+        verbose_name = "Школа (ответственный)"
+        verbose_name_plural = "Школы (ответственные)"
 
 
 class DocumentTypeTicket(models.Model):

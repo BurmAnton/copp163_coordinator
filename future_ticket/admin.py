@@ -113,7 +113,7 @@ class TicketFullQuotaAdmin(admin.ModelAdmin):
     list_display = ['project_year', 'full_quota', 'federal_quota']
 
 
-#@admin.register(SchoolProjectYear)
+@admin.register(SchoolProjectYear)
 class SchoolProjectYearAdmin(admin.ModelAdmin):
     search_fields = [
         'school__name',
