@@ -107,5 +107,71 @@
             </tr>
         </table>
     </div>
-
+    <div class="budget_table">
+        <div><h3>Распределение средств</h3></div>
+        <div class="day-stats">
+            <div class="day-stat">
+                <h5>Всего средств:<br>{{project_year.full_budget|money_format}}</h5>
+            </div>
+            <div class="day-stat">
+                <h5>Квотировано:<br>{{ed_centers|count_budget_summary}}</h5>
+            </div>
+            <div class="day-stat">
+                <h5>Остаток:<br>{{ed_centers|count_budget_remainder}}</h5>
+            </div>
+            <div class="day-stat">
+                <h5>Распределено:<br>{{applications|count_appl_budget_summary}}</h5>
+            </div>
+        </div>
+        <table class="table table-striped">
+            <thead class="sticky-top">
+                <tr>
+                    <th rowspan="2" style="text-align: left;">ЦО</th>
+                    <th class="right-border" colspan="2" style="border:0;">72 часа</th>
+                    <th class="right-border" colspan="2" style="border:0;">144 часа</th>
+                    <th class="right-border" colspan="2" style="border:0;">256 часа</th>
+                    <th colspan="2" style="border:0;">Всего</th>
+                </tr>
+                <tr>
+                    <th>Квота</th>
+                    <th>Выполнено</th>
+                    <th>Квота</th>
+                    <th>Выполнено</th>
+                    <th>Квота</th>
+                    <th>Выполнено</th>
+                    <th>Квота</th>
+                    <th>Выполнено</th>
+                </tr>
+            </thead>
+                {% for ed_center in ed_centers %}
+                    <tr>
+                        <td style="text-align: left;" class="ed_center-col">
+                            {% if ed_center.ed_center__flow_name != "" %} {{ed_center.ed_center__flow_name}}
+                            {% elif ed_center.ed_center__short_name != "" %} {{ed_center.ed_center__short_name}}
+                            {% else %} {{ed_center.ed_center__name}}
+                            {% endif %}
+                        </td>
+                        <td>{{ed_center.quota_72|multiply:project_year.price_72}}</td>
+                        <td class="right-border">{{applications|count_appl_budget_72:ed_center}}</td>
+                        <td>{{ed_center.quota_144|multiply:project_year.price_144}}</td>
+                        <td class="right-border">{{applications|count_appl_budget_144:ed_center}}</td>
+                        <td>{{ed_center.quota_256|multiply:project_year.price_256}}</td>
+                        <td class="right-border">{{applications|count_appl_budget_256:ed_center}}</td>
+                        <td>{{ed_center|count_budget:project_year}}</td>
+                        <td>{{applications|count_appl_budget_all:ed_center}}</td>
+                    </tr>
+                {% endfor %}
+                <tr class='table-darkblue'>
+                    <td style="font-weight: bold">Итого</td>
+                    <td style="font-weight: bold">{{ed_centers|count_budget_summary:72}}</td>
+                    <td style="font-weight: bold">{{applications|count_appl_budget_summary:72}}</td>
+                    <td style="font-weight: bold">{{ed_centers|count_budget_summary:144}}</td>
+                    <td style="font-weight: bold">{{applications|count_appl_budget_summary:144}}</td>
+                    <td style="font-weight: bold">{{ed_centers|count_budget_summary:256}}</td>
+                    <td style="font-weight: bold">{{applications|count_appl_budget_summary:256}}</td>
+                    <td style="font-weight: bold">{{ed_centers|count_budget_summary}}</td>
+                    <td style="font-weight: bold">{{applications|count_appl_budget_summary}}</td>
+                </tr>
+        </table>
+    </div>
 {% endblock %}

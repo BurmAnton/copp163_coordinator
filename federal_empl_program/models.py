@@ -6,6 +6,7 @@ from django.db.models.deletion import DO_NOTHING, CASCADE
 from django.utils.translation import gettext_lazy as _
 from field_history.tracker import FieldHistoryTracker
 from django.utils.timezone import now
+from django.core.cache import cache
 
 from citizens.models import Citizen
 from organizations.models import Company
@@ -21,6 +22,10 @@ class ProjectYear(models.Model):
         related_name="project_years",
         blank=True
     )
+    price_72 = models.IntegerField("Стоимость 72", default=27435)
+    price_144 = models.IntegerField("Стоимость 144", default=40920)
+    price_256 = models.IntegerField("Стоимость 256", default=61380)
+    full_budget = models.IntegerField("Бюджет", default=49850840)
     appls_last_update = models.DateTimeField(
         "Дата последнего обновления заявок", blank=True, null=True)
 
@@ -93,6 +98,10 @@ class EducationCenterProjectYear(models.Model):
 
     def __str__(self):
         return  f'{self.ed_center} ({self.project_year.year} г.)'
+   
+    def save(self, *args, **kwargs):
+        super(EducationCenterProjectYear, self).save(*args, **kwargs)
+        cache.clear()
 
     class Meta:
         verbose_name = "Данные колледжа на год"
@@ -396,6 +405,7 @@ class Application(models.Model):
     creation_date = models.DateTimeField("Дата создания", blank=True, null=True, default=now)
     expiration_date = models.DateField("Дата истечения заявки", blank=True, null=True)
     csn_prv_date = models.DateField("Дата одобрения ЦЗН", blank=True, null=True)
+    price = models.IntegerField('Стоимость обучения', default=0)
     APPL_STATUS_CHOICES = [
         ('NEW', "Новая заявка"),
         ('ADM', "Допущен"),
