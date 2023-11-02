@@ -10,13 +10,13 @@ from django.utils.timezone import now
 from django.db.models.signals import pre_delete, post_delete
 from django.dispatch import receiver
 from django.db.models import Sum
+import unidecode
 
 from citizens.models import School
 from copp163_coordinator import settings
 from education_centers.models import Competence, EducationProgram, \
                                      EducationCenter, Group, Employee, Workshop
 from future_ticket.tasks import find_participants_dublicates
-from future_ticket.utils import number_cycles
 from users.models import DisabilityType
 from education_centers.models import Teacher
 
@@ -215,6 +215,10 @@ class EducationCenterTicketProjectYear(models.Model):
         ('DWNLD', "подгружена"),
         ('PRVD', "принята"),
         ('FNSHD', "ПКО пройден"),
+        ('ACT', "Акт сформирован"),
+        ('ACTS', "Акт подписан"),
+        ('NVC', "Счёт подгружен"),
+        ('NVCP', "Счёт оплачен"),
     ]
     stage = models.CharField("Работа с заявкой", max_length=5, 
                              default='FLLNG', choices=STAGES)
@@ -272,6 +276,11 @@ class EducationCenterTicketProjectYear(models.Model):
     )
     appl_track_number = models.CharField(
         "Трек номер", max_length=150, blank=True, null=True)
+    def doc_directory_path(instance, filename):
+        return 'media/applications/{0}/{1}'.format(
+            instance.id, unidecode.unidecode(filename)
+        )
+#
 
     def __str__(self):
         return  f'{self.ed_center} ({self.project_year.year} г.)'
@@ -456,6 +465,9 @@ class TicketQuota(models.Model):
 
     def save(self, *args, **kwargs):
         self.free_quota = int(self.approved_value) - self.reserved_quota
+        if self.reserved_quota > self.approved_value:
+            self.reserved_quota = self.approved_value
+        self.free_quota = int(self.approved_value) - self.reserved_quota
         super(TicketQuota, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -605,6 +617,17 @@ class ContractorsDocumentTicket(models.Model):
 
     def __str__(self):
         return f'{self.doc_type} №{self.register_number} ({self.contractor.name})'
+
+
+def number_cycles():
+    from .models import EventsCycle
+    cycles = EventsCycle.objects.all().order_by(
+            'end_reg_date', 'start_period_date', 'end_period_date'
+        )
+    for cycle_number, cycle in enumerate(cycles, start=1):
+        if cycle_number != cycle.cycle_number:
+            cycle.cycle_number = cycle_number
+            cycle.save(cycle_number=True)
 
 
 class EventsCycle(models.Model):
@@ -780,6 +803,7 @@ class QuotaEvent(models.Model):
 
     def save(self, *args, **kwargs):
         super(QuotaEvent, self).save(*args, **kwargs)
+
         participants_limit = QuotaEvent.objects.filter(event=self.event
             ).aggregate(participants_limit=Sum("reserved_quota")
             )['participants_limit']

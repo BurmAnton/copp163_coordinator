@@ -72,6 +72,7 @@
                 <th scope="col">ЦО</th>
                 <th scope="col">Статус</th>
                 {% if project == 'bilet' and user.is_superuser %}
+                    <th scope="col">Ссылка на акт</th>
                     <th scope="col">Ссылка на упр. квотой</th>
                 {% endif %}
             </tr>
@@ -99,6 +100,13 @@
                     </td>
                     <td scope="row">{{ center.get_stage_display }}</td>
                     {% if project == 'bilet' and user.is_superuser %}
+                    <td scope="row">
+                        {% if center.stage == 'ACT' or center.stage == 'ACTS' or center.stage == 'NVC' or center.stage == 'NVCP' %}
+                        <a href="{{ center|get_act }}">Акт</a>  
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
                     <td scope="row">
                         <a href="{% url 'ticket_center_events' center.ed_center.id %}" target="_blank">
                             Ссылка
