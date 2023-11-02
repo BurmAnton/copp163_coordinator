@@ -149,12 +149,12 @@ class TicketQuotaAdmin(admin.ModelAdmin):
         
     ]
 
-#@admin.register(DocumentTypeTicket)
+@admin.register(DocumentTypeTicket)
 class DocumentTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'stage']
 
 
-#@admin.register(ContractorsDocumentTicket)
+@admin.register(ContractorsDocumentTicket)
 class ContractorsDocumentAdmin(admin.ModelAdmin):
     search_fields = ['contractor__name',]
     list_display = [

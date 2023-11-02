@@ -367,7 +367,7 @@
             </div>
         </div>
     </div>
-    <!-- #EndModals -->
+<!-- #EndModals -->
 
     <div class="page-hdr">
         <h1>Управление мероприятиями</h1>
@@ -376,6 +376,23 @@
     <div class="quotas-list">
         <div class="table-hdr">
             <h2>Выполнение квоты</h2>
+            {% if center_year.stage == 'ACT' %}
+                <div class="alert alert-success w-90" role="alert">
+                    Акт сформирован успешно, мы уведомив Вас, когда отправим его на подписание. После подписания Вы сможете подгрузить счёт на оплату.
+                </div>
+            {% elif center_year.stage == 'ACT' %}
+            {% else %}
+                {% if act_ready %}
+                    <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post" enctype="multipart/form-data">
+                        <button class="btn btn-primary" name="create-act">Сформировать акт</button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-warning w-90" role="alert">
+                        Чтобы перейти к формированию акта нужно прикрепить ссылки на фото/видео материалы ко всем пробам и 
+                        чтобы выделенная Вам квота была выполнена (или обратиться для уменьшения квоты).
+                    </div>
+                {% endif %}
+            {% endif %}
         </div>
         <table class="table quotas-table">
             <tr class="">

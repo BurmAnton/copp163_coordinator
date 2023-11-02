@@ -4,9 +4,23 @@ from django.template.defaultfilters import stringfilter
 
 from education_centers.models import ContractorsDocument, DocumentType
 from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndicator
-from future_ticket.models import EducationCenterTicketProjectYear
+from future_ticket.models import ContractorsDocumentTicket,\
+        DocumentTypeTicket, EducationCenterTicketProjectYear
 
 register = template.Library()
+
+@register.filter
+def get_act(center):
+    if center.is_ndc: doc_type = "Акт с НДС"
+    else: doc_type = "Акт без НДС"
+    doc_type = get_object_or_404(DocumentTypeTicket, name=doc_type)
+    act = ContractorsDocumentTicket.objects.filter(
+        contractor=center.ed_center,
+        doc_type=doc_type
+    )
+    if len(act) == 0:
+        return "#"
+    return act[0].doc_file.url
 
 @register.filter
 def count_teachers(program, ed_center):

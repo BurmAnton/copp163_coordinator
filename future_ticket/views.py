@@ -1,12 +1,10 @@
-from datetime import date, datetime, timedelta
+from datetime import datetime
 from django.forms import IntegerField
-import pandas
-from transliterate import translit
 
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from citizens.models import School
-from django.db.models import Sum, Count, Case, When
+from django.db.models import Sum, Count, Case, When, F
 from education_centers.forms import ImportSchoolOrderDataForm,\
                                     ImportTicketDataForm
 from .forms import ImportParticipantsForm
@@ -14,12 +12,13 @@ from education_centers.models import EducationCenter
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-
-from future_ticket.models import DocumentTypeTicket, EducationCenterTicketProjectYear, EventsCycle, QuotaEvent, SchoolProjectYear, StudentBVB, TicketEvent,\
-                                 TicketFullQuota, TicketProfession, TicketProjectYear, TicketQuota
-
+from future_ticket.models import EducationCenterTicketProjectYear,\
+        EventsCycle, QuotaEvent, SchoolProjectYear, StudentBVB, TicketEvent,\
+        TicketFullQuota, TicketProfession, TicketProjectYear, TicketQuota
 from .forms import ImportDataForm
+from .utils import generate_ticket_act
 from . import imports, exports
+
 
 def equalize_quotas(request):
     quotas = TicketQuota.objects.all()
@@ -372,6 +371,10 @@ def center_events(request, ed_center_id):
                 event = TicketEvent.objects.get(id=request.POST["event_id"])
                 import_output = imports.import_participants(form, event)
             else: import_output = "FormError"
+        if 'create-act' in request.POST:
+           generate_ticket_act(center_year)
+           center_year.stage = 'ACT'
+           center_year.save()
         else:
             return HttpResponseRedirect(reverse(
                 "ticket_center_events", args=[ed_center_id]))
@@ -387,7 +390,14 @@ def center_events(request, ed_center_id):
     professions = TicketProfession.objects.filter(
         quotas__in=quotas
     ).distinct()
-    
+
+    events_wo_links = TicketEvent.objects.filter(
+        ed_center=center_year, photo_link=None).count()
+    act_ready = False
+    if quotas.exclude(approved_value=F('completed_quota')).count() == 0\
+    and events_wo_links == 0:
+        act_ready = True
+
     return render(request, "future_ticket/center_events.html", {
         'center_year': center_year,
         'cycles': cycles,
@@ -395,6 +405,7 @@ def center_events(request, ed_center_id):
         'professions': professions,
         'schools': School.objects.all(),
         'participants_form': ImportParticipantsForm(),
-        'import_output': import_output
+        'import_output': import_output,
+        'act_ready': act_ready
     })
 
