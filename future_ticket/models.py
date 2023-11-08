@@ -280,7 +280,6 @@ class EducationCenterTicketProjectYear(models.Model):
         return 'media/applications/{0}/{1}'.format(
             instance.id, unidecode.unidecode(filename)
         )
-#
 
     def __str__(self):
         return  f'{self.ed_center} ({self.project_year.year} г.)'
@@ -716,6 +715,9 @@ class TicketEvent(models.Model):
     )
     event_date = models.DateTimeField(
         "Дата проведения", blank=False, null=False
+    )
+    start_time = models.CharField(
+        "Время начала", max_length=20, blank=True, null=True
     )
     participants_limit = models.IntegerField(
         "Колво участников", blank=False, null=False, default=0

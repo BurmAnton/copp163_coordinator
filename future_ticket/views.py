@@ -35,7 +35,7 @@ def quotas(request):
             value=0, approved_value=0, reserved_quota=0, completed_quota=0):
             approved_value = request.POST[f'{quota.id}']
             if int(approved_value) != quota.approved_value:
-                quota.approved_value = approved_value
+                quota.approved_value = int(approved_value)
                 quota.save()
     project_year = get_object_or_404(TicketProjectYear, year=2023)
     centers_project_year = EducationCenterTicketProjectYear.objects.filter(
@@ -279,13 +279,27 @@ def center_events(request, ed_center_id):
             cycle = EventsCycle.objects.get(id=request.POST["cycle_id"])
             profession = TicketProfession.objects.get(id=request.POST["profession_id"])
             event_date = request.POST["event_date"]
+            start_time = request.POST["start_time"]
             TicketEvent.objects.create(
                 ed_center=center_year,
                 cycle=cycle,
                 profession=profession,
                 event_date=datetime.strptime(event_date, "%d.%m.%Y"),
+                start_time=start_time,
                 status="CRTD"
             )
+        elif 'change-event' in request.POST:
+            event_id = request.POST["event_id"]
+            event = TicketEvent.objects.get(id=event_id)
+            event.profession = TicketProfession.objects.get(
+                id=request.POST["profession_id"])
+            event.event_date  = datetime.strptime(request.POST["event_date"], "%d.%m.%Y")
+            event.start_time = request.POST["start_time"]
+            photo_link = request.POST["photo_link"]
+            if photo_link == "":
+                event.photo_link = None
+            else: event.photo_link = photo_link
+            event.save()
         elif 'delete-event' in request.POST:
             event = TicketEvent.objects.get(id=request.POST["event_id"])
             event.delete()
@@ -314,12 +328,6 @@ def center_events(request, ed_center_id):
                     quota.save()
                     event_quota.save()
                     double_quota.delete()
-        elif 'add-link' in request.POST:
-            event = TicketEvent.objects.get(id=request.POST["event_id"])
-            photo_link = request.POST["photo_link"]
-            event.photo_link = photo_link
-            event.status = 'LOAD'
-            event.save()
         elif 'change-quota' in request.POST:
             quota = TicketQuota.objects.get(id=request.POST["quota_id"])
             school = School.objects.get(id=request.POST["school_id"])
@@ -333,11 +341,11 @@ def center_events(request, ed_center_id):
                     is_federal=quota.is_federal
                 )
                 if is_new:
-                    new_quota.value=transfered_quota
-                    new_quota.approved_value=transfered_quota
+                    new_quota.value = transfered_quota
+                    new_quota.approved_value = transfered_quota
                 else:
-                    new_quota.value= new_quota.value + transfered_quota
-                    new_quota.approved_value= new_quota.approved_value\
+                    new_quota.value = new_quota.value + transfered_quota
+                    new_quota.approved_value = new_quota.approved_value\
                                                 + transfered_quota
                 new_quota.save()
                 if transfered_quota == quota.approved_value and\
@@ -393,9 +401,11 @@ def center_events(request, ed_center_id):
 
     events_wo_links = TicketEvent.objects.filter(
         ed_center=center_year, photo_link=None).count()
+    events_wo_time = TicketEvent.objects.filter(
+        ed_center=center_year, start_time=None).count()
     act_ready = False
     if quotas.exclude(approved_value=F('completed_quota')).count() == 0\
-    and events_wo_links == 0:
+    and events_wo_links == 0 and events_wo_time == 0:
         act_ready = True
 
     return render(request, "future_ticket/center_events.html", {
