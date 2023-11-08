@@ -135,6 +135,10 @@
                                     {% endfor %}
                                 </select>
                             </div>
+                            <div class="form mb-3">
+                                <label>Время начала</label>
+                                <input class="form-control" type="time" name="start_time" required>
+                            </div>
                             <div class="form mb-3 filter-selectpicker">
                                 <label for="DurationInput">Профессия</label>
                                 <select class="selectpicker w-100" title="Профессия" data-live-search="true" name="profession_id" required>
@@ -154,6 +158,60 @@
             </div>
         </div>
         {% for event in cycle.events.all|filter_events:center_year %}
+            <div class="modal fade change-event-modal" id="ChangeEvent{{event.id}}Modal" tabindex="-1" aria-labelledby="#ChangeEvent{{event.id}}ModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="#ChangeEvent{{event.id}}ModalLabel">Изменить мероприятие</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post" enctype="multipart/form-data">
+                            <div class="modal-body">
+                                <input style="display: none;" type="text" id="event_id" name="event_id" value={{event.id}}>
+                                <div class="form mb-3 filter-selectpicker">
+                                    <label for="DurationInput">Профессия</label>
+                                    <select class="selectpicker w-100" title="Профессия" data-live-search="true" name="profession_id" required>
+                                        <option selected value={{event.profession.id}}>{{event.profession.name}}</option>
+                                        {% for profession in professions %}
+                                            {% if event.profession != profession %}
+                                                <option value='{{profession.id}}'>{{profession.name}}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form mb-3 filter-selectpicker">
+                                    <label for="DurationInput">Дата проведения</label>
+                                    <select class="selectpicker w-100" title="Дата проведения" data-live-search="true" name="event_date" required>
+                                        <option selected value={{event.event_date|date:"d.m.Y"}}>{{event.event_date|date:"d.m.Y"}}</option>
+                                        {% for available_date in cycle|get_available_dates %}
+                                            <option value='{{available_date|date:"d.m.Y"}}'>{{available_date|date:"d.m.Y"}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form mb-3">
+                                    <label>Время начала</label>
+                                    <input class="form-control" type="text" name="start_time" {% if event.start_time != None %}value="{{event.start_time}}"{% endif %} required>
+                                </div>
+                                <div class="form mb-3" >
+                                    <label for="photo_link{{event.id}}" class="form-label">Ссылка на фото и видеоматериалы с профпробы</label>
+                                    <input type="url" name="photo_link" class="form-control" id="photo_link{{event.id}}" {% if event.photo_link != None %}value="{{event.photo_link}}"{% endif %}>
+                                </div>
+                            </div>
+                            <div class="modal-footer" style="display: flex;flex-direction: row-reverse;justify-content: space-between;">
+                                    <div class="d-grid gap-2">
+                                        <input type="submit" class="btn btn-primary" name="change-event" value="Изменить мероприятие"> 
+                                    </div>
+                                </form>
+                                <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post">
+                                    <input style="display: none;" type="text" name="event_id" value="{{event.id}}">
+                                    <button class="btn btn-danger" name="delete-event">
+                                        Удалить
+                                    </button>
+                                </form>
+                            </div>
+                    </div>
+                </div>
+            </div>
             <div class="modal fade assign-quota-modal" id="AssignQuotaModal{{event.id}}" tabindex="-1" aria-labelledby="#AssignQuotaModal{{event.id}}Label" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -179,30 +237,6 @@
                             <div class="modal-footer">
                                 <div class="d-grid gap-2">
                                     <input type="submit" class="btn btn-primary" name="assign-quota" value="Добавить" disabled> 
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade assign-quota-modal" id="AddLink{{event.id}}" tabindex="-1" aria-labelledby="#AddLink{{event.id}}Label" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="#AddLink{{event.id}}Label">Добавить ссылку на фото и видеоматериалы</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post">
-                            <div class="modal-body">
-                                <input style="display: none;" type="text" name="event_id" value="{{event.id}}">
-                                <div class="form mb-3" >
-                                    <label for="photo_link{{event.id}}" class="form-label">Ссылка на фото и видеоматериалы с профпробы</label>
-                                    <input type="url" name="photo_link" class="form-control" id="photo_link{{event.id}}" required>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <div class="d-grid gap-2">
-                                    <input type="submit" class="btn btn-primary" name="add-link" value="Добавить"> 
                                 </div>
                             </div>
                         </form>
@@ -388,7 +422,7 @@
                     </form>
                 {% else %}
                     <div class="alert alert-warning w-90" role="alert">
-                        Чтобы перейти к формированию акта нужно прикрепить ссылки на фото/видео материалы ко всем пробам и 
+                        Чтобы перейти к формированию акта нужно прикрепить ссылки на фото/видео материалы ко всем пробам, добавить время начала проб и 
                         чтобы выделенная Вам квота была выполнена (или обратиться для уменьшения квоты).
                     </div>
                 {% endif %}
@@ -476,10 +510,9 @@
                                 {{event.profession}} 
                                 <span class="tooltiptext">{{event.profession}}</span>
                             </div>
-                            <div class="edit-icon">
+                            <div class="edit-icon" data-bs-toggle="modal" data-bs-target="#ChangeEvent{{event.id}}Modal">
                                 <img src="{% static 'federal_empl_program/img/edit-icon.svg' %}" alt="">
                             </div>
-                            
                         </div>
                         <div class="event-card-body">
                             {% if event|check_double %}
@@ -489,7 +522,7 @@
                             {% endif %}
                             <p><span class="field">ID мероприятия:</span> {{event.id }}</p>
                             <p><span class="field">Статус:</span> {{event.get_status_display }}</p>
-                            <p><span class="field">Дата проведения:</span> {{event.event_date|date:"d.m.Y" }}</p>
+                            <p><span class="field">Дата проведения:</span> {% if event.start_time != None %}{{event.start_time}}{% endif %} {{event.event_date|date:"d.m.Y" }}</p>
                             <p><span class="field">Лимит участников:</span> {{event.participants_limit }}</p>
                             <p><span class="field link" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#ParticipantsModal{{event.id}}"><u>Участников загружено:</span> {{event.participants.all.count }}</u></p>
                             {% if event.photo_link is not None %}
@@ -523,21 +556,6 @@
                                     Импортировать участников
                                 </button>
                             {% endif %}
-                            {% if event.photo_link is None %}
-                                <button class="btn btn-sm btn-primary link-upload-btn" data-bs-toggle="modal" data-bs-target="#AddLink{{event.id}}">
-                                    Добавить ссылку на фото и видеоматериалы
-                                </button>
-                            {% else %}
-                                <button class="btn btn-sm btn-outline-primary link-update-btn" data-bs-toggle="modal" data-bs-target="#AddLink{{event.id}}">
-                                    Заменить ссылку на фото и видеоматериалы
-                                </button>
-                            {% endif %}
-                            <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post">
-                                <input style="display: none;" type="text" name="event_id" value="{{event.id}}">
-                                <button class="btn btn-sm btn-outline-danger disapear" name="delete-event">
-                                    Удалить
-                                </button>
-                            </form>
                         </div>
                     </div>
                     {% endfor %}

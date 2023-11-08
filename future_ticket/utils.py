@@ -79,15 +79,15 @@ def generate_ticket_act(ed_center_year):
         doc_type = "Акт с НДС"
         contract_type="Договор с ЦО с НДС"
         full_amount = quota * 1300
-        ndc = str((full_amount / 1.2 - full_amount) * -1).split('.')
+        ndc = str(round((full_amount / 1.2 - full_amount) * -1, 2)).split('.')
         if ndc[1] == "0": ndc[1] = "00"
         full_amount_spelled = f'{full_amount} ({get_string_by_number(full_amount).replace(" рублей 00 копеек", "")}) рублей 00 копеек (включая НДС {ndc[0]} руб. {ndc[1]} копеек)'
         full_amount = f'{full_amount} руб. 00 копеек (включая НДС {ndc[0]} руб. {ndc[1]} копеек)'
     else: 
         doc_type = "Акт без НДС"
         contract_type="Договор с ЦО без НДС"
-        full_amount = str(quota * 1083.33).split('.')
-        full_amount_spelled = f'{full_amount[0]} ({get_string_by_number(int(full_amount[0]))}'.replace(" рублей", ") рублей")
+        full_amount = str(round(quota * 1083.33, 2)).split('.')
+        full_amount_spelled = f'{full_amount[0]} ({get_string_by_number(int(full_amount[0])).replace(" рублей 00 копеек", "")}) {full_amount[1]} копеек'.replace(" рублей", ") рублей")
         full_amount = f'{full_amount[0]} руб. {full_amount[1]} копеек'
     doc_type = get_object_or_404(DocumentTypeTicket, name=doc_type)
     contract_type = get_object_or_404(DocumentTypeTicket, name=contract_type)

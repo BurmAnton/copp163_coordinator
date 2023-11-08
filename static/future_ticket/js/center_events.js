@@ -22,14 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
     })
-    document.querySelectorAll('.edit-icon').forEach(icon => {
-        icon.addEventListener('click', (edit_icon) => {
-            edit_icon.currentTarget.classList.toggle("selected");
-            edit_icon = edit_icon.currentTarget.parentElement.parentElement;
-            edit_icon.querySelector('.btn-outline-danger').classList.toggle("disapear");
-            
-        })
-    })
     document.querySelectorAll('.import-btn').forEach(btn => {
         btn.addEventListener('click', (import_btn) => {
             let event_card = import_btn.currentTarget.parentElement.parentElement;
