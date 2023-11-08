@@ -293,7 +293,7 @@ def center_events(request, ed_center_id):
             event = TicketEvent.objects.get(id=event_id)
             event.profession = TicketProfession.objects.get(
                 id=request.POST["profession_id"])
-            event.event_date  = datetime.strptime(request.POST["event_date"], "%d.%m.%Y")
+            event.event_date = datetime.strptime(request.POST["event_date"], "%d.%m.%Y")
             event.start_time = request.POST["start_time"]
             photo_link = request.POST["photo_link"]
             if photo_link == "":
@@ -328,6 +328,11 @@ def center_events(request, ed_center_id):
                     quota.save()
                     event_quota.save()
                     double_quota.delete()
+            reserved_quota = QuotaEvent.objects.filter(
+                quota=quota
+            ).aggregate(reserved_quota_sum=Sum('reserved_quota'))['reserved_quota_sum']
+            quota.reserved_quota = reserved_quota
+            quota.save()
         elif 'change-quota' in request.POST:
             quota = TicketQuota.objects.get(id=request.POST["quota_id"])
             school = School.objects.get(id=request.POST["school_id"])
@@ -370,9 +375,12 @@ def center_events(request, ed_center_id):
                     event = quota_event.event,
                     reserved_quota = quota_event.reserved_quota - minus_quota
                 )
-                new_quota_event.quota.reserved_quota += new_quota_event.reserved_quota
-                new_quota_event.quota.save()
             quota_event.delete()
+            reserved_quota = QuotaEvent.objects.filter(
+                quota=quota_event.quota
+            ).aggregate(reserved_quota_sum=Sum('reserved_quota'))['reserved_quota_sum']
+            quota_event.quota.reserved_quota = reserved_quota
+            quota_event.quota.save()
         if 'import-participants' in request.POST:
             form = ImportParticipantsForm(request.POST, request.FILES)
             if form.is_valid():

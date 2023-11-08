@@ -125,3 +125,12 @@ def generate_ticket_act(ed_center_year):
     )
     act.doc_file.name=act_path
     act.save()
+
+
+def fix_reserved_quota():
+    from .models import QuotaEvent, TicketQuota
+    for quota in TicketQuota.objects.all():
+        reserved_quota = QuotaEvent.objects.filter(quota=quota).aggregate(
+                reserved_quota_sum=Sum('reserved_quota'))['reserved_quota_sum']
+        quota.reserved_quota = reserved_quota
+        quota.save()
