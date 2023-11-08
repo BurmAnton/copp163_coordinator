@@ -132,5 +132,8 @@ def fix_reserved_quota():
     for quota in TicketQuota.objects.all():
         reserved_quota = QuotaEvent.objects.filter(quota=quota).aggregate(
                 reserved_quota_sum=Sum('reserved_quota'))['reserved_quota_sum']
-        quota.reserved_quota = reserved_quota
+        if reserved_quota == None:
+            quota.reserved_quota = 0
+        else:
+            quota.reserved_quota = reserved_quota
         quota.save()
