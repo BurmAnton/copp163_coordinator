@@ -29,7 +29,7 @@ def update_completed_quota():
         for quota_event in quota_events:
             event=quota_event.event
             participants = StudentBVB.objects.filter(
-                event=event, is_attend=True, is_double=False).count()
+                school=quota.school, event=event, is_attend=True, is_double=False).count()
             if participants > quota_event.reserved_quota:
                 participants = quota_event.reserved_quota
             completed_quota += participants
