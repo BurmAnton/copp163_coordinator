@@ -54,6 +54,7 @@
                                                 {% if request.user.is_superuser %}
                                                     <li><a class="dropdown-item" href="{% url 'quota_request' %}">Запрос квоты (регион)</a></li>
                                                     <li><a class="dropdown-item" href="{% url 'applications' %}?p=zen">Мониторинг заявок</a></li>
+                                                    <li><a class="dropdown-item" href="{% url 'flow_appls_dashboard' 2023 %}">Дашборд заявок flow</a></li>
                                                 {% endif %}
                                             </ul>
                                         </li>
