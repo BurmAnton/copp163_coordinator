@@ -73,6 +73,7 @@ def generate_ticket_act(ed_center_year):
                                         ).exclude(participants_limit=0)
     quota = TicketQuota.objects.filter(ed_center=ed_center).aggregate(
         quota_count=Sum('completed_quota'))['quota_count']
+    
     participant_all_count = quota
     
     if is_ndc: 
@@ -81,14 +82,14 @@ def generate_ticket_act(ed_center_year):
         full_amount = quota * 1300
         ndc = str(round((full_amount / 1.2 - full_amount) * -1, 2)).split('.')
         if ndc[1] == "0": ndc[1] = "00"
-        full_amount_spelled = f'{full_amount} ({get_string_by_number(full_amount).replace(" рублей 00 копеек", "")}) рублей 00 копеек (включая НДС {ndc[0]} руб. {ndc[1]} копеек)'
-        full_amount = f'{full_amount} руб. 00 копеек (включая НДС {ndc[0]} руб. {ndc[1]} копеек)'
+        full_amount_spelled = f'{full_amount} ({get_string_by_number(full_amount).replace(" 00 копеек", "")}) 00 коп. (включая НДС {ndc[0]} руб. {ndc[1]} коп.)'
+        full_amount = f'{full_amount} руб. 00 коп. (включая НДС {ndc[0]} руб. {ndc[1]} коп.)'
     else: 
         doc_type = "Акт без НДС"
         contract_type="Договор с ЦО без НДС"
         full_amount = str(round(quota * 1083.33, 2)).split('.')
-        full_amount_spelled = f'{full_amount[0]} ({get_string_by_number(int(full_amount[0])).replace(" рублей 00 копеек", "")}) {full_amount[1]} копеек'.replace(" рублей", ") рублей")
-        full_amount = f'{full_amount[0]} руб. {full_amount[1]} копеек'
+        full_amount_spelled = f'{full_amount[0]} ({get_string_by_number(int(full_amount[0])).replace(" 00 копеек", "")}) {full_amount[1]} коп.'.replace(" рублей)", ") рублей").replace(" рубля)", ") руб.")
+        full_amount = f'{full_amount[0]} руб. {full_amount[1]} коп.'
     doc_type = get_object_or_404(DocumentTypeTicket, name=doc_type)
     contract_type = get_object_or_404(DocumentTypeTicket, name=contract_type)
     contract = get_object_or_404(

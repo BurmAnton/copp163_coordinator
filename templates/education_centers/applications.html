@@ -28,6 +28,19 @@
     </div>
     <div class="centers-list">
         <h2>Список участников ПКО</h2>
+        {% if project == 'bilet' %}
+            <div class="stats">
+                <div class="stat">
+                    <h5>Квотировано участников:<br>{{activated_students}} человек</h5>
+                </div>
+                <div class="stat">
+                    <h5>Квотирована сумма:<br>{{activated_sum}} руб.</h5>
+                </div>
+                <div class="stat">
+                    <h5>Оплачено на сумму:<br>{{paid_sum}} руб.</h5>
+                </div>
+            </div>
+        {% endif %}
         <div class="filter">
             <form action="{% url 'applications' %}" method="post">
                 {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
@@ -72,7 +85,8 @@
                 <th scope="col">ЦО</th>
                 <th scope="col">Статус</th>
                 {% if project == 'bilet' and user.is_superuser %}
-                    <th scope="col">Ссылка на акт</th>
+                    <th scope="col">Акт</th>
+                    <th scope="col">Счёт</th>
                     <th scope="col">Ссылка на упр. квотой</th>
                 {% endif %}
             </tr>
@@ -101,10 +115,19 @@
                     <td scope="row">{{ center.get_stage_display }}</td>
                     {% if project == 'bilet' and user.is_superuser %}
                     <td scope="row">
-                        {% if center.stage == 'ACT' or center.stage == 'ACTS' or center.stage == 'NVC' or center.stage == 'NVCP' %}
-                        <a href="{{ center|get_act }}">Акт</a>  
+                        {% if center.stage == 'ACT' or center.stage == 'ACTS' %}
+                            <a href="{{ center|get_act }}" target="_blank">Акт</a>
+                        {% elif center.act_file.url != None %}
+                            <a href="{{center.act_file.url}}" target="_blank">Акт (подписанный)</a>
                         {% else %}
                         -
+                        {% endif %}
+                    </td>
+                    <td scope="row">
+                        {% if center.bill_file.url != None %}
+                            <a href="{{center.bill_file.url}}" target="_blank">Счёт</a>
+                        {% else %}
+                            -
                         {% endif %}
                     </td>
                     <td scope="row">

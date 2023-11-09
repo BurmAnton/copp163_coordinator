@@ -414,7 +414,46 @@
                 <div class="alert alert-success w-90" role="alert">
                     Акт сформирован успешно, мы уведомив Вас, когда отправим его на подписание. После подписания Вы сможете подгрузить счёт на оплату.
                 </div>
-            {% elif center_year.stage == 'ACT' %}
+            {% elif center_year.stage == 'ACTS' %}
+                <div class="alert alert-success w-90" role="alert">
+                    Мы отправили Вам акт на подписание через систему электронного документооборота. Подпишите акт и подгрузите его и счёт на оплату.
+                </div>
+                {% if center_year.act_file.url != None %}
+                    <a class="act-link btn btn-primary" href="{{center_year.act_file.url}}">Скачать акт</a>
+                {% else %}
+                    <form class="upload-act-form" action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            {% csrf_token %}
+                            {{ form.non_field_errors }}
+                            {{ form.import_file.errors }}
+                            {{ form.import_file }}
+                        </div>
+                        <input type="submit" class="btn btn-primary" name="upload-act" value="Загрузить подписанный акт">
+                    </form>
+                {% endif %}
+                {% if center_year.bill_file.url != None %}
+                    <a class="bill-link btn btn-primary" href="{{center_year.bill_file.url}}">Скачать счёт</a>
+                {% else %}
+                    <form class="upload-bill-form" action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            {% csrf_token %}
+                            {{ form.non_field_errors }} 
+                            {{ form.import_file.errors }}
+                            {{ form.import_file }}
+                        </div>
+                        <input type="submit" class="btn btn-primary" name="upload-bill" value="Загрузить счёт">
+                    </form>
+                {% endif %}
+            {% elif center_year.stage == 'NVC' or center_year.stage == 'PNVC' or center_year.stage == 'NVCP' %}
+                <div class="alert alert-success w-90" role="alert">
+                    Документы полученны, после проверки, мы оплатим счёт и уведомим Вас.
+                </div>
+                {% if center_year.act_file.url != None %}
+                    <a class="act-link btn btn-primary" href="{{center_year.act_file.url}}">Скачать акт</a>
+                {% endif %}
+                {% if center_year.bill_file.url != None %}
+                    <a class="bill-link btn btn-primary" href="{{center_year.bill_file.url}}">Скачать счёт</a>
+                {% endif %}
             {% else %}
                 {% if act_ready %}
                     <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post" enctype="multipart/form-data">
@@ -443,7 +482,7 @@
             {% for quota in quotas %}
                 <tr>
                     <td scope="row">{{ quota.profession }}</td>
-                    <td scope="row"><a href="" data-bs-toggle="modal" data-bs-target="#ChangeSchoolModal{{quota.id}}">{{ quota.school.name }}</a></td>
+                    <td scope="row">{% if center_year.stage == 'FNSHD' %}<a href="" data-bs-toggle="modal" data-bs-target="#ChangeSchoolModal{{quota.id}}">{{ quota.school.name }}</a>{% else %}{{ quota.school.name }}{% endif %}</td>
                     <td scope="row" class="td-center">{{ quota.approved_value }}</td>
                     <td scope="row" class="td-center">{{ quota.reserved_quota }}</td>
                     <td scope="row" class="td-center">{{ quota.completed_quota }}</td>
@@ -498,9 +537,11 @@
             <div class="cycle-events-stat">
                 
                 <p>Мероприятий запланировано: {{ cycle.center_events_count }}</p>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddEventModal{{cycle.id}}">
-                    Запланировать мероприятия
-                </button>
+                {% if center_year.stage == 'FNSHD' %}
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddEventModal{{cycle.id}}">
+                        Запланировать мероприятия
+                    </button>
+                {% endif %}
             </div>
             <div class="cycle-events">
                 {% for event in cycle.events.all|filter_events:center_year %}
@@ -510,9 +551,11 @@
                                 {{event.profession}} 
                                 <span class="tooltiptext">{{event.profession}}</span>
                             </div>
-                            <div class="edit-icon" data-bs-toggle="modal" data-bs-target="#ChangeEvent{{event.id}}Modal">
-                                <img src="{% static 'federal_empl_program/img/edit-icon.svg' %}" alt="">
-                            </div>
+                            {% if center_year.stage == 'FNSHD' %}
+                                <div class="edit-icon" data-bs-toggle="modal" data-bs-target="#ChangeEvent{{event.id}}Modal">
+                                    <img src="{% static 'federal_empl_program/img/edit-icon.svg' %}" alt="">
+                                </div>
+                            {% endif %}
                         </div>
                         <div class="event-card-body">
                             {% if event|check_double %}
@@ -545,18 +588,20 @@
                                 {% endfor %}
                             </table>
                         </div>
-                        <div class="event-card-footer">
-                            {% if event.participants_limit < 15 %}
-                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#AssignQuotaModal{{event.id}}">
-                                Добавить квоту
-                            </button>
-                            {% endif %}
-                            {% if event.participants_limit > 0 %}
-                                <button class="btn btn-sm btn-primary import-btn" data-bs-toggle="modal" data-bs-target="#ImportParticModal">
-                                    Импортировать участников
+                        {% if center_year.stage == 'FNSHD' %}
+                            <div class="event-card-footer">
+                                {% if event.participants_limit < 15 %}
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#AssignQuotaModal{{event.id}}">
+                                    Добавить квоту
                                 </button>
-                            {% endif %}
-                        </div>
+                                {% endif %}
+                                {% if event.participants_limit > 0 %}
+                                    <button class="btn btn-sm btn-primary import-btn" data-bs-toggle="modal" data-bs-target="#ImportParticModal">
+                                        Импортировать участников
+                                    </button>
+                                {% endif %}
+                            </div>
+                        {% endif %}
                     </div>
                     {% endfor %}
             </div>

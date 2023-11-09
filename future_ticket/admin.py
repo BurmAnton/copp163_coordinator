@@ -23,7 +23,7 @@ class TicketProjectYearAdmin(admin.ModelAdmin):
     list_display = ['year']
 
 
-#@admin.register(EducationCenterTicketProjectYear)
+@admin.register(EducationCenterTicketProjectYear)
 class EducationCenterTicketProjectYearAdmin(admin.ModelAdmin):
     list_display = ['ed_center', 'project_year']
 
