@@ -44,6 +44,27 @@ body .centers-list {
 body .centers-list h2 {
   text-align: center;
 }
+body .centers-list .stats {
+  display: flex;
+  justify-content: center;
+  -moz-column-gap: 25px;
+       column-gap: 25px;
+  margin-top: 15px;
+  margin-bottom: 25px;
+}
+body .centers-list .stats .stat {
+  width: 285px;
+  height: -moz-min-content;
+  height: min-content;
+  background-color: #394959;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  border-radius: 5px;
+}
+body .centers-list .stats h5 {
+  font-weight: 400;
+}
 body .centers-list table th {
   color: #394959;
   font-weight: 400 !important;

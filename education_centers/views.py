@@ -7,7 +7,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files import File
-from django.db.models import Case, When, Value, Count, OuterRef, Subquery
+from django.db.models import Case, When, Value, Count, OuterRef, Subquery, Sum
 from django.utils.encoding import escape_uri_path
 from django.db.models.functions import Concat
 from citizens.models import School
@@ -16,19 +16,21 @@ from users.models import DisabilityType
 
 from . import imports
 from . import exports
-from .forms import ImportDataForm, ImportTicketContractForm, ImportTicketDataForm
-from .contracts import create_document, combine_all_docx, create_application, create_ticket_application
+from .forms import ImportDataForm, ImportTicketContractForm, \
+                   ImportTicketDataForm
+from .contracts import create_document, combine_all_docx, create_application, \
+                       create_ticket_application
 from .models import BankDetails, Competence, ContractorsDocument, DocumentType,\
-                    EducationCenter, EducationProgram,Employee, Group,\
-                    Teacher, Workshop
+        EducationCenter, EducationProgram,Employee, Group,Teacher, Workshop
 from federal_empl_program.models import EdCenterEmployeePosition,\
-                                        EdCenterIndicator,\
-                                        EducationCenterProjectYear, Indicator,\
-                                        ProjectPosition, ProjectYear
-from future_ticket.models import AgeGroup, ContractorsDocumentTicket, DocumentTypeTicket, ProfEnviroment, ProgramAuthor, TicketFullQuota, TicketProfession, TicketProgram, TicketProjectYear,TicketProjectPosition,\
-                                 EducationCenterTicketProjectYear, \
-                                 TicketEdCenterEmployeePosition, \
-                                 TicketIndicator, EdCenterTicketIndicator, TicketQuota
+        EdCenterIndicator, EducationCenterProjectYear, Indicator,\
+        ProjectPosition, ProjectYear
+from future_ticket.models import AgeGroup, ContractorsDocumentTicket, \
+        DocumentTypeTicket, ProfEnviroment, ProgramAuthor, TicketEvent, TicketFullQuota, \
+        TicketProfession, TicketProgram, TicketProjectYear,\
+        EducationCenterTicketProjectYear, TicketProjectPosition,\
+        TicketEdCenterEmployeePosition, TicketIndicator, \
+        EdCenterTicketIndicator, TicketQuota
 from future_ticket.utils import generate_document_ticket
 
 # Create your views here.
@@ -54,12 +56,67 @@ def applications(request):
     if 'bilet' in request.POST: project = 'bilet'
     if project_year != '': project_year = int(project_year)
     else: project_year = datetime.now().year
+    activated_students = 0
+    activated_sum = 0
+    paid_sum = 0
     if project == 'bilet':
         project_year = get_object_or_404(TicketProjectYear, year=project_year)
         centers_project_year = EducationCenterTicketProjectYear.objects.filter(
-            project_year=project_year,
-        ).select_related('ed_center')
+            project_year=project_year,).select_related('ed_center')
         stages = EducationCenterTicketProjectYear.STAGES
+        activated_centers_years = EducationCenterTicketProjectYear.objects.filter(
+            stage__in=('ACT', 'ACTS', 'NVC', 'PNVC', 'NVCP')
+        )
+        activated_centers = EducationCenter.objects.filter(
+            ticket_project_years__in=activated_centers_years,
+        ).distinct()
+        if len(activated_centers) != 0:
+            activated_students = TicketQuota.objects.filter(
+                ed_center__in=activated_centers).aggregate(
+                quota_count=Sum('completed_quota'))['quota_count']
+            activated_centers_year_w_ndc = activated_centers_years.filter(
+                is_ndc=True)
+            if len(activated_centers_year_w_ndc) != 0:
+                activated_centers_w_ndc = EducationCenter.objects.filter(
+                    ticket_project_years__in=activated_centers_year_w_ndc,
+                ).distinct()
+                
+                activated_sum_w_ndc = TicketQuota.objects.filter(
+                ed_center__in=activated_centers_w_ndc).aggregate(
+                quota_count=Sum('completed_quota'))['quota_count'] * 1300
+            else: activated_sum_w_ndc = 0
+            activated_centers_year_wo_ndc = activated_centers_years.filter(
+                    is_ndc=False)
+            if len(activated_centers_year_wo_ndc) != 0:
+                activated_centers_wo_ndc = EducationCenter.objects.filter(
+                    ticket_project_years__in=activated_centers_year_wo_ndc,
+                ).distinct()
+                activated_sum_wo_ndc = TicketQuota.objects.filter(
+                    ed_center__in=activated_centers_wo_ndc).aggregate(
+                    quota_count=Sum('completed_quota'))['quota_count'] * 1083.33
+            else: activated_sum_wo_ndc = 0
+            activated_sum = activated_sum_w_ndc + activated_sum_wo_ndc
+            paid_centers_year_wo_ndc = activated_centers_year_wo_ndc.filter(stage='NVCP')
+            paid_centers_year_w_ndc = activated_centers_year_w_ndc.filter(stage='NVCP')
+            if len(paid_centers_year_w_ndc) != 0:
+                paid_centers_w_ndc = EducationCenter.objects.filter(
+                    ticket_project_years__in=activated_centers_year_w_ndc,
+                ).distinct()
+                
+                paid_sum_w_ndc = TicketQuota.objects.filter(
+                ed_center__in=paid_centers_w_ndc).aggregate(
+                quota_count=Sum('completed_quota'))['quota_count'] * 1300
+            else: paid_sum_w_ndc = 0
+            if len(paid_centers_year_wo_ndc) != 0:
+                paid_centers_wo_ndc = EducationCenter.objects.filter(
+                    ticket_project_years__in=activated_centers_year_wo_ndc,
+                ).distinct()
+                
+                paid_sum_wo_ndc = TicketQuota.objects.filter(
+                ed_center__in=paid_centers_wo_ndc).aggregate(
+                quota_count=Sum('completed_quota'))['quota_count'] * 1083.33
+            else: paid_sum_wo_ndc = 0
+            paid_sum = paid_sum_w_ndc + paid_sum_wo_ndc
     else:
         project_year = get_object_or_404(ProjectYear, year=project_year)
         centers_project_year = EducationCenterProjectYear.objects.filter(
@@ -95,7 +152,10 @@ def applications(request):
         'project_year': project_year,
         'centers_project_year': centers_project_year,
         'stages': stages,
-        'chosen_stages': chosen_stages
+        'chosen_stages': chosen_stages,
+        'activated_students': activated_students,
+        'activated_sum': activated_sum,
+        'paid_sum': paid_sum
     })
 
 @csrf_exempt
@@ -133,6 +193,7 @@ def ed_center_application(request, ed_center_id):
             else: 
                 contract = generate_document_ticket(
                     center_project_year, contract_type)
+        
     else:
         project_year = get_object_or_404(ProjectYear, year=project_year)
         center_project_year = EducationCenterProjectYear.objects.get_or_create(

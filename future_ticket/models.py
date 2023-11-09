@@ -217,7 +217,8 @@ class EducationCenterTicketProjectYear(models.Model):
         ('FNSHD', "ПКО пройден"),
         ('ACT', "Акт сформирован"),
         ('ACTS', "Акт подписан"),
-        ('NVC', "Счёт подгружен"),
+        ('NVC', "Счёт и акт подгружены"),
+        ('PNVC', "Счёт и акт проверены"),
         ('NVCP', "Счёт оплачен"),
     ]
     stage = models.CharField("Работа с заявкой", max_length=5, 
@@ -276,10 +277,23 @@ class EducationCenterTicketProjectYear(models.Model):
     )
     appl_track_number = models.CharField(
         "Трек номер", max_length=150, blank=True, null=True)
-    def doc_directory_path(instance, filename):
+    
+    def doc_dir_path(instance, filename):
         return 'media/applications/{0}/{1}'.format(
             instance.id, unidecode.unidecode(filename)
         )
+    act_file = models.FileField(
+        "Подписанный акт",
+        null=True, 
+        blank=True,
+        upload_to=doc_dir_path
+    )
+    bill_file = models.FileField(
+        "Счёт",
+        null=True, 
+        blank=True,
+        upload_to=doc_dir_path
+    )
 
     def __str__(self):
         return  f'{self.ed_center} ({self.project_year.year} г.)'

@@ -7,7 +7,7 @@ from citizens.models import School
 from django.db.models import Sum, Count, Case, When, F
 from education_centers.forms import ImportSchoolOrderDataForm,\
                                     ImportTicketDataForm
-from .forms import ImportParticipantsForm
+from .forms import ImportDocumentForm, ImportParticipantsForm
 from education_centers.models import EducationCenter
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -381,16 +381,32 @@ def center_events(request, ed_center_id):
             ).aggregate(reserved_quota_sum=Sum('reserved_quota'))['reserved_quota_sum']
             quota_event.quota.reserved_quota = reserved_quota
             quota_event.quota.save()
+        elif 'create-act' in request.POST:
+           generate_ticket_act(center_year)
+           center_year.stage = 'ACT'
+           center_year.save()
+        elif 'upload-bill' in request.POST:
+            form = ImportDocumentForm(request.POST, request.FILES)
+            if form.is_valid():
+                center_year.bill_file = request.FILES['import_file']
+                if bool(center_year.act_file) and\
+                    bool(center_year.bill_file):
+                    center_year.stage = 'NVC'
+                center_year.save()
+        elif 'upload-act' in request.POST:
+            form = ImportDocumentForm(request.POST, request.FILES)
+            if form.is_valid():
+                center_year.act_file = request.FILES['import_file']
+                if bool(center_year.act_file) and\
+                    bool(center_year.bill_file):
+                    center_year.stage = 'NVC'
+                center_year.save()
         if 'import-participants' in request.POST:
             form = ImportParticipantsForm(request.POST, request.FILES)
             if form.is_valid():
                 event = TicketEvent.objects.get(id=request.POST["event_id"])
                 import_output = imports.import_participants(form, event)
             else: import_output = "FormError"
-        if 'create-act' in request.POST:
-           generate_ticket_act(center_year)
-           center_year.stage = 'ACT'
-           center_year.save()
         else:
             return HttpResponseRedirect(reverse(
                 "ticket_center_events", args=[ed_center_id]))
@@ -424,6 +440,7 @@ def center_events(request, ed_center_id):
         'schools': School.objects.all(),
         'participants_form': ImportParticipantsForm(),
         'import_output': import_output,
-        'act_ready': act_ready
+        'act_ready': act_ready,
+        'form': ImportDocumentForm()
     })
 

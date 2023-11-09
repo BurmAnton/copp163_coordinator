@@ -12,3 +12,12 @@ class ImportParticipantsForm(forms.Form):
         super(ImportParticipantsForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control'
+
+class ImportDocumentForm(forms.Form):
+    import_file = forms.FileField(label="Загрузить документ", max_length=200,
+    widget=forms.ClearableFileInput, required=True)
+
+    def __init__(self, *args, **kwargs):
+        super(ImportDocumentForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
