@@ -27,9 +27,16 @@
                 <h5>Начали обучение: {{day_stats|get_item:'Начали обучение'}}</h5>
             </div>
         </div>
+        
         <div class="graphic-control">
             <div class="appls-last-update">Последнее обновление: {{project_year.appls_last_update|date:"H:i d/m/y"}}</div>
             <button class="btn btn-primary cumulative-switch">Показать нарастающий итог</button>
+            <form action="{% url 'flow_appls_dashboard' project_year.year %}" method="post">
+                <div class="form mb-3">
+                    <input class="form-control" type="date" name="date" required>
+                </div>
+                <input type="submit" class="btn btn-primary" name="change-start-date" value="Изменить период">
+            </form>
         </div>
         <div class="graphic">
             <img src='data:image/png;base64, {{chart|safe}}'>
@@ -40,7 +47,6 @@
     </div>
     <div class="qouta_table">
         <div><h3>Статистика заявок ЦО на flow</h3></div>
-        
         <div class="instrument-panel">
             <button class="btn btn-primary show-appls">Показать все заявки</button>
             <button class="btn btn-primary hide-appls" style="display: none;">Скрыть не одобреные заявки</button>

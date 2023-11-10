@@ -24,6 +24,22 @@
   margin-top: 15px;
   margin-bottom: 5px;
   align-items: flex-end;
+  flex-wrap: wrap;
+  row-gap: 15px;
+}
+.body .graphic-control form {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  width: 100%;
+  height: -moz-min-content;
+  height: min-content;
+}
+.body .graphic-control form input {
+  width: 300px;
+}
+.body .graphic-control form .btn {
+  width: 200px;
 }
 .body .graphic, .body .cumulative-graphic {
   display: flex;
