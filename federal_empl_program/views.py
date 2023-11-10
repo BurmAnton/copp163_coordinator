@@ -190,6 +190,7 @@ def applications_dashboard(request, year=2023):
     })
 
 @cache_page(None, key_prefix="flow")
+@csrf_exempt
 def flow_appls_dashboard(request, year=2023):
     project_year = get_object_or_404(ProjectYear, year=year)
     ed_centers_year = EducationCenterProjectYear.objects.filter(
@@ -250,7 +251,12 @@ def flow_appls_dashboard(request, year=2023):
     day_stats['Одобрено ЦЗН'] = applications.filter(csn_prv_date=today).count()
     day_stats['Начали обучение'] = applications.filter(group__start_date=today).count()
     #chart
-    week_now = date.today().isocalendar().week
+    if 'change-start-date' in request.POST:
+        start_date_p = datetime.strptime(request.POST["date"], "%Y-%m-%d"
+                                       )
+        week_now = start_date_p.isocalendar().week
+    else:
+        week_now = date.today().isocalendar().week
     weeks = []
     weeks_stat = {}
     weeks_stat['Новые'] = []
@@ -267,8 +273,12 @@ def flow_appls_dashboard(request, year=2023):
         week_dates['start_date'] = datetime.strptime(start_date, '%Y-%U-%w')
         week_dates['end_date'] = datetime.strptime(end_date, '%Y-%U-%w')\
                                 + timedelta(1)
-        if week_dates['end_date'] > datetime.now():
-            week_dates['end_date'] = datetime.now()
+        if 'change-start-date' in request.POST:
+            if week_dates['end_date'] > start_date_p:
+                week_dates['end_date'] = start_date_p
+        else:
+            if week_dates['end_date'] > datetime.now():
+                week_dates['end_date'] = datetime.now()
         weeks_stat['Новые'].append(applications.filter(
             creation_date__gte=week_dates['start_date'],
             creation_date__lte=week_dates['end_date']
