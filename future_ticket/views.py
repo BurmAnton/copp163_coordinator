@@ -30,6 +30,8 @@ def equalize_quotas(request):
 
 @csrf_exempt
 def quotas(request):
+    if not(request.user.is_superuser):
+        return HttpResponseRedirect(reverse("login"))
     if 'save-quotas' in request.POST:
         for quota in TicketQuota.objects.exclude(
             value=0, approved_value=0, reserved_quota=0, completed_quota=0):
@@ -252,7 +254,7 @@ def schools_application(request):
     })
 
 @csrf_exempt
-def schools_applications(request):     
+def schools_applications(request):
     schools = SchoolProjectYear.objects.all()
     if request.method == 'POST':
         return exports.schools_applications(schools)
@@ -262,9 +264,6 @@ def schools_applications(request):
     })
 
 
-def events(request):
-    pass
-
 @csrf_exempt
 def center_events(request, ed_center_id):
     project_year = datetime.now().year
@@ -273,6 +272,9 @@ def center_events(request, ed_center_id):
         EducationCenterTicketProjectYear, 
         ed_center=ed_center_id, project_year=project_year
     )
+    contact_person = center_year.ed_center.contact_person
+    if not(request.user.is_superuser) and request.user != contact_person:
+        return HttpResponseRedirect(reverse("login"))
     import_output = None
     if request.method == 'POST':
         if 'add-event' in request.POST:

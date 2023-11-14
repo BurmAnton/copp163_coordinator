@@ -26,7 +26,7 @@ from federal_empl_program.models import EdCenterEmployeePosition,\
         EdCenterIndicator, EducationCenterProjectYear, Indicator,\
         ProjectPosition, ProjectYear
 from future_ticket.models import AgeGroup, ContractorsDocumentTicket, \
-        DocumentTypeTicket, ProfEnviroment, ProgramAuthor, TicketEvent, TicketFullQuota, \
+        DocumentTypeTicket, ProfEnviroment, ProgramAuthor, TicketFullQuota, \
         TicketProfession, TicketProgram, TicketProjectYear,\
         EducationCenterTicketProjectYear, TicketProjectPosition,\
         TicketEdCenterEmployeePosition, TicketIndicator, \
