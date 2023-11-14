@@ -17,6 +17,7 @@ class UserAdmin(UserAdmin):
         ('groups', RelatedOnlyDropdownFilter), 
         'is_staff', 
         'is_active',
+        'is_superuser'
     )
     fieldsets = (
         (None,
@@ -34,6 +35,15 @@ class UserAdmin(UserAdmin):
     )
     search_fields = ('email','last_name', 'first_name')
     ordering = ('email',)
+    actions = ['remove_staff_status', 'remove_superuser_status']
+
+    def remove_staff_status(self, request, queryset):
+        queryset.update(is_staff=False)
+    remove_staff_status.short_description='Убрать доступ к админке'
+
+    def remove_superuser_status(self, request, queryset):
+        queryset.update(is_superuser=False)
+    remove_superuser_status.short_description='Убрать админ права'
 
     def get_group(self, user):
         specialist = Group.objects.filter(name='Специалист по работе с клиентами')

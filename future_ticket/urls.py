@@ -4,11 +4,6 @@ from . import views
 
 urlpatterns = [
     path(
-        'events/', 
-        views.events, 
-        name='ticket_events'
-    ),
-    path(
         'events/<int:ed_center_id>/', 
         views.center_events, 
         name='ticket_center_events'
