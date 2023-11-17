@@ -58,6 +58,13 @@ def count_budget_summary(ed_centers, duration=None):
     return "{:,.2f} ₽".format(budget).replace(',', ' ')
 
 @register.filter
+def count_average_price(applications):
+    applications = applications.exclude(price=None)
+    appl_count = applications.count()
+    appl_sum = applications.aggregate(price_sum=Sum('price'))['price_sum']
+    return "{:,.2f} ₽".format(appl_sum / appl_count).replace(',', ' ')
+
+@register.filter
 def count_appl_budget_summary(applications, duration=None):
     project_year = ProjectYear.objects.get(year=2023)
     if duration == None:

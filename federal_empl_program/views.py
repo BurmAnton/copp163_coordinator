@@ -28,8 +28,9 @@ from pysendpulse.pysendpulse import PySendPulse
 from .utils import get_applications_plot, get_flow_applications_plot
 from users.models import User
 from citizens.models import Citizen
-from federal_empl_program.models import Application, CitizenApplication, EdCenterQuotaRequest, EducationCenterProjectYear, \
-                                        Grant, ProgramQuotaRequest,  ProjectYear, QuotaRequest
+from federal_empl_program.models import Application, CitizenApplication,\
+                    EdCenterQuotaRequest, EducationCenterProjectYear,\
+                    Grant, ProgramQuotaRequest,  ProjectYear, QuotaRequest
 
 
 @login_required
