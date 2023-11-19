@@ -255,9 +255,9 @@ def flow_appls_dashboard(request, year=2023):
     if 'change-start-date' in request.POST:
         start_date_p = datetime.strptime(request.POST["date"], "%Y-%m-%d"
                                        )
-        week_now = start_date_p.isocalendar().week
+        week_now = start_date_p.isocalendar()[1]
     else:
-        week_now = date.today().isocalendar().week
+        week_now = date.today().isocalendar()[1]
     weeks = []
     weeks_stat = {}
     weeks_stat['Новые'] = []
