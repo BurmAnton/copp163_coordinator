@@ -208,7 +208,9 @@ def events():
         "ЦО",
         "Профессия",
         "Дата проведения",
-        "Выполнено",
+        "Выделено квоты",
+        "Выполнено квоты",
+        "Ссылка",
     ]
     for col_number, col_title in enumerate(col_titles, start=1):
         ws.cell(row=1, column=col_number, value=col_title)
@@ -218,11 +220,12 @@ def events():
         ws.cell(row=row, column=1, value=event.ed_center.ed_center.short_name)
         ws.cell(row=row, column=2, value=event.profession.name)
         ws.cell(row=row, column=3, value=event.event_date.strftime('%d/%m/%Y'))
+        ws.cell(row=row, column=4, value=event.participants_limit)
         if event.participants.all().count() >= event.participants_limit:
-            ws.cell(row=row, column=4, value=event.participants_limit)
+            ws.cell(row=row, column=5, value=event.participants_limit)
         else:
-            ws.cell(row=row, column=4, value=event.participants.all().count())
-        ws.cell(row=row, column=5, value=event.photo_link)
+            ws.cell(row=row, column=5, value=event.participants.all().count())
+        ws.cell(row=row, column=6, value=event.photo_link)
     wb.template = False
     response = HttpResponse(
         content=save_virtual_workbook(wb), 
