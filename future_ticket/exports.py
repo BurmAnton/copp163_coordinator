@@ -6,7 +6,7 @@ from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 
-from .models import TicketProfession, TicketProgram, TicketQuota
+from .models import TicketEvent, TicketProfession, TicketProgram, TicketQuota
 
 def professions():
     professions = TicketProfession.objects.all()
@@ -197,5 +197,40 @@ def qoutas(quotas):
     response['Content-Disposition'] = "attachment; filename=" + \
         escape_uri_path(
             f'quotas_{datetime.now().strftime("%d/%m/%y %H:%M")}.xlsx'
+        )
+    return response
+
+def events():
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Мероприятия"
+    col_titles = [
+        "ЦО",
+        "Профессия",
+        "Дата проведения",
+        "Выполнено",
+    ]
+    for col_number, col_title in enumerate(col_titles, start=1):
+        ws.cell(row=1, column=col_number, value=col_title)
+
+    events = TicketEvent.objects.exclude(participants_limit=0)
+    for row, event in enumerate(events, start=2):
+        ws.cell(row=row, column=1, value=event.ed_center.ed_center.short_name)
+        ws.cell(row=row, column=2, value=event.profession.name)
+        ws.cell(row=row, column=3, value=event.event_date.strftime('%d/%m/%Y'))
+        if event.participants.all().count() >= event.participants_limit:
+            ws.cell(row=row, column=4, value=event.participants_limit)
+        else:
+            ws.cell(row=row, column=4, value=event.participants.all().count())
+        ws.cell(row=row, column=5, value=event.photo_link)
+    wb.template = False
+    response = HttpResponse(
+        content=save_virtual_workbook(wb), 
+        content_type='application/vnd.openxmlformats-\
+        officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = "attachment; filename=" + \
+        escape_uri_path(
+            f'events_{datetime.now().strftime("%d/%m/%y %H:%M")}.xlsx'
         )
     return response

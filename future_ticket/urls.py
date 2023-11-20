@@ -39,6 +39,11 @@ urlpatterns = [
         name='export_professions'
     ),
     path(
+        'export/events/', 
+        views.export_events, 
+        name='export_events'
+    ),
+    path(
         'export/programs/', 
         views.export_ticket_programs, 
         name='export_ticket_programs'
