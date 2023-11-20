@@ -212,6 +212,10 @@ def export_professions(request):
     return exports.professions()
 
 @csrf_exempt
+def export_events(request):
+    return exports.events()
+
+@csrf_exempt
 def export_ticket_programs(request):
     return exports.programs()
 
