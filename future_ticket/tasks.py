@@ -26,13 +26,17 @@ def update_completed_quota():
     for quota in TicketQuota.objects.exclude(approved_value=0):
         quota_events = QuotaEvent.objects.filter(quota=quota)
         completed_quota = 0
+        reserved_quota = 0
         for quota_event in quota_events:
+            reserved_quota += quota_event.reserved_quota
             event=quota_event.event
             participants = StudentBVB.objects.filter(
-                school=quota.school, event=event, is_attend=True, is_double=False).count()
+                school=quota.school, event=event, is_attend=True, 
+                is_double=False).count()
             if participants > quota_event.reserved_quota:
                 participants = quota_event.reserved_quota
             completed_quota += participants
         quota.completed_quota = completed_quota
+        quota.reserved_quota = reserved_quota
         quotas.append(quota)
-    TicketQuota.objects.bulk_update(quotas, ['completed_quota'])
+    TicketQuota.objects.bulk_update(quotas, ['completed_quota', 'reserved_quota'])
