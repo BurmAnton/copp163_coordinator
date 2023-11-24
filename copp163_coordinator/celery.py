@@ -25,7 +25,12 @@ def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
         crontab(minute="*/1"),
         update_events_cycles_statuses,
-        name='update_events_cycles_statuses_everyday'
+        name='update_events_cycles_statuses_everyminute'
+    )
+    sender.add_periodic_task(
+        crontab(minute="*/1"),
+        update_completed_quota,
+        name='update_completed_quotas_everyminute'
     )
 
 @app.task()
@@ -58,4 +63,4 @@ def update_events_cycles_statuses():
     #Проверяем дубликатов
     for cycle in EventsCycle.objects.all():
         find_participants_dublicates.delay(cycle.id)
-    update_completed_quota()
+    
