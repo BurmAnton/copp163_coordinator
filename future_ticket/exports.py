@@ -225,7 +225,7 @@ def events():
                 is_double=False, is_attend=True
             ).count()
         if participants >= event.participants_limit:
-            ws.cell(row=row, column=5, value=participants)
+            ws.cell(row=row, column=5, value=event.participants_limit)
         else:
             ws.cell(row=row, column=5, value=participants)
         ws.cell(row=row, column=6, value=event.photo_link)
