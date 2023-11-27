@@ -4,12 +4,15 @@ from django.shortcuts import get_object_or_404
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django import forms
+from education_centers.forms import AbilimpicsWinnerCreationForm,\
+                                    AbilimpicsWinnerChangeForm
+from django.contrib.auth.admin import UserAdmin
 
 from easy_select2 import select2_modelform
 from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter,\
       DropdownFilter, ChoiceDropdownFilter
 
-from .models import Teacher, Workshop, EducationCenter, EducationProgram, Competence, \
+from .models import AbilimpicsWinner, Teacher, Workshop, EducationCenter, EducationProgram, Competence, \
       Group, ContractorsDocument, DocumentType, BankDetails
 from federal_empl_program.models import Application, EducationCenterProjectYear, ProjectYear
 from citizens.models import Citizen, School
@@ -140,6 +143,36 @@ class StudentsInline(admin.StackedInline):
     fields = ('applicant',)
 
 GroupForm = select2_modelform(Group, attrs={'width': '400px'})
+
+
+
+AbilimpicsWinnerForm = select2_modelform(AbilimpicsWinner, attrs={'width': '400px'})
+
+@admin.register(AbilimpicsWinner)
+class AbilimpicsWinnerAdmin(UserAdmin):
+    add_form = AbilimpicsWinnerCreationForm
+    form = AbilimpicsWinnerChangeForm
+    list_filter = []
+    list_display = ('last_name', 'first_name', 'middle_name', 'email', 'competence', 'ed_center', 'program', 'is_received', 'is_send')
+    fieldsets = (
+        (None,
+            {'fields': (
+                'email', 'password', 'first_name', 'last_name', 'middle_name',
+                'competence', 'ed_center', 'program', 'is_received', 'is_send'
+            )}),
+        ('Важные даты', 
+            {'fields': ('last_login', 'date_joined')}),
+    )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': (
+                'email', 'password1', 'password2',
+
+            )}
+        ),
+    )
+    ordering = ('email',)
 
 @admin.register(Group)
 class GroupAdmin(admin.ModelAdmin):

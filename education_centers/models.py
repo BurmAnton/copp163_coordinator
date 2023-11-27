@@ -5,8 +5,10 @@ from django.db.models.deletion import DO_NOTHING, CASCADE
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
+from users.models import DisabilityType
 
 from users.models import User
+from users.managers import CustomUserManager
 
 class Competence(models.Model):
     title = models.CharField("Название компетенции", max_length=500)
@@ -116,6 +118,14 @@ class EducationProgram(models.Model):
         "Описание программы", null=True, blank=True
     )
     notes = models.TextField("Примечания", null=True, blank=True)
+
+    is_abilimpics = models.BooleanField("Абилимпикс?", default=False)
+    period = models.CharField("Период обучения", max_length=500, blank=True, null=True)
+    disability_types = models.ManyToManyField(
+        DisabilityType, 
+        verbose_name="ОВЗ", 
+        blank=True
+    )
 
     class Meta:
         verbose_name = "Программа"
@@ -446,3 +456,43 @@ class ContractorsDocument(models.Model):
 
     def __str__(self):
         return f'{self.doc_type} №{self.register_number} ({self.contractor.name})'
+    
+
+class AbilimpicsWinner(User):
+    is_send = models.BooleanField("Сертификат отправлен", default=False)
+    is_received = models.BooleanField("Сертификат получен", default=False)
+    competence = models.ForeignKey(
+        Competence,
+        verbose_name="Компетенция",
+        related_name="abilimpics_winners",
+        on_delete=DO_NOTHING,
+        null=True,
+        blank=False
+    )
+    ed_center = models.ForeignKey(
+        EducationCenter,
+        verbose_name="Центр обучения",
+        related_name="abilimpics_winners",
+        on_delete=DO_NOTHING,
+        null=True,
+        blank=True
+    )
+    program = models.ForeignKey(
+        EducationProgram,
+        verbose_name="Программа",
+        related_name="abilimpics_winners",
+        on_delete=DO_NOTHING,
+        null=True,
+        blank=True
+    )
+
+    objects = CustomUserManager()
+
+    def __str__(self):
+        if self.first_name == "":
+            return f'{self.email}'
+        return f'{self.first_name} {self.last_name}'
+    
+    class Meta:
+        verbose_name = "Участник Абилимпикс"
+        verbose_name_plural = "Участники Абилимпикс"

@@ -17,7 +17,7 @@ from django.views.decorators.cache import cache_page
 from django.db import IntegrityError
 from django.core.cache import cache
 
-from education_centers.models import Competence, EducationCenter, EducationProgram
+from education_centers.models import AbilimpicsWinner, Competence, EducationCenter, EducationProgram
 from federal_empl_program.imports import import_applications
 
 from . import exports
@@ -68,6 +68,9 @@ def login(request):
             message = "Неверный логин и/или пароль."
 
     if request.user.is_authenticated:
+        winner = AbilimpicsWinner.objects.filter(email=request.user.email)
+        if len(winner) > 0:
+            return HttpResponseRedirect(reverse("abilimpics"))
         if request.user.role == 'CO':
             ed_center_id = request.user.education_centers.first().id
             return HttpResponseRedirect(reverse(
