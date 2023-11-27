@@ -2,7 +2,7 @@ from datetime import date
 from django import template
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import stringfilter
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Q
 
 from federal_empl_program.models import ProjectYear
 
@@ -154,7 +154,7 @@ def filter_chs_center_72(applications, ed_center):
     applications_count = applications.filter(
             education_center__id=ed_center['ed_center__id'],
             education_program__duration__lte=72,
-        ).exclude(csn_prv_date=None, group=None).count()
+        ).exclude(Q(csn_prv_date=None)| Q(group=None)).count()
     if quota == 0:
         return f'{applications_count}/{quota} (0%)'
     return f'{applications_count}/{quota} ({round(applications_count / quota * 100, 2)}%)'
@@ -209,7 +209,7 @@ def filter_chs_center_all_72(applications, ed_centers):
     quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_72'))['quota_sum']
     applications_count = applications.filter(
                 education_program__duration__lte=72,
-            ).exclude(csn_prv_date=None, group=None).count()
+            ).exclude(Q(csn_prv_date=None)| Q(group=None)).count()
     return f'{applications_count}/{quota_sum} ({round(applications_count / quota_sum * 100, 2)}%)'
 
 @register.filter
