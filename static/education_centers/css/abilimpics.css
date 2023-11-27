@@ -1,0 +1,94 @@
+body {
+  background-color: rgba(242, 242, 242, 0.5411764706);
+}
+body .page-hdr {
+  margin-top: 25px;
+  display: grid;
+  justify-content: center;
+  justify-items: center;
+}
+body .page-hdr h1 {
+  font-size: 52px;
+}
+body .page-hdr p {
+  font-size: 22px;
+  font-weight: 400;
+}
+body .notice {
+  margin: auto;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  padding: 25px 25px;
+  text-align: left;
+  background-color: white;
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
+  border-radius: 10px;
+  width: 80%;
+  font-size: 18px;
+}
+body .notice h2 {
+  font-size: 24px;
+}
+body .programs-list {
+  width: 95%;
+  margin: auto;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 15px 25px;
+  flex-wrap: wrap;
+}
+body .programs-list .program-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 300px;
+  max-width: 550px;
+  background-color: white;
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
+  color: #394959;
+  border-radius: 10px;
+}
+body .programs-list .program-card .program-card-hdr, body .programs-list .program-card .program-card-body {
+  padding: 15px 15px;
+}
+body .programs-list .program-card .program-card-hdr p, body .programs-list .program-card .program-card-body p {
+  margin-bottom: 3px;
+}
+body .programs-list .program-card .program-card-hdr .field, body .programs-list .program-card .program-card-body .field {
+  font-weight: 500;
+}
+body .programs-list .program-card .program-card-body {
+  padding: 15px 25px;
+  min-height: 100px;
+  height: 100%;
+  font-size: 18px;
+}
+body .programs-list .program-card .program-card-body .description p {
+  display: inline-block;
+  height: 245px;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+body .programs-list .program-card .program-card-hdr {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  font-size: 22px;
+  font-weight: 400;
+  border-bottom: 2px solid #394959;
+}
+body .programs-list .program-card .program-card-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border-top: 1px solid #394959;
+  padding: 15px 15px;
+}
+body .programs-list .program-card .program-card-footer .btn {
+  font-size: 20px;
+  width: 100%;
+  background-color: white;
+  font-weight: 500;
+}/*# sourceMappingURL=abilimpics.css.map */

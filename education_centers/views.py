@@ -1,9 +1,10 @@
 from datetime import date, datetime
 import json
+from django.urls import reverse
 import unidecode
 
 from django.utils.formats import date_format
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files import File
@@ -20,7 +21,7 @@ from .forms import ImportDataForm, ImportTicketContractForm, \
                    ImportTicketDataForm
 from .contracts import create_document, combine_all_docx, create_application, \
                        create_ticket_application
-from .models import BankDetails, Competence, ContractorsDocument, DocumentType,\
+from .models import AbilimpicsWinner, BankDetails, Competence, ContractorsDocument, DocumentType,\
         EducationCenter, EducationProgram,Employee, Group,Teacher, Workshop
 from federal_empl_program.models import EdCenterEmployeePosition,\
         EdCenterIndicator, EducationCenterProjectYear, Indicator,\
@@ -156,6 +157,33 @@ def applications(request):
         'activated_students': activated_students,
         'activated_sum': activated_sum,
         'paid_sum': paid_sum
+    })
+
+@csrf_exempt
+def abilimpics(request):
+    if 'choose-program' in request.POST:
+        program_id = request.POST['program']
+        program = EducationProgram.objects.get(id=program_id)
+        winner_id = request.POST['winner']
+        winner = AbilimpicsWinner.objects.get(id=winner_id)
+        winner.program = program
+        winner.ed_center = program.ed_center
+        winner.save()
+
+    winner = AbilimpicsWinner.objects.filter(email=request.user.email)
+    if request.user.is_authenticated and\
+    len(winner) == 1:
+        winner = winner[0]
+        if winner.program == None: stage = 'program'
+        else: stage = 'notice'
+    else:
+        return HttpResponseRedirect(reverse("login"))
+    programs = EducationProgram.objects.filter(is_abilimpics=True)
+
+    return render(request, "education_centers/abilimpics.html", {
+        'winner': winner,
+        'programs': programs,
+        'stage': stage
     })
 
 @csrf_exempt

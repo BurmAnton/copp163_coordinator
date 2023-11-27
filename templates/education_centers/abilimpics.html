@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}Управление мероприятиями{% endblock %}
+{% block style %}
+    <link href="{% static 'education_centers/css/abilimpics.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="page-hdr">
+        <h1>Абилимпикс</h1>
+        {% if stage == "program" %}
+            <p>Выберите программу из списка ниже.</p>
+        {% endif %}
+    </div>
+    {% if stage == "program" %}
+        <div class="programs-list">
+            {% for program in programs %}
+            <div class="program-card">
+                <div class="program-card-hdr">
+                    {{program.program_name}}
+                </div>
+                <div class="program-card-body">
+                    <p><span class="field">Центр обучения:</span> {{program.ed_center.short_name }}</p>
+                    <div class="description"><span class="field">Описание:</span>{{program.description|linebreaks}}</div>
+                    <p><span class="field">Длительность:</span> {{program.duration }}ч.</p>
+                    <p><span class="field">Форма обучения:</span> {{program.get_education_form_display }}</p>
+                    <p><span class="field">Период обучения:</span> {{program.period }}</p>
+                    <p><span class="field">Нозологии:</span></p>
+                    <ul>
+                        {% for disability in program.disability_types.all %}
+                            <li>{{disability.name}}</li>
+                        {% empty %}
+                            <li>Нозологии отсутствуют</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="program-card-footer">
+                    <form action="" method="post">
+                        <input style="display: none;" type="text" name="program" value="{{program.id}}">
+                        <input style="display: none;" type="text" name="winner" value="{{winner.id}}">
+                        <button class="btn btn-primary" name="choose-program">
+                            Выбрать программу
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="notice">
+            <h2>Внимание! Вы записались на программу, для того, чтобы начать обучение необходимо заполнить заявление по <a href="ttps://docs.google.com/document/d/16bmfIBzl2e5QEFPXZkas1taDdZlHe8jI4bpP7JJxCB4/edit" target="_blank" rel="noopener noreferrer">форме</a>.</h2>
+            <ul>
+                <li>Напоминаем, что подать заявление о выборе образовательного  центра (продавца) вы можете только один раз.</li>
+                <li>Если вы действительно хотите пройти обучение по данной программе, то распечатайте заявление, заполните в нём данные и подгрузите скан во вкладку "Скан".</li>
+                <li>Если вы хотите подать заявление на другую программу, то перейдите на страницу программы и подайте заявление на неё.</li>
+                <li>Если у вас возникли вопросы, обращайтесь по номеру +79397006155, Мария.</li>
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}
