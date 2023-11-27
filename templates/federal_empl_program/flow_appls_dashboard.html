@@ -61,55 +61,71 @@
                     <th class="qouta-duration" colspan="1" style="border:0;">Всего</th>
                 </tr>
                 <tr>
+                    <!--72 часа-->
                     <th class="hide-col">Заявок</th>
-                    <th class="hide-col">Начали обучение</th>
-                    <th class=""><p>Одобрено ЦЗН</p></th>
+                    <th class="hide-col">Одобрено ЦЗН</th>
+                    <!--<th class=""><p>Начали обучение</p></th>-->
+                    <th class=""><p>Выбрали поток</p></th>
+                    <!--144 часа-->
                     <th class="hide-col">Заявок</th>
-                    <th class="hide-col">Начали обучение</th>
-                    <th class=""><p>Одобрено ЦЗН</p></th>
+                    <th class="hide-col"><p>Одобрено ЦЗН</p></th>
+                    <th class=""><p>Начали обучение</p></th>
+                    <!--256 часа-->
                     <th class="hide-col">Заявок</th>
-                    <th class="hide-col">Начали обучение</th>
-                    <th class=""><p>Одобрено ЦЗН</p></th>
+                    <th class="hide-col">Одобрено ЦЗН</th>
+                    <th class=""><p>Начали обучение</p></th>
+                    <!--Всего-->
                     <th class="hide-col">Заявок</th>
-                    <th class="hide-col">Начали обучение</th>
-                    <th><p>Одобрено ЦЗН</p></th>
+                    <th class="hide-col">Одобрено ЦЗН</th>
+                    <th class=""><p>Начали обучение</p></th>
                 </tr>
             </thead>
             {% for ed_center in ed_centers %}
             <tr>
+                <!--Название ЦО-->
                 <td style="text-align: left;" class="ed_center-col">
-                {% if ed_center.ed_center__flow_name != "" %} {{ed_center.ed_center__flow_name}}
-                {% elif ed_center.ed_center__short_name != "" %} {{ed_center.ed_center__short_name}}
-                {% else %} {{ed_center.ed_center__name}}
+                {% if ed_center.ed_center__flow_name != "" %} 
+                    {{ed_center.ed_center__flow_name}}
+                {% else %} 
+                    {{ed_center.ed_center__name}}
                 {% endif %}</td>
+                <!--72 часа-->
                 <td class="hide-col">{{applications|filter_center_72:ed_center}}</td>
-                <td class="hide-col">{{applications|filter_strt_center_72:ed_center}}</td>
-                <td class="right-border"><p>{{applications|count_procent_72:ed_center}}</p></td>
+                <td class="hide-col">{{applications|count_procent_72:ed_center}}</td>
+                <!--<td class="right-border"><p>{{applications|filter_strt_center_72:ed_center}}</p></td>-->
+                <td class="right-border"><p>{{applications|filter_chs_center_72:ed_center}}</p></td>
+                <!--144 часа-->
                 <td class="hide-col">{{applications|filter_center_144:ed_center}}</td>
-                <td class="hide-col">{{applications|filter_strt_center_144:ed_center}}</td>
-                <td class="right-border"><p>{{applications|count_procent_144:ed_center}}</p></td>
+                <td class="hide-col">{{applications|count_procent_144:ed_center}}</td>
+                <td class="right-border"><p>{{applications|filter_strt_center_144:ed_center}}</p></td>
+                <!--256 часа-->
                 <td class="hide-col">{{applications|filter_center_256:ed_center}}</td>
-                <td class="hide-col">{{applications|filter_strt_center_256:ed_center}}</td>
-                <td class="right-border"><p>{{applications|count_procent_256:ed_center}}</p></td>
+                <td class="hide-col">{{applications|count_procent_256:ed_center}}</td>
+                <td class="right-border"><p>{{applications|filter_strt_center_256:ed_center}}</p></td>
+                <!--Всего-->
                 <td class="hide-col">{{applications|filter_center:ed_center}}</td>
-                <td class="hide-col">{{applications|filter_strt_center:ed_center}}</td>
-                <td><p>{{applications|count_procent:ed_center}}</p></td>
+                <td class="hide-col">{{applications|count_procent:ed_center}}</td>
+                <td><p>{{applications|filter_strt_center:ed_center}}</p></td>
             </tr>
             {% endfor %}
             <tr class='table-darkblue'>
                 <td style="font-weight: bold">Итого</td>
+                <!--72 часа-->
                 <td class="hide-col" style="font-weight: bold">{{appls_stat.appls_count_72}}</td>
-                <td class="hide-col">{{applications|filter_strt_center_all:72}}</td>
-                <td style="font-weight: bold"><p>{{applications|count_procent_all_72:ed_centers}}</p></td>
+                <td class="hide-col">{{applications|count_procent_all_72:ed_centers}}</td>
+                <td><p>{{applications|filter_strt_center_all_72:ed_centers}}</p></td>
+                <!--144 часа-->
                 <td class="hide-col" style="font-weight: bold">{{appls_stat.appls_count_144}}</td>
-                <td class="hide-col">{{applications|filter_strt_center_all:144}}</td>
-                <td style="font-weight: bold"><p>{{applications|count_procent_all_144:ed_centers}}</p></td>
+                <td class="hide-col">{{applications|count_procent_all_144:ed_centers}}</td>
+                <td><p>{{applications|filter_strt_center_all_144:ed_centers}}</p></td>
+                <!--256 часа-->
                 <td class="hide-col" style="font-weight: bold">{{appls_stat.appls_count_256}}</td>
-                <td class="hide-col">{{applications|filter_strt_center_all:256}}</td>
-                <td style="font-weight: bold"><p>{{applications|count_procent_all_256:ed_centers}}</p></td>
+                <td class="hide-col">{{applications|count_procent_all_256:ed_centers}}</td>
+                <td><p>{{applications|filter_strt_center_all_256:ed_centers}}</p></td>
+                <!--Всего-->
                 <td class="hide-col" style="font-weight: bold">{{appls_stat.appls_count}}</td>
-                <td class="hide-col">{{applications|filter_strt_center_all}}</td>
-                <td style="font-weight: bold"><p>{{applications|count_procent_all:ed_centers}}</p></td>
+                <td class="hide-col">{{applications|count_procent_all:ed_centers}}</td>
+                <td><p>{{applications|filter_strt_center_all:ed_centers}}</p></td>
             </tr>
         </table>
     </div>
