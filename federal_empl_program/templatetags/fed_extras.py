@@ -177,8 +177,7 @@ def filter_strt_center_256(applications, ed_center):
     quota = ed_center['quota_256']
     applications_count = applications.filter(
             education_center__id=ed_center['ed_center__id'],
-            education_program__duration__gt=72,
-            education_program__duration__lt=256,
+            education_program__duration__gte=256,
             group__start_date__lte=date.today(),
         ).exclude(csn_prv_date=None).count()
     if quota == 0:
@@ -203,6 +202,14 @@ def filter_strt_center_all_72(applications, ed_centers):
                 education_program__duration__lte=72,
                 group__start_date__lte=date.today(),
             ).exclude(csn_prv_date=None).count()
+    return f'{applications_count}/{quota_sum} ({round(applications_count / quota_sum * 100, 2)}%)'
+
+@register.filter
+def filter_chs_center_all_72(applications, ed_centers):
+    quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_72'))['quota_sum']
+    applications_count = applications.filter(
+                education_program__duration__lte=72,
+            ).exclude(csn_prv_date=None, group=None).count()
     return f'{applications_count}/{quota_sum} ({round(applications_count / quota_sum * 100, 2)}%)'
 
 @register.filter
