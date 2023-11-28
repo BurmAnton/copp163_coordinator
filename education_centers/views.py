@@ -179,11 +179,15 @@ def abilimpics(request):
     else:
         return HttpResponseRedirect(reverse("login"))
     programs = EducationProgram.objects.filter(is_abilimpics=True)
+    template = get_object_or_404(
+                DocumentType, name="Шаблон заявки (Абилимпикс)")
+
 
     return render(request, "education_centers/abilimpics.html", {
         'winner': winner,
         'programs': programs,
-        'stage': stage
+        'stage': stage,
+        'template': template
     })
 
 @csrf_exempt
