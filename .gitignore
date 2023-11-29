@@ -6,3 +6,5 @@
 /media/applications/.gitignore
 dump.rdb
 **/.gitignore
+/htmlcov
+/.vscode
