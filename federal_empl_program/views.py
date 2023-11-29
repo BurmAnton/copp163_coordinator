@@ -20,7 +20,7 @@ from pysendpulse.pysendpulse import PySendPulse
 
 from citizens.models import Citizen
 from education_centers.models import (AbilimpicsWinner, Competence,
-                                      EducationCenter, EducationProgram)
+                                      EducationCenter, EducationProgram, Group)
 from federal_empl_program.imports import import_applications
 from federal_empl_program.models import (Application, CitizenApplication,
                                          EdCenterQuotaRequest,
@@ -194,7 +194,7 @@ def applications_dashboard(request, year=2023):
             education_program__duration=256, appl_status='COMP'),
     })
 
-#@cache_page(None, key_prefix="flow")
+@cache_page(None, key_prefix="flow")
 @csrf_exempt
 def flow_appls_dashboard(request, year=2023):
     project_year = get_object_or_404(ProjectYear, year=year)
@@ -465,6 +465,14 @@ def quota_request(request):
         'programs_quota_256': programs_quota_256,
         'ed_centers': ed_centers,
         'programs': programs
+    })
+    
+@csrf_exempt
+def group_view(request, group_id):
+    group = get_object_or_404(Group, id=group_id)
+    
+    return render(request, 'federal_empl_program/group_view.html', {
+        'group': group,
     })
 
 @csrf_exempt
