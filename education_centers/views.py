@@ -1,38 +1,43 @@
-from datetime import date, datetime
 import json
-from django.urls import reverse
+from datetime import date, datetime
+
 import unidecode
-
-from django.utils.formats import date_format
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, render
-from django.views.decorators.csrf import csrf_exempt
 from django.core.files import File
-from django.db.models import Case, When, Value, Count, OuterRef, Subquery, Sum
-from django.utils.encoding import escape_uri_path
+from django.db.models import Case, Count, OuterRef, Subquery, Sum, Value, When
 from django.db.models.functions import Concat
-from citizens.models import School
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
+from django.utils.encoding import escape_uri_path
+from django.utils.formats import date_format
+from django.views.decorators.csrf import csrf_exempt
 
+from citizens.models import School
+from federal_empl_program.models import (EdCenterEmployeePosition,
+                                         EdCenterIndicator,
+                                         EducationCenterProjectYear, Indicator,
+                                         ProjectPosition, ProjectYear)
+from future_ticket.models import (AgeGroup, ContractorsDocumentTicket,
+                                  DocumentTypeTicket, EdCenterTicketIndicator,
+                                  EducationCenterTicketProjectYear,
+                                  ProfEnviroment, ProgramAuthor,
+                                  TicketEdCenterEmployeePosition,
+                                  TicketFullQuota, TicketIndicator,
+                                  TicketProfession, TicketProgram,
+                                  TicketProjectPosition, TicketProjectYear,
+                                  TicketQuota)
+from future_ticket.utils import generate_document_ticket
 from users.models import DisabilityType
 
-from . import imports
-from . import exports
-from .forms import ImportDataForm, ImportTicketContractForm, \
-                   ImportTicketDataForm
-from .contracts import create_document, combine_all_docx, create_application, \
-                       create_ticket_application
-from .models import AbilimpicsWinner, BankDetails, Competence, ContractorsDocument, DocumentType,\
-        EducationCenter, EducationProgram,Employee, Group,Teacher, Workshop
-from federal_empl_program.models import EdCenterEmployeePosition,\
-        EdCenterIndicator, EducationCenterProjectYear, Indicator,\
-        ProjectPosition, ProjectYear
-from future_ticket.models import AgeGroup, ContractorsDocumentTicket, \
-        DocumentTypeTicket, ProfEnviroment, ProgramAuthor, TicketFullQuota, \
-        TicketProfession, TicketProgram, TicketProjectYear,\
-        EducationCenterTicketProjectYear, TicketProjectPosition,\
-        TicketEdCenterEmployeePosition, TicketIndicator, \
-        EdCenterTicketIndicator, TicketQuota
-from future_ticket.utils import generate_document_ticket
+from . import exports, imports
+from .contracts import (combine_all_docx, create_application, create_document,
+                        create_ticket_application)
+from .forms import (ImportDataForm, ImportTicketContractForm,
+                    ImportTicketDataForm)
+from .models import (AbilimpicsWinner, BankDetails, Competence,
+                     ContractorsDocument, DocumentType, EducationCenter,
+                     EducationProgram, Employee, Group, Teacher, Workshop)
+
 
 # Create your views here.
 def index(request):

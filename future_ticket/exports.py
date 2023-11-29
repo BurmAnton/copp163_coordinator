@@ -1,12 +1,13 @@
+from datetime import datetime
+
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.utils.encoding import escape_uri_path
-from django.db.models import Sum
-
-from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 
 from .models import TicketEvent, TicketProfession, TicketProgram, TicketQuota
+
 
 def professions():
     professions = TicketProfession.objects.all()

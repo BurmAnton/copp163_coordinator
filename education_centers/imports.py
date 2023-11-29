@@ -1,7 +1,8 @@
 import math
+
 from openpyxl import load_workbook
 
-from .models import Competence, EducationProgram, EducationCenter
+from .models import Competence, EducationCenter, EducationProgram
 
 
 def get_sheet(form):

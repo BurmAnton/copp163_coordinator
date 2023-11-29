@@ -1,8 +1,8 @@
 import os
+from os.path import dirname, join
 from pathlib import Path
-from django.db import models
 
-from os.path import join, dirname
+from django.db import models
 from dotenv import load_dotenv
 
 dotenv_path = join(dirname(__file__), '.env')

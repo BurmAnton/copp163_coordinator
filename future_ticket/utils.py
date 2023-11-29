@@ -1,19 +1,19 @@
+import os
 from datetime import date
+
+from django.db.models import Sum
+from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404
 from django.utils.formats import date_format
-from django.db.models.query import QuerySet
-from django.db.models import Sum
-import os
-
-from docxcompose.composer import Composer
 from docx import Document as Document_compose
+from docxcompose.composer import Composer
 from docxtpl import DocxTemplate
 from number_to_string import get_string_by_number
 
-from .models import EdCenterTicketIndicator, EventsCycle,\
-            TicketEdCenterEmployeePosition, TicketEvent, TicketProfession,\
-            TicketProjectPosition,DocumentTypeTicket, \
-            ContractorsDocumentTicket, TicketQuota
+from .models import (ContractorsDocumentTicket, DocumentTypeTicket,
+                     EdCenterTicketIndicator, EventsCycle,
+                     TicketEdCenterEmployeePosition, TicketEvent,
+                     TicketProfession, TicketProjectPosition, TicketQuota)
 
 
 def get_document_number(doc_type, contractor=None, parent_doc=None):

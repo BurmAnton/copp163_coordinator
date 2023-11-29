@@ -1,7 +1,6 @@
 from celery import shared_task
 
 
-
 @shared_task()
 def find_participants_dublicates(cycle_id):
     from future_ticket.models import StudentBVB, EventsCycle

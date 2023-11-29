@@ -1,36 +1,37 @@
 import calendar
+import json
+import random
+import string
 from datetime import date, datetime, timedelta
 from email.mime import application
-from dateutil.relativedelta import relativedelta
-import string
-import random
-import json
 
-from django.db.models import Q, Count, Sum, Case, When, IntegerField, Avg
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
+from dateutil.relativedelta import relativedelta
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.cache import cache_page
-from django.db import IntegrityError
 from django.core.cache import cache
+from django.db import IntegrityError
+from django.db.models import Avg, Case, Count, IntegerField, Q, Sum, When
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
+from django.views.decorators.cache import cache_page
+from django.views.decorators.csrf import csrf_exempt
+from pysendpulse.pysendpulse import PySendPulse
 
-from education_centers.models import AbilimpicsWinner, Competence, EducationCenter, EducationProgram
+from citizens.models import Citizen
+from education_centers.models import (AbilimpicsWinner, Competence,
+                                      EducationCenter, EducationProgram)
 from federal_empl_program.imports import import_applications
+from federal_empl_program.models import (Application, CitizenApplication,
+                                         EdCenterQuotaRequest,
+                                         EducationCenterProjectYear, Grant,
+                                         ProgramQuotaRequest, ProjectYear,
+                                         QuotaRequest)
+from users.models import User
 
 from . import exports
 from .forms import ImportDataForm
-
-from pysendpulse.pysendpulse import PySendPulse
-
 from .utils import get_applications_plot, get_flow_applications_plot
-from users.models import User
-from citizens.models import Citizen
-from federal_empl_program.models import Application, CitizenApplication,\
-                    EdCenterQuotaRequest, EducationCenterProjectYear,\
-                    Grant, ProgramQuotaRequest,  ProjectYear, QuotaRequest
 
 
 @login_required

@@ -1,14 +1,16 @@
 from django.contrib import admin
-from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter,\
-      DropdownFilter, ChoiceDropdownFilter
+from django_admin_listfilter_dropdown.filters import (
+    ChoiceDropdownFilter, DropdownFilter, RelatedOnlyDropdownFilter)
 from easy_select2 import select2_modelform
 
-from .models import AgeGroup, ContractorsDocumentTicket, DocumentTypeTicket, EventsCycle, \
-    ProfEnviroment, ProgramAuthor, SchoolProjectYear, StudentBVB, TicketEvent, TicketFullQuota, \
-    TicketProfession, TicketProgram, TicketProjectYear, \
-    EducationCenterTicketProjectYear, TicketProjectPosition, \
-    TicketEdCenterEmployeePosition, TicketIndicator, EdCenterTicketIndicator, \
-    TicketQuota
+from .models import (AgeGroup, ContractorsDocumentTicket, DocumentTypeTicket,
+                     EdCenterTicketIndicator, EducationCenterTicketProjectYear,
+                     EventsCycle, ProfEnviroment, ProgramAuthor,
+                     SchoolProjectYear, StudentBVB,
+                     TicketEdCenterEmployeePosition, TicketEvent,
+                     TicketFullQuota, TicketIndicator, TicketProfession,
+                     TicketProgram, TicketProjectPosition, TicketProjectYear,
+                     TicketQuota)
 
 
 @admin.register(StudentBVB)

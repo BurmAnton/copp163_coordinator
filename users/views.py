@@ -1,14 +1,18 @@
 from ast import Not
-from django.shortcuts import render
+
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
 
 from federal_empl_program.forms import ImportDataForm
-from .models import PartnerContact, Project, PartnerOrganization, PartnerContactEmail, PartnerContactPhone, PartnerOrganization
-from . import imports
-from . import sendpulse
+
+from . import imports, sendpulse
+from .models import (PartnerContact, PartnerContactEmail, PartnerContactPhone,
+                     PartnerOrganization, Project)
+
+
 # Create your views here.
 @csrf_exempt
 def contacts_list(request):

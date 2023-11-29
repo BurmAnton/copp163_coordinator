@@ -1,23 +1,26 @@
 import datetime
 import math
-from django.test import TestCase, Client
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.contrib import auth
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-
 from datetime import date
+
+from django.contrib import auth
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.test import Client, TestCase
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+
 from citizens.models import Citizen
-from education_centers.models import EducationProgram, EducationCenter,\
-                                     Competence, Employee
+from education_centers.models import (Competence, EducationCenter,
+                                      EducationProgram, Employee)
 from users.models import User
-from .models import EdCenterQuotaRequest, Indicator, CitizenApplication,\
-                    ProgramQuotaRequest, EducationCenterProjectYear,\
-                    EdCenterIndicator, ProjectPosition, Grant, Application,\
-                    EdCenterEmployeePosition, QuotaRequest, ProjectYear,\
-                    CitizenCategory
+
+from .models import (Application, CitizenApplication, CitizenCategory,
+                     EdCenterEmployeePosition, EdCenterIndicator,
+                     EdCenterQuotaRequest, EducationCenterProjectYear, Grant,
+                     Indicator, ProgramQuotaRequest, ProjectPosition,
+                     ProjectYear, QuotaRequest)
+
 
 # Models tests
 class FedEmplModelsTest(TestCase):

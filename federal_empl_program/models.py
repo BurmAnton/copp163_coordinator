@@ -1,17 +1,17 @@
-from email.policy import default
 import math
+
+from django.core.cache import cache
 from django.db import models
-from users.models import User
-from django.db.models.deletion import DO_NOTHING, CASCADE
+from django.db.models.deletion import CASCADE, DO_NOTHING
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from field_history.tracker import FieldHistoryTracker
-from django.utils.timezone import now
-from django.core.cache import cache
 
 from citizens.models import Citizen
+from education_centers.models import (Competence, EducationCenter,
+                                      EducationProgram, Employee, Group)
 from organizations.models import Company
-from education_centers.models import Competence, EducationProgram,\
-                                     EducationCenter, Group, Employee
+from users.models import User
 
 
 class ProjectYear(models.Model):

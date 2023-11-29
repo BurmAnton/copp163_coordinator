@@ -1,23 +1,27 @@
+from django import forms
 from django.contrib import admin
 from django.contrib.admin.filters import SimpleListFilter
-from django.shortcuts import get_object_or_404
-from django.utils.safestring import mark_safe
-from django.urls import reverse
-from django import forms
-from education_centers.forms import AbilimpicsWinnerCreationForm,\
-                                    AbilimpicsWinnerChangeForm
 from django.contrib.auth.admin import UserAdmin
-
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
+from django.utils.safestring import mark_safe
+from django_admin_listfilter_dropdown.filters import (
+    ChoiceDropdownFilter, DropdownFilter, RelatedOnlyDropdownFilter)
 from easy_select2 import select2_modelform
-from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter,\
-      DropdownFilter, ChoiceDropdownFilter
 
-from .models import AbilimpicsWinner, Teacher, Workshop, EducationCenter, EducationProgram, Competence, \
-      Group, ContractorsDocument, DocumentType, BankDetails
-from federal_empl_program.models import Application, EducationCenterProjectYear, ProjectYear
-from citizens.models import Citizen, School
-from users.models import User
 import users
+from citizens.models import Citizen, School
+from education_centers.forms import (AbilimpicsWinnerChangeForm,
+                                     AbilimpicsWinnerCreationForm)
+from federal_empl_program.models import (Application,
+                                         EducationCenterProjectYear,
+                                         ProjectYear)
+from users.models import User
+
+from .models import (AbilimpicsWinner, BankDetails, Competence,
+                     ContractorsDocument, DocumentType, EducationCenter,
+                     EducationProgram, Group, Teacher, Workshop)
+
 
 @admin.register(BankDetails)
 class BankDetailsAdmin(admin.ModelAdmin):

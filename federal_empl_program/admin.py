@@ -1,25 +1,28 @@
+from datetime import datetime, timedelta
 from pickle import TRUE
-from django.contrib.admin.filters import SimpleListFilter
-from users.models import User
+
 from django.contrib import admin
-from django.utils.safestring import mark_safe
-from django.urls import reverse
-from django.forms import TextInput
+from django.contrib.admin.filters import SimpleListFilter
 from django.db import models
-
-from django.db.models import Sum, Avg
+from django.db.models import Avg, Sum
 from django.db.models.functions import Coalesce
-
+from django.forms import TextInput
+from django.urls import reverse
+from django.utils.safestring import mark_safe
+from django_admin_listfilter_dropdown.filters import (
+    ChoiceDropdownFilter, DropdownFilter, RelatedDropdownFilter,
+    RelatedOnlyDropdownFilter)
 from easy_select2 import select2_modelform
-from django_admin_listfilter_dropdown.filters import  RelatedDropdownFilter, ChoiceDropdownFilter, RelatedOnlyDropdownFilter, DropdownFilter
 from field_history.models import FieldHistory
 
-from .models import Application, CitizenApplication, EdCenterEmployeePosition,CitizenCategory, EdCenterQuotaRequest, EducationCenterProjectYear, FlowStatus, \
-                    Grant, ProgramQuotaRequest, ProjectYear, Indicator, ProjectPosition, QuotaRequest
 from education_centers.models import EducationCenter, EducationProgram
-from users.models import Group
+from users.models import Group, User
 
-from datetime import datetime, timedelta
+from .models import (Application, CitizenApplication, CitizenCategory,
+                     EdCenterEmployeePosition, EdCenterQuotaRequest,
+                     EducationCenterProjectYear, FlowStatus, Grant, Indicator,
+                     ProgramQuotaRequest, ProjectPosition, ProjectYear,
+                     QuotaRequest)
 
 
 #@admin.register(QuotaRequest)

@@ -1,24 +1,26 @@
-from datetime import date
-from django.utils import timezone
 import datetime
-from transliterate import translit
+from datetime import date
 
-from django.db import models
-from django.db.models.deletion import DO_NOTHING, CASCADE
-from django.utils.translation import gettext_lazy as _
-from django.utils.timezone import now
-from django.db.models.signals import pre_delete, post_delete
-from django.dispatch import receiver
-from django.db.models import Sum
 import unidecode
+from django.db import models
+from django.db.models import Sum
+from django.db.models.deletion import CASCADE, DO_NOTHING
+from django.db.models.signals import post_delete, pre_delete
+from django.dispatch import receiver
+from django.utils import timezone
+from django.utils.timezone import now
+from django.utils.translation import gettext_lazy as _
+from transliterate import translit
 
 from citizens.models import School
 from copp163_coordinator import settings
-from education_centers.models import Competence, EducationProgram, \
-                                     EducationCenter, Group, Employee, Workshop
-from future_ticket.tasks import find_participants_dublicates, update_completed_quota
+from education_centers.models import (Competence, EducationCenter,
+                                      EducationProgram, Employee, Group,
+                                      Teacher, Workshop)
+from future_ticket.tasks import (find_participants_dublicates,
+                                 update_completed_quota)
 from users.models import DisabilityType
-from education_centers.models import Teacher
+
 
 # Create your models here.
 class ProfEnviroment(models.Model):

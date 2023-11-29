@@ -4,6 +4,7 @@ from django.urls import reverse
 from citizens.models import Citizen, DisabilityType, Municipality, School
 from education_centers.forms import ImportDataForm
 
+
 # models test
 class MunicipalityTest(TestCase):
 
