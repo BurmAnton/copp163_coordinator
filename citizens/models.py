@@ -1,11 +1,11 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models.deletion import CASCADE, DO_NOTHING
 from django.db.models.enums import Choices
 from field_history.tracker import FieldHistoryTracker
-from django.db.models.deletion import DO_NOTHING, CASCADE
-from django.core.validators import MaxValueValidator, MinValueValidator
 
-from users.models import User
 from organizations.models import Company
+from users.models import User
 
 
 class Municipality(models.Model):

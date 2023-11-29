@@ -1,13 +1,15 @@
 from datetime import datetime
+
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils.encoding import escape_uri_path
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
-from django.utils.encoding import escape_uri_path
 
 from federal_empl_program.models import EducationCenterProjectYear, ProjectYear
 
 from .models import EducationCenter, EducationProgram
+
 
 def ed_centers():
     ed_centers = EducationCenter.objects.all()

@@ -1,10 +1,11 @@
-import os
-import matplotlib.pyplot as plt
 import base64
+import os
 from io import BytesIO
 
+import matplotlib.pyplot as plt
 import numpy as np
 from openpyxl import Workbook, load_workbook
+
 
 def get_graph():
     buffer = BytesIO()

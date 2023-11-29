@@ -1,11 +1,14 @@
-from datetime import date
 import math
+from datetime import date
+
 from django.shortcuts import get_object_or_404
 from openpyxl import load_workbook
+
 from citizens.models import School
 from education_centers.models import EducationCenter, Teacher
-
-from future_ticket.models import AgeGroup, ProfEnviroment, ProgramAuthor, StudentBVB, TicketProfession, TicketProgram, TicketQuota
+from future_ticket.models import (AgeGroup, ProfEnviroment, ProgramAuthor,
+                                  StudentBVB, TicketProfession, TicketProgram,
+                                  TicketQuota)
 
 
 def get_sheet(form):

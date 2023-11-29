@@ -1,14 +1,15 @@
 from email.policy import default
 from email.quoprimime import quote
-from django.db import models
-from django.db.models.deletion import DO_NOTHING, CASCADE
-from django.core.validators import MaxValueValidator, MinValueValidator
-from django.utils.translation import gettext_lazy as _
-from django.utils.timezone import now
-from users.models import DisabilityType
 
-from users.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from django.db.models.deletion import CASCADE, DO_NOTHING
+from django.utils.timezone import now
+from django.utils.translation import gettext_lazy as _
+
 from users.managers import CustomUserManager
+from users.models import DisabilityType, User
+
 
 class Competence(models.Model):
     title = models.CharField("Название компетенции", max_length=500)

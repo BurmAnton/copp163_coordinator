@@ -1,7 +1,9 @@
 import base64
-from datetime import datetime
 import math
+from datetime import datetime
+
 from pysendpulse.pysendpulse import PySendPulse
+
 
 def mailing():
     REST_API_ID = 'e071900fe5ab9aa6dd4dec2f42160ead'

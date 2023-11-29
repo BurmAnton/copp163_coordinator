@@ -1,23 +1,25 @@
 from datetime import datetime
+
+from django.db.models import Case, Count, F, Sum, When
 from django.forms import IntegerField
-
-from django.shortcuts import get_object_or_404, render
-from django.views.decorators.csrf import csrf_exempt
-from citizens.models import School
-from django.db.models import Sum, Count, Case, When, F
-from education_centers.forms import ImportSchoolOrderDataForm,\
-                                    ImportTicketDataForm
-from .forms import ImportDocumentForm, ImportParticipantsForm
-from education_centers.models import EducationCenter
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
-from future_ticket.models import EducationCenterTicketProjectYear,\
-        EventsCycle, QuotaEvent, SchoolProjectYear, StudentBVB, TicketEvent,\
-        TicketFullQuota, TicketProfession, TicketProjectYear, TicketQuota
-from .forms import ImportDataForm
+from citizens.models import School
+from education_centers.forms import (ImportSchoolOrderDataForm,
+                                     ImportTicketDataForm)
+from education_centers.models import EducationCenter
+from future_ticket.models import (EducationCenterTicketProjectYear,
+                                  EventsCycle, QuotaEvent, SchoolProjectYear,
+                                  StudentBVB, TicketEvent, TicketFullQuota,
+                                  TicketProfession, TicketProjectYear,
+                                  TicketQuota)
+
+from . import exports, imports
+from .forms import ImportDataForm, ImportDocumentForm, ImportParticipantsForm
 from .utils import generate_ticket_act
-from . import imports, exports
 
 
 def equalize_quotas(request):

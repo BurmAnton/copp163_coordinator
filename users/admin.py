@@ -1,12 +1,13 @@
+from django.contrib import admin
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
+from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter
 from easy_select2 import select2_modelform
 
-from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin, GroupAdmin
+from .forms import CustomUserChangeForm, CustomUserCreationForm
+from .models import (DisabilityType, Group, PartnerContact,
+                     PartnerContactEmail, PartnerContactPhone,
+                     PartnerOrganization, Project, User)
 
-from django_admin_listfilter_dropdown.filters import  RelatedOnlyDropdownFilter
-
-from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import DisabilityType, User, Group, PartnerContact, PartnerOrganization, Project, PartnerContactEmail, PartnerContactPhone
 
 @admin.register(User)
 class UserAdmin(UserAdmin):

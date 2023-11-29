@@ -6,8 +6,9 @@ from celery import Celery
 from celery.schedules import crontab
 from django.apps import apps
 
-from future_ticket.tasks import find_participants_dublicates,\
-                                update_completed_quota
+from future_ticket.tasks import (find_participants_dublicates,
+                                 update_completed_quota)
+
 # Set the default Django settings module for the 'celery' program.
 # "sample_app" is name of the root app
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'copp163_coordinator.settings')

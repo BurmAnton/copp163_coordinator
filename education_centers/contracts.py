@@ -1,16 +1,21 @@
+import os
 from datetime import date
+
+from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404
 from django.utils.formats import date_format
-from django.db.models.query import QuerySet
-import os
-
-from docxcompose.composer import Composer
 from docx import Document as Document_compose
+from docxcompose.composer import Composer
 from docxtpl import DocxTemplate
 
-from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndicator, ProjectPosition
-from future_ticket.models import EdCenterTicketIndicator, TicketEdCenterEmployeePosition, TicketProfession, TicketProjectPosition
-from .models import ContractorsDocument, DocumentType, EducationProgram, Teacher, Workshop
+from federal_empl_program.models import (EdCenterEmployeePosition,
+                                         EdCenterIndicator, ProjectPosition)
+from future_ticket.models import (EdCenterTicketIndicator,
+                                  TicketEdCenterEmployeePosition,
+                                  TicketProfession, TicketProjectPosition)
+
+from .models import (ContractorsDocument, DocumentType, EducationProgram,
+                     Teacher, Workshop)
 
 
 def get_document_number(doc_type, contractor, parent_doc=None):

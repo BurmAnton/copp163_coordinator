@@ -1,16 +1,17 @@
-from django.contrib import admin
-import django.contrib.auth.models
-from django.db.models import Q
-
-from easy_select2 import select2_modelform
 from datetime import timedelta
-from django_admin_listfilter_dropdown.filters import DropdownFilter, RelatedOnlyDropdownFilter
 
-from .models import Citizen, School, DisabilityType
-from federal_empl_program.models import Application
+import django.contrib.auth.models
+from django.contrib import admin
+from django.db.models import Q
+from django_admin_listfilter_dropdown.filters import (
+    DropdownFilter, RelatedOnlyDropdownFilter)
+from easy_select2 import select2_modelform
+
 from education_centers.models import EducationCenter
+from federal_empl_program.models import Application
 from users.models import User
 
+from .models import Citizen, DisabilityType, School
 
 ApplicationForm = select2_modelform(Application, attrs={'width': '400px'})
 

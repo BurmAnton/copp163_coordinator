@@ -1,10 +1,11 @@
 
-from datetime import datetime, date
+from datetime import date, datetime
+
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils.encoding import escape_uri_path
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
-from django.utils.encoding import escape_uri_path
 
 from future_ticket.models import SchoolProjectYear, TicketProjectYear
 

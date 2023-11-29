@@ -1,10 +1,12 @@
 from datetime import datetime
+
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
+from django.db.models.deletion import CASCADE, DO_NOTHING
 from django.utils.translation import gettext_lazy as _
-from django.db.models.deletion import DO_NOTHING, CASCADE
 
 from .managers import CustomUserManager
+
 
 class DisabilityType(models.Model):
     name = models.CharField("ОВЗ", max_length=100)

@@ -1,18 +1,18 @@
-import pytz
 import math
+from datetime import date, datetime, tzinfo
 
-from users.models import User
+import pytz
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 from openpyxl import load_workbook
 
-from datetime import date, datetime, tzinfo
-from django.utils import timezone
-from django.core.exceptions import ObjectDoesNotExist
-
 from citizens.models import Citizen, School
-from education_centers.models import EducationProgram, EducationCenter, \
-                                     Workshop, Competence
-from .models import Application, EducationCenterProjectYear, FlowStatus, Group, CitizenCategory, ProjectYear
+from education_centers.models import (Competence, EducationCenter,
+                                      EducationProgram, Workshop)
+from users.models import User
 
+from .models import (Application, CitizenCategory, EducationCenterProjectYear,
+                     FlowStatus, Group, ProjectYear)
 
 CONTR_TYPE_CHOICES = {
      "Трёхсторонний с работодателем": 'THR',
