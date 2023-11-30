@@ -192,7 +192,7 @@ class GroupAdmin(admin.ModelAdmin):
         'is_new_price'
     )
     search_fields = ['name', 'start_date', 'end_date']
-    list_display = ('name', 'education_period', 'is_new_price', 'workshop_link', 'competence')
+    list_display = ('flow_id', 'education_period', 'is_new_price', 'workshop_link', 'competence')
     
     def competence(self, group):
         if group.education_program != None:
@@ -203,6 +203,8 @@ class GroupAdmin(admin.ModelAdmin):
     competence.short_description = 'Компетенция'
 
     def workshop_link(self, group):
+        if group.workshop == None:
+            return "-"
         url = reverse("admin:education_centers_educationcenter_change", args=[group.workshop.education_center.id])
         link = f'<a href="%s"> %s </a>' % (url, group.workshop)
         return mark_safe(link)

@@ -22,6 +22,7 @@ urlpatterns = [
         views.citizen_application, 
         name="citizen_application"
     ),
+    path('group/<int:group_id>', views.group_view, name="group_view"),
     path(
         'dashboard/applications/<int:year>', 
         views.applications_dashboard, 

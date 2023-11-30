@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}Поток №{{group.flow_id}}{% endblock %}
+{% block style %}
+    <link href="{% static 'federal_empl_program/css/group_view.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}{% endblock %}
+
+{% block body %}
+    <div id="page-hdr">
+        <h1>
+            Учебный поток 
+            <a href="https://flow.firpo.info/EducationPrograms/Cohort?cohortId={{group.flow_id}}" target="_blank">
+                №{{group.flow_id}}
+            </a>
+        </h1>
+        <h3>{{group.education_program.ed_center.flow_name}}</h3>
+    </div>
+    <div id="group-info">
+        <h2>Данные потока</h2>
+        <div>
+            <p><b>Центр обучения:</b> {{group.education_program.ed_center.flow_name}}</p>
+            <p><b>Программа обучения:</b> {{group.education_program.program_name}}</p>
+            <p><b>Начало обучения:</b> {{group.start_date}}</p>
+            <p><b>Конец обучения:</b> {{group.end_date}}</p>
+        </div>
+        <div>
+            <p><b>Вид программы:</b> {{group.education_program.get_program_type_display}}</p>
+            <p><b>Длительность программы:</b> {{group.education_program.duration}} ч.</p>
+        </div>
+    </div>
+    <div id="applicants-list">
+        <h2>Участники</h2>
+        <table id="applicants-table" class="table table-striped">
+            <thead>
+                <th scope="col" style="border-top-left-radius: 10px; text-align:left;">ФИО</th>
+                <th scope="col">Статус</th>
+                <th scope="col">Актирован</th>
+                <th scope="col" style="border-top-right-radius: 10px;">Стоимость обучения</th>
+            </thead>
+            {% for applicant in applicants %}
+                <tr>
+                    <td scope="row" style="text-align:left;">{{applicant.applicant}}</td>
+                    <td scope="row">{{applicant.flow_status.off_name}}</td>
+                    <td scope="row">Да</td>
+                    <td scope="row">{{applicant.price}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div id="payment-stats">
+        <h2 style="text-align: center;">Оплата</h2>
+        <div class="pay-stat"><h5>За обучение:<br>{{ed_price}} руб</h5></div>
+        <div class="pay-stat"><h5>За трудоустройство:<br>{{wrk_price}} руб</h5></div>
+        <div class="pay-stat"><h5>Всего:<br>40 929 руб</h5></div>
+        <div class="pay-stat"><h5>Оплаченно:<br>40 929 руб</h5></div>
+        <div id="control-panel">
+            <button class="btn btn-primary">Добавить документ</button>
+        </div>
+        <table id="acts-table" class="table table-striped">
+            <thead>
+                <th style="border-top-left-radius: 10px; text-align:left;">Акт/Отчёт о занятости</th>
+                <th>Счёт</th>
+                <th>Сумма</th>
+                <th style="border-top-right-radius: 10px;">Оплачен</th>
+            </thead>
+            <tr>
+                <td scope="row" colspan="4">Нет документов</td>
+            </tr>
+        </table>
+    </div>
+{% endblock %}

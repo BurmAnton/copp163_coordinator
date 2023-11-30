@@ -65,6 +65,10 @@ body .programs-list .program-card .program-card-body {
   height: 100%;
   font-size: 18px;
 }
+body .programs-list .program-card .program-card-body .description {
+  display: flex;
+  flex-direction: column;
+}
 body .programs-list .program-card .program-card-body .description p {
   display: inline-block;
   height: 245px;
