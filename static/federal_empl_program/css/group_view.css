@@ -1,0 +1,88 @@
+body {
+  color: #394959;
+  background-color: #F2F2F2;
+}
+
+#page-hdr {
+  text-align: center;
+  margin-top: 25px;
+  margin-bottom: 20px;
+}
+#page-hdr h1 {
+  font-size: 28px;
+}
+#page-hdr h1 a {
+  font-size: 26px;
+}
+#page-hdr h3 {
+  font-size: 20px;
+  font-weight: 400;
+}
+
+#group-info, #applicants-list, #payment-stats {
+  margin: auto;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  width: 85%;
+  display: flex;
+  flex-wrap: wrap;
+  -moz-column-gap: 30px;
+       column-gap: 30px;
+}
+#group-info h2, #applicants-list h2, #payment-stats h2 {
+  width: 100%;
+  font-size: 24px;
+}
+#group-info p, #applicants-list p, #payment-stats p {
+  margin-bottom: 5px;
+}
+#group-info table, #applicants-list table, #payment-stats table {
+  border-radius: 10px;
+  box-shadow: 1px 0px 5px 2px rgba(0, 0, 0, 0.2);
+}
+#group-info table tbody, #group-info table td, #group-info table tfoot, #group-info table th, #group-info table thead, #group-info table tr, #applicants-list table tbody, #applicants-list table td, #applicants-list table tfoot, #applicants-list table th, #applicants-list table thead, #applicants-list table tr, #payment-stats table tbody, #payment-stats table td, #payment-stats table tfoot, #payment-stats table th, #payment-stats table thead, #payment-stats table tr {
+  border-color: inherit;
+  border-style: none;
+  border-width: 0;
+}
+#group-info table .table-striped, #applicants-list table .table-striped, #payment-stats table .table-striped {
+  background-color: #e9ecf7 !important;
+}
+#group-info table th, #group-info table td, #applicants-list table th, #applicants-list table td, #payment-stats table th, #payment-stats table td {
+  text-align: center;
+}
+#group-info table th, #applicants-list table th, #payment-stats table th {
+  color: #394959;
+  background-color: #ffffff !important;
+  font-weight: 500 !important;
+  font-size: 16px;
+  line-height: 20px;
+}
+#group-info table td, #applicants-list table td, #payment-stats table td {
+  border-top: 0px solid #dee2e6;
+}
+
+#payment-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+#payment-stats .pay-stat {
+  width: 230px;
+  background-color: #394959;
+  color: white;
+  padding: 10px 10px;
+  text-align: center;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+#payment-stats .pay-stat h5 {
+  font-weight: 400;
+  margin: 0;
+}
+#payment-stats #control-panel {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}/*# sourceMappingURL=group_view.css.map */

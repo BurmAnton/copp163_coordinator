@@ -26,7 +26,7 @@ from federal_empl_program.models import (Application, CitizenApplication,
                                          EdCenterQuotaRequest,
                                          EducationCenterProjectYear, Grant,
                                          ProgramQuotaRequest, ProjectYear,
-                                         QuotaRequest)
+                                         QuotaRequest, FlowStatus)
 from users.models import User
 
 from . import exports
@@ -470,9 +470,20 @@ def quota_request(request):
 @csrf_exempt
 def group_view(request, group_id):
     group = get_object_or_404(Group, id=group_id)
+    applicants = Application.objects.filter(
+        group=group, flow_status__is_rejected=False
+    )
+    ed_price = applicants.aggregate(price=Sum('price'))['price']
+    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+    wrk_price = applicants.filter(
+        flow_status=find_wrk_status).aggregate(price=Sum('price'))['price']
+    if wrk_price == None: wrk_price = 0
     
     return render(request, 'federal_empl_program/group_view.html', {
         'group': group,
+        'applicants': applicants,
+        'ed_price': ed_price,
+        'wrk_price': wrk_price
     })
 
 @csrf_exempt
