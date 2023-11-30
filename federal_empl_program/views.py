@@ -478,12 +478,17 @@ def group_view(request, group_id):
     wrk_price = applicants.filter(
         flow_status=find_wrk_status).aggregate(price=Sum('price'))['price']
     if wrk_price == None: wrk_price = 0
+    full_price = ed_price + wrk_price
+    full_price = "{:,.0f} ₽".format(full_price).replace(',', ' ')
+    wrk_price = "{:,.0f} ₽".format(wrk_price).replace(',', ' ')
+    ed_price = "{:,.0f} ₽".format(ed_price).replace(',', ' ')
     
     return render(request, 'federal_empl_program/group_view.html', {
         'group': group,
         'applicants': applicants,
         'ed_price': ed_price,
-        'wrk_price': wrk_price
+        'wrk_price': wrk_price,
+        'full_price': full_price
     })
 
 @csrf_exempt
