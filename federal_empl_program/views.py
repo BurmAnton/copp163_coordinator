@@ -23,10 +23,11 @@ from education_centers.models import (AbilimpicsWinner, Competence,
                                       EducationCenter, EducationProgram, Group)
 from federal_empl_program.imports import import_applications
 from federal_empl_program.models import (Application, CitizenApplication,
-                                         EdCenterQuotaRequest,
-                                         EducationCenterProjectYear, Grant,
+                                         ClosingDocument, EdCenterQuotaRequest,
+                                         EducationCenterProjectYear,
+                                         FlowStatus, Grant,
                                          ProgramQuotaRequest, ProjectYear,
-                                         QuotaRequest, FlowStatus)
+                                         QuotaRequest)
 from users.models import User
 
 from . import exports
@@ -194,7 +195,7 @@ def applications_dashboard(request, year=2023):
             education_program__duration=256, appl_status='COMP'),
     })
 
-@cache_page(None, key_prefix="flow")
+#@cache_page(None, key_prefix="flow")
 @csrf_exempt
 def flow_appls_dashboard(request, year=2023):
     project_year = get_object_or_404(ProjectYear, year=year)
@@ -473,6 +474,15 @@ def group_view(request, group_id):
     applicants = Application.objects.filter(
         group=group, flow_status__is_rejected=False
     )
+    documents = ClosingDocument.objects.filter(group=group)
+    
+    if 'add_to_act' in request.POST:
+        for applicant in applicants:
+            if f'act{applicant.id}' in request.POST:
+                applicant.added_to_act = True
+            else: applicant.added_to_act = False
+            applicant.save()
+    
     ed_price = applicants.aggregate(price=Sum('price'))['price']
     find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
     wrk_price = applicants.filter(
@@ -485,6 +495,7 @@ def group_view(request, group_id):
     
     return render(request, 'federal_empl_program/group_view.html', {
         'group': group,
+        'documents': documents,
         'applicants': applicants,
         'ed_price': ed_price,
         'wrk_price': wrk_price,

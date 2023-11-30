@@ -31,23 +31,32 @@
         </div>
     </div>
     <div id="applicants-list">
-        <h2>Участники</h2>
-        <table id="applicants-table" class="table table-striped">
-            <thead>
-                <th scope="col" style="border-top-left-radius: 10px; text-align:left;">ФИО</th>
-                <th scope="col">Статус</th>
-                <th scope="col">Актирован</th>
-                <th scope="col" style="border-top-right-radius: 10px;">Стоимость обучения</th>
-            </thead>
-            {% for applicant in applicants %}
-                <tr>
-                    <td scope="row" style="text-align:left;">{{applicant.applicant}}</td>
-                    <td scope="row">{{applicant.flow_status.off_name}}</td>
-                    <td scope="row">Да</td>
-                    <td scope="row">{{applicant.price}}</td>
-                </tr>
-            {% endfor %}
-        </table>
+        <form style="width:100%" action="{% url 'group_view' group.id %}" method="post">
+            <div style="display:flex; justify-content:space-between;margin-bottom:10px">
+                <h2>Участники</h2>
+                <button class="btn btn-primary" name="add_to_act">Сохранить</button>
+            </div>
+            <table id="applicants-table" class="table table-striped">
+                <thead>
+                    <th scope="col" style="border-top-left-radius: 10px; text-align:left;">ФИО</th>
+                    <th scope="col">Статус</th>
+                    <th scope="col">Актирован</th>
+                    <th scope="col" style="border-top-right-radius: 10px;">Стоимость обучения</th>
+                </thead>
+                {% for applicant in applicants %}
+                    <tr>
+                        <td scope="row" style="text-align:left;">{{applicant.applicant}}</td>
+                        <td scope="row">{{applicant.flow_status.off_name}}</td>
+                        <td scope="row">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="act{{applicant.id}}" {% if applicant.added_to_act %} checked {% endif %}>
+                            </div>
+                        </td>
+                        <td scope="row">{{applicant.price}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </form>
     </div>
     <div id="payment-stats">
         <h2 style="text-align: center;">Оплата</h2>
@@ -55,8 +64,11 @@
         <div class="pay-stat"><h5>За трудоустройство:<br>{{wrk_price}}</h5></div>
         <div class="pay-stat"><h5>Всего:<br>{{full_price}}</h5></div>
         <div class="pay-stat"><h5>Оплаченно:<br>40 929 руб</h5></div>
-        <div id="control-panel">
-            <button class="btn btn-primary">Добавить документ</button>
+        <div style="display:flex; justify-content:space-between;margin-top:10px; width:100%">
+            <h2>Документы</h2>
+            <div id="control-panel">
+                <button class="btn btn-primary">Добавить документ</button>
+            </div>
         </div>
         <table id="acts-table" class="table table-striped">
             <thead>
@@ -66,7 +78,18 @@
                 <th style="border-top-right-radius: 10px;">Оплачен</th>
             </thead>
             <tr>
-                <td scope="row" colspan="4">Нет документов</td>
+                {% for document in documents %}
+                    <td scope="row">{{document.get_doc_type_dispay}}</td>
+                    <td scope="row">-</td>
+                    <td scope="row">-</td>
+                    <td scope="row">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="">
+                        </div>
+                    </td>
+                {% empty %}
+                    <td scope="row" colspan="4">Нет документов</td>
+                {% endfor %}
             </tr>
         </table>
     </div>

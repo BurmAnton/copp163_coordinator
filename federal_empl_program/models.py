@@ -401,6 +401,7 @@ class Application(models.Model):
         blank=True,
         on_delete=CASCADE
     )
+    added_to_act = models.BooleanField("Трудоустроен", default=False)
     applicant = models.ForeignKey(Citizen, verbose_name="Заявитель", on_delete=CASCADE, related_name='POE_applications')
     creation_date = models.DateTimeField("Дата создания", blank=True, null=True, default=now)
     expiration_date = models.DateField("Дата истечения заявки", blank=True, null=True)
@@ -488,7 +489,37 @@ class Application(models.Model):
     
     def __str__(self):
         return  f"{self.applicant} ({self.get_appl_status_display()})"
+
+
+class ClosingDocument(models.Model):
+    group = models.ForeignKey(
+        Group, 
+        verbose_name="Поток",
+        related_name="closing_documents",
+        null=False, blank=False, on_delete=CASCADE
+    )
+    DOC_TYPES = [
+        ('ACT', 'Акт'),
+        ('RPRT', 'Отчёт об трудоустройсте')
+    ]
+    doc_type = models.CharField(
+        "Тип документа", max_length=4, 
+        choices=DOC_TYPES, blank=False, null=False
+    )
     
+    def doc_path(instance, filename):
+        return 'media/federal_empl/docs/{0}'.format(filename)
+    doc_file = models.FileField("Акт/Отчёт", upload_to=doc_path)
+    def bill_path(instance, filename):
+        return 'media/federal_empl/docs/{0}'.format(filename)
+    bill_file = models.FileField("Счёт", upload_to=bill_path)
+    
+    class Meta:
+        verbose_name = "Закрывающий документ"
+        verbose_name_plural = "Закрывающие документы"
+    
+    def __str__(self):
+        return  f"{self.group.id} ({self.get_doc_type_display()})"
 
 class CitizenApplication(models.Model):
     first_name = models.CharField("Имя", max_length=30, null=True)
