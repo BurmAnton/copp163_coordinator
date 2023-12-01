@@ -506,6 +506,8 @@ class ClosingDocument(models.Model):
         "Тип документа", max_length=4, 
         choices=DOC_TYPES, blank=False, null=False
     )
+    bill_sum = models.IntegerField("Сумма оплаты", default=0)
+    is_paid = models.BooleanField("Оплаченно?", default=False)
     
     def doc_path(instance, filename):
         return 'media/federal_empl/docs/{0}'.format(filename)
