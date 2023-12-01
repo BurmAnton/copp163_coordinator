@@ -1,13 +1,118 @@
 {% extends "layout.html" %}
 {% load static %}
+{% load fed_extras %}
 
 {% block title %}Поток №{{group.flow_id}}{% endblock %}
 {% block style %}
     <link href="{% static 'federal_empl_program/css/group_view.css' %}" rel="stylesheet">
 {% endblock %}
-{% block script %}{% endblock %}
+{% block script %}
+
+{% endblock %}
 
 {% block body %}
+    {% for document in documents %}
+        <div class="modal fade change-document-modal" id="ChangeDoc{{document.id}}Modal" tabindex="-1" aria-labelledby="AddDocModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="AddDocModalLabel">Изменить документы</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{% url 'group_view' group.id %}" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <input style="display: none;" type="text" name="doc_id" value="{{document.id}}">
+                        <div class="form mb-3 selectpicker">
+                            <select class="selectpicker" title="Тип документа" data-width="100%" data-live-search="true" name="doc_type" required>
+                                <option {% if document.doc_type == "ACT" %}selected{% endif %} value="ACT">Акт</option>
+                                <option {% if document.doc_type == "RPRT" %}selected{% endif %} value="RPRT">Отчёт об трудоустройсте</option>
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="number" class="form-control" id="BillSumInput" name="bill_sum" placeholder="Сумма акта" value="{{document.bill_sum}}" required>
+                            <label for="BillSumInput">Сумма акта</label>
+                        </div>
+                        <a href="{{document.doc_file.url}}">Акт/Отчёт:</a>
+                        <div class="mb-3">
+                            {% csrf_token %}
+                            {{ act_change_form.non_field_errors }}
+                            {{ act_change_form.act_file.help_text }}
+                            {{ act_change_form.act_file.errors }}
+                            {{ act_change_form.act_file }}
+                        </div>
+                        {% if document.bill_sum.url != None %}
+                            <a href="{{document.bill_sum.url}}">Счёт:</a>
+                        {% endif %}
+                        <div class="mb-3">
+                            {% csrf_token %}
+                            {{ bill_form.non_field_errors }}
+                            {% if document.bill_sum.url == None %}
+                                {{ bill_form.bill_file.label_tag }} 
+                            {% endif %}
+                            {{ bill_form.bill_file.help_text }}
+                            {{ bill_form.bill_file.errors }}
+                            {{ bill_form.bill_file }}
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="display: flex;flex-direction: row-reverse;justify-content: space-between;">
+                            <div class="d-grid gap-2">
+                                <input type="submit" class="btn btn-primary" name="change-doc" value="Сохранить">
+                            </div>
+                        </form>
+                        <form action="{% url 'group_view' group.id %}" method="post">
+                            <input style="display: none;" type="text" name="doc_id" value="{{document.id}}">
+                            <input type="submit" class="btn btn-danger" name="delete-doc" value="Удалить">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <div class="modal fade add-document-modal" id="AddDocModal" tabindex="-1" aria-labelledby="AddDocModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddDocModalLabel">Добавить документ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'group_view' group.id %}" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="form mb-3 selectpicker">
+                            <select class="selectpicker" title="Тип документа" data-width="100%" data-live-search="true" name="doc_type" required>
+                                <option selected value="ACT">Акт</option>
+                                <option value="RPRT">Отчёт об трудоустройсте</option>
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="number" class="form-control" id="BillSumInput" name="bill_sum" placeholder="Сумма акта" required>
+                            <label for="BillSumInput">Сумма акта</label>
+                        </div>
+                        <div class="mb-3">
+                            {% csrf_token %}
+                            {{ act_form.non_field_errors }}
+                            {{ act_form.act_file.label_tag }} 
+                            {{ act_form.act_file.help_text }}
+                            {{ act_form.act_file.errors }}
+                            {{ act_form.act_file }}
+                        </div>
+                        <div class="mb-3">
+                            {% csrf_token %}
+                            {{ bill_form.non_field_errors }}
+                            {{ bill_form.bill_file.label_tag }} 
+                            {{ bill_form.bill_file.help_text }}
+                            {{ bill_form.bill_file.errors }}
+                            {{ bill_form.bill_file }}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <input type="submit" class="btn btn-primary" name="add-doc" value="Сохранить">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <div id="page-hdr">
         <h1>
             Учебный поток 
@@ -60,37 +165,60 @@
     </div>
     <div id="payment-stats">
         <h2 style="text-align: center;">Оплата</h2>
-        <div class="pay-stat"><h5>За обучение:<br>{{ed_price}}</h5></div>
-        <div class="pay-stat"><h5>За трудоустройство:<br>{{wrk_price}}</h5></div>
-        <div class="pay-stat"><h5>Всего:<br>{{full_price}}</h5></div>
-        <div class="pay-stat"><h5>Оплаченно:<br>40 929 руб</h5></div>
+        <div class="pay-stat"><h5>За обучение:<br>{{ed_price|money_format}}</h5></div>
+        <div class="pay-stat"><h5>За трудоустройство:<br>{{wrk_price|money_format}}</h5></div>
+        <div class="pay-stat"><h5>Всего:<br>{{full_price|money_format}}</h5></div>
+        <div class="pay-stat"><h5>Оплаченно:<br>{{paid_price|money_format}}</h5></div>
         <div style="display:flex; justify-content:space-between;margin-top:10px; width:100%">
             <h2>Документы</h2>
             <div id="control-panel">
-                <button class="btn btn-primary">Добавить документ</button>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddDocModal">Добавить документ</button>
             </div>
         </div>
         <table id="acts-table" class="table table-striped">
             <thead>
-                <th style="border-top-left-radius: 10px; text-align:left;">Акт/Отчёт о занятости</th>
-                <th>Счёт</th>
+                <th style="border-top-left-radius: 10px; text-align:left;padding-left:60px">Акт/Отчёт о занятости</th>
+                <th>Оплачен</th>
                 <th>Сумма</th>
-                <th style="border-top-right-radius: 10px;">Оплачен</th>
+                <th style="border-top-right-radius: 10px;">Счёт</th>
             </thead>
-            <tr>
                 {% for document in documents %}
-                    <td scope="row">{{document.get_doc_type_dispay}}</td>
-                    <td scope="row">-</td>
-                    <td scope="row">-</td>
-                    <td scope="row">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="">
-                        </div>
-                    </td>
+                    <tr>
+                        <td scope="row" style="text-align:left;">
+                            <div style="display: flex; align-items:center; gap:15px;">
+                                <div class="edit-icon" data-bs-toggle="modal" data-bs-target="#ChangeDoc{{document.id}}Modal">
+                                    <img src="{% static 'federal_empl_program/img/edit-icon.svg' %}" alt="">
+                                </div>
+                                <a href="{{document.doc_file.url}}" target="_blank">{{document.get_doc_type_display}}</a>    
+                            </div>
+                        </td>
+                        <td scope="row">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="" {{document.is_paid}}>
+                            </div>
+                        </td>
+                        <td scope="row">{{document.bill_sum|money_format}}</td>
+                        <td scope="row">
+                            {% if document.bill_file.name == "" %}
+                                <form action="{% url 'group_view' group.id %}" method="post" enctype="multipart/form-data" style="display: flex;align-items: flex-start; justify-content:center;gap:10px;">
+                                    <input style="display: none;" type="text" name="doc_id" value="{{document.id}}">
+                                    <div class="mb-3" style="width: 260px; margin-bottom:0 !important;">
+                                        {% csrf_token %}
+                                        {{ bill_form.non_field_errors }}
+                                        {{ bill_form.bill_file.help_text }}
+                                        {{ bill_form.bill_file.errors }}
+                                        {{ bill_form.bill_file }}
+                                    </div>
+                                    <input type="submit" class="btn btn-primary" name="add-bill" value="Загрузить">
+                                </form>
+                            {% else %}
+                                <a href="{{document.bill_file.url}}" target="_blank">Счёт</a>
+                            {% endif %}
+                        </td>
+                    </tr>
                 {% empty %}
-                    <td scope="row" colspan="4">Нет документов</td>
+                    <tr><td scope="row" colspan="4">Нет документов</td></tr>
                 {% endfor %}
-            </tr>
         </table>
     </div>
 {% endblock %}

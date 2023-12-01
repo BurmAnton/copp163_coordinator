@@ -2,6 +2,14 @@ body {
   color: #394959;
   background-color: #F2F2F2;
 }
+body a {
+  color: #394959;
+  font-weight: 500;
+  text-decoration: underline;
+}
+body a:hover {
+  color: #2e3c4a;
+}
 
 #page-hdr {
   text-align: center;
@@ -13,6 +21,7 @@ body {
 }
 #page-hdr h1 a {
   font-size: 26px;
+  font-weight: 400;
 }
 #page-hdr h3 {
   font-size: 20px;
@@ -50,6 +59,7 @@ body {
 }
 #group-info table th, #group-info table td, #applicants-list table th, #applicants-list table td, #payment-stats table th, #payment-stats table td {
   text-align: center;
+  vertical-align: middle;
 }
 #group-info table th, #applicants-list table th, #payment-stats table th {
   color: #394959;
@@ -60,6 +70,17 @@ body {
 }
 #group-info table td, #applicants-list table td, #payment-stats table td {
   border-top: 0px solid #dee2e6;
+}
+#group-info table td .edit-icon, #applicants-list table td .edit-icon, #payment-stats table td .edit-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#group-info table td .edit-icon img, #applicants-list table td .edit-icon img, #payment-stats table td .edit-icon img {
+  width: 21px;
 }
 
 #payment-stats {

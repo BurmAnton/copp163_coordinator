@@ -2,6 +2,7 @@ import calendar
 import json
 import random
 import string
+import unidecode
 from datetime import date, datetime, timedelta
 from email.mime import application
 
@@ -31,7 +32,7 @@ from federal_empl_program.models import (Application, CitizenApplication,
 from users.models import User
 
 from . import exports
-from .forms import ImportDataForm
+from .forms import ImportDataForm, ActDataForm, BillDataForm, ActChangeDataForm
 from .utils import get_applications_plot, get_flow_applications_plot
 
 
@@ -195,7 +196,7 @@ def applications_dashboard(request, year=2023):
             education_program__duration=256, appl_status='COMP'),
     })
 
-#@cache_page(None, key_prefix="flow")
+@cache_page(None, key_prefix="flow")
 @csrf_exempt
 def flow_appls_dashboard(request, year=2023):
     project_year = get_object_or_404(ProjectYear, year=year)
@@ -252,7 +253,7 @@ def flow_appls_dashboard(request, year=2023):
     )
 
     day_stats = {}
-    today = date.today() - timedelta(1)
+    today = date.today()
     day_stats['Новые'] = applications.filter(creation_date=today).count()
     day_stats['Одобрено ЦЗН'] = applications.filter(csn_prv_date=today).count()
     day_stats['Начали обучение'] = applications.filter(group__start_date=today).count()
@@ -482,16 +483,54 @@ def group_view(request, group_id):
                 applicant.added_to_act = True
             else: applicant.added_to_act = False
             applicant.save()
-    
+    elif 'add-doc' in request.POST:
+        doc = ClosingDocument(
+            group=group,
+            doc_type = request.POST['doc_type'],
+            bill_sum = request.POST['bill_sum']
+        )
+        doc.doc_file = request.FILES['act_file']
+        doc.doc_file.name = unidecode.unidecode(doc.doc_file.name)
+        if 'bill_file' in request.FILES:
+            doc.bill_file = request.FILES['bill_file']
+            doc.bill_file.name = unidecode.unidecode(doc.bill_file.name)
+        doc.save()
+    elif 'add-bill' in request.POST:
+        doc_id = request.POST['doc_id']
+        doc = ClosingDocument.objects.get(id=doc_id)
+        doc.bill_file = request.FILES['bill_file']
+        doc.save()
+    elif 'change-doc' in request.POST:
+        doc_id = request.POST['doc_id']
+        doc = ClosingDocument.objects.get(id=doc_id)
+        doc.doc_type = request.POST['doc_type']
+        doc.bill_sum = request.POST['bill_sum']
+        if 'act_file' in request.FILES:
+            doc.doc_file = request.FILES['act_file']
+            doc.doc_file.name = unidecode.unidecode(doc.doc_file.name)
+        if 'bill_file' in request.FILES:
+            doc.bill_file = request.FILES['bill_file']
+            doc.bill_file.name = unidecode.unidecode(doc.bill_file.name)
+        doc.save()
+    elif 'delete-doc' in request.POST:
+        doc_id = request.POST['doc_id']
+        doc = ClosingDocument.objects.get(id=doc_id)
+        doc.delete()
+    if request.method == 'POST':
+        return HttpResponseRedirect(reverse(
+            'group_view', kwargs={'group_id': group.id}
+        ))
     ed_price = applicants.aggregate(price=Sum('price'))['price']
+    ed_price = ed_price * 0.7
     find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
     wrk_price = applicants.filter(
         flow_status=find_wrk_status).aggregate(price=Sum('price'))['price']
     if wrk_price == None: wrk_price = 0
+    wrk_price = wrk_price * 0.3
     full_price = ed_price + wrk_price
-    full_price = "{:,.0f} ₽".format(full_price).replace(',', ' ')
-    wrk_price = "{:,.0f} ₽".format(wrk_price).replace(',', ' ')
-    ed_price = "{:,.0f} ₽".format(ed_price).replace(',', ' ')
+    paid_price = documents.filter(
+        is_paid=True).aggregate(bill_sum=Sum('bill_sum'))['bill_sum']
+    if paid_price == None: paid_price = 0
     
     return render(request, 'federal_empl_program/group_view.html', {
         'group': group,
@@ -499,7 +538,11 @@ def group_view(request, group_id):
         'applicants': applicants,
         'ed_price': ed_price,
         'wrk_price': wrk_price,
-        'full_price': full_price
+        'full_price': full_price,
+        'paid_price': paid_price,
+        'act_form': ActDataForm(),
+        'bill_form': BillDataForm(),
+        'act_change_form': ActChangeDataForm()
     })
 
 @csrf_exempt
