@@ -8,6 +8,9 @@ from federal_empl_program.models import ProjectYear, FlowStatus
 
 register = template.Library()
 
+@register.filter
+def order_by_paid_field(documents):
+    return documents.order_by('is_paid')
 
 @register.filter
 def get_item(dictionary, key):

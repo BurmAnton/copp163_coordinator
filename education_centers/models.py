@@ -337,6 +337,13 @@ class Group(models.Model):
     end_date = models.DateField("Дата окончания обучения", blank=True, null=True)
     distance_education = models.BooleanField("Дистанционное обучение", default=False)
     mixed_education = models.BooleanField("Смешанное обучение", default=False)
+    PAY_STATUSES = [
+        ('WFB', "Проверка"),
+        ('UPB', "На оплату"),
+        ('PDB', "Оплачен"),
+    ]
+    pay_status = models.CharField(
+        "Статус оплаты", max_length=4, default='WFB', choices=PAY_STATUSES)
     GROUP_STATUS_CHOICES = [
         ('NEW', "Создана"),
         ('SED',"В процессе обучения"),

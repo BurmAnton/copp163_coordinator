@@ -31,7 +31,8 @@ class User(AbstractUser):
         ('CTZ', 'Гражданин'),
         ('CO', 'Представитель ЦО'),
         ('COR', 'Координатор'),
-        ('BLM', 'Участник Абилимпикса')
+        ('BLM', 'Участник Абилимпикса'),
+        ('CNT', 'Бухгалтер')
     )
     role = models.CharField(max_length=3, choices=ROLES, verbose_name='Роль', blank=True, null=True)
 

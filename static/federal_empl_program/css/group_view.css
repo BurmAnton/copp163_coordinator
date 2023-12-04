@@ -1,13 +1,12 @@
-body {
+.body {
   color: #394959;
-  background-color: #F2F2F2;
 }
-body a {
+.body a {
   color: #394959;
   font-weight: 500;
   text-decoration: underline;
 }
-body a:hover {
+.body a:hover {
   color: #2e3c4a;
 }
 
@@ -46,7 +45,6 @@ body a:hover {
   margin-bottom: 5px;
 }
 #group-info table, #applicants-list table, #payment-stats table {
-  border-radius: 10px;
   box-shadow: 1px 0px 5px 2px rgba(0, 0, 0, 0.2);
 }
 #group-info table tbody, #group-info table td, #group-info table tfoot, #group-info table th, #group-info table thead, #group-info table tr, #applicants-list table tbody, #applicants-list table td, #applicants-list table tfoot, #applicants-list table th, #applicants-list table thead, #applicants-list table tr, #payment-stats table tbody, #payment-stats table td, #payment-stats table tfoot, #payment-stats table th, #payment-stats table thead, #payment-stats table tr {
@@ -106,4 +104,6 @@ body a:hover {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 10px;
+  -moz-column-gap: 15px;
+       column-gap: 15px;
 }/*# sourceMappingURL=group_view.css.map */
