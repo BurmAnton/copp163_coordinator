@@ -578,10 +578,10 @@ def group_view(request, group_id):
         return HttpResponseRedirect(reverse(
             'group_view', kwargs={'group_id': group.id}
         ))
-    ed_price = applicants.aggregate(price=Sum('price'))['price']
+    ed_price = applicants.filter(added_to_act=True).aggregate(price=Sum('price'))['price']
     ed_price = ed_price * 0.7
     find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
-    wrk_price = applicants.filter(
+    wrk_price = applicants.filter(added_to_act=True,
         flow_status=find_wrk_status).aggregate(price=Sum('price'))['price']
     if wrk_price == None: wrk_price = 0
     wrk_price = wrk_price * 0.3
