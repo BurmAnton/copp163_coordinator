@@ -2,16 +2,17 @@ import calendar
 import json
 import random
 import string
-import unidecode
 from datetime import date, datetime, timedelta
 from email.mime import application
 
+import unidecode
 from dateutil.relativedelta import relativedelta
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db import IntegrityError
-from django.db.models import Avg, Case, Count, IntegerField, Q, Sum, When
+from django.db.models import (Avg, Case, Count, IntegerField, Q, Sum, Value,
+                              When)
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -32,7 +33,7 @@ from federal_empl_program.models import (Application, CitizenApplication,
 from users.models import User
 
 from . import exports
-from .forms import ImportDataForm, ActDataForm, BillDataForm, ActChangeDataForm
+from .forms import ActChangeDataForm, ActDataForm, BillDataForm, ImportDataForm
 from .utils import get_applications_plot, get_flow_applications_plot
 
 
@@ -74,6 +75,11 @@ def login(request):
         winner = AbilimpicsWinner.objects.filter(email=request.user.email)
         if len(winner) > 0:
             return HttpResponseRedirect(reverse("abilimpics"))
+        if request.user.role == 'CNT':
+            return HttpResponseRedirect(reverse(
+                "groups_list", 
+                kwargs={'year': 2023})
+            )
         if request.user.role == 'CO':
             ed_center_id = request.user.education_centers.first().id
             return HttpResponseRedirect(reverse(
@@ -469,6 +475,49 @@ def quota_request(request):
         'programs': programs
     })
     
+@login_required
+@csrf_exempt
+def groups_list(request, year=2023):
+    project_year = get_object_or_404(ProjectYear, year=year)
+    ed_centers = EducationCenter.objects.exclude(flow_name="")
+    start_date = date(2023, 1, 1)
+    end_date = date(2023, 12, 31)
+    groups = Group.objects.filter(
+        start_date__gte=start_date, end_date__lte=end_date
+    ).exclude(students=None).select_related(
+        'education_program', 'education_program__ed_center'
+    ).prefetch_related('closing_documents').order_by(
+        Case( 
+            When (pay_status="UPB", then=Value(0)),
+            When (pay_status="WFB", then=Value(1)),
+            default = Value(2)
+        ),
+        Case( 
+            When (closing_documents=None, then=Value(1)),
+            default = Value(0)
+        ),
+        'end_date',
+        'education_program__ed_center'
+    ).distinct()
+    if 'pay_bills' in request.POST:
+        for group in groups.exclude(closing_documents=None):
+            for document in group.closing_documents.all():
+                if f'doc_{document.id}' in request.POST:
+                    document.is_paid = True
+                else: document.is_paid = False
+                document.save()
+                if len(group.closing_documents.exclude(bill_file='').filter(is_paid=False)) == 0:
+                    group.pay_status = 'PDB'
+                else:  group.pay_status = 'UPB'
+                group.save()
+                
+    return render(request, 'federal_empl_program/groups_list.html', {
+        'groups': groups,
+        'project_year': project_year,
+        'ed_centers': ed_centers
+    })
+     
+@login_required
 @csrf_exempt
 def group_view(request, group_id):
     group = get_object_or_404(Group, id=group_id)
@@ -495,11 +544,15 @@ def group_view(request, group_id):
             doc.bill_file = request.FILES['bill_file']
             doc.bill_file.name = unidecode.unidecode(doc.bill_file.name)
         doc.save()
+        group.pay_status = 'WFB'
+        group.save()
     elif 'add-bill' in request.POST:
         doc_id = request.POST['doc_id']
         doc = ClosingDocument.objects.get(id=doc_id)
         doc.bill_file = request.FILES['bill_file']
         doc.save()
+        group.pay_status = 'WFB'
+        group.save()
     elif 'change-doc' in request.POST:
         doc_id = request.POST['doc_id']
         doc = ClosingDocument.objects.get(id=doc_id)
@@ -511,11 +564,16 @@ def group_view(request, group_id):
         if 'bill_file' in request.FILES:
             doc.bill_file = request.FILES['bill_file']
             doc.bill_file.name = unidecode.unidecode(doc.bill_file.name)
+        group.pay_status = 'WFB'
+        group.save()
         doc.save()
     elif 'delete-doc' in request.POST:
         doc_id = request.POST['doc_id']
         doc = ClosingDocument.objects.get(id=doc_id)
         doc.delete()
+    elif 'send-bill' in request.POST:
+        group.pay_status = 'UPB'
+        group.save()
     if request.method == 'POST':
         return HttpResponseRedirect(reverse(
             'group_view', kwargs={'group_id': group.id}

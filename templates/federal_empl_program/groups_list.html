@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load fed_extras %}
+
+{% block title %}Список потоков{% endblock %}
+{% block style %}
+    <link href="{% static 'federal_empl_program/css/groups_list.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+<script src="{% static 'federal_empl_program/js/groups_list.js' %}" rel="stylesheet"></script>
+{% endblock %}
+
+{% block body %}
+    <div id="page-hdr">
+        <h1>Мониторинг потоков (учебных групп)</h1>
+        <h3><b>Проект:</b> Содействие занятости</h3>
+    </div>
+    <div id="groups-list">
+        <h2>Список участников ПКО</h2>
+        
+        <div id="control-panel">
+            <div id="filters">
+                <div class="input-group mb-3 table-search">
+                    <input type="text" class="form-control" id="myInput" onkeyup="SearchFunction()" placeholder="Поиск..">
+                </div>
+                <div class="form mb-3">
+                    <select class="selectpicker" title="Выберите управления" multiple data-width="100%" onchange="FilterFunction(1, 'EdCenterFilter')" data-live-search="true" id="EdCenterFilter">
+                        {% for ed_center in ed_centers %}
+                            <option class="project" value="{{ed_center.flow_name}}">{{ed_center.flow_name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <form action="{% url 'groups_list' project_year.year %}" method="post">
+                {% if user.role == 'CNT' %}
+                <button class="btn btn-primary" name="pay_bills">Оплатить</button>
+                {% endif %}
+        </div>
+            <table id="groups-table" class="table">
+                <thead style="background-color: white;" class="sticky-top">
+                    <th scope="col" class="align-col-left">Номер потока</th>
+                    <th scope="col" class="align-col-left">ЦО</th>
+                    <th scope="col">Статус потока</th>
+                    <th scope="col">Период обучения</th>
+                    <th scope="col" class="align-col-left">Акт/Отчёт</th>
+                    <th scope="col" class="align-col-left">Счёт</th>
+                    <th scope="col">Оплачен?</th>
+                </thead>
+                {% for group in groups %}
+                <tr>
+                    <td class="align-col-left" rowspan="{{group.closing_documents.all.count|add:1}}"><a href="{% url 'group_view' group.id %}" target="_blank">
+                            Поток №{{group.flow_id}}
+                    </a></td>
+                    <td class="align-col-left" rowspan="{{group.closing_documents.all.count|add:1}}">{{group.education_program.ed_center.flow_name}}</td>
+                    <td rowspan="{{group.closing_documents.all.count|add:1}}">{{group.get_pay_status_display}}</td>
+                    <td rowspan="{{group.closing_documents.all.count|add:1}}">{{group.start_date|date:"d.m.y"}} - {{group.end_date|date:"d.m.y"}}</td>
+                    {% for document in group.closing_documents.all %}
+                        <tr>
+                            <td class="align-col-left"><a href="{{document.doc_file.url}}" target="_blank">{{document.get_doc_type_display}}</a></td>
+                            <td class="align-col-left" style="display: none;">{{group.education_program.ed_center.flow_name}}</td>
+                            {% if document.bill_file.name != "" %}
+                                <td class="align-col-left"><a href="{{document.bill_file.url}}" target="_blank">Счёт</a></td>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="doc_{{document.id}}" {% if document.is_paid %}checked{% endif %}>
+                                    </div>
+                                </td>
+                                {% else %}
+                                    <td class="align-col-left">-</td>
+                                    <td>-</td>
+                                {% endif %}
+                        </tr>
+                    {% empty %}
+                        <td class="align-col-left">-</td>
+                        <td class="align-col-left">-</td>
+                        <td>-</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </form>
+    </div>
+{% endblock %}
