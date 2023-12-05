@@ -579,7 +579,9 @@ def group_view(request, group_id):
             'group_view', kwargs={'group_id': group.id}
         ))
     ed_price = applicants.filter(added_to_act=True).aggregate(price=Sum('price'))['price']
-    ed_price = ed_price * 0.7
+    if ed_price == None:
+        ed_price = 0
+    else: ed_price = ed_price * 0.7
     find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
     wrk_price = applicants.filter(added_to_act=True,
         flow_status=find_wrk_status).aggregate(price=Sum('price'))['price']
