@@ -101,7 +101,7 @@ def generate_ticket_act(ed_center_year):
     for event in events:
         events_list.append([
             event.profession, 
-            event.event_date, 
+            event.event_date.strftime('%d.%m.%Y'), 
             event.start_time, 
             event.participants_limit, 
             event.photo_link
