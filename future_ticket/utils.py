@@ -101,12 +101,12 @@ def generate_ticket_act(ed_center_year):
     for event in events:
         events_list.append([
             event.profession, 
-            str((event.event_date).strftime('%d.%m.%Y')), 
+            str((event.event_date + timedelta(days=1)).strftime('%d.%m.%Y')), 
             event.start_time, 
             event.participants_limit, 
             event.photo_link
         ])
-
+    
     context = {
         'events': events_list,
         'register_number': register_number,
