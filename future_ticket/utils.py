@@ -106,7 +106,7 @@ def generate_ticket_act(ed_center_year):
             event.participants_limit, 
             event.photo_link
         ])
-    breakpoint()
+
     context = {
         'events': events_list,
         'register_number': register_number,
