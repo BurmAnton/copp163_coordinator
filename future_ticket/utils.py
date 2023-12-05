@@ -1,5 +1,5 @@
 import os
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 from django.db.models import Sum
 from django.db.models.query import QuerySet
@@ -101,10 +101,11 @@ def generate_ticket_act(ed_center_year):
     for event in events:
         events_list.append([
             event.profession, 
-            str((event.event_date + timedelta(days=1)).strftime('%d.%m.%Y')), 
+            str(event.event_date.strftime('%d.%m.%Y')), 
             event.start_time, 
             event.participants_limit, 
-            event.photo_link
+            event.photo_link,
+            event.event_date
         ])
     
     context = {
@@ -124,7 +125,7 @@ def generate_ticket_act(ed_center_year):
     path = f'media/documents/ticket/{ed_center_year.id}/acts/'
     if not os.path.exists(path): os.makedirs(path)
 
-    act_path = f'{path}act_bvb_№{register_number}.docx'
+    act_path = f'{path}act_bvb_№{register_number} ({datetime.now().strftime("%d.%m.%y %H:%M:%S")}).docx'
 
     document.save(act_path)
 
