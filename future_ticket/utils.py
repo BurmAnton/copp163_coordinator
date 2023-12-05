@@ -1,5 +1,5 @@
 import os
-from datetime import date
+from datetime import date, deltatime
 
 from django.db.models import Sum
 from django.db.models.query import QuerySet
@@ -101,7 +101,7 @@ def generate_ticket_act(ed_center_year):
     for event in events:
         events_list.append([
             event.profession, 
-            (event.event_date + datetime(days=1)).strftime('%d.%m.%Y'), 
+            (event.event_date + deltatime(hours=5)).strftime('%d.%m.%Y'), 
             event.start_time, 
             event.participants_limit, 
             event.photo_link
