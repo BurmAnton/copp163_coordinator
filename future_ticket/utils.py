@@ -96,9 +96,18 @@ def generate_ticket_act(ed_center_year):
         ContractorsDocumentTicket, doc_type=contract_type, contractor=ed_center
     )
     register_number = contract.register_number
-
+    
+    events_list = []
+    for event in events:
+        events_list.append([
+            event.profession, 
+            event.event_date, 
+            event.start_time, 
+            event.participants_limit, 
+            event.photo_link
+        ])
     context = {
-        'events': events,
+        'events': events_list,
         'register_number': register_number,
         'ed_center': ed_center,
         'sign_employee': sign_employee,
