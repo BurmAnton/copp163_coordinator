@@ -729,7 +729,7 @@ class TicketEvent(models.Model):
         blank=False,
         null=False
     )
-    event_date = models.DateTimeField(
+    event_date = models.DateField(
         "Дата проведения", blank=False, null=False
     )
     start_time = models.CharField(
