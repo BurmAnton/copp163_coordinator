@@ -202,7 +202,7 @@ def applications_dashboard(request, year=2023):
             education_program__duration=256, appl_status='COMP'),
     })
 
-@cache_page(None, key_prefix="flow")
+#@cache_page(None, key_prefix="flow")
 @csrf_exempt
 def flow_appls_dashboard(request, year=2023):
     project_year = get_object_or_404(ProjectYear, year=year)
@@ -258,11 +258,10 @@ def flow_appls_dashboard(request, year=2023):
         "education_program__duration", "csn_prv_date"
     )
 
-    day_stats = {}
-    today = date.today()
-    day_stats['Новые'] = applications.filter(creation_date=today).count()
-    day_stats['Одобрено ЦЗН'] = applications.filter(csn_prv_date=today).count()
-    day_stats['Начали обучение'] = applications.filter(group__start_date=today).count()
+    #day_stats = {}
+    #day_stats['Новые'] = applications.filter(creation_date=today).count()
+    #day_stats['Одобрено ЦЗН'] = applications.filter(csn_prv_date=today).count()
+    #day_stats['Начали обучение'] = applications.filter(group__start_date=today).count()
     #chart
     if 'change-start-date' in request.POST:
         start_date_p = datetime.strptime(request.POST["date"], "%Y-%m-%d"
@@ -272,13 +271,14 @@ def flow_appls_dashboard(request, year=2023):
         week_now = date.today().isocalendar()[1]
     weeks = []
     weeks_stat = {}
-    weeks_stat['Новые'] = []
-    weeks_stat['Одобрены ЦЗН'] = []
     weeks_stat['Начали обучение'] = []
+    weeks_stat['Завершили обучение'] = []
+    weeks_stat['Трудоустроенны'] = []
     cumulative_weeks_stat = {}
-    cumulative_weeks_stat['Новые'] = []
-    cumulative_weeks_stat['Одобрены ЦЗН'] = []
     cumulative_weeks_stat['Начали обучение'] = []
+    cumulative_weeks_stat['Завершили обучение'] = []
+    cumulative_weeks_stat['Трудоустроенны'] = []
+    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
     for week in range(5, -1, -1):
         week_dates={}
         start_date = f'{year}-{week_now - week}-1'
@@ -292,27 +292,32 @@ def flow_appls_dashboard(request, year=2023):
         else:
             if week_dates['end_date'] > datetime.now():
                 week_dates['end_date'] = datetime.now()
-        weeks_stat['Новые'].append(applications.filter(
-            creation_date__gte=week_dates['start_date'],
-            creation_date__lte=week_dates['end_date']
-        ).count())
-        weeks_stat['Одобрены ЦЗН'].append(applications.filter(
-            csn_prv_date__gte=week_dates['start_date'],
-            csn_prv_date__lte=week_dates['end_date']
-        ).count())
+                
         weeks_stat['Начали обучение'].append(applications.filter(
             group__start_date__gte=week_dates['start_date'],
             group__start_date__lte=week_dates['end_date']
         ).exclude(csn_prv_date=None).count())
-        cumulative_weeks_stat['Новые'].append(applications.filter(
-            creation_date__lte=week_dates['end_date']
+        weeks_stat['Завершили обучение'].append(applications.filter(
+            group__end_date__gte=week_dates['start_date'],
+            group__end_date__lte=week_dates['end_date'],
         ).count())
-        cumulative_weeks_stat['Одобрены ЦЗН'].append(applications.filter(
-            csn_prv_date__lte=week_dates['end_date']
+        weeks_stat['Трудоустроенны'].append(applications.filter(
+            group__end_date__gte=week_dates['start_date'],
+            group__end_date__lte=week_dates['end_date'],
+            flow_status=find_wrk_status
         ).count())
+        
         cumulative_weeks_stat['Начали обучение'].append(applications.filter(
             group__start_date__lte=week_dates['end_date']
         ).exclude(csn_prv_date=None).count())
+        cumulative_weeks_stat['Завершили обучение'].append(applications.filter(
+            group__end_date__lte=week_dates['end_date'],
+        ).count())
+        cumulative_weeks_stat['Трудоустроенны'].append(applications.filter(
+            group__end_date__lte=week_dates['end_date'],
+            flow_status=find_wrk_status
+        ).count())
+        
         weeks.append(f'{week_dates["start_date"].strftime("%d/%m")}-{week_dates["end_date"].strftime("%d/%m")}')
     chart = get_flow_applications_plot(weeks, weeks_stat)
     cumulative_chart = get_flow_applications_plot(weeks, cumulative_weeks_stat)
@@ -322,7 +327,6 @@ def flow_appls_dashboard(request, year=2023):
         'ed_centers': ed_centers_year,
         'chart': chart,
         'cumulative_chart': cumulative_chart,
-        'day_stats': day_stats,
         'applications': applications,
         'appls_stat': appls_stat,
         'prvd_appls_stat': prvd_appls_stat

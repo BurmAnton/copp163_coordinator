@@ -47,8 +47,8 @@ def get_applications_plot(month, applications):
     bar_labels = month
     
 
-    #ax.bar(applications, month, label=bar_labels, color=bar_colors)
-    #addlabels(applications, month)
+    ax.bar(applications, month, label=bar_labels, color=bar_colors)
+    addlabels(applications, month)
     ax.set_ylabel('Количество заявок')
     ax.set_title('')
 
@@ -69,9 +69,9 @@ def get_flow_applications_plot(weeks, weeks_stat):
     fig, ax = plt.subplots(layout='constrained')
     for attribute, measurement in weeks_stat.items():
         offset = width * multiplier
-        if attribute == 'Новые':
+        if attribute == 'Начали обучение':
             color = '#426cf8'
-        elif attribute == 'Одобрены ЦЗН':
+        elif attribute == 'Завершили обучение':
             color = '#02509e'
         else:
             color = '#394959'
@@ -91,9 +91,9 @@ def get_flow_applications_plot(weeks, weeks_stat):
 
     ax.set_ylabel('Заявки')
     ax.set_xticks(x + width, weeks)
-   # ax.legend(loc='upper left', ncols=4)
-    #ax.legend(ncols=4, bbox_to_anchor=(0, 1),
-    #          loc='lower left')
+    ax.legend(loc='upper left', ncols=4)
+    ax.legend(ncols=4, bbox_to_anchor=(0, 1),
+              loc='lower left')
     plt.tight_layout()
     graph = get_graph()
     return graph
