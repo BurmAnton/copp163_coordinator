@@ -141,15 +141,14 @@ def count_quota(ed_centers, duration=None):
 
 @register.filter
 def filter_strt_center_72(applications, ed_center):
-    quota = ed_center['quota_72']
+    #quota = ed_center['quota_72']
     applications_count = applications.filter(
             education_center__id=ed_center['ed_center__id'],
             education_program__duration__lte=72,
             group__start_date__lte=date.today(),
         ).exclude(csn_prv_date=None).count()
-    if quota == 0:
-        return f'{applications_count}/{quota} (0%)'
-    return f'{applications_count}/{quota} ({round(applications_count / quota * 100, 2)}%)'
+    
+    return applications_count
 
 @register.filter
 def filter_chs_center_72(applications, ed_center):
@@ -184,7 +183,21 @@ def filter_strt_center_256(applications, ed_center):
     return applications_count
 
 @register.filter
+def filter_end_center_72(applications, ed_center):
+    quota = ed_center['quota_72']
+    applications_count = applications.filter(
+            education_center__id=ed_center['ed_center__id'],
+            education_program__duration__lte=72,
+            group__end_date__lte=date.today(),
+        ).exclude(csn_prv_date=None).count()
+    
+    if quota == 0:
+        return f'{applications_count}/{quota} (0%)'
+    return f'{applications_count}/{quota} ({round(applications_count / quota * 100, 2)}%)'
+
+@register.filter
 def filter_end_center_144(applications, ed_center):
+    quota = ed_center['quota_144']
     applications_count = applications.filter(
             education_center__id=ed_center['ed_center__id'],
             education_program__duration__gt=72,
@@ -192,17 +205,41 @@ def filter_end_center_144(applications, ed_center):
             group__end_date__lte=date.today(),
         ).exclude(csn_prv_date=None).count()
     
-    return applications_count
+    if quota == 0:
+        return f'{applications_count}/{quota} (0%)'
+    return f'{applications_count}/{quota} ({round(applications_count / quota * 100, 2)}%)'
 
 @register.filter
 def filter_end_center_256(applications, ed_center):
+    quota = ed_center['quota_256']
     applications_count = applications.filter(
             education_center__id=ed_center['ed_center__id'],
             education_program__duration__gte=256,
             group__end_date__lte=date.today(),
         ).exclude(csn_prv_date=None).count()
 
-    return applications_count
+    if quota == 0:
+        return f'{applications_count}/{quota} (0%)'
+    return f'{applications_count}/{quota} ({round(applications_count / quota * 100, 2)}%)'
+
+@register.filter
+def filter_wrk_center_72(applications, ed_center):
+    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+    applications_count = applications.filter(
+            education_center__id=ed_center['ed_center__id'],
+            education_program__duration__lte=72,
+            flow_status=find_wrk_status
+        ).exclude(csn_prv_date=None).count()
+    applications_f_count = applications.filter(
+            education_center__id=ed_center['ed_center__id'],
+            education_program__duration__lte=72,
+            group__end_date__lte=date.today(),
+        ).exclude(csn_prv_date=None).count()
+    
+    if applications_f_count == 0:
+        return f'{applications_count}/{applications_f_count} (0%)'
+    return f'{applications_count}/{applications_f_count} ({round(applications_count / applications_f_count * 100, 2)}%)'
+
 
 @register.filter
 def filter_wrk_center_144(applications, ed_center):
@@ -246,23 +283,48 @@ def filter_wrk_center_256(applications, ed_center):
 
 @register.filter
 def filter_strt_center(applications, ed_center):
-    quota = ed_center['quota_256'] + ed_center['quota_144'] + ed_center['quota_72']
+    #quota = ed_center['quota_256'] + ed_center['quota_144'] + ed_center['quota_72']
     applications_count = applications.filter(
             education_center__id=ed_center['ed_center__id'],
             group__start_date__lte=date.today(),
         ).exclude(csn_prv_date=None).count()
+    return applications_count
+
+@register.filter
+def filter_end_center(applications, ed_center):
+    quota = ed_center['quota_256'] + ed_center['quota_144'] + ed_center['quota_72']
+    applications_count = applications.filter(
+            education_center__id=ed_center['ed_center__id'],
+            group__end_date__lte=date.today(),
+        ).exclude(csn_prv_date=None).count()
     if quota == 0:
         return f'{applications_count}/{quota} (0%)'
-    return f'{applications_count}/{quota} ({round(applications_count / quota * 100, 2)}%)' 
+    return f'{applications_count}/{quota} ({round(applications_count / quota * 100, 2)}%)'
+
+@register.filter
+def filter_wrk_center(applications, ed_center):
+    quota = ed_center['quota_256'] + ed_center['quota_144'] + ed_center['quota_72']
+    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+    applications_count = applications.filter(
+            education_center__id=ed_center['ed_center__id'],
+            flow_status=find_wrk_status,
+        ).exclude(csn_prv_date=None).count()
+    applications_f_count = applications.filter(
+            education_center__id=ed_center['ed_center__id'],
+            group__end_date__lte=date.today(),
+        ).exclude(csn_prv_date=None).count()
+    if applications_f_count == 0:
+        return f'{applications_count}/{applications_f_count} (0%)'
+    return f'{applications_count}/{applications_f_count} ({round(applications_count / applications_f_count * 100, 2)}%)'
 
 @register.filter
 def filter_strt_center_all_72(applications, ed_centers):
-    quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_72'))['quota_sum']
+    #quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_72'))['quota_sum']
     applications_count = applications.filter(
                 education_program__duration__lte=72,
                 group__start_date__lte=date.today(),
             ).exclude(csn_prv_date=None).count()
-    return f'{applications_count}/{quota_sum} ({round(applications_count / quota_sum * 100, 2)}%)'
+    return applications_count
 
 @register.filter
 def filter_chs_center_all_72(applications, ed_centers):
@@ -290,21 +352,46 @@ def filter_strt_center_all_256(applications, ed_centers):
     return applications_count
 
 @register.filter
+def filter_end_center_all_72(applications, ed_centers):
+    quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_72'))['quota_sum']
+    applications_count = applications.filter(
+                education_program__duration__lte=72,
+                group__end_date__lte=date.today(),
+            ).exclude(csn_prv_date=None).count()
+    return f'{applications_count}/{quota_sum} ({round(applications_count / quota_sum * 100, 2)}%)'
+
+@register.filter
 def filter_end_center_all_144(applications, ed_centers):
+    quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_144'))['quota_sum']
     applications_count = applications.filter(
                 education_program__duration__gt=72,
                 education_program__duration__lt=256,
                 group__end_date__lte=date.today(),
             ).exclude(csn_prv_date=None).count()
-    return applications_count
+    return f'{applications_count}/{quota_sum} ({round(applications_count / quota_sum * 100, 2)}%)'
 
 @register.filter
 def filter_end_center_all_256(applications, ed_centers):
+    quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_256'))['quota_sum']
     applications_count = applications.filter(
                 education_program__duration__gte=256,
                 group__end_date__lte=date.today(),
             ).exclude(csn_prv_date=None).count()
-    return applications_count
+    return f'{applications_count}/{quota_sum} ({round(applications_count / quota_sum * 100, 2)}%)'
+
+@register.filter
+def filter_wrk_center_all_72(applications, ed_centers):
+    #quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_144'))['quota_sum']
+    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+    applications_count = applications.filter(
+                education_program__duration__lte=72,
+                flow_status=find_wrk_status,
+            ).exclude(csn_prv_date=None).count()
+    applications_f_count = applications.filter(
+                education_program__duration__lte=72,
+                group__end_date__lte=date.today(),
+            ).exclude(csn_prv_date=None).count()
+    return f'{applications_count}/{applications_f_count} ({round(applications_count / applications_f_count * 100, 2)}%)'
 
 @register.filter
 def filter_wrk_center_all_144(applications, ed_centers):
@@ -338,13 +425,32 @@ def filter_wrk_center_all_256(applications, ed_centers):
 
 @register.filter
 def filter_strt_center_all(applications, ed_centers):
+    applications_count = applications.filter(
+                group__start_date__lte=date.today(),
+            ).exclude(csn_prv_date=None).count()
+    return applications_count
+
+@register.filter
+def filter_end_center_all(applications, ed_centers):
     quota_sum = ed_centers.aggregate(quota_sum=Sum(
                 F('quota_72') + F('quota_144') + F('quota_256')
             ))['quota_sum']
     applications_count = applications.filter(
-                group__start_date__lte=date.today(),
+                group__end_date__lte=date.today(),
             ).exclude(csn_prv_date=None).count()
     return f'{applications_count}/{quota_sum} ({round(applications_count / quota_sum * 100, 2)}%)'
+
+@register.filter
+def filter_wrk_center_all(applications, ed_centers):
+    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+    applications_f_count = applications.filter(
+        group__end_date__lte=date.today(),
+    ).exclude(csn_prv_date=None).count()
+    applications_count = applications.filter(
+        flow_status=find_wrk_status,
+        group__start_date__lte=date.today(),
+    ).exclude(csn_prv_date=None).count()
+    return f'{applications_count}/{applications_f_count} ({round(applications_count / applications_f_count * 100, 2)}%)'
 
 @register.filter
 def filter_appl(applications, duration=None):
