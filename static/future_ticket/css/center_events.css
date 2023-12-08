@@ -51,7 +51,7 @@ body .quotas-list .table-hdr form {
   grid-column: 3;
   justify-self: right;
 }
-body .quotas-list .table-hdr .upload-act-form, body .quotas-list .table-hdr .upload-bill-form {
+body .quotas-list .table-hdr .upload-act-form, body .quotas-list .table-hdr .upload-bill-form, body .quotas-list .table-hdr .upload-ndc-bill-form {
   width: 100%;
   display: flex;
   align-items: baseline;
@@ -59,7 +59,12 @@ body .quotas-list .table-hdr .upload-act-form, body .quotas-list .table-hdr .upl
   grid-column-end: 3;
   gap: 10px;
 }
-body .quotas-list .table-hdr .upload-act-form .btn, body .quotas-list .table-hdr .upload-bill-form .btn {
+body .quotas-list .table-hdr .upload-act-form .btn, body .quotas-list .table-hdr .upload-bill-form .btn, body .quotas-list .table-hdr .upload-ndc-bill-form .btn {
+  width: 240px;
+}
+body .quotas-list .table-hdr .ndc-bill-link {
+  grid-row: 1;
+  margin-bottom: 5px;
   width: 240px;
 }
 body .quotas-list .table-hdr .act-link {

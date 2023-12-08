@@ -56,7 +56,7 @@
                                                     <li><a class="dropdown-item" href="{% url 'applications' %}?p=zen">Мониторинг заявок</a></li>
                                                     <li><a class="dropdown-item" href="{% url 'flow_appls_dashboard' 2023 %}">Дашборд заявок flow</a></li>
                                                 {% endif %}
-                                                {% if request.user.is_superuser or  request.user.role == 'CNT' %}
+                                                {% if request.user.is_superuser or request.user.role == 'CNT' %}
                                                     <li><a class="dropdown-item" href="{% url 'groups_list' 2023 %}">Мониторинг потоков</a></li>
                                                 {% endif %}
                                             </ul>
@@ -67,8 +67,11 @@
                                                     ФП «Билет в будущее»
                                                 </a>
                                                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                                        {% if request.user.is_superuser %}
+                                                        {% if request.user.is_superuser or request.user.role == 'CNT' %}
                                                             <li><a class="dropdown-item" href="{% url 'applications' %}?p=bilet">Мониторинг заявок</a></li>
+                                                        {%endif%}
+                                                        {% if request.user.is_superuser %}
+                                                            
                                                             <li><a class="dropdown-item" href="{% url 'quotas' %}?p=bilet">Управление квотой</a></li>
                                                             <li><a class="dropdown-item" href="{% url 'schools_applications' %}">Ответственные от школ</a></li>
                                                         {% endif %}

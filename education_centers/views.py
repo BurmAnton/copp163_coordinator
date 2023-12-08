@@ -138,6 +138,15 @@ def applications(request):
             if len(chosen_stages) != 0:
                 centers_project_year = centers_project_year.filter(
                     stage__in=chosen_stages)
+        elif 'centers_paid' in request.POST:
+            for center in centers_project_year.filter(stage='PNVC'):
+                if f'center_{center.id}' in request.POST:
+                    center.stage = 'NVCP'
+                center.save()
+            for center in centers_project_year.filter(stage='NVCP'):
+                if f'center_{center.id}' not in request.POST:
+                    center.stage = 'PNVC'
+                center.save()
         else:
             data = json.loads(request.body.decode("utf-8"))
             stage = data['stage']
@@ -145,13 +154,16 @@ def applications(request):
             project = data['project']
             for center_id in centers_list:
                 if project == 'bilet':
-                    center_year = get_object_or_404(EducationCenterTicketProjectYear, id=center_id)
+                    center_year = get_object_or_404(
+                        EducationCenterTicketProjectYear, id=center_id)
                 else:
-                    center_year = get_object_or_404(EducationCenterProjectYear, id=center_id)
+                    center_year = get_object_or_404(
+                        EducationCenterProjectYear, id=center_id)
                 center_year.stage = stage
                 center_year.save()
 
-            return JsonResponse({"message": "Centers stage changed successfully."}, status=201)
+            return JsonResponse(
+                {"message": "Centers stage changed successfully."}, status=201)
 
     return render(request, "education_centers/applications.html", {
         'project': project,

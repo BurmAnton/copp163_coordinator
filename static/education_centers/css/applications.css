@@ -28,7 +28,10 @@ body .page-hdr h3 {
   grid-row: 2;
   grid-column: 2;
 }
-body .centers-list {
+body .pay-stats table {
+  text-align: center;
+}
+body .centers-list, body .pay-stats {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -41,10 +44,10 @@ body .centers-list {
   box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
   padding: 25px 50px 25px 50px;
 }
-body .centers-list h2 {
+body .centers-list h2, body .pay-stats h2 {
   text-align: center;
 }
-body .centers-list .stats {
+body .centers-list .stats, body .pay-stats .stats {
   display: flex;
   justify-content: center;
   -moz-column-gap: 25px;
@@ -52,7 +55,7 @@ body .centers-list .stats {
   margin-top: 15px;
   margin-bottom: 25px;
 }
-body .centers-list .stats .stat {
+body .centers-list .stats .stat, body .pay-stats .stats .stat {
   width: 285px;
   height: -moz-min-content;
   height: min-content;
@@ -62,10 +65,10 @@ body .centers-list .stats .stat {
   text-align: center;
   border-radius: 5px;
 }
-body .centers-list .stats h5 {
+body .centers-list .stats h5, body .pay-stats .stats h5 {
   font-weight: 400;
 }
-body .centers-list table th {
+body .centers-list table th, body .pay-stats table th {
   color: #394959;
   font-weight: 400 !important;
   font-size: 16px;
@@ -73,49 +76,49 @@ body .centers-list table th {
   border-top: 0;
   border-bottom: 2px solid #394959;
 }
-body .centers-list table .sticky-top {
+body .centers-list table .sticky-top, body .pay-stats table .sticky-top {
   z-index: 100 !important;
 }
-body .centers-list table td {
+body .centers-list table td, body .pay-stats table td {
   color: #394959;
   font-weight: 300 !important;
   max-width: 250px;
   word-wrap: break-word;
 }
-body .centers-list table .selected-row {
+body .centers-list table .selected-row, body .pay-stats table .selected-row {
   background-color: rgba(242, 242, 242, 0.5411764706);
 }
-body .centers-list table .selected-all-row {
+body .centers-list table .selected-all-row, body .pay-stats table .selected-all-row {
   background-color: #f2f2f2 !important;
 }
-body .centers-list .filter form {
+body .centers-list .filter form, body .pay-stats .filter form {
   display: flex;
   align-items: flex-start;
   gap: 10px;
 }
-body .centers-list .filter form .dropdown-toggle {
+body .centers-list .filter form .dropdown-toggle, body .pay-stats .filter form .dropdown-toggle {
   width: 350px;
 }
-body .centers-list .filter form button {
+body .centers-list .filter form button, body .pay-stats .filter form button {
   width: 130px;
 }
-body .centers-list .action-panel {
+body .centers-list .action-panel, body .pay-stats .action-panel {
   margin-top: 15px;
   margin-bottom: 15px;
   display: flex;
   align-items: flex-end;
   gap: 10px;
 }
-body .centers-list .action-panel .filter-selectpicker {
+body .centers-list .action-panel .filter-selectpicker, body .pay-stats .action-panel .filter-selectpicker {
   margin-bottom: 0rem !important;
 }
-body .centers-list .action-panel .dropdown-toggle {
+body .centers-list .action-panel .dropdown-toggle, body .pay-stats .action-panel .dropdown-toggle {
   width: 350px;
 }
-body .centers-list .action-panel button {
+body .centers-list .action-panel button, body .pay-stats .action-panel button {
   width: 130px;
 }
-body .centers-list .action-panel .row-count {
+body .centers-list .action-panel .row-count, body .pay-stats .action-panel .row-count {
   font-size: 16px;
   font-weight: 300;
 }/*# sourceMappingURL=applications.css.map */

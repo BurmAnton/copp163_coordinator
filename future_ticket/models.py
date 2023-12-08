@@ -296,6 +296,12 @@ class EducationCenterTicketProjectYear(models.Model):
         blank=True,
         upload_to=doc_dir_path
     )
+    ndc_bill_file = models.FileField(
+        "Счёт-фактура",
+        null=True, 
+        blank=True,
+        upload_to=doc_dir_path
+    )
 
     def __str__(self):
         return  f'{self.ed_center} ({self.project_year.year} г.)'
