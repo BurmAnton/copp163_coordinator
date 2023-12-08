@@ -83,19 +83,6 @@
     {% endif %}
     <div class="centers-list">
         <h2>Список участников ПКО</h2>
-        {% if project == 'bilet' %}
-            <div class="stats">
-                <div class="stat">
-                    <h5>Квотировано участников:<br>{{activated_students}} человек</h5>
-                </div>
-                <div class="stat">
-                    <h5>Квотирована сумма:<br>{{activated_sum}} руб.</h5>
-                </div>
-                <div class="stat">
-                    <h5>Оплачено на сумму:<br>{{paid_sum}} руб.</h5>
-                </div>
-            </div>
-        {% endif %}
         <div class="filter" style="display: flex; justify-content: space-between;">
             <div>
             <form action="{% url 'applications' %}" method="post">

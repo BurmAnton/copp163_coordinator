@@ -62,67 +62,11 @@ def applications(request):
     if 'bilet' in request.POST: project = 'bilet'
     if project_year != '': project_year = int(project_year)
     else: project_year = datetime.now().year
-    activated_students = 0
-    activated_sum = 0
-    paid_sum = 0
     if project == 'bilet':
         project_year = get_object_or_404(TicketProjectYear, year=project_year)
         centers_project_year = EducationCenterTicketProjectYear.objects.filter(
             project_year=project_year,).select_related('ed_center')
         stages = EducationCenterTicketProjectYear.STAGES
-        activated_centers_years = EducationCenterTicketProjectYear.objects.filter(
-            stage__in=('ACT', 'ACTS', 'NVC', 'PNVC', 'NVCP')
-        )
-        activated_centers = EducationCenter.objects.filter(
-            ticket_project_years__in=activated_centers_years,
-        ).distinct()
-        if len(activated_centers) != 0:
-            activated_students = TicketQuota.objects.filter(
-                ed_center__in=activated_centers).aggregate(
-                quota_count=Sum('completed_quota'))['quota_count']
-            activated_centers_year_w_ndc = activated_centers_years.filter(
-                is_ndc=True)
-            if len(activated_centers_year_w_ndc) != 0:
-                activated_centers_w_ndc = EducationCenter.objects.filter(
-                    ticket_project_years__in=activated_centers_year_w_ndc,
-                ).distinct()
-                
-                activated_sum_w_ndc = TicketQuota.objects.filter(
-                ed_center__in=activated_centers_w_ndc).aggregate(
-                quota_count=Sum('completed_quota'))['quota_count'] * 1300
-            else: activated_sum_w_ndc = 0
-            activated_centers_year_wo_ndc = activated_centers_years.filter(
-                    is_ndc=False)
-            if len(activated_centers_year_wo_ndc) != 0:
-                activated_centers_wo_ndc = EducationCenter.objects.filter(
-                    ticket_project_years__in=activated_centers_year_wo_ndc,
-                ).distinct()
-                activated_sum_wo_ndc = TicketQuota.objects.filter(
-                    ed_center__in=activated_centers_wo_ndc).aggregate(
-                    quota_count=Sum('completed_quota'))['quota_count'] * 1083.33
-            else: activated_sum_wo_ndc = 0
-            activated_sum = activated_sum_w_ndc + activated_sum_wo_ndc
-            paid_centers_year_wo_ndc = activated_centers_year_wo_ndc.filter(stage='NVCP')
-            paid_centers_year_w_ndc = activated_centers_year_w_ndc.filter(stage='NVCP')
-            if len(paid_centers_year_w_ndc) != 0:
-                paid_centers_w_ndc = EducationCenter.objects.filter(
-                    ticket_project_years__in=activated_centers_year_w_ndc,
-                ).distinct()
-                
-                paid_sum_w_ndc = TicketQuota.objects.filter(
-                ed_center__in=paid_centers_w_ndc).aggregate(
-                quota_count=Sum('completed_quota'))['quota_count'] * 1300
-            else: paid_sum_w_ndc = 0
-            if len(paid_centers_year_wo_ndc) != 0:
-                paid_centers_wo_ndc = EducationCenter.objects.filter(
-                    ticket_project_years__in=activated_centers_year_wo_ndc,
-                ).distinct()
-                
-                paid_sum_wo_ndc = TicketQuota.objects.filter(
-                ed_center__in=paid_centers_wo_ndc).aggregate(
-                quota_count=Sum('completed_quota'))['quota_count'] * 1083.33
-            else: paid_sum_wo_ndc = 0
-            paid_sum = paid_sum_w_ndc + paid_sum_wo_ndc
     else:
         project_year = get_object_or_404(ProjectYear, year=project_year)
         centers_project_year = EducationCenterProjectYear.objects.filter(
@@ -171,9 +115,6 @@ def applications(request):
         'centers_project_year': centers_project_year,
         'stages': stages,
         'chosen_stages': chosen_stages,
-        'activated_students': activated_students,
-        'activated_sum': activated_sum,
-        'paid_sum': paid_sum
     })
 
 @csrf_exempt
