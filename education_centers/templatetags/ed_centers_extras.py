@@ -1,13 +1,91 @@
 from django import template
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import stringfilter
+from django.db.models import Sum
 
-from education_centers.models import ContractorsDocument, DocumentType
+from education_centers.models import ContractorsDocument, DocumentType, EducationCenter
 from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndicator
 from future_ticket.models import ContractorsDocumentTicket,\
-        DocumentTypeTicket, EducationCenterTicketProjectYear
+        DocumentTypeTicket, EducationCenterTicketProjectYear, TicketQuota
 
 register = template.Library()
+
+@register.filter
+def count_people(ndc_type, pay_status):
+    centers = EducationCenterTicketProjectYear.objects.all()
+    if ndc_type == "NDC":
+        centers = centers.filter(is_ndc=True)
+    elif ndc_type == "NNDC":
+        centers = centers.filter(is_ndc=False)
+    
+    if pay_status == "quoted":
+        centers = centers.filter(stage__in=('ACT', 'ACTS', 'NVC', 'PNVC'))
+    elif pay_status == "paid":
+        centers = centers.filter(stage="NVCP")
+    
+    centers = EducationCenter.objects.filter(
+            ticket_project_years__in=centers,
+        ).distinct()
+    people_count = TicketQuota.objects.filter(
+        ed_center__in=centers).aggregate(
+        quota_count=Sum('completed_quota'))['quota_count']
+    if people_count == None:
+        return 0
+    return people_count
+
+@register.filter
+def count_pay_wo_ndc(ndc_type, pay_status):
+    people_count = count_people(ndc_type, pay_status)
+    if people_count == 0:
+        return "0.00 ₽"
+    pay_wo_ndc = people_count * 1083.33
+    return "{:,.2f} ₽".format(pay_wo_ndc).replace(',', ' ')
+
+@register.filter
+def count_ndc(ndc_type, pay_status):
+    people_count = count_people(ndc_type, pay_status)
+    if people_count == 0:
+        return "0.00 ₽"
+    full_amount = people_count * 1300
+    ndc = round((full_amount / 1.2 - full_amount) * -1, 2)
+    return "{:,.2f} ₽".format(ndc).replace(',', ' ')
+
+@register.filter
+def count_full_price(ndc_type, pay_status):
+    people_count = count_people(ndc_type, pay_status)
+    if people_count == 0:
+        return "0.00 ₽"
+    if ndc_type == "NNDC":
+        full_amount = people_count * 1083.33
+    elif ndc_type == "NDC":
+        full_amount = people_count * 1300
+    else:
+        people_count_w_ndc = count_people("NDC", pay_status)
+        full_amount_w_ndc = people_count_w_ndc * 1300
+        people_count_wo_ndc = count_people("NNDC", pay_status)
+        full_amount_wo_ndc = people_count_wo_ndc * 1083.33
+        full_amount = full_amount_w_ndc + full_amount_wo_ndc
+    return "{:,.2f} ₽".format(full_amount).replace(',', ' ')
+        
+@register.filter
+def ndc_sum(center):
+    ed_center = center.ed_center
+    quota = TicketQuota.objects.filter(ed_center=ed_center).aggregate(
+        quota_count=Sum('completed_quota'))['quota_count']
+    full_amount = quota * 1300
+    ndc = round((full_amount / 1.2 - full_amount) * -1, 2)
+    if quota is None or quota == 0:
+        return "-"
+    return "{:,.2f} ₽".format(ndc).replace(',', ' ')
+
+@register.filter
+def act_sum(center):
+    ed_center = center.ed_center
+    quota = TicketQuota.objects.filter(ed_center=ed_center).aggregate(
+        quota_count=Sum('completed_quota'))['quota_count']
+    if quota is None or quota == 0:
+        return "-"
+    return "{:,.2f} ₽".format(quota * 1083.33).replace(',', ' ')
 
 @register.filter
 def get_act(center):

@@ -398,8 +398,22 @@ def center_events(request, ed_center_id):
             if form.is_valid():
                 center_year.bill_file = request.FILES['import_file']
                 if bool(center_year.act_file) and\
-                    bool(center_year.bill_file):
-                    center_year.stage = 'NVC'
+                bool(center_year.bill_file):
+                    if center_year.is_ndc == False:
+                        center_year.stage = 'NVC'
+                    elif bool(center_year.ndc_bill_file):
+                        center_year.stage = 'NVC'
+                center_year.save()
+        elif 'upload-ndc-bill'in request.POST:
+            form = ImportDocumentForm(request.POST, request.FILES)
+            if form.is_valid():
+                center_year.ndc_bill_file = request.FILES['import_file']
+                if bool(center_year.act_file) and\
+                bool(center_year.bill_file):
+                    if center_year.is_ndc == False:
+                        center_year.stage = 'NVC'
+                    elif bool(center_year.ndc_bill_file):
+                        center_year.stage = 'NVC'
                 center_year.save()
         elif 'upload-act' in request.POST:
             form = ImportDocumentForm(request.POST, request.FILES)

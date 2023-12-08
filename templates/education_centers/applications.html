@@ -26,6 +26,61 @@
             {% endif %}
         </h3>
     </div>
+    {% if project == 'bilet' %}
+    <div class="pay-stats">
+        <h2>Данные по оплате</h2>
+        <table class="table">
+            <tr>
+                <th scope="col" rowspan="2"></th>
+                <th scope="col" colspan="4" style="border: 0">Квотировано</th>
+                <th scope="col" colspan="4" style="border: 0">Оплачено</th>
+            </tr>
+            <tr>
+                <th scope="col">Человек</th>
+                <th scope="col">Сумма без НДС</th>
+                <th scope="col">НДС</th>
+                <th scope="col">Всего</th>
+                <th scope="col">Человек</th>
+                <th scope="col">Сумма без НДС</th>
+                <th scope="col">НДС</th>
+                <th scope="col">Всего</th>
+            </tr>
+            <tr>
+                <td scope="row">ЦО с НДС</td>
+                <td scope="row">{{"NDC"|count_people:"quoted"}}</td>
+                <td scope="row">{{"NDC"|count_pay_wo_ndc:"quoted"}}</td>
+                <td scope="row">{{"NDC"|count_ndc:"quoted"}}</td>
+                <td scope="row">{{"NDC"|count_full_price:"quoted"}}</td>
+                <td scope="row">{{"NDC"|count_people:"paid"}}</td>
+                <td scope="row">{{"NDC"|count_pay_wo_ndc:"paid"}}</td>
+                <td scope="row">{{"NDC"|count_ndc:"paid"}}</td>
+                <td scope="row">{{"NDC"|count_full_price:"paid"}}</td>
+            </tr>
+            <tr>
+                <td scope="row">ЦО без НДС</td>
+                <td scope="row">{{"NNDC"|count_people:"quoted"}}</td>
+                <td scope="row">{{"NNDC"|count_pay_wo_ndc:"quoted"}}</td>
+                <td scope="row">{{"NNDC"|count_ndc:"quoted"}}<br><span style="font-size:12px">(остаётся у нас для уплаты НДС)</span></td>
+                <td scope="row">{{"NNDC"|count_full_price:"quoted"}}</td>
+                <td scope="row">{{"NNDC"|count_people:"paid"}}</td>
+                <td scope="row">{{"NNDC"|count_pay_wo_ndc:"paid"}}</td>
+                <td scope="row">{{"NNDC"|count_ndc:"paid"}}<br><span style="font-size:12px">(остаётся у нас для уплаты НДС)</span></td>
+                <td scope="row">{{"NNDC"|count_full_price:"paid"}}</td>
+            </tr>
+            <tr>
+                <td scope="row">Всего</td>
+                <td scope="row">{{"ALL"|count_people:"quoted"}}</td>
+                <td scope="row">{{"ALL"|count_pay_wo_ndc:"quoted"}}</td>
+                <td scope="row">{{"ALL"|count_ndc:"quoted"}}</td>
+                <td scope="row">{{"ALL"|count_full_price:"quoted"}}</td>
+                <td scope="row">{{"ALL"|count_people:"paid"}}</td>
+                <td scope="row">{{"ALL"|count_pay_wo_ndc:"paid"}}</td>
+                <td scope="row">{{"ALL"|count_ndc:"paid"}}</td>
+                <td scope="row">{{"ALL"|count_full_price:"paid"}}</td>
+            </tr>
+        </table>
+    </div>
+    {% endif %}
     <div class="centers-list">
         <h2>Список участников ПКО</h2>
         {% if project == 'bilet' %}
@@ -41,7 +96,8 @@
                 </div>
             </div>
         {% endif %}
-        <div class="filter">
+        <div class="filter" style="display: flex; justify-content: space-between;">
+            <div>
             <form action="{% url 'applications' %}" method="post">
                 {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
                 <div class="form-floating mb-3 filter-selectpicker">
@@ -58,17 +114,23 @@
                 <button type="submit" class="btn btn-outline-primary" name="filter-events">Фильтровать</button>
             </form>
             {% if user.is_superuser %}
-            <div class="action-panel">
-                <div class="form-floating mb-3 filter-selectpicker">
-                    <select class="selectpicker" data-width="100%" data-live-search="true" title="Сменить статус" id="stage-select">
-                        {% for stage in stages %}
-                        <option value="{{stage.0}}">{{stage.1}}</option>
-                        {% endfor %}
-                    </select>
+                <div class="action-panel">
+                    <div class="form-floating mb-3 filter-selectpicker">
+                        <select class="selectpicker" data-width="100%" data-live-search="true" title="Сменить статус" id="stage-select">
+                            {% for stage in stages %}
+                            <option value="{{stage.0}}">{{stage.1}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="change-status-btn">Изменить</button>
+                    <div class="row-count">Выбрано <span class="selected-row-count">0</span> из {{centers_project_year.count}}</div>
                 </div>
-                <button type="submit" class="btn btn-primary" id="change-status-btn">Изменить</button>
-                <div class="row-count">Выбрано <span class="selected-row-count">0</span> из {{centers_project_year.count}}</div>
+            {% endif %}
             </div>
+        <form action="{% url 'applications' %}"  method="post">
+            <input type="text" name="bilet" style="display:none">
+            {% if user.role == 'CNT' %}
+            <button class="btn btn-primary" name="centers_paid">Оплатить</button>
             {% endif %}
         </div>
         <table class="table">
@@ -84,10 +146,14 @@
                 {% endif %}
                 <th scope="col">ЦО</th>
                 <th scope="col">Статус</th>
-                {% if project == 'bilet' and user.is_superuser %}
+                {% if project == 'bilet' and user.is_superuser or request.user.role == 'CNT' %}
+                    <th scope="col">Упр. квотой</th>
                     <th scope="col">Акт</th>
                     <th scope="col">Счёт</th>
-                    <th scope="col">Ссылка на упр. квотой</th>
+                    <th scope="col">Счёт-фактура</th>
+                    <th scope="col">Сумма без НДС</th>
+                    <th scope="col">НДС</th>
+                    <th scope="col">Оплачен?</th>
                 {% endif %}
             </tr>
             {%for center in centers_project_year %}
@@ -102,7 +168,7 @@
                         <td scope="row">{{ forloop.counter }}</td>
                     {% endif %}
                     <td scope="row">
-                        {% if user.is_superuser %}
+                        {% if user.is_superuser or request.user.role == 'CNT' %}
                         <a href="{% url 'ed_center_application' center.ed_center.id %}?p={{project}}" target="_blank">
                             {{ center.ed_center.short_name }}
                             {% if center.ed_center.short_name == "" %}{{center.ed_center.name}}{% endif %}
@@ -113,7 +179,12 @@
                        {% endif %}
                     </td>
                     <td scope="row">{{ center.get_stage_display }}</td>
-                    {% if project == 'bilet' and user.is_superuser %}
+                    {% if project == 'bilet' and user.is_superuser or request.user.role == 'CNT' %}
+                    <td scope="row">
+                        <a href="{% url 'ticket_center_events' center.ed_center.id %}" target="_blank">
+                            Ссылка
+                        </a>  
+                    </td>
                     <td scope="row">
                         {% if center.stage == 'ACT' or center.stage == 'ACTS' %}
                             <a href="{{ center|get_act }}" target="_blank">Акт</a>
@@ -131,13 +202,33 @@
                         {% endif %}
                     </td>
                     <td scope="row">
-                        <a href="{% url 'ticket_center_events' center.ed_center.id %}" target="_blank">
-                            Ссылка
-                        </a>  
+                        {% if center.is_ndc and center.ndc_bill_file.url != None %}
+                            <a href="{{center.ndc_bill_file.url}}" target="_blank">Счёт-фактура</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{center|act_sum}}</td>
+                    <td>
+                        {% if center.is_ndc %}
+                            {{center|ndc_sum}}
+                        {% else %}
+                            {{center.none_ndc_reason}}
+                        {% endif %}
+                    </td>
+                    <td style="text-align:center">
+                        {% if center.stage == 'PNVC' or center.stage == "NVCP"  %}
+                            <div class="form-check" style="display: flex; justify-content:center;">
+                                <input class="form-check-input" type="checkbox" name="center_{{center.id}}" {% if center.stage == "NVCP" %}checked{% endif %}>
+                            </div>
+                        {% else %}
+                            -
+                        {% endif %}
                     </td>
                 {% endif %}
                 </tr>
             {% endfor %}
         </table>
+    </form>
     </div>
 {% endblock %}

@@ -442,8 +442,25 @@
                             {{ form.import_file }}
                         </div>
                         <input type="submit" class="btn btn-primary" name="upload-bill" value="Загрузить счёт">
+                    </form>  
+                {% endif %}
+                
+                
+                {% if center_year.is_ndc and center_year.ndc_bill_file.url != None %}
+                    <form class="upload-ndc-bill-form" action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            {% csrf_token %}a
+                            {{ form.non_field_errors }} 
+                            {{ form.import_file.errors }}
+                            {{ form.import_file }}
+                        </div>
+                        <input type="submit" class="btn btn-primary" name="upload-ndc-bill" value="Загрузить счёт-фактуру">
                     </form>
                 {% endif %}
+                {% if center_year.ndc_bill_file.url != None %}
+                    <a class="ndc-bill-link btn btn-primary" href="{{center_year.ndc_bill_file.url}}">Скачать счёт-фактуру</a>
+                {% endif %}
+                
             {% elif center_year.stage == 'NVC' or center_year.stage == 'PNVC' or center_year.stage == 'NVCP' %}
                 <div class="alert alert-success w-90" role="alert">
                     Документы полученны, после проверки, мы оплатим счёт и уведомим Вас.
@@ -466,6 +483,7 @@
                     </div>
                 {% endif %}
             {% endif %}
+            
         </div>
         <table class="table quotas-table">
             <tr class="">
