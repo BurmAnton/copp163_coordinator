@@ -52,6 +52,11 @@
                             {{ bill_form.bill_file.help_text }}
                             {{ bill_form.bill_file.errors }}
                             {{ bill_form.bill_file }}
+                        </div>  
+                                           
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="bill_id" id="bill_id" {% if document.bill_id is not None %}value="{{document.bill_id}}"{% endif %} placeholder="Номер счёта">
+                            <label class="form-check-label first-step" for="bill_id">Номер счёта</label>  
                         </div>
                     </div>
                     <div class="modal-footer" style="display: flex;flex-direction: row-reverse;justify-content: space-between;">
@@ -103,6 +108,10 @@
                             {{ bill_form.bill_file.errors }}
                             {{ bill_form.bill_file }}
                         </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="bill_id" id="bill_id" value="{{document.bill_id}}" placeholder="Номер счёта">
+                            <label class="form-check-label first-step" for="bill_id">Номер счёта</label>  
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <div class="d-grid gap-2">
@@ -130,11 +139,21 @@
             <p><b>Статус:</b> {{group.get_pay_status_display}}</p>
             <p><b>Начало обучения:</b> {{group.start_date}}</p>
             <p><b>Конец обучения:</b> {{group.end_date}}</p>
+            {% if group.group_link is not None%} <p><b><a href="{{group.group_link}}" target="_blank" rel="noopener noreferrer">Цифровой след</a></b></p>{% endif %}
         </div>
         <div>
             <p><b>Вид программы:</b> {{group.education_program.get_program_type_display}}</p>
             <p><b>Длительность программы:</b> {{group.education_program.duration}} ч.</p>
+            
         </div>
+    </div>
+    <div style="width: 85%; margin: auto;">
+        <form action="{% url 'group_view' group.id %}" method="post" style="display: flex; gap: 15px; align-items: flex-start;">
+            <div class="mb-3">
+                <input type="input" class="form-control" name="group_link" id="group_link" placeholder="Цифровой след" required>
+            </div>
+            <input type="submit" class="btn btn-primary" name="add-group-link" value="Сохранить">
+        </form>
     </div>
     <div id="applicants-list">
         <form style="width:100%" action="{% url 'group_view' group.id %}" method="post">
@@ -186,6 +205,7 @@
                 <th style="border-top-left-radius: 10px; text-align:left;padding-left:60px">Акт/Отчёт о занятости</th>
                 <th>Оплачен</th>
                 <th>Сумма</th>
+                <th>Номер счёта</th>
                 <th style="border-top-right-radius: 10px;">Счёт</th>
             </thead>
                 {% for document in documents %}
@@ -204,6 +224,7 @@
                             </div>
                         </td>
                         <td scope="row">{{document.bill_sum|money_format}}</td>
+                        <td>{% if document.bill_id is not None%}{{document.bill_id}}{% endif %}</td>
                         <td scope="row">
                             {% if document.bill_file.name == "" %}
                                 <form action="{% url 'group_view' group.id %}" method="post" enctype="multipart/form-data" style="display: flex;align-items: flex-start; justify-content:center;gap:10px;">
@@ -226,5 +247,14 @@
                     <tr><td scope="row" colspan="4">Нет документов</td></tr>
                 {% endfor %}
         </table>
+    </div>
+    <div style="width: 85%; margin: auto; margin-bottom: 25px;">
+        <h5>Комментарий</h5>
+        <form class="comment-form" action="{% url 'group_view' group.id %}" method="post">
+            <div class="mb-3">
+                <textarea class="form-control" name="group_commentary" rows="3">{% if group.group_commentary != None %}{{group.group_commentary}}{% endif %}</textarea>
+            </div>
+            <div class="submit" style="display: flex; justify-content: flex-end;"><button class="btn btn-primary" name="group-comment">Сохранить</button></div>
+        </form>
     </div>
 {% endblock %}

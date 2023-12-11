@@ -137,7 +137,7 @@ def applications_dashboard(request, year=2023):
     
     start_month = 3
     end_month = 12
-    monthly_applications = dict()
+    monthly_applications = {}
     monthly_applications['Подали заявку'] = []
     monthly_applications['Завершили обучение'] = []
     months = []
@@ -270,29 +270,28 @@ def flow_appls_dashboard(request, year=2023):
     else:
         week_now = date.today().isocalendar()[1]
     weeks = []
-    weeks_stat = {}
-    weeks_stat['Начали обучение'] = []
-    weeks_stat['Завершили обучение'] = []
-    weeks_stat['Трудоустроенны'] = []
-    cumulative_weeks_stat = {}
-    cumulative_weeks_stat['Начали обучение'] = []
-    cumulative_weeks_stat['Завершили обучение'] = []
-    cumulative_weeks_stat['Трудоустроенны'] = []
+    weeks_stat = {
+        'Начали обучение': [],
+        'Завершили обучение': [],
+        'Трудоустроенны': [],
+    }
+    cumulative_weeks_stat = {
+        'Начали обучение': [],
+        'Завершили обучение': [],
+        'Трудоустроенны': [],
+    }
     find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
     for week in range(5, -1, -1):
-        week_dates={}
         start_date = f'{year}-{week_now - week}-1'
         end_date = f'{year}-{week_now - week}-6'
-        week_dates['start_date'] = datetime.strptime(start_date, '%Y-%U-%w')
+        week_dates = {'start_date': datetime.strptime(start_date, '%Y-%U-%w')}
         week_dates['end_date'] = datetime.strptime(end_date, '%Y-%U-%w')\
                                 + timedelta(1)
         if 'change-start-date' in request.POST:
-            if week_dates['end_date'] > start_date_p:
-                week_dates['end_date'] = start_date_p
-        else:
-            if week_dates['end_date'] > datetime.now():
-                week_dates['end_date'] = datetime.now()
-                
+            week_dates['end_date'] = min(week_dates['end_date'], start_date_p)
+        elif week_dates['end_date'] > datetime.now():
+            week_dates['end_date'] = datetime.now()
+
         weeks_stat['Начали обучение'].append(applications.filter(
             group__start_date__gte=week_dates['start_date'],
             group__start_date__lte=week_dates['end_date']
@@ -306,7 +305,7 @@ def flow_appls_dashboard(request, year=2023):
             group__end_date__lte=week_dates['end_date'],
             flow_status=find_wrk_status
         ).count())
-        
+
         cumulative_weeks_stat['Начали обучение'].append(applications.filter(
             group__start_date__lte=week_dates['end_date']
         ).exclude(csn_prv_date=None).count())
@@ -317,7 +316,7 @@ def flow_appls_dashboard(request, year=2023):
             group__end_date__lte=week_dates['end_date'],
             flow_status=find_wrk_status
         ).count())
-        
+
         weeks.append(f'{week_dates["start_date"].strftime("%d/%m")}-{week_dates["end_date"].strftime("%d/%m")}')
     chart = get_flow_applications_plot(weeks, weeks_stat)
     cumulative_chart = get_flow_applications_plot(weeks, cumulative_weeks_stat)
@@ -506,15 +505,13 @@ def groups_list(request, year=2023):
     if 'pay_bills' in request.POST:
         for group in groups.exclude(closing_documents=None):
             for document in group.closing_documents.all():
-                if f'doc_{document.id}' in request.POST:
-                    document.is_paid = True
-                else: document.is_paid = False
+                document.is_paid = f'doc_{document.id}' in request.POST
                 document.save()
                 if len(group.closing_documents.exclude(bill_file='').filter(is_paid=False)) == 0:
                     group.pay_status = 'PDB'
                 else:  group.pay_status = 'UPB'
                 group.save()
-                
+
     return render(request, 'federal_empl_program/groups_list.html', {
         'groups': groups,
         'project_year': project_year,
@@ -529,12 +526,10 @@ def group_view(request, group_id):
         group=group, flow_status__is_rejected=False
     )
     documents = ClosingDocument.objects.filter(group=group)
-    
+
     if 'add_to_act' in request.POST:
         for applicant in applicants:
-            if f'act{applicant.id}' in request.POST:
-                applicant.added_to_act = True
-            else: applicant.added_to_act = False
+            applicant.added_to_act = f'act{applicant.id}' in request.POST
             applicant.save()
     elif 'add-doc' in request.POST:
         doc = ClosingDocument(
@@ -547,6 +542,7 @@ def group_view(request, group_id):
         if 'bill_file' in request.FILES:
             doc.bill_file = request.FILES['bill_file']
             doc.bill_file.name = unidecode.unidecode(doc.bill_file.name)
+            doc.bill_id = request.POST['bill_id']
         doc.save()
         group.pay_status = 'WFB'
         group.save()
@@ -554,14 +550,22 @@ def group_view(request, group_id):
         doc_id = request.POST['doc_id']
         doc = ClosingDocument.objects.get(id=doc_id)
         doc.bill_file = request.FILES['bill_file']
+        doc.bill_id = request.POST['bill_id']
         doc.save()
         group.pay_status = 'WFB'
+        group.save()
+    elif 'group-comment' in request.POST:
+        group.group_commentary = request.POST['group_commentary']
+        group.save()
+    elif 'add-group-link' in request.POST:
+        group.group_link = request.POST['group_link']
         group.save()
     elif 'change-doc' in request.POST:
         doc_id = request.POST['doc_id']
         doc = ClosingDocument.objects.get(id=doc_id)
         doc.doc_type = request.POST['doc_type']
         doc.bill_sum = request.POST['bill_sum']
+        doc.bill_id = request.POST['bill_id']
         if 'act_file' in request.FILES:
             doc.doc_file = request.FILES['act_file']
             doc.doc_file.name = unidecode.unidecode(doc.doc_file.name)
@@ -583,19 +587,17 @@ def group_view(request, group_id):
             'group_view', kwargs={'group_id': group.id}
         ))
     ed_price = applicants.filter(added_to_act=True).aggregate(price=Sum('price'))['price']
-    if ed_price == None:
-        ed_price = 0
-    else: ed_price = ed_price * 0.7
+    ed_price = 0 if ed_price is None else ed_price * 0.7
     find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
     wrk_price = applicants.filter(added_to_act=True,
         flow_status=find_wrk_status).aggregate(price=Sum('price'))['price']
-    if wrk_price == None: wrk_price = 0
+    if wrk_price is None: wrk_price = 0
     wrk_price = wrk_price * 0.3
     full_price = ed_price + wrk_price
     paid_price = documents.filter(
         is_paid=True).aggregate(bill_sum=Sum('bill_sum'))['bill_sum']
-    if paid_price == None: paid_price = 0
-    
+    if paid_price is None: paid_price = 0
+
     return render(request, 'federal_empl_program/group_view.html', {
         'group': group,
         'documents': documents,
@@ -618,11 +620,9 @@ def citizen_application(request):
         birthday = request.POST["birthday"]
         birthday = datetime.strptime(birthday, "%Y-%m-%d")
         sex = request.POST.getlist("GenderOptions")
-        if 'male' in sex: sex = 'M'
-        else: sex = 'F'
+        sex = 'M' if 'male' in sex else 'F'
         consultation = request.POST.getlist("consultation")
-        if len(consultation) == 0: consultation = False
-        else: consultation = True
+        consultation =  len(consultation) != 0
         citizen_application = CitizenApplication.objects.get_or_create(
             last_name=request.POST["last_name"],
             first_name=request.POST["first_name"],

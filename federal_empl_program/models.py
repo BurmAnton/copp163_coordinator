@@ -515,6 +515,7 @@ class ClosingDocument(models.Model):
     def bill_path(instance, filename):
         return 'media/federal_empl/docs/{0}'.format(filename)
     bill_file = models.FileField("Счёт", upload_to=bill_path)
+    bill_id = models.CharField("Номер счёта", blank=True, null=True, max_length=50)
     
     class Meta:
         verbose_name = "Закрывающий документ"
