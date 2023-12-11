@@ -351,7 +351,10 @@ class Group(models.Model):
         ('NCOM', "Отменена"),
     ]
     group_status = models.CharField("Статус заявки", max_length=4, default='NEW', choices=GROUP_STATUS_CHOICES)
-
+    group_link = models.CharField("Цифровой след", max_length=500, null=True, blank=True)
+    group_commentary = models.TextField(
+        "Комментарий", null=True, blank=True, default=""
+    )
     is_new_price = models.BooleanField("Новая цена", default=False)
 
     class Meta:
