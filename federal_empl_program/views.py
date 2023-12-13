@@ -517,7 +517,7 @@ def groups_list(request, year=2023):
     find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
     today = date.today()
     stats = {
-        "in_process": applicants.filter(group__start_date__gte=today, group__end_date__gt=today).count(),
+        "in_process": applicants.filter(group__start_date__lte=today, group__end_date__gt=today).count(),
         "done": applicants.filter(group__end_date__gte=today).count(),
         "is_employed": f'{applicants.filter(flow_status=find_wrk_status).count()} | {applicants.filter(is_working=True).count()}',
     }
