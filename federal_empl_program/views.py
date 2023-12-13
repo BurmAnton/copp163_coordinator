@@ -512,10 +512,21 @@ def groups_list(request, year=2023):
                 else:  group.pay_status = 'UPB'
                 group.save()
 
+    #Training stats
+    applicants = Application.objects.filter(education_center__in=ed_centers, project_year=project_year, flow_status__is_rejected=False)
+    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+    today = date.today()
+    stats = {
+        "in_process": applicants.filter(group__start_date__gte=today, group__end_date__lt=today).count(),
+        "done": applicants.filter(group__end_date__gte=today).count(),
+        "is_employed": f'{applicants.filter(flow_status=find_wrk_status).count()} | {applicants.filter(is_working=True).count()}',
+    }
+
     return render(request, 'federal_empl_program/groups_list.html', {
         'groups': groups,
         'project_year': project_year,
-        'ed_centers': ed_centers
+        'ed_centers': ed_centers,
+        'stats': stats
     })
      
 @login_required
@@ -530,6 +541,7 @@ def group_view(request, group_id):
     if 'add_to_act' in request.POST:
         for applicant in applicants:
             applicant.added_to_act = f'act{applicant.id}' in request.POST
+            applicant.is_working = f'is_working{applicant.id}' in request.POST
             applicant.save()
     elif 'add-doc' in request.POST:
         doc = ClosingDocument(
@@ -586,6 +598,7 @@ def group_view(request, group_id):
         return HttpResponseRedirect(reverse(
             'group_view', kwargs={'group_id': group.id}
         ))
+    
     ed_price = applicants.filter(added_to_act=True).aggregate(price=Sum('price'))['price']
     ed_price = 0 if ed_price is None else ed_price * 0.7
     find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')

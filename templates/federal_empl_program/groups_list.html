@@ -17,7 +17,17 @@
     </div>
     <div id="groups-list">
         <h2>Список участников ПКО</h2>
-        
+        <div class="training-stats">
+            <div class="training-stat" style="background-color: #426cf8;">
+                <h5>В процессе обучения:<br>{{stats|get_item:"in_process"}}</h5>
+            </div>
+            <div class="training-stat" style="background-color: #02509e;">
+                <h5>Завершили обучение:<br>{{stats|get_item:"done"}}</h5>
+            </div>
+            <div class="training-stat">
+                <h5>Трудоустроено:<br>{{stats|get_item:"is_employed"}}</h5>
+            </div>
+        </div>
         <div id="control-panel">
             <div id="filters">
                 <div class="input-group mb-3 table-search">
