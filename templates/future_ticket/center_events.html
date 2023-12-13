@@ -461,7 +461,7 @@
                     <a class="ndc-bill-link btn btn-primary" href="{{center_year.ndc_bill_file.url}}">Скачать счёт-фактуру</a>
                 {% endif %}
                 
-            {% elif center_year.stage == 'NVC' or center_year.stage == 'PNVC' or center_year.stage == 'NVCP' %}
+            {% elif center_year.stage == 'NVC' or center_year.stage == 'PNVC' or center_year.stage == 'NVCP' or center_year.stage == 'ACT' %}
                 <div class="alert alert-success w-90" role="alert">
                     Документы полученны, после проверки, мы оплатим счёт и уведомим Вас.
                 </div>
