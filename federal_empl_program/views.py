@@ -518,7 +518,7 @@ def groups_list(request, year=2023):
     today = date.today()
     stats = {
         "in_process": applicants.filter(group__start_date__lte=today, group__end_date__gt=today).count(),
-        "done": applicants.filter(group__end_date__gte=today).count(),
+        "done": applicants.filter(group__end_date__lte=today).count(),
         "is_employed": f'{applicants.filter(flow_status=find_wrk_status).count()} | {applicants.filter(is_working=True).count()}',
     }
 
