@@ -452,7 +452,7 @@
                 {% if center_year.is_ndc %}
                     <form class="upload-ndc-bill-form" action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
-                            {% csrf_token %}a
+                            {% csrf_token %}
                             {{ form.non_field_errors }} 
                             {{ form.import_file.errors }}
                             {{ form.import_file }}
