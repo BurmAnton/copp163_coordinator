@@ -4,9 +4,16 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import stringfilter
 from django.db.models import Sum, F, Q
 
-from federal_empl_program.models import ProjectYear, FlowStatus
+from federal_empl_program.models import ProjectYear, FlowStatus, Application
 
 register = template.Library()
+
+
+@register.filter
+def get_employement(group):
+    applications = Application.objects.filter(group=group, flow_status__is_rejected=False)
+    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+    return f'{applications.filter(flow_status=find_wrk_status).count()} | {applications.filter(is_working=True).count()}'
 
 @register.filter
 def order_by_paid_field(documents):
