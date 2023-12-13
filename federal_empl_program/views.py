@@ -482,7 +482,13 @@ def quota_request(request):
 @csrf_exempt
 def groups_list(request, year=2023):
     project_year = get_object_or_404(ProjectYear, year=year)
-    ed_centers = EducationCenter.objects.exclude(flow_name="")
+    ed_centers_year = EducationCenterProjectYear.objects.filter(
+        project_year=project_year).exclude(
+            quota_72=0, quota_144=0, quota_256=0
+        ).order_by('-quota_256', '-quota_144', '-quota_72'
+                   ).select_related( 'ed_center')
+    ed_centers = EducationCenter.objects.filter(
+        project_years__in=ed_centers_year)
     start_date = date(2023, 1, 1)
     end_date = date(2023, 12, 31)
     groups = Group.objects.filter(
@@ -513,7 +519,7 @@ def groups_list(request, year=2023):
                 group.save()
 
     #Training stats
-    applicants = Application.objects.filter(project_year=project_year, flow_status__is_rejected=False)
+    applicants = Application.objects.filter(project_year=project_year, flow_status__is_rejected=False, education_center__in=ed_centers)
     find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
     today = date.today()
     stats = {
