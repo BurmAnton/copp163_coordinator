@@ -414,6 +414,9 @@
                 <div class="alert alert-success w-90" role="alert">
                     Акт сформирован успешно, мы уведомив Вас, когда отправим его на подписание. После подписания Вы сможете подгрузить счёт на оплату.
                 </div>
+                {% if center_year.act_file.url != None %}
+                    <a href="{{ center_year|get_act }}" target="_blank">Скачать акт</a>
+                {% endif %}
             {% elif center_year.stage == 'ACTS' %}
                 <div class="alert alert-success w-90" role="alert">
                     Мы отправили Вам акт на подписание через систему электронного документооборота. Подпишите акт и подгрузите его и счёт на оплату.
@@ -460,8 +463,8 @@
                 {% if center_year.ndc_bill_file.url != None %}
                     <a class="ndc-bill-link btn btn-primary" href="{{center_year.ndc_bill_file.url}}">Скачать счёт-фактуру</a>
                 {% endif %}
-                
-            {% elif center_year.stage == 'NVC' or center_year.stage == 'PNVC' or center_year.stage == 'NVCP' or center_year.stage == 'ACT' %}
+            
+            {% elif center_year.stage == 'NVC' or center_year.stage == 'PNVC' or center_year.stage == 'NVCP' %}
                 <div class="alert alert-success w-90" role="alert">
                     Документы полученны, после проверки, мы оплатим счёт и уведомим Вас.
                 </div>
