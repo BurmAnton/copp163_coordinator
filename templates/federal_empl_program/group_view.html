@@ -133,6 +133,7 @@
     </div>
     <div id="group-info">
         <h2>Данные потока</h2>
+        
         <div>
             <p><b>Центр обучения:</b> {{group.education_program.ed_center.flow_name}}</p>
             <p><b>Программа обучения:</b> {{group.education_program.program_name}}</p>
@@ -166,6 +167,7 @@
                     <th scope="col" style="border-top-left-radius: 10px; text-align:left;">ФИО</th>
                     <th scope="col">Статус</th>
                     <th scope="col">Актирован</th>
+                    <th scope="col">Трудоустроен (не подтверждено)</th>
                     <th scope="col" style="border-top-right-radius: 10px;">Стоимость обучения</th>
                 </thead>
                 {% for applicant in applicants %}
@@ -175,6 +177,11 @@
                         <td scope="row">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="act{{applicant.id}}" {% if applicant.added_to_act %} checked {% endif %}>
+                            </div>
+                        </td>
+                        <td scope="row">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_working{{applicant.id}}" {% if applicant.is_working %} checked {% endif %}>
                             </div>
                         </td>
                         <td scope="row">{{applicant.price}}</td>

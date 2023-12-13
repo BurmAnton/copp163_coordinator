@@ -434,7 +434,8 @@ class Application(models.Model):
     ]
     contract_type = models.CharField("Тип контракта", max_length=4, choices=CONTR_TYPE_CHOICES, default='–')
     contract_date = models.DateTimeField("Дата последней смены статуса", null=True, blank=False)
-    is_working = models.BooleanField("Трудоустроен", default=False)
+    #В 2023 используется для тех кто не потверждён на платформе
+    is_working = models.BooleanField("Трудоустроен (не подтверждено)", default=False)
     PAYMENT_OPTIONS = [
         ('DP', 'Не оплачен'),
         ('PF', 'Оплачен (100%)'),
@@ -460,6 +461,7 @@ class Application(models.Model):
         ('CRIP', 'Предоставил справку ИП')
     ]
     find_work = models.CharField("Трудоустройство", max_length=4, choices=WORK_SEARCH_STAGES, blank=True, null=True)
+    
         
     class Meta:
         verbose_name = "Заявка (Содействие занятости)"
