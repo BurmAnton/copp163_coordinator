@@ -415,9 +415,8 @@
                 <div class="alert alert-success w-90" role="alert">
                     Акт сформирован успешно, мы уведомив Вас, когда отправим его на подписание. После подписания Вы сможете подгрузить счёт на оплату.
                 </div>
-                {% if center_year.act_file.url != None %}
-                    <a href="{{ center_year|get_act }}" target="_blank">Скачать акт</a>
-                {% endif %}
+                <div style="display: flex;justify-content: flex-end;"><a class="act-link btn btn-primary"  href="{{ center_year|get_act }}" target="_blank">Скачать акт</a></div>
+                
             {% elif center_year.stage == 'ACTS' %}
                 <div class="alert alert-success w-90" role="alert">
                     Мы отправили Вам акт на подписание через систему электронного документооборота. Подпишите акт и подгрузите его и счёт на оплату.
