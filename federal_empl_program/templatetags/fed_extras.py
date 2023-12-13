@@ -11,9 +11,12 @@ register = template.Library()
 
 @register.filter
 def get_employement(group):
-    applications = Application.objects.filter(group=group, flow_status__is_rejected=False)
+    applications = Application.objects.filter(group=group, flow_status__is_rejected=False, added_to_act=True)
     find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
-    return f'{applications.filter(flow_status=find_wrk_status).count()} | {applications.filter(is_working=True).count()}'
+    is_working = applications.filter(is_working=True).count() 
+    if applications.count() == 0:
+        return '0/0 (0.0%) | 0'
+    return f'{applications.filter(flow_status=find_wrk_status).count()}/{applications.count()} ({applications.filter(flow_status=find_wrk_status).count()/applications.count() * 100}%) | {is_working}'
 
 @register.filter
 def order_by_paid_field(documents):
