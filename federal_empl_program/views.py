@@ -513,7 +513,7 @@ def groups_list(request, year=2023):
                 group.save()
 
     #Training stats
-    applicants = Application.objects.filter(education_center__in=ed_centers, project_year=project_year, flow_status__is_rejected=False)
+    applicants = Application.objects.filter(project_year=project_year, flow_status__is_rejected=False)
     find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
     today = date.today()
     stats = {
