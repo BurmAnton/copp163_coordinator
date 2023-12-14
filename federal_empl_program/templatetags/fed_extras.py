@@ -15,8 +15,8 @@ def get_employement(group):
     find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
     is_working = applications.filter(is_working=True).count() 
     if applications.count() == 0:
-        return '0/0 (0.0%) | 0'
-    return f'{applications.filter(flow_status=find_wrk_status).count()}/{applications.count()} ({applications.filter(flow_status=find_wrk_status).count()/applications.count() * 100}%) | {is_working}'
+        return '0/0 (0.00%) | 0'
+    return f'{applications.filter(flow_status=find_wrk_status).count()}/{applications.count()} ({applications.filter(flow_status=find_wrk_status).count()/applications.count() * 100:.2f}%) | {is_working}'
 
 @register.filter
 def order_by_paid_field(documents):
