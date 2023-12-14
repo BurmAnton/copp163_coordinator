@@ -361,8 +361,8 @@ class Grant(models.Model):
 
 
 class FlowStatus(models.Model):
-    off_name = models.CharField("Название с flow", max_length=100, null=False)
-    name = models.CharField("Название", max_length=100, null=False)
+    off_name = models.CharField("Название с flow", max_length=300, null=False)
+    name = models.CharField("Название", max_length=300, null=False)
     action = models.TextField("Что делать?", null=False, blank=False)
     is_parent = models.BooleanField("Верхнеуровневый статус", default=False)
     is_rejected = models.BooleanField("Отказной статус", default=False)
