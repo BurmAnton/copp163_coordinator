@@ -29,7 +29,7 @@
                             </select>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control" id="BillSumInput" name="bill_sum" placeholder="Сумма акта" value="{{document.bill_sum}}" required>
+                            <input type="number" class="form-control" id="BillSumInput" name="bill_sum" placeholder="Сумма акта" value="{{document.bill_sum}}" step="0.01" required>
                             <label for="BillSumInput">Сумма акта</label>
                         </div>
                         <a href="{{document.doc_file.url}}">Акт/Отчёт:</a>
@@ -89,7 +89,7 @@
                             </select>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control" id="BillSumInput" name="bill_sum" placeholder="Сумма акта" required>
+                            <input type="number" class="form-control" id="BillSumInput" name="bill_sum" step="0.01" placeholder="Сумма акта" required>
                             <label for="BillSumInput">Сумма акта</label>
                         </div>
                         <div class="mb-3">
