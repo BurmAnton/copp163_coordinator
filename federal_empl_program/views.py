@@ -496,6 +496,7 @@ def groups_list(request, year=2023):
         project_year=project_year,
         flow_status__is_rejected=False
     )
+    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
     groups = Group.objects.filter(
         start_date__gte=start_date, end_date__lte=end_date,
         students__in=applications
@@ -513,6 +514,15 @@ def groups_list(request, year=2023):
         ),
         'end_date',
         'education_program__ed_center'
+    ).annotate(
+        students_count=Count(
+            "students",
+            filter=Q(students__flow_status__is_rejected=False, students__added_to_act=True)
+        ),
+        employed_count=Count(
+            "students",
+            filter=Q(students__flow_status=find_wrk_status, students__added_to_act=True)
+        )
     ).distinct()
     if 'pay_bills' in request.POST:
         for group in groups.exclude(closing_documents=None):
@@ -525,8 +535,7 @@ def groups_list(request, year=2023):
                 group.save()
 
     #Training stats
-    applicants = Application.objects.filter(project_year=project_year, flow_status__is_rejected=False, education_center__in=ed_centers)
-    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+    applicants = Application.objects.filter(project_year=project_year, flow_status__is_rejected=False, education_center__in=ed_centers)    
     today = date.today()
     stats = {
         "is_employed": f'{applicants.filter(flow_status=find_wrk_status, added_to_act=True).count()}/{applicants.filter(group__end_date__lte=today, added_to_act=True).count()} | {applicants.filter(is_working=True).count()}',

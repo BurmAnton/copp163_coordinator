@@ -52,7 +52,9 @@
                     <th scope="col" class="align-col-left">Номер потока</th>
                     <th scope="col" class="align-col-left">ЦО</th>
                     <th scope="col">Статус потока</th>
-                    <th scope="col">Трудоустроено</th>
+                    {% if user.role != 'CNT' %}
+                        <th scope="col">Трудоустроено</th>
+                    {% endif %}
                     <th scope="col">Период обучения</th>
                     <th scope="col" class="align-col-left">Акт/Отчёт</th>
                     <th scope="col" class="align-col-left">Счёт</th>
@@ -66,7 +68,9 @@
                     </a></td>
                     <td class="align-col-left" rowspan="{{group.closing_documents.all.count|add:1}}">{{group.education_program.ed_center.flow_name}}</td>
                     <td rowspan="{{group.closing_documents.all.count|add:1}}">{{group.get_pay_status_display}}</td>
-                    <td rowspan="{{group.closing_documents.all.count|add:1}}">{{group|get_employement}}</td>
+                    {% if user.role != 'CNT' %}
+                        <td rowspan="{{group.closing_documents.all.count|add:1}}">{{group.employed_count|get_employement:group.students_count}}</td>
+                    {% endif %}
                     <td rowspan="{{group.closing_documents.all.count|add:1}}">{{group.start_date|date:"d.m.y"}} - {{group.end_date|date:"d.m.y"}}</td>
                     {% for document in group.closing_documents.all %}
                         <tr>
