@@ -87,7 +87,10 @@ def act_sum(center):
         quota_count=Sum('completed_quota'))['quota_count']
     if quota is None or quota == 0:
         return "-"
-    return "{:,.2f} ₽".format(quota * 1083.33).replace(',', ' ')
+    full_amount = quota * 1300
+    ndc = round((full_amount / 1.2 - full_amount) * -1, 2)
+    pay_wo_ndc = full_amount - ndc
+    return "{:,.2f} ₽".format(pay_wo_ndc).replace(',', ' ')
 
 @register.filter
 def get_act(center):
