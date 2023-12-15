@@ -1,7 +1,7 @@
 import os
 from datetime import date, timedelta, datetime
 
-from django.db.models import Sum
+from django.db.models import Sum, Max, Min
 from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404
 from django.utils.formats import date_format
@@ -141,6 +141,44 @@ def generate_ticket_act(ed_center_year):
     act.doc_file.name=act_path
     act.save()
 
+def generate_ticket_certificate(ed_center_year):
+    ed_center = ed_center_year.ed_center
+    participants_count = TicketQuota.objects.filter(ed_center=ed_center).aggregate(
+        quota_count=Sum('completed_quota'))['quota_count']
+    events = TicketEvent.objects.filter(ed_center=ed_center_year).exclude(participants_limit=0)
+    professions = TicketProfession.objects.filter(
+            events__in=events
+        ).distinct().values_list('name')
+    professions = ', '.join(list(
+        map(lambda profession: profession[0].strip().capitalize(), professions)
+    ))
+    dates = TicketEvent.objects.filter(
+            ed_center=ed_center_year
+        ).exclude(participants_limit=0)
+    first_date = dates.earliest('event_date').event_date
+    last_date = dates.latest('event_date').event_date
+
+    context = {
+        'ed_center': ed_center.short_name if ed_center.short_name != None else ed_center.name,
+        'participants_count': participants_count,
+        'first_date': str(first_date.strftime('%d.%m.%Y')),
+        'last_date': str(last_date.strftime('%d.%m.%Y')),
+        'professions': professions
+    }
+    doc_type = get_object_or_404(DocumentTypeTicket, name="Справка")
+    document = DocxTemplate(doc_type.template)
+    document.render(context)
+
+    path = f'media/documents/ticket/{ed_center_year.id}/certificates/'
+    if not os.path.exists(path): os.makedirs(path)
+
+    act_path = f'{path}spravka_({datetime.now().strftime("%d.%m.%y %H:%M:%S")}).docx'
+
+    document.save(act_path)
+
+    return document
+    
+    
 
 def fix_reserved_quota():
     from .models import QuotaEvent, TicketQuota
