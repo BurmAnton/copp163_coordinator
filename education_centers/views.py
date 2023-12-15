@@ -26,7 +26,7 @@ from future_ticket.models import (AgeGroup, ContractorsDocumentTicket,
                                   TicketProfession, TicketProgram,
                                   TicketProjectPosition, TicketProjectYear,
                                   TicketQuota)
-from future_ticket.utils import generate_document_ticket
+from future_ticket.utils import generate_document_ticket, generate_ticket_certificate
 from users.models import DisabilityType
 
 from . import exports, imports
@@ -91,6 +91,16 @@ def applications(request):
                 if f'center_{center.id}' not in request.POST:
                     center.stage = 'PNVC'
                 center.save()
+        elif 'generate-certificate' in request.POST:
+            project = 'bilet'
+            center_year_id = request.POST['center_year']
+            center_year = get_object_or_404(
+                EducationCenterTicketProjectYear, id=center_year_id)
+            certificate = generate_ticket_certificate(center_year)
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            response['Content-Disposition'] = f'attachment; filename=spravka_{date.today()}.docx'
+            certificate.save(response)
+            return response
         else:
             data = json.loads(request.body.decode("utf-8"))
             stage = data['stage']
@@ -250,7 +260,7 @@ def ed_center_application(request, ed_center_id):
                 position = get_object_or_404(ProjectPosition, id=position_id)
                 employee_position = EdCenterEmployeePosition(
                     position=position,
-                    ed_center=edownload-contractd_center,
+                    ed_center=ed_center,
                     employee=employee
                 )
             if position.is_basis_needed:

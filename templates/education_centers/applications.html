@@ -141,6 +141,9 @@
                     <th scope="col">Сумма без НДС</th>
                     <th scope="col">НДС</th>
                     <th scope="col">Оплачен?</th>
+                    {% if user.role != 'CNT' %}
+                        <th scope="col">Справка</th>
+                    {% endif %}
                 {% endif %}
             </tr>
             {%for center in centers_project_year %}
@@ -212,6 +215,16 @@
                             -
                         {% endif %}
                     </td>
+                    {% if user.role != 'CNT' %}
+                    <td>
+                        {% if center.stage == 'ACT' or center.stage == 'ACTS' or center.stage == 'PNVC' or center.stage == "NVCP" or center.stage == "NVC" %}
+                        <form action="" method="post" enctype="multipart/form-data">
+                            <input type="text" style="display: none;" value="{{center.id}}" name="center_year">
+                            <button name="generate-certificate" class=" btn btn-sm btn-outline-primary">Скачать</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                    {% endif %}
                 {% endif %}
                 </tr>
             {% endfor %}
