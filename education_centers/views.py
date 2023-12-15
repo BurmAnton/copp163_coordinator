@@ -96,9 +96,12 @@ def applications(request):
             center_year_id = request.POST['center_year']
             center_year = get_object_or_404(
                 EducationCenterTicketProjectYear, id=center_year_id)
+            ed_center = center_year.ed_center
+            ed_center_name = ed_center.short_name if ed_center.short_name != None else ed_center.name
+            ed_center_name = ed_center_name.strip().replace("  ", " ").replace(" ", "_")
             certificate = generate_ticket_certificate(center_year)
             response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-            response['Content-Disposition'] = f'attachment; filename=spravka_({datetime.now().strftime("%d.%m.%y %H:%M:%S")}).docx'
+            response['Content-Disposition'] = f'attachment; filename=spravka_{unidecode.unidecode(ed_center_name)}.docx'
             certificate.save(response)
             return response
         else:
