@@ -8,15 +8,13 @@ from federal_empl_program.models import ProjectYear, FlowStatus, Application
 
 register = template.Library()
 
+find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
 
 @register.filter
-def get_employement(group):
-    applications = Application.objects.filter(group=group, flow_status__is_rejected=False, added_to_act=True)
-    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
-    is_working = applications.filter(is_working=True).count() 
-    if applications.count() == 0:
+def get_employement(employed_count, students_count):
+    if students_count == 0:
         return '0/0 (0.00%) | 0'
-    return f'{applications.filter(flow_status=find_wrk_status).count()}/{applications.count()} ({applications.filter(flow_status=find_wrk_status).count()/applications.count() * 100:.2f}%) | {is_working}'
+    return f'{employed_count}/{students_count} ({employed_count/students_count * 100:.2f}%)'
 
 @register.filter
 def order_by_paid_field(documents):
