@@ -27,8 +27,12 @@ def get_item(dictionary, key):
     return dictionary.get(key)
 
 @register.filter
+def float_format(number):
+    return "{:.2f}".format(number)
+
+@register.filter
 def money_format(number):
-     return "{:,.2f} ₽".format(number).replace(',', ' ')
+    return "{:,.2f} ₽".format(number).replace(',', ' ')
 
 @register.filter
 def multiply(factor_1, factor_2):

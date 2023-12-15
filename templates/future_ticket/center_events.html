@@ -421,8 +421,9 @@
                 <div class="alert alert-success w-90" role="alert">
                     Мы отправили Вам акт на подписание через систему электронного документооборота. Подпишите акт и подгрузите его и счёт на оплату.
                 </div>
+                <div style="display: flex;justify-content: flex-end;"><a class="act-link btn btn-primary"  href="{{ center_year|get_act }}" target="_blank">Скачать акт (сформированый)</a></div>
                 {% if center_year.act_file.url != None %}
-                    <a class="act-link btn btn-primary" href="{{center_year.act_file.url}}">Скачать акт</a>
+                    <a class="act-link btn btn-primary" href="{{center_year.act_file.url}}">Скачать акт (подписанный)</a>
                 {% else %}
                     <form class="upload-act-form" action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
