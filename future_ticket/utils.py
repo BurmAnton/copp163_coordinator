@@ -82,6 +82,7 @@ def generate_ticket_act(ed_center_year):
         full_amount = quota * 1300
         ndc = str(round((full_amount / 1.2 - full_amount) * -1, 2)).split('.')
         if ndc[1] == "0": ndc[1] = "00"
+        elif len(ndc[1]) == 1: ndc[1] = f"{ndc[1]}0"
         full_amount_spelled = f'{full_amount} ({get_string_by_number(full_amount).replace(" 00 копеек", "")}) 00 коп. (включая НДС {ndc[0]} руб. {ndc[1]} коп.)'
         full_amount = f'{full_amount} руб. 00 коп. (включая НДС {ndc[0]} руб. {ndc[1]} коп.)'
     else: 
