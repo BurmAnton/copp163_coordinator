@@ -98,7 +98,7 @@ def applications(request):
                 EducationCenterTicketProjectYear, id=center_year_id)
             certificate = generate_ticket_certificate(center_year)
             response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-            response['Content-Disposition'] = f'attachment; filename=spravka_{date.today()}.docx'
+            response['Content-Disposition'] = f'attachment; filename=spravka_({datetime.now().strftime("%d.%m.%y %H:%M:%S")}).docx'
             certificate.save(response)
             return response
         else:
