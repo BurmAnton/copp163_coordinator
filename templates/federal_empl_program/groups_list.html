@@ -19,14 +19,15 @@
         <h2>Список участников ПКО</h2>
         <div class="training-stats">
             <div class="training-stat" style="background-color: #426cf8;">
-                <h5>В процессе обучения:<br>{{stats|get_item:"in_process"}}</h5>
-            </div>
-            <div class="training-stat" style="background-color: #02509e;">
-                <h5>Завершили обучение:<br>{{stats|get_item:"done"}}</h5>
-            </div>
-            <div class="training-stat">
                 <h5>Трудоустроено:<br>{{stats|get_item:"is_employed"}}</h5>
             </div>
+            <div class="training-stat" style="background-color: #02509e;">
+                <h5>Груупп оплачено:<br>{{stats|get_item:"groups_paid"}}</h5>
+            </div>
+            <div class="training-stat" >
+                <h5>Денег выплаченно: <br>{{stats|get_item:"paid_amount"}}</h5>
+            </div>
+            
         </div>
         <div id="control-panel">
             <div id="filters">
@@ -55,6 +56,7 @@
                     <th scope="col">Период обучения</th>
                     <th scope="col" class="align-col-left">Акт/Отчёт</th>
                     <th scope="col" class="align-col-left">Счёт</th>
+                    <th scope="col" class="align-col-left">Сумма</th>
                     <th scope="col">Оплачен?</th>
                 </thead>
                 {% for group in groups %}
@@ -72,6 +74,7 @@
                             <td class="align-col-left" style="display: none;">{{group.education_program.ed_center.flow_name}}</td>
                             {% if document.bill_file.name != "" %}
                                 <td class="align-col-left"><a href="{{document.bill_file.url}}" target="_blank">Счёт {% if document.bill_id is not None %}№ {{document.bill_id}}{% endif %}</a></td>
+                                <td>{{document.bill_sum|money_format}}</td>
                                 <td>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="doc_{{document.id}}" {% if document.is_paid %}checked{% endif %}>
@@ -83,6 +86,7 @@
                                 {% endif %}
                         </tr>
                     {% empty %}
+                        <td class="align-col-left">-</td>
                         <td class="align-col-left">-</td>
                         <td class="align-col-left">-</td>
                         <td>-</td>
