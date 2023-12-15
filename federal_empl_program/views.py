@@ -529,9 +529,9 @@ def groups_list(request, year=2023):
     find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
     today = date.today()
     stats = {
-        "in_process": applicants.filter(group__start_date__lte=today, group__end_date__gt=today).count(),
-        "done": applicants.filter(group__end_date__lte=today).count(),
-        "is_employed": f'{applicants.filter(flow_status=find_wrk_status, added_to_act=True).count()} | {applicants.filter(is_working=True).count()}',
+        "is_employed": f'{applicants.filter(flow_status=find_wrk_status, added_to_act=True).count()}/{applicants.filter(group__end_date__lte=today).count()} | {applicants.filter(is_working=True).count()}',
+        "groups_paid": f'{groups.filter(pay_status="PDB").count()}/{groups.count()}',
+        "paid_amount": '{:,.2f} ₽'.format(ClosingDocument.objects.filter(is_paid=True).aggregate(paid_amount=Sum("bill_sum"))["paid_amount"]).replace(',', ' ')
     }
 
     return render(request, 'federal_empl_program/groups_list.html', {

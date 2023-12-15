@@ -38,9 +38,7 @@ def count_pay_wo_ndc(ndc_type, pay_status):
     people_count = count_people(ndc_type, pay_status)
     if people_count == 0:
         return "0.00 ₽"
-    full_amount = people_count * 1300
-    ndc = round((full_amount / 1.2 - full_amount) * -1, 2)
-    pay_wo_ndc = full_amount - ndc
+    pay_wo_ndc = people_count * 1083.33
     return "{:,.2f} ₽".format(pay_wo_ndc).replace(',', ' ')
 
 @register.filter
@@ -87,10 +85,7 @@ def act_sum(center):
         quota_count=Sum('completed_quota'))['quota_count']
     if quota is None or quota == 0:
         return "-"
-    full_amount = quota * 1300
-    ndc = round((full_amount / 1.2 - full_amount) * -1, 2)
-    pay_wo_ndc = full_amount - ndc
-    return "{:,.2f} ₽".format(pay_wo_ndc).replace(',', ' ')
+    return "{:,.2f} ₽".format(quota * 1083.33).replace(',', ' ')
 
 @register.filter
 def get_act(center):

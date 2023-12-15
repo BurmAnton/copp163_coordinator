@@ -89,6 +89,8 @@ def generate_ticket_act(ed_center_year):
         doc_type = "Акт без НДС"
         contract_type="Договор с ЦО без НДС"
         full_amount = str(round(quota * 1083.33, 2)).split('.')
+        if full_amount[1] == "0": full_amount[1] = "00"
+        elif len(full_amount[1]) == 1: full_amount[1] = f"{full_amount[1]}0"
         full_amount_spelled = f'{full_amount[0]} ({get_string_by_number(int(full_amount[0])).replace(" 00 копеек", "")}) {full_amount[1]} коп.'.replace(" рублей)", ") рублей").replace(" рубля)", ") руб.")
         full_amount = f'{full_amount[0]} руб. {full_amount[1]} коп.'
     doc_type = get_object_or_404(DocumentTypeTicket, name=doc_type)
