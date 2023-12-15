@@ -491,8 +491,14 @@ def groups_list(request, year=2023):
         project_years__in=ed_centers_year)
     start_date = date(2023, 1, 1)
     end_date = date(2023, 12, 31)
+    applications = Application.objects.filter(
+        education_center__in=ed_centers,
+        project_year=project_year,
+        flow_status__is_rejected=False
+    )
     groups = Group.objects.filter(
-        start_date__gte=start_date, end_date__lte=end_date
+        start_date__gte=start_date, end_date__lte=end_date,
+        students__in=applications
     ).exclude(students=None).select_related(
         'education_program', 'education_program__ed_center'
     ).prefetch_related('closing_documents').order_by(
