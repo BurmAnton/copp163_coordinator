@@ -84,7 +84,7 @@ def import_applications(form, year):
         "Программа", "Идентификатор образовательной программы", 
         "Дата рождения гражданина", "Срок истечения заявки",
         "Дата заключения договора со слушателем", 
-        "Стоимость договора гражданина"
+        "Стоимость договора гражданина", "Документ о занятости"
     }
     cheak_col_names = cheak_col_match(sheet, fields_names)
     if cheak_col_names[0] != True:
@@ -190,6 +190,9 @@ def create_application(sheet, row, citizen, project_year):
             application.contract_date = datetime.strptime(sheet[
                 "Дата заключения договора со слушателем"][row], "%d.%m.%Y")
     else: application.contract_type = "–"
+
+    if sheet["Документ о занятости"][row] in ["Не проверен", "Подтвержден"]:
+        application.is_working = True
 
     flow_name = sheet["Образовательный партнёр"][row]
     education_center = EducationCenter.objects.filter(
