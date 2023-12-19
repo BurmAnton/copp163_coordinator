@@ -502,7 +502,7 @@ def groups_list(request, year=2023):
         students__in=applications
     ).exclude(students=None).select_related(
         'education_program', 'education_program__ed_center'
-    ).prefetch_related('closing_documents').order_by(
+    ).prefetch_related('closing_documents', 'students').order_by(
         Case( 
             When (pay_status="UPB", then=Value(0)),
             When (pay_status="WFB", then=Value(1)),
@@ -514,16 +514,18 @@ def groups_list(request, year=2023):
         ),
         'end_date',
         'education_program__ed_center'
-    ).annotate(
+    ).distinct().annotate(
         students_count=Count(
             "students",
-            filter=Q(students__flow_status__is_rejected=False, students__added_to_act=True)
+            filter=Q(students__flow_status__is_rejected=False, students__added_to_act=True),
+            distinct=True
         ),
         employed_count=Count(
             "students",
-            filter=Q(students__flow_status=find_wrk_status, students__added_to_act=True)
+            filter=Q(students__flow_status=find_wrk_status, students__added_to_act=True), 
+            distinct=True
         )
-    ).distinct()
+    )
     if 'pay_bills' in request.POST:
         for group in groups.exclude(closing_documents=None):
             for document in group.closing_documents.all():
