@@ -450,7 +450,7 @@
                 {% endif %}
                 
                 
-                {% if center_year.is_ndc %}
+                {% if center_year.is_ndc and center_year.ndc_bill_file.name == "" %}
                     <form class="upload-ndc-bill-form" action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             {% csrf_token %}
@@ -466,6 +466,7 @@
                 {% endif %}
             
             {% elif center_year.stage == 'NVC' or center_year.stage == 'PNVC' or center_year.stage == 'NVCP' %}
+                <div style="display: flex;justify-content: flex-end;"><a class="act-link btn btn-primary"  href="{{ center_year|get_act }}" target="_blank">Скачать акт (сформированый)</a></div>
                 <div class="alert alert-success w-90" role="alert">
                     Документы полученны, после проверки, мы оплатим счёт и уведомим Вас.
                 </div>
@@ -474,6 +475,9 @@
                 {% endif %}
                 {% if center_year.bill_file.url != None %}
                     <a class="bill-link btn btn-primary" href="{{center_year.bill_file.url}}">Скачать счёт</a>
+                {% endif %}
+                {% if center_year.ndc_bill_file.url != None %}
+                    <a class="ndc-bill-link btn btn-primary" href="{{center_year.ndc_bill_file.url}}">Скачать счёт-фактуру</a>
                 {% endif %}
             {% else %}
                 {% if act_ready %}
