@@ -322,7 +322,7 @@ class EdCenterEmployeePosition(models.Model):
 class CitizenCategory(models.Model):
     short_name = models.CharField("Название", max_length=100, blank=False)
     official_name = models.CharField("Офицальное наименованние", 
-                                     max_length=500, blank=True)
+                                     max_length=600, blank=True)
     project_year = models.ForeignKey(
         ProjectYear, 
         verbose_name="Год проекта",
