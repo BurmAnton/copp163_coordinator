@@ -69,7 +69,7 @@
                     <td class="align-col-left" rowspan="{{group.closing_documents.all.count|add:1}}">{{group.education_program.ed_center.flow_name}}</td>
                     <td rowspan="{{group.closing_documents.all.count|add:1}}">{{group.get_pay_status_display}}</td>
                     {% if user.role != 'CNT' %}
-                        <td rowspan="{{group.closing_documents.all.count|add:1}}">{{group.employed_count|get_employement:group.students_count}}</td>
+                        <td rowspan="{{group.closing_documents.all.count|add:1}}">{{group|get_employement}}</td>
                     {% endif %}
                     <td rowspan="{{group.closing_documents.all.count|add:1}}">{{group.start_date|date:"d.m.y"}} - {{group.end_date|date:"d.m.y"}}</td>
                     {% for document in group.closing_documents.all %}

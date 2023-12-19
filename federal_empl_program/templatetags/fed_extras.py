@@ -11,10 +11,10 @@ register = template.Library()
 find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
 
 @register.filter
-def get_employement(employed_count, students_count):
-    if students_count == 0:
+def get_employement(group):
+    if group.students_count == 0:
         return '0/0 (0.00%) | 0'
-    return f'{employed_count}/{students_count} ({employed_count/students_count * 100:.2f}%)'
+    return f'{group.employed_count}/{group.students_count} ({group.employed_count/group.students_count * 100:.2f}%) | {group.check_count}'
 
 @register.filter
 def order_by_paid_field(documents):
