@@ -280,6 +280,7 @@ def flow_appls_dashboard(request, year=2023):
         'Завершили обучение': [],
         'Трудоустроенны': [],
     }
+    check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоустройства')
     find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
     for week in range(5, -1, -1):
         start_date = f'{year}-{week_now - week}-1'
@@ -299,6 +300,7 @@ def flow_appls_dashboard(request, year=2023):
         weeks_stat['Завершили обучение'].append(applications.filter(
             group__end_date__gte=week_dates['start_date'],
             group__end_date__lte=week_dates['end_date'],
+            flow_status__in=[check_wrk_status, find_wrk_status]
         ).count())
         weeks_stat['Трудоустроенны'].append(applications.filter(
             group__end_date__gte=week_dates['start_date'],
@@ -311,6 +313,7 @@ def flow_appls_dashboard(request, year=2023):
         ).exclude(csn_prv_date=None).count())
         cumulative_weeks_stat['Завершили обучение'].append(applications.filter(
             group__end_date__lte=week_dates['end_date'],
+            flow_status__in=[check_wrk_status, find_wrk_status]
         ).count())
         cumulative_weeks_stat['Трудоустроенны'].append(applications.filter(
             group__end_date__lte=week_dates['end_date'],
