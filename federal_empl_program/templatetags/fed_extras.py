@@ -9,6 +9,7 @@ from federal_empl_program.models import ProjectYear, FlowStatus, Application
 register = template.Library()
 
 find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоустройства')
 
 @register.filter
 def get_employement(group):
@@ -201,6 +202,7 @@ def filter_end_center_72(applications, ed_center):
             education_center__id=ed_center['ed_center__id'],
             education_program__duration__lte=72,
             group__end_date__lte=date.today(),
+            flow_status__in=[check_wrk_status, find_wrk_status]
         ).exclude(csn_prv_date=None).count()
     
     if quota == 0:
@@ -215,6 +217,7 @@ def filter_end_center_144(applications, ed_center):
             education_program__duration__gt=72,
             education_program__duration__lt=256,
             group__end_date__lte=date.today(),
+            flow_status__in=[check_wrk_status, find_wrk_status]
         ).exclude(csn_prv_date=None).count()
     
     if quota == 0:
@@ -228,6 +231,7 @@ def filter_end_center_256(applications, ed_center):
             education_center__id=ed_center['ed_center__id'],
             education_program__duration__gte=256,
             group__end_date__lte=date.today(),
+            flow_status__in=[check_wrk_status, find_wrk_status]
         ).exclude(csn_prv_date=None).count()
 
     if quota == 0:
@@ -369,6 +373,7 @@ def filter_end_center_all_72(applications, ed_centers):
     applications_count = applications.filter(
                 education_program__duration__lte=72,
                 group__end_date__lte=date.today(),
+                flow_status__in=[check_wrk_status, find_wrk_status]
             ).exclude(csn_prv_date=None).count()
     return f'{applications_count}/{quota_sum} ({round(applications_count / quota_sum * 100, 2)}%)'
 
@@ -379,6 +384,7 @@ def filter_end_center_all_144(applications, ed_centers):
                 education_program__duration__gt=72,
                 education_program__duration__lt=256,
                 group__end_date__lte=date.today(),
+                flow_status__in=[check_wrk_status, find_wrk_status]
             ).exclude(csn_prv_date=None).count()
     return f'{applications_count}/{quota_sum} ({round(applications_count / quota_sum * 100, 2)}%)'
 
@@ -388,6 +394,7 @@ def filter_end_center_all_256(applications, ed_centers):
     applications_count = applications.filter(
                 education_program__duration__gte=256,
                 group__end_date__lte=date.today(),
+                flow_status__in=[check_wrk_status, find_wrk_status]
             ).exclude(csn_prv_date=None).count()
     return f'{applications_count}/{quota_sum} ({round(applications_count / quota_sum * 100, 2)}%)'
 
