@@ -497,6 +497,7 @@ def groups_list(request, year=2023):
         flow_status__is_rejected=False
     )
     find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+    check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоустройства')
     groups = Group.objects.filter(
         start_date__gte=start_date, end_date__lte=end_date,
         students__in=applications
@@ -524,6 +525,11 @@ def groups_list(request, year=2023):
             "students",
             filter=Q(students__flow_status=find_wrk_status, students__added_to_act=True), 
             distinct=True
+        ),
+        check_count=Count(
+            "students",
+            filter=Q(students__flow_status=check_wrk_status, students__added_to_act=True, students__is_working=True), 
+            distinct=True
         )
     )
     if 'pay_bills' in request.POST:
@@ -540,7 +546,7 @@ def groups_list(request, year=2023):
     applicants = Application.objects.filter(project_year=project_year, flow_status__is_rejected=False, education_center__in=ed_centers)    
     today = date.today()
     stats = {
-        "is_employed": f'{applicants.filter(flow_status=find_wrk_status, added_to_act=True).count()}/{applicants.filter(group__end_date__lte=today, added_to_act=True).count()} | {applicants.filter(is_working=True).count()}',
+        "is_employed": f'{applicants.filter(flow_status=find_wrk_status, added_to_act=True).count()}/{applicants.filter(group__end_date__lte=today, added_to_act=True).count()} | {applicants.filter(is_working=True, flow_status=check_wrk_status, added_to_act=True).count()}',
         "groups_paid": f'{groups.filter(pay_status="PDB").count()}/{groups.count()}',
         "paid_amount": '{:,.2f} ₽'.format(ClosingDocument.objects.filter(is_paid=True).aggregate(paid_amount=Sum("bill_sum"))["paid_amount"]).replace(',', ' ')
     }
