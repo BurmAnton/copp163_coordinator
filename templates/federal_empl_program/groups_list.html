@@ -75,6 +75,9 @@
                     {% for document in group.closing_documents.all %}
                         <tr>
                             <td class="align-col-left"><a href="{{document.doc_file.url}}" target="_blank">{{document.get_doc_type_display}}</a></td>
+                            <td class="align-col-left" rowspan="{{group.closing_documents.all.count|add:1}}" style="display: none;"><a href="{% url 'group_view' group.id %}" target="_blank">
+                                    Поток №{{group.flow_id}}
+                            </a></td>
                             <td class="align-col-left" style="display: none;">{{group.education_program.ed_center.flow_name}}</td>
                             <td class="align-col-left" style="display: none;">{{group|get_employement}}</td>
                             <td class="align-col-left" style="display: none;">{{group.get_pay_status_display}}</td>
