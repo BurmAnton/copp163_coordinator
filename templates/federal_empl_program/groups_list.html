@@ -77,7 +77,7 @@
                             <td class="align-col-left"><a href="{{document.doc_file.url}}" target="_blank">{{document.get_doc_type_display}}</a></td>
                             <td class="align-col-left" style="display: none;">{{group.education_program.ed_center.flow_name}}</td>
                             <td class="align-col-left" style="display: none;">{{group|get_employement}}</td>
-                            <td class="align-col-left" style="display: none;">{{group|get_pay_status_display}}</td>
+                            <td class="align-col-left" style="display: none;">{{group.get_pay_status_display}}</td>
                             {% if document.bill_file.name != "" %}
                                 <td class="align-col-left"><a href="{{document.bill_file.url}}" target="_blank">Счёт {% if document.bill_id is not None %}№ {{document.bill_id}}{% endif %}</a></td>
                                 <td>{{document.bill_sum|money_format}}</td>
