@@ -56,7 +56,7 @@ function SearchFunction() {
     
     for (i = 1; i < tr.length; i++) {
         let display = "none"
-        let fields = [0, 1]
+        let fields = [0, 1, 2, 3, 4]
         fields.forEach(col => {
             td = tr[i].getElementsByTagName("td")[col];
             if (td) {
