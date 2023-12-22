@@ -65,28 +65,22 @@ def count_full_price(ndc_type, pay_status):
     elif ndc_type == "NDC":
         full_amount = people_count * 1300
     else:
-        people_count_w_ndc = count_people("NDC", pay_status)
+        people_count_w_ndc = count_people("NDC", None)
         full_amount_w_ndc = people_count_w_ndc * 1300
-        people_count_wo_ndc = count_people("NNDC", pay_status)
+        people_count_wo_ndc = count_people("NNDC", None)
         full_amount_wo_ndc = people_count_wo_ndc * 1083.33
-        full_amount = full_amount_w_ndc + full_amount_wo_ndc
+        ndc = round((full_amount_wo_ndc / 1.2 - full_amount_wo_ndc) * -1, 2)
+        full_amount = full_amount_w_ndc + full_amount_wo_ndc + ndc
     return "{:,.2f} ₽".format(full_amount).replace(',', ' ')
 
 @register.filter
-def count_full_price_w_ndc(ndc_type, pay_status):
-    people_count = count_people(ndc_type, pay_status)
-    if people_count == 0:
-        return "0.00 ₽"
-    if ndc_type == "NNDC":
-        full_amount = people_count * 1083.33
-    elif ndc_type == "NDC":
-        full_amount = people_count * 1300
-    else:
-        people_count_w_ndc = count_people("NDC", pay_status)
-        full_amount_w_ndc = people_count_w_ndc * 1300
-        people_count_wo_ndc = count_people("NNDC", pay_status)
-        full_amount_wo_ndc = people_count_wo_ndc * 1300
-        full_amount = full_amount_w_ndc + full_amount_wo_ndc
+def count_full_price_w_ndc():
+    people_count = count_people(None, None)
+    people_count_w_ndc = count_people("NDC", pay_status)
+    full_amount_w_ndc = people_count_w_ndc * 1300
+    people_count_wo_ndc = count_people("NNDC", pay_status)
+    full_amount_wo_ndc = people_count_wo_ndc * 1300
+    full_amount = full_amount_w_ndc + full_amount_wo_ndc
     return "{:,.2f} ₽".format(full_amount).replace(',', ' ')
         
 @register.filter
