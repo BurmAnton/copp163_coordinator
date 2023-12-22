@@ -73,7 +73,7 @@ def count_full_price(ndc_type, pay_status):
     return "{:,.2f} ₽".format(full_amount).replace(',', ' ')
 
 @register.filter
-def count_full_price_w_ndc():
+def count_full_price_w_ndc(ndc_type):
     people_count = count_people(None, None)
     people_count_w_ndc = count_people("NDC", None)
     full_amount_w_ndc = people_count_w_ndc * 1300
