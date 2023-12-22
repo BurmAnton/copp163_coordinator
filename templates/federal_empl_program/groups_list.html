@@ -35,7 +35,7 @@
                     <input type="text" class="form-control" id="myInput" onkeyup="SearchFunction()" placeholder="Поиск..">
                 </div>
                 <div class="form mb-3">
-                    <select class="selectpicker" title="Выберите управления" multiple data-width="100%" onchange="FilterFunction(1, 'EdCenterFilter')" data-live-search="true" id="EdCenterFilter">
+                    <select class="selectpicker" title="Выберите ЦО" multiple data-width="100%" onchange="FilterFunction(1, 'EdCenterFilter')" data-live-search="true" id="EdCenterFilter">
                         {% for ed_center in ed_centers %}
                             <option class="project" value="{{ed_center.flow_name}}">{{ed_center.flow_name}}</option>
                         {% endfor %}
