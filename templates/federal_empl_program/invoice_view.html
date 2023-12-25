@@ -42,7 +42,6 @@
                 <div class="mb-3">
                     <input type="input" class="form-control" name="invoice_number" id="invoice_number" placeholder="Номер счёта" required>
                 </div>
-                
                 <div class="mb-3">
                     <input type="number" class="form-control" name="amount" id="amount" placeholder="Сумма оплаты"step="0.01" required>
                 </div>
@@ -80,6 +79,45 @@
                         <td scope="row">{{applicant.price}}</td>
                     </tr>
                 {% endfor %}
+            </table>
+            <div style="display:flex; justify-content:space-between;margin-top:10px; width:100%">
+                <h2>Документы</h2>
+                <div id="control-panel">
+                    {% if user.role != 'CO' %}
+                    <form action="{% url 'invoice_view' invoice.id %}" method="post" enctype="multipart/form-data" style="display: flex; gap: 15px; align-items: flex-start;">
+                        <input type="text" name="group_id" value="{{group.0.id}}" style="display: none;">
+                        <div class="mb-3" style="width: 260px; margin-bottom:0 !important;">
+                            {% csrf_token %}
+                            {{ bill_form.non_field_errors }}
+                            {{ bill_form.bill_file.help_text }}
+                            {{ bill_form.bill_file.errors }}
+                            {{ bill_form.bill_file }}
+                        </div>
+                        <div class="mb-3">
+                            <input type="number" class="form-control" name="amount" id="amount" placeholder="Сумма"step="0.01" required>
+                        </div>
+                        <button class="btn btn-primary" name="add-report" style="width: 250px; margin-bottom: 15px;">Добавить документ</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            <table id="acts-table" class="table table-striped">
+                <thead>
+                    <th style="border-top-left-radius: 10px; text-align:left;padding-left:60px">Отчёт о занятости</th>
+                    <th>Сумма</th>
+                </thead>
+                    {% for document in group.0.closing_documents.all|filter_docs:'RPRT'  %}
+                        <tr>
+                            <td scope="row" style="text-align:left;">
+                                <div style="display: flex; align-items:center; gap:15px;">
+                                    <a href="{{document.doc_file.url}}" target="_blank" style="padding-left: 50px;">{{document.get_doc_type_display}}</a>    
+                                </div>
+                            </td>
+                            <td scope="row">{{document.bill_sum|money_format}}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td scope="row" colspan="2">Нет документов</td></tr>
+                    {% endfor %}
             </table>
         </div>
     {% endfor %}
