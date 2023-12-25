@@ -225,7 +225,7 @@
             </thead>
                 {% for document in documents %}
                     <tr>
-                        <td scope="row" style="text-align:left;">
+                        <td scope="row" style="text-align:left;" {% if document.doc_type == 'RPRT' %} colspan="2"{% endif %}>
                             <div style="display: flex; align-items:center; gap:15px;">
                                 {% if user.role != 'CO' %}
                                 <div class="edit-icon" data-bs-toggle="modal" data-bs-target="#ChangeDoc{{document.id}}Modal">
@@ -235,28 +235,32 @@
                                 <a href="{{document.doc_file.url}}" target="_blank"{% if group.pay_status == 'UPB' %}style="padding-left: 50px;"{% endif %}>{{document.get_doc_type_display}}</a>    
                             </div>
                         </td>
-                        <td scope="row">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="" {% if document.is_paid %}checked{% endif %} disabled>
-                            </div>
-                        </td>
+                        {% if document.doc_type != 'RPRT' %}
+                            <td scope="row">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="" {% if document.is_paid %}checked{% endif %} disabled>
+                                </div>
+                            </td>
+                        {% endif %}
                         <td scope="row">{{document.bill_sum|money_format}}</td>
                         <td>{% if document.bill_id is not None%}{{document.bill_id}}{% endif %}</td>
                         <td scope="row">
-                            {% if document.bill_file.name == "" %}
-                                <form action="{% url 'group_view' group.id %}" method="post" enctype="multipart/form-data" style="display: flex;align-items: flex-start; justify-content:center;gap:10px;">
-                                    <input style="display: none;" type="text" name="doc_id" value="{{document.id}}">
-                                    <div class="mb-3" style="width: 260px; margin-bottom:0 !important;">
-                                        {% csrf_token %}
-                                        {{ bill_form.non_field_errors }}
-                                        {{ bill_form.bill_file.help_text }}
-                                        {{ bill_form.bill_file.errors }}
-                                        {{ bill_form.bill_file }}
-                                    </div>
-                                    <input type="submit" class="btn btn-primary" name="add-bill" value="Загрузить">
-                                </form>
-                            {% else %}
-                                <a href="{{document.bill_file.url}}" target="_blank">Счёт</a>
+                            {% if document.doc_type != 'RPRT' %}
+                                {% if document.bill_file.name == "" %}
+                                    <form action="{% url 'group_view' group.id %}" method="post" enctype="multipart/form-data" style="display: flex;align-items: flex-start; justify-content:center;gap:10px;">
+                                        <input style="display: none;" type="text" name="doc_id" value="{{document.id}}">
+                                        <div class="mb-3" style="width: 260px; margin-bottom:0 !important;">
+                                            {% csrf_token %}
+                                            {{ bill_form.non_field_errors }}
+                                            {{ bill_form.bill_file.help_text }}
+                                            {{ bill_form.bill_file.errors }}
+                                            {{ bill_form.bill_file }}
+                                        </div>
+                                        <input type="submit" class="btn btn-primary" name="add-bill" value="Загрузить">
+                                    </form>
+                                {% else %}
+                                    <a href="{{document.bill_file.url}}" target="_blank">Счёт</a>
+                                {% endif %}
                             {% endif %}
                         </td>
                     </tr>

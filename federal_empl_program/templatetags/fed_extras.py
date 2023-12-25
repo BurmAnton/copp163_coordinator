@@ -15,6 +15,11 @@ check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоу�
 
 
 @register.filter
+def filter_docs(docs, doc_type):
+    return docs.filter(doc_type=doc_type)
+
+
+@register.filter
 def get_groups(invoice):
     from education_centers.models import Group
     return Group.objects.filter(

@@ -528,6 +528,20 @@ def invoice_view(request, invoice_id):
     elif 'send-bill' in request.POST:
         invoice.stage = 'SPD'
         invoice.save()
+    elif 'add-report' in request.POST:
+        group = Group.objects.get(id=request.POST['group_id'])
+        doc = ClosingDocument(
+            group=group,
+            doc_type='RPRT',
+            bill_sum=request.POST['amount']
+        )
+        doc.doc_file = request.FILES['bill_file']
+        doc.doc_file.name = unidecode.unidecode(doc.doc_file.name)
+        doc.save()
+    if request.method == 'POST':
+        return HttpResponseRedirect(reverse(
+            'invoice_view', kwargs={'invoice_id': invoice_id}
+        ))
     
     groups = Group.objects.filter(students__in=invoice.applications.all()).distinct()
     groups_list = []
