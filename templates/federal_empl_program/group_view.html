@@ -227,9 +227,11 @@
                     <tr>
                         <td scope="row" style="text-align:left;">
                             <div style="display: flex; align-items:center; gap:15px;">
+                                {% if user.role != 'CO' %}
                                 <div class="edit-icon" data-bs-toggle="modal" data-bs-target="#ChangeDoc{{document.id}}Modal">
                                     <img src="{% static 'federal_empl_program/img/edit-icon.svg' %}" alt="">
                                 </div>
+                                {% endif %}
                                 <a href="{{document.doc_file.url}}" target="_blank"{% if group.pay_status == 'UPB' %}style="padding-left: 50px;"{% endif %}>{{document.get_doc_type_display}}</a>    
                             </div>
                         </td>
