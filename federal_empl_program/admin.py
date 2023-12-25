@@ -18,16 +18,19 @@ from field_history.models import FieldHistory
 from education_centers.models import EducationCenter, EducationProgram
 from users.models import Group, User
 
-from .models import (Application, CitizenApplication, CitizenCategory,
+from .models import (Application, CitizenApplication, CitizenCategory, ClosingDocument,
                      EdCenterEmployeePosition, EdCenterQuotaRequest,
                      EducationCenterProjectYear, EmploymentInvoice, FlowStatus, Grant, Indicator,
                      ProgramQuotaRequest, ProjectPosition, ProjectYear,
                      QuotaRequest)
 
 
-#@admin.register(QuotaRequest)
-class QuotaRequestAdmin(admin.ModelAdmin):
-    pass
+@admin.register(ClosingDocument)
+class ClosingDocumentAdmin(admin.ModelAdmin):
+    list_filter = [
+        'doc_type',
+        'is_paid'
+    ]
 
 #@admin.register(EdCenterQuotaRequest)
 class EdCenterQuotaAdmin(admin.ModelAdmin):
