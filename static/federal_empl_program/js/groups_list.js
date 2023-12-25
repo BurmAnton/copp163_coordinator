@@ -27,7 +27,6 @@ function FilterFunction(col, filter_id) {
                     }else{
                         document.querySelectorAll('.group'+group_id).forEach(group_tr => {
                             group_tr.classList.add('disapear-'+filter_id);
-                            
                         })
                     }
                 }    
@@ -49,7 +48,7 @@ function SearchFunction() {
     
     for (i = 1; i < tr.length; i++) {
         let display = "none"
-        let fields = [0, 1, 2, 3]
+        let fields = [1, 2, 3, 4]
         fields.forEach(col => {
             td = tr[i].getElementsByTagName("td")[col];
             if (td) {

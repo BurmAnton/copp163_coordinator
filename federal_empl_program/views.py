@@ -490,7 +490,9 @@ def invoices_list(request, year=2023):
         invoices = EmploymentInvoice.objects.filter(id__in=invoices)
         invoices.update(stage='PD')
 
-    invoices = EmploymentInvoice.objects.all().prefetch_related('applications')
+    invoices = EmploymentInvoice.objects.all().prefetch_related('applications').annotate(
+        sum_price=Sum("applications__price")
+    )
     contracts = Contract.objects.filter(empl_invoices__in=invoices).distinct()
     project_year = get_object_or_404(ProjectYear, year=year)
     ed_centers_year = EducationCenterProjectYear.objects.filter(
@@ -513,6 +515,7 @@ def invoices_list(request, year=2023):
 @csrf_exempt
 def invoice_view(request, invoice_id):
     invoice = get_object_or_404(EmploymentInvoice, id=invoice_id)
+
     if 'add-invoice' in request.POST:
         invoice.invoice_number = request.POST['invoice_number']
         try:

@@ -21,7 +21,6 @@ def get_groups(invoice):
         students__in=invoice.applications.all()  
     ).distinct()
 
-
 @register.filter
 def get_employement_pay(group):
     if group.employed_count == 0:

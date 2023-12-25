@@ -79,14 +79,14 @@
                         {% if invoice.invoice_file.name != "" %}
                             {{invoice.amount|money_format}}
                         {% else %}
-                            -
+                            {{invoice.sum_price|money_format}}
                         {% endif %}
                     </td>
                     <td class="">
                         {% if invoice.stage == 'SPD' or invoice.stage == 'PD'  %}
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="{{invoice.id}}" name="invoices" {% if invoice.stage == 'PD' %}checked disabled {% endif %}>
-                        </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="{{invoice.id}}" name="invoices" {% if invoice.stage == 'PD' %}checked disabled {% endif %}>
+                            </div>
                         {% else %}
                         -
                         {% endif %}

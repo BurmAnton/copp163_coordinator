@@ -137,6 +137,7 @@ class QuotaRequest(models.Model):
         verbose_name = "Запрос квоты"
         verbose_name_plural = "Запрос квоты"
 
+
 class EdCenterQuotaRequest(models.Model):
     request = models.ForeignKey(
         QuotaRequest, 
