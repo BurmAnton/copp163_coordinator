@@ -491,7 +491,7 @@ def invoices_list(request, year=2023):
         invoices.update(stage='PD')
 
     invoices = EmploymentInvoice.objects.all().prefetch_related('applications').annotate(
-        sum_price=Sum("applications__price")
+        sum_price=Sum("applications__price")*30%
     )
     contracts = Contract.objects.filter(empl_invoices__in=invoices).distinct()
     project_year = get_object_or_404(ProjectYear, year=year)
