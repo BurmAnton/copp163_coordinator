@@ -4,6 +4,7 @@ body {
 
 .body {
   color: #394959;
+  padding-bottom: 15px;
 }
 .body a {
   color: #394959;
@@ -21,6 +22,13 @@ body {
 }
 #page-hdr h3 {
   font-size: 22px;
+}
+
+#switch-panel {
+  display: flex;
+  justify-content: flex-end;
+  width: 85%;
+  margin: auto;
 }
 
 #groups-list {
@@ -97,7 +105,7 @@ body {
   word-wrap: break-word;
   text-align: center;
 }
-#groups-list table .disapear-EdCenterFilter {
+#groups-list table .disapear-EdCenterFilter, #groups-list table .disapear-ActPayStatusFilter {
   display: none !important;
 }
 #groups-list table .align-col-left {

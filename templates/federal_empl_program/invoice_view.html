@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load fed_extras %}
+
+{% block title %}Счёт 30% ({{invoice.contract.ed_center.ed_center.flow_name}}){% endblock %}
+{% block style %}
+    <link href="{% static 'federal_empl_program/css/invoice_view.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+
+{% endblock %}
+
+{% block body %}
+       <div id="page-hdr">
+        <h1>
+            Счёт за трудоустройство {% if invoice.invoice_number is not None %}№{{invoice.invoice_number}}{% endif %} ({{invoice.contract.ed_center.ed_center.flow_name}})
+        </h1>
+        <h3>Статус: {{invoice.get_stage_display}}</h3>
+    </div>
+    <div style="width: 85%; margin: auto;">
+        <div style="display: flex; justify-content: space-between; ">
+            <h2>Счёт</h2>
+            <form action="{% url 'invoice_view' invoice.id %}" method="post">
+                {% if invoice.stage == "NVC" and user.is_superuser %}
+                    <input type="submit" class="btn btn-primary" name="send-bill" value="Отправить на оплату">
+                {% endif %}
+            </form>
+        </div>
+        
+        {% if invoice.invoice_file.name != "" %}
+            <a href="{{invoice.invoice_file.url}}" target="_blank">Счёт {% if invoice.invoice_number is not None %}№{{invoice.invoice_number}}{% endif %} ({{invoice.amount|money_format}})</a>
+        {% endif %}
+        {% if user.is_superuser %}
+            <form action="{% url 'invoice_view' invoice.id %}" method="post" enctype="multipart/form-data" style="display: flex; gap: 15px; align-items: flex-start;">
+                <div class="mb-3" style="width: 260px; margin-bottom:0 !important;">
+                    {% csrf_token %}
+                    {{ bill_form.non_field_errors }}
+                    {{ bill_form.bill_file.help_text }}
+                    {{ bill_form.bill_file.errors }}
+                    {{ bill_form.bill_file }}
+                </div>
+                <div class="mb-3">
+                    <input type="input" class="form-control" name="invoice_number" id="invoice_number" value="{{invoice.invoice_number}}" placeholder="Номер счёта" required>
+                </div>
+                
+                <div class="mb-3">
+                    <input type="number" class="form-control" name="amount" id="amount" placeholder="Сумма оплаты"step="0.01" {% if invoice.amount is not None %}value="{{invoice.amount|float_format}}"{% endif %} required>
+                </div>
+                <input type="submit" class="btn btn-primary" name="add-invoice" value="Сохранить">
+            </form>
+        {% endif %}
+    </div>
+    {% for group in groups %}
+        <div class="applicants-list">
+            <div style="display:flex; justify-content:space-between;margin-bottom:10px">
+                <h2>Поток №{{group.0.flow_id}}</h2>
+            </div>
+            <div id="group-info" style="width: 100%;">
+                <div>
+                    <p><b>Программа обучения:</b> {{group.0.education_program.program_name}} ({{group.0.education_program.duration}} ч.)</p>
+                    <p><b>Вид программы:</b> {{group.0.education_program.get_program_type_display}}</p>
+                </div>
+                <div>
+                    <p><b>Начало обучения:</b> {{group.0.start_date}}</p>
+                    <p><b>Конец обучения:</b> {{group.0.end_date}}</p>
+                </div>
+            </div>
+            <table id="applicants-table" class="table table-striped">
+                <thead>
+                    <th scope="col" style="border-top-left-radius: 10px; text-align:left;">ФИО</th>
+                    <th scope="col">Статус</th>
+                    <th scope="col">Договор</th>
+                    <th scope="col" style="border-top-right-radius: 10px;">Стоимость обучения</th>
+                </thead>
+                {% for applicant in group.1 %}
+                    <tr>
+                        <td scope="row" style="text-align:left;">{{applicant.applicant}}</td>
+                        <td scope="row">{{applicant.flow_status.off_name}}</td>
+                        <td scope="row">{{applicant.contract.number}}</td>
+                        <td scope="row">{{applicant.price}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endfor %}
+{% endblock %}

@@ -11,7 +11,7 @@ from education_centers.models import (Competence, EducationCenter,
                                       EducationProgram, Workshop)
 from users.models import User
 
-from .models import (Application, CitizenCategory, EducationCenterProjectYear,
+from .models import (Application, CitizenCategory, Contract, EducationCenterProjectYear,
                      FlowStatus, Group, ProjectYear)
 
 CONTR_TYPE_CHOICES = {
@@ -27,6 +27,8 @@ EDUCATION_CHOICES = {
     "Среднее общее образование - 11 классов": 'SCHL',
     "Основное общее образование - 9 классов": 'SCHL',
 }
+
+project_year = ProjectYear.objects.get(year=2023)
 
 def get_sheet(form):
     workbook = load_workbook(form.cleaned_data['import_file'])
@@ -78,13 +80,14 @@ def import_applications(form, year):
     fields_names = {
         "Номер заявки", "Фамилия", "Имя", "Отчество", "СНИЛС", "Телефон",
         "Пол гражданина","Уровень образования с портала РР", "Email",
-        "Регион", "Статус заявки", "Дата одобрения ЦЗН", "Категория",
+        "Регион", "Статус заявки", "Дата одобрения ЦЗН", "Категория (полное)",
         "Тип договора", "Образовательный партнёр", "Начало обучения",
         "Окончание обучения", "Дата создания заявки", "Идентификатор потока",
         "Программа", "Идентификатор образовательной программы", 
         "Дата рождения гражданина", "Срок истечения заявки",
         "Дата заключения договора со слушателем", 
-        "Стоимость договора гражданина", "Документ о занятости"
+        "Стоимость договора гражданина", "Документ о занятости",
+        "Номер договора на организацию обучения"
     }
     cheak_col_names = cheak_col_match(sheet, fields_names)
     if cheak_col_names[0] != True:
@@ -176,12 +179,12 @@ def create_application(sheet, row, citizen, project_year):
         csn_prv_date = datetime.strptime(sheet["Дата одобрения ЦЗН"][row], "%d.%m.%Y")
         if csn_prv_date == "": csn_prv_date = None
         application.csn_prv_date = csn_prv_date
-    citizen_category = sheet["Категория"][row]
+    citizen_category = sheet["Категория (полное)"][row]
     citizen_category = CitizenCategory.objects.filter(
             official_name=citizen_category, project_year=project_year)
     if len(citizen_category) == 0:
         application.delete()
-        return {"status": "CategoryMissing", "value": sheet["Категория"][row]}
+        return {"status": "CategoryMissing", "value": sheet["Категория (полное)"][row]}
     application.citizen_category = citizen_category[0]
     contract_type = sheet["Тип договора"][row]
     if contract_type in CONTR_TYPE_CHOICES:
@@ -202,6 +205,12 @@ def create_application(sheet, row, citizen, project_year):
         application.delete()
         return {"status": "EdCenterMissing", "value": flow_name}
     application.education_center = education_center[0]
+    contract = sheet["Номер договора на организацию обучения"][row]
+    if contract != "" and contract is not None and application.education_center != None:
+        contract = create_contract(
+            contract, application.education_center
+        )
+        application.contract = contract
     program_flow_id = sheet["Идентификатор образовательной программы"][row]
     application.education_program = get_education_program(program_flow_id)
     if application.education_program == None:
@@ -223,6 +232,7 @@ def create_application(sheet, row, citizen, project_year):
 def create_group(sheet, row, application):
     flow_id = sheet["Идентификатор потока"][row]
     group, is_new = Group.objects.get_or_create(flow_id=flow_id)
+    
     if sheet["Начало обучения"][row] != None:
         group.start_date = datetime.strptime(sheet["Начало обучения"][row], "%d.%m.%Y")
     if sheet["Окончание обучения"][row] != None:
@@ -231,6 +241,19 @@ def create_group(sheet, row, application):
     group.students.add(application)
     group.save()
     return {"status": True, "value": group, "is_new": is_new}
+
+def create_contract(number: str, ed_center: EducationCenter):
+    ed_center = EducationCenterProjectYear.objects.get(
+        project_year=project_year,
+        ed_center=ed_center
+    )
+    contract, is_new = Contract.objects.get_or_create(
+        number=number,
+        ed_center=ed_center,
+        project_year=project_year
+    )
+    return contract
+
     
 def get_education_program(program_flow_id):
     education_program = EducationProgram.objects.filter(

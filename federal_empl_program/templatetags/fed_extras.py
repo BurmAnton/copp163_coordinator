@@ -1,4 +1,5 @@
 from datetime import date
+from click import Group
 from django import template
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import stringfilter
@@ -6,10 +7,26 @@ from django.db.models import Sum, F, Q
 
 from federal_empl_program.models import ProjectYear, FlowStatus, Application
 
+
 register = template.Library()
 
 find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
 check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоустройства')
+
+
+@register.filter
+def get_groups(invoice):
+    from education_centers.models import Group
+    return Group.objects.filter(
+        students__in=invoice.applications.all()  
+    ).distinct()
+
+
+@register.filter
+def get_employement_pay(group):
+    if group.employed_count == 0:
+        return '0 в счёте (0.00%)'
+    return f'{group.employee_paid_count} в счёте ({group.employee_paid_count/group.employed_count * 100:.2f}%)'
 
 @register.filter
 def get_employement(group):
@@ -27,11 +44,11 @@ def get_item(dictionary, key):
 
 @register.filter
 def float_format(number):
-    return "{:.2f}".format(number)
+    return "{:.2f}".format(float(number))
 
 @register.filter
 def money_format(number):
-    return "{:,.2f} ₽".format(number).replace(',', ' ')
+    return "{:,.2f} ₽".format(float(number)).replace(',', ' ')
 
 @register.filter
 def multiply(factor_1, factor_2):

@@ -178,6 +178,7 @@ class AbilimpicsWinnerAdmin(UserAdmin):
     )
     ordering = ('email',)
 
+
 @admin.register(Group)
 class GroupAdmin(admin.ModelAdmin):
     form = GroupForm
@@ -189,26 +190,9 @@ class GroupAdmin(admin.ModelAdmin):
         ('education_program', RelatedOnlyDropdownFilter),
         ('workshop__education_center', RelatedOnlyDropdownFilter),
         ('workshop', RelatedOnlyDropdownFilter),
-        'is_new_price'
     )
-    search_fields = ['name', 'start_date', 'end_date']
-    list_display = ('flow_id', 'education_period', 'is_new_price', 'workshop_link', 'competence')
-    
-    def competence(self, group):
-        if group.education_program != None:
-            url = reverse("admin:education_centers_competence_change", args=[group.education_program.competence.id])
-            link = f'<a href="%s"> %s </a>' % (url, group.education_program.competence)
-            return mark_safe(link)
-        return "-"
-    competence.short_description = 'Компетенция'
-
-    def workshop_link(self, group):
-        if group.workshop == None:
-            return "-"
-        url = reverse("admin:education_centers_educationcenter_change", args=[group.workshop.education_center.id])
-        link = f'<a href="%s"> %s </a>' % (url, group.workshop)
-        return mark_safe(link)
-    workshop_link.short_description = 'Место обучения (адрес)'
+    search_fields = ['flow_id', 'start_date', 'end_date']
+    list_display = ('flow_id', 'education_period')
 
     def education_period(self, group):
         start_date = group.start_date.strftime('%d/%m/%y')
@@ -217,29 +201,6 @@ class GroupAdmin(admin.ModelAdmin):
         return period
     education_period.short_description = 'Период обучения'
     education_period.admin_order_field = 'start_date'
-
-    actions = ['set_new_price', 'set_old_price']
-
-    def set_new_price(self, request, queryset):
-        queryset.update(is_new_price=True)
-    set_new_price.short_description='Установить новую цену'
-
-    def set_old_price(self, request, queryset):
-        queryset.update(is_new_price=False)
-    set_old_price.short_description='Вернуть старую цену'
-
-    def get_queryset(self, request):
-        queryset = super().get_queryset(request)
-        cl_group = users.models.Group.objects.filter(name='Представитель ЦО')
-
-        if len(cl_group) != 0:
-            if len(User.objects.filter(groups=cl_group[0], email=request.user.email)) != 0:
-                education_centers = EducationCenter.objects.filter(contact_person=request.user)
-                if len(education_centers) != 0:  
-                    workshops = Workshop.objects.filter(education_center=education_centers[0])        
-                    queryset = Group.objects.filter(workshop__in=workshops)
-                    return queryset
-        return queryset
 
 
 CitizenForm = select2_modelform(Application, attrs={'width': '400px'})
