@@ -40,11 +40,11 @@
                     {{ bill_form.bill_file }}
                 </div>
                 <div class="mb-3">
-                    <input type="input" class="form-control" name="invoice_number" id="invoice_number" value="{{invoice.invoice_number}}" placeholder="Номер счёта" required>
+                    <input type="input" class="form-control" name="invoice_number" id="invoice_number" placeholder="Номер счёта" required>
                 </div>
                 
                 <div class="mb-3">
-                    <input type="number" class="form-control" name="amount" id="amount" placeholder="Сумма оплаты"step="0.01" {% if invoice.amount is not None %}value="{{invoice.amount|float_format}}"{% endif %} required>
+                    <input type="number" class="form-control" name="amount" id="amount" placeholder="Сумма оплаты"step="0.01" required>
                 </div>
                 <input type="submit" class="btn btn-primary" name="add-invoice" value="Сохранить">
             </form>

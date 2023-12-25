@@ -96,6 +96,22 @@
                                 {% for document in group.closing_documents.all %}
                                     {% if document.doc_type == 'ACT' %}
                                         <tr class="group{{group.id}}">
+                                            <td rowspan="{{group.row_count}}" style="display: none;">
+                                                <div class="form-check">
+                                                    <input class="form-check-input center-checkbox" type="checkbox" name="groups" value="{{group.id}}">
+                                                </div>
+                                            </td>
+                                            <td class="align-col-left" rowspan="{{group.row_count}}" style="display: none;">
+                                                <a href="{% url 'group_view' group.id %}" target="_blank">Поток №{{group.flow_id}}</a>
+                                            </td>
+                                            <td class="align-col-left" rowspan="{{group.row_count}}" style="display: none;" data-id="{{group.id}}">{{group.education_program.ed_center.flow_name}}</td>
+                                            <td rowspan="{{group.row_count}}" style="display: none;">{{group.get_pay_status_display}}</td>
+                                            {% if user.role != 'CNT' %}
+                                                <td rowspan="{{group.row_count}}" style="display: none;">
+                                                    {{group|get_employement}}
+                                                    <br>{{group|get_employement_pay}}
+                                                </td>
+                                            {% endif %}
                                             <td class="align-col-left"><a href="{{document.doc_file.url}}" target="_blank">{{document.get_doc_type_display}}</a></td>
                                             {% if document.bill_file.name != "" %}
                                                 <td class="align-col-left"><a href="{{document.bill_file.url}}" target="_blank">Счёт {% if document.bill_id is not None %}№{{document.bill_id}}{% endif %}</a></td>
