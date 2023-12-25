@@ -11,33 +11,26 @@ function FilterFunction(col, filter_id) {
         tr = table.getElementsByTagName("tr");
         
         if (options.length != 0){
-            if (col === 6){
-                for (i = 1; i < tr.length; i++) {
-                    let display = "none"
-                    td = tr[i].getElementsByTagName("td")[col];
-                    if (td) {
-                        td.querySelectorAll('div').forEach(div =>{
-                            if (options.includes(div.innerHTML)) {
-                                tr[i].classList.remove('disapear-'+filter_id);
-                            }else{
-                                tr[i].classList.add('disapear-'+filter_id);
-                            }
-                        });
-                    }    
-                }
-            }else{
-                for (i = 1; i < tr.length; i++) {
-                    let display = "none"
-                    td = tr[i].getElementsByTagName("td")[col];
-                    if (td) {
-                        txtValue = td.textContent || td.innerText;
-                        if (options.includes(txtValue)) {
-                            tr[i].classList.remove('disapear-'+filter_id);
-                        }else{
-                            tr[i].classList.add('disapear-'+filter_id);
-                        }
-                    }    
-                } 
+            console.log(options)
+            for (i = 1; i < tr.length; i++) {
+                let display = "none"
+                td = tr[i].getElementsByTagName("td")[col];
+                group_id = td.dataset.id;
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    
+                    if (options.includes(txtValue)) {
+                        document.querySelectorAll('.group'+group_id).forEach(group_tr => {
+                            group_tr.classList.remove('disapear-'+filter_id);
+                            console.log(group_tr)
+                        })
+                    }else{
+                        document.querySelectorAll('.group'+group_id).forEach(group_tr => {
+                            group_tr.classList.add('disapear-'+filter_id);
+                            
+                        })
+                    }
+                }    
             }
         } else {
             for (i = 1; i < tr.length; i++) {

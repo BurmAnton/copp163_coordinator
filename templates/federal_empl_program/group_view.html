@@ -148,24 +148,29 @@
             
         </div>
     </div>
-    <div style="width: 85%; margin: auto;">
-        <form action="{% url 'group_view' group.id %}" method="post" style="display: flex; gap: 15px; align-items: flex-start;">
-            <div class="mb-3">
-                <input type="input" class="form-control" name="group_link" id="group_link" placeholder="Цифровой след" required>
-            </div>
-            <input type="submit" class="btn btn-primary" name="add-group-link" value="Сохранить">
-        </form>
-    </div>
+    {% if user.role != 'CO' %}
+        <div style="width: 85%; margin: auto;">
+            <form action="{% url 'group_view' group.id %}" method="post" style="display: flex; gap: 15px; align-items: flex-start;">
+                <div class="mb-3">
+                    <input type="input" class="form-control" name="group_link" id="group_link" placeholder="Цифровой след" required>
+                </div>
+                <input type="submit" class="btn btn-primary" name="add-group-link" value="Сохранить">
+            </form>
+        </div>
+    {% endif %}
     <div id="applicants-list">
         <form style="width:100%" action="{% url 'group_view' group.id %}" method="post">
             <div style="display:flex; justify-content:space-between;margin-bottom:10px">
                 <h2>Участники</h2>
-                <button class="btn btn-primary" name="add_to_act">Сохранить</button>
+                {% if user.role != 'CO' %}
+                    <button class="btn btn-primary" name="add_to_act">Сохранить</button>
+                {% endif %}
             </div>
             <table id="applicants-table" class="table table-striped">
                 <thead>
                     <th scope="col" style="border-top-left-radius: 10px; text-align:left;">ФИО</th>
                     <th scope="col">Статус</th>
+                    <th scope="col">Договор</th>
                     <th scope="col">Актирован</th>
                     <th scope="col">Трудоустроен (не подтверждено)</th>
                     <th scope="col" style="border-top-right-radius: 10px;">Стоимость обучения</th>
@@ -174,6 +179,7 @@
                     <tr>
                         <td scope="row" style="text-align:left;">{{applicant.applicant}}</td>
                         <td scope="row">{{applicant.flow_status.off_name}}</td>
+                        <td scope="row">{{applicant.contract.number}}</td>
                         <td scope="row">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="act{{applicant.id}}" {% if applicant.added_to_act %} checked {% endif %}>
@@ -199,12 +205,14 @@
         <div style="display:flex; justify-content:space-between;margin-top:10px; width:100%">
             <h2>Документы</h2>
             <div id="control-panel">
-                {% if documents.count != 0 and group.pay_status != 'UPB' %}
+                {% if documents.count != 0 and group.pay_status != 'UPB' and user.role != 'CO' %}
                 <form action="{% url 'group_view' group.id %}" method="post">
                     <input type="submit" class="btn btn-outline-primary" name="send-bill" value="Отправить на оплату">
                 </form>
                 {% endif %}
+                {% if user.role != 'CO' %}
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddDocModal">Добавить документ</button>
+                {% endif %}
             </div>
         </div>
         <table id="acts-table" class="table table-striped">
@@ -251,10 +259,11 @@
                         </td>
                     </tr>
                 {% empty %}
-                    <tr><td scope="row" colspan="4">Нет документов</td></tr>
+                    <tr><td scope="row" colspan="5">Нет документов</td></tr>
                 {% endfor %}
         </table>
     </div>
+    {% if user.role != 'CO' %}
     <div style="width: 85%; margin: auto; margin-bottom: 25px;">
         <h5>Комментарий</h5>
         <form class="comment-form" action="{% url 'group_view' group.id %}" method="post">
@@ -264,4 +273,5 @@
             <div class="submit" style="display: flex; justify-content: flex-end;"><button class="btn btn-primary" name="group-comment">Сохранить</button></div>
         </form>
     </div>
+    {% endif %}
 {% endblock %}

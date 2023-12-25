@@ -50,6 +50,7 @@
                                                 {% if request.user.role == 'CO' %}
                                                     <li><a class="dropdown-item" href="{% url 'ed_center_application' ed_center_id=request.user.education_centers.first.id %}">Заявки на ПКО</a></li>
                                                     <li><a class="dropdown-item" href="{% url 'quota_center_request' ed_center_id=request.user.education_centers.first.id %}">Запрос квоты</a></li>
+                                                    <li><a class="dropdown-item" href="{% url 'groups_list' 2023 %}">Потоки/Акты/Счета</a></li>
                                                 {% endif %}
                                                 {% if request.user.is_superuser %}
                                                     <li><a class="dropdown-item" href="{% url 'quota_request' %}">Запрос квоты (регион)</a></li>

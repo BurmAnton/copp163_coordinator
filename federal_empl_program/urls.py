@@ -24,6 +24,8 @@ urlpatterns = [
     ),
     path('groups/list/<int:year>', views.groups_list, name="groups_list"),
     path('groups/<int:group_id>', views.group_view, name="group_view"),
+    path('invoices/list/<int:year>', views.invoices_list, name="invoices_list"),
+    path('invoices/<int:invoice_id>', views.invoice_view, name="invoice_view"),
     path(
         'dashboard/applications/<int:year>', 
         views.applications_dashboard, 

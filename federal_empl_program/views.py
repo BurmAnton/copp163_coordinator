@@ -11,7 +11,7 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db import IntegrityError
-from django.db.models import (Avg, Case, Count, IntegerField, Q, Sum, Value,
+from django.db.models import (Avg, Case, Count, IntegerField, Q, F,  Sum, Value,
                               When)
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
@@ -25,8 +25,8 @@ from education_centers.models import (AbilimpicsWinner, Competence,
                                       EducationCenter, EducationProgram, Group)
 from federal_empl_program.imports import import_applications
 from federal_empl_program.models import (Application, CitizenApplication,
-                                         ClosingDocument, EdCenterQuotaRequest,
-                                         EducationCenterProjectYear,
+                                         ClosingDocument, Contract, EdCenterQuotaRequest,
+                                         EducationCenterProjectYear, EmploymentInvoice,
                                          FlowStatus, Grant,
                                          ProgramQuotaRequest, ProjectYear,
                                          QuotaRequest)
@@ -480,6 +480,63 @@ def quota_request(request):
         'ed_centers': ed_centers,
         'programs': programs
     })
+
+
+@login_required
+@csrf_exempt
+def invoices_list(request, year=2023):
+    if 'pay_bills' in request.POST:
+        invoices = request.POST.getlist('invoices')
+        invoices = EmploymentInvoice.objects.filter(id__in=invoices)
+        invoices.update(stage='PD')
+
+    invoices = EmploymentInvoice.objects.all().prefetch_related('applications')
+    contracts = Contract.objects.filter(empl_invoices__in=invoices).distinct()
+    project_year = get_object_or_404(ProjectYear, year=year)
+    ed_centers_year = EducationCenterProjectYear.objects.filter(
+        contracts__in=contracts)
+    ed_centers = EducationCenter.objects.filter(
+        project_years__in=ed_centers_year)
+
+    if request.user.role == 'CO':
+        invoices = invoices.filter(contract__ed_center__ed_center__in=request.user.education_centers.all())
+        ed_centers = ed_centers.filter(id__in=request.user.education_centers.all())
+
+    return render(request, 'federal_empl_program/invoices_list.html', {
+        'invoices': invoices,
+        'ed_centers': ed_centers,
+        'project_year': project_year
+    })
+
+
+@login_required
+@csrf_exempt
+def invoice_view(request, invoice_id):
+    invoice = get_object_or_404(EmploymentInvoice, id=invoice_id)
+    if 'add-invoice' in request.POST:
+        invoice.invoice_number = request.POST['invoice_number']
+        try:
+            invoice.invoice_file = request.FILES['bill_file']
+        except:
+            pass
+        invoice.amount = request.POST['amount']
+        invoice.stage = 'NVC'
+        invoice.save()
+    elif 'send-bill' in request.POST:
+        invoice.stage = 'SPD'
+        invoice.save()
+    
+    groups = Group.objects.filter(students__in=invoice.applications.all()).distinct()
+    groups_list = []
+    for group in groups:
+        groups_list.append([group, group.students.filter(employment_invoice=invoice)])
+
+    return render(request, 'federal_empl_program/invoice_view.html', {
+        'invoice': invoice,
+        'groups': groups_list,
+        'bill_form': BillDataForm(),
+    })
+
     
 @login_required
 @csrf_exempt
@@ -505,7 +562,7 @@ def groups_list(request, year=2023):
         start_date__gte=start_date, end_date__lte=end_date,
         students__in=applications
     ).exclude(students=None).select_related(
-        'education_program', 'education_program__ed_center'
+        'education_program', 'education_program__ed_center',
     ).prefetch_related('closing_documents', 'students').order_by(
         Case( 
             When (pay_status="UPB", then=Value(0)),
@@ -529,11 +586,21 @@ def groups_list(request, year=2023):
             filter=Q(students__flow_status=find_wrk_status, students__added_to_act=True), 
             distinct=True
         ),
+        employee_paid_count=Count(
+            "students",
+            filter=Q(students__flow_status=find_wrk_status, students__added_to_act=True) & ~Q(students__employment_invoice=None),
+            distinct=True
+        ),
         check_count=Count(
             "students",
             filter=Q(students__flow_status=check_wrk_status, students__added_to_act=True, students__is_working=True), 
             distinct=True
-        )
+        ),
+        row_count=Count(
+            "closing_documents",
+            filter=Q(closing_documents__doc_type="ACT"),
+            distinct=True
+        ) + 1
     )
     if 'pay_bills' in request.POST:
         for group in groups.exclude(closing_documents=None):
@@ -544,7 +611,23 @@ def groups_list(request, year=2023):
                     group.pay_status = 'PDB'
                 else:  group.pay_status = 'UPB'
                 group.save()
-
+    elif 'generate_employment_invoice' in request.POST:
+        groups_list = request.POST.getlist('groups')
+        groups_list = Group.objects.filter(id__in=groups_list)
+        find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+        applications = Application.objects.filter(
+            group__in=groups_list, 
+            employment_invoice=None,
+            flow_status=find_wrk_status,
+            added_to_act=True
+        )
+        contracts = Contract.objects.filter(applications__in=applications).distinct()
+        for contract in contracts:
+            invoice = EmploymentInvoice.objects.create(
+                contract=contract,
+            )
+            invoice.applications.add(*applications.filter(contract=contract))
+            invoice.save()
     #Training stats
     applicants = Application.objects.filter(project_year=project_year, flow_status__is_rejected=False, education_center__in=ed_centers)    
     today = date.today()
@@ -553,6 +636,10 @@ def groups_list(request, year=2023):
         "groups_paid": f'{groups.filter(pay_status="PDB").count()}/{groups.count()}',
         "paid_amount": '{:,.2f} ₽'.format(ClosingDocument.objects.filter(is_paid=True).aggregate(paid_amount=Sum("bill_sum"))["paid_amount"]).replace(',', ' ')
     }
+
+    if request.user.role == 'CO':
+        groups = groups.filter(education_program__ed_center__in=request.user.education_centers.all())
+        ed_centers = ed_centers.filter(id__in=request.user.education_centers.all())
 
     return render(request, 'federal_empl_program/groups_list.html', {
         'groups': groups,

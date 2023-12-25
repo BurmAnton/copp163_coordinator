@@ -7,6 +7,7 @@ from django.db.models.deletion import CASCADE, DO_NOTHING
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
+
 from users.managers import CustomUserManager
 from users.models import DisabilityType, User
 
@@ -328,7 +329,7 @@ class Workshop(models.Model):
     def __str__(self):
         return f"{self.education_center} ({self.adress})"
 
-class Group(models.Model):
+class Group(models.Model):   
     name = models.CharField("Номер группы", max_length=50)
     flow_id = models.IntegerField('Идентификатор flow', null=True, blank=True) 
     workshop = models.ForeignKey(Workshop, verbose_name="мастерская", on_delete=CASCADE, related_name='groups', blank=True, null=True)

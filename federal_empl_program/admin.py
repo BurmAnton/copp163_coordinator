@@ -20,7 +20,7 @@ from users.models import Group, User
 
 from .models import (Application, CitizenApplication, CitizenCategory,
                      EdCenterEmployeePosition, EdCenterQuotaRequest,
-                     EducationCenterProjectYear, FlowStatus, Grant, Indicator,
+                     EducationCenterProjectYear, EmploymentInvoice, FlowStatus, Grant, Indicator,
                      ProgramQuotaRequest, ProjectPosition, ProjectYear,
                      QuotaRequest)
 
@@ -87,6 +87,11 @@ class EducationCenterProjectYearAdmin(admin.ModelAdmin):
 
 #@admin.register(Indicator)
 class IndicatorAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(EmploymentInvoice)
+class EmploymentInvoiceAdmin(admin.ModelAdmin):
     pass
 
 

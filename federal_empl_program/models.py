@@ -2,7 +2,7 @@ import math
 
 from django.core.cache import cache
 from django.db import models
-from django.db.models.deletion import CASCADE, DO_NOTHING
+from django.db.models.deletion import CASCADE, SET_NULL
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from field_history.tracker import FieldHistoryTracker
@@ -383,6 +383,68 @@ class FlowStatus(models.Model):
         verbose_name_plural = "Статусы flow"
 
 
+class Contract(models.Model):
+    number = models.CharField(
+        "Номер договора", max_length=100,
+        null=False, blank=False
+    )
+    project_year = models.ForeignKey(
+        ProjectYear, 
+        verbose_name="Год проекта",
+        related_name="contracts",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+    ed_center = models.ForeignKey(
+        EducationCenterProjectYear,
+        verbose_name="ЦО",
+        related_name="contracts",
+        null=False, 
+        blank=False,
+        on_delete=models.CASCADE
+    )
+
+    class Meta:
+        verbose_name = "Договор на организацию обучения"
+        verbose_name_plural = "Договоры на организацию обучения"
+    
+    def __str__(self):
+        return  f"{self.number} ({self.ed_center.ed_center}, {self.project_year})"
+
+
+class EmploymentInvoice(models.Model):
+    invoice_number = models.CharField("Номер счёта", blank=True, null=True, max_length=50)
+    contract = models.ForeignKey(
+        Contract,
+        verbose_name="договор",
+        related_name="empl_invoices",
+        null=False,
+        blank=False,
+        on_delete=CASCADE
+    )
+    amount = models.FloatField("Сумма оплаты", default=0)
+    STAGES = [
+        ('GNRT', 'Сгенерирован'),
+        ('NVC', 'Подгружен счёт'),
+        ('SPD', 'На оплату'),
+        ('PD', 'Оплачен')
+    ]
+    stage = models.CharField("Стадии", max_length=4, choices=STAGES, blank=True, null=True, default="GNRT")
+    
+    def invoice_path(instance, filename):
+        return 'media/federal_empl/docs/invoices/employeement/{0}'.format(filename)
+    invoice_file = models.FileField("Счёт", blank=True, upload_to=invoice_path)
+
+    class Meta:
+        verbose_name = "Счёт (30%)"
+        verbose_name_plural = "Счёта (30%)"
+    
+    def __str__(self):
+        return  f"№{self.invoice_number} ({self.contract.number})"    
+
+
+
 class Application(models.Model):
     project_year = models.ForeignKey(
         ProjectYear, 
@@ -402,6 +464,22 @@ class Application(models.Model):
         on_delete=CASCADE
     )
     added_to_act = models.BooleanField("Трудоустроен", default=False)
+    contract = models.ForeignKey(
+        Contract, 
+        verbose_name="Договор",
+        related_name="applications",
+        null=True, 
+        blank=True,
+        on_delete=SET_NULL
+    )
+    employment_invoice = models.ForeignKey(
+        EmploymentInvoice, 
+        verbose_name="Счёт (30%)",
+        related_name="applications",
+        null=True, 
+        blank=True,
+        on_delete=SET_NULL
+    )
     applicant = models.ForeignKey(Citizen, verbose_name="Заявитель", on_delete=CASCADE, related_name='POE_applications')
     creation_date = models.DateTimeField("Дата создания", blank=True, null=True, default=now)
     expiration_date = models.DateField("Дата истечения заявки", blank=True, null=True)
@@ -514,6 +592,7 @@ class ClosingDocument(models.Model):
     def doc_path(instance, filename):
         return 'media/federal_empl/docs/{0}'.format(filename)
     doc_file = models.FileField("Акт/Отчёт", upload_to=doc_path)
+
     def bill_path(instance, filename):
         return 'media/federal_empl/docs/{0}'.format(filename)
     bill_file = models.FileField("Счёт", upload_to=bill_path)
@@ -525,6 +604,8 @@ class ClosingDocument(models.Model):
     
     def __str__(self):
         return  f"{self.group.id} ({self.get_doc_type_display()})"
+    
+
 
 class CitizenApplication(models.Model):
     first_name = models.CharField("Имя", max_length=30, null=True)
