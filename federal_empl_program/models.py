@@ -432,7 +432,7 @@ class EmploymentInvoice(models.Model):
         ('PD', 'Оплачен')
     ]
     stage = models.CharField("Стадии", max_length=4, choices=STAGES, blank=True, null=True, default="GNRT")
-    
+    is_requisted = models.BooleanField("Запросили счёт", default=False)
     def invoice_path(instance, filename):
         return 'media/federal_empl/docs/invoices/employeement/{0}'.format(filename)
     invoice_file = models.FileField("Счёт", blank=True, upload_to=invoice_path)
