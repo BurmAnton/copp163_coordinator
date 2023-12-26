@@ -622,8 +622,9 @@ def groups_list(request, year=2023):
     if 'pay_bills' in request.POST:
         for group in groups.exclude(closing_documents=None):
             for document in group.closing_documents.all():
-                document.is_paid = f'doc_{document.id}' in request.POST
-                document.save()
+                if f'doc_{document.id}' in request.POST:
+                    document.is_paid = True
+                    document.save()
                 if len(group.closing_documents.exclude(bill_file='').filter(is_paid=False)) == 0:
                     group.pay_status = 'PDB'
                 else:  group.pay_status = 'UPB'
