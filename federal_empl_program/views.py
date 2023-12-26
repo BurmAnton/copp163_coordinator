@@ -489,6 +489,10 @@ def invoices_list(request, year=2023):
         invoices = request.POST.getlist('invoices')
         invoices = EmploymentInvoice.objects.filter(id__in=invoices)
         invoices.update(stage='PD')
+    elif 'send_requests' in request.POST:
+        invoices = request.POST.getlist('is_requisted')
+        invoices = EmploymentInvoice.objects.filter(id__in=invoices)
+        invoices.update(is_requisted=True)
     
     invoices = EmploymentInvoice.objects.all().prefetch_related('applications').annotate(
         sum_price=Sum("applications__price") * 0.3
