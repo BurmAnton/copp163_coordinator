@@ -83,7 +83,7 @@
             <div style="display:flex; justify-content:space-between;margin-top:10px; width:100%">
                 <h2>Документы</h2>
                 <div id="control-panel">
-                    {% if user.role != 'CO' %}
+                    {% if user.is_superuser %}
                     <form action="{% url 'invoice_view' invoice.id %}" method="post" enctype="multipart/form-data" style="display: flex; gap: 15px; align-items: flex-start;">
                         <input type="text" name="group_id" value="{{group.0.id}}" style="display: none;">
                         <div class="mb-3" style="width: 260px; margin-bottom:0 !important;">

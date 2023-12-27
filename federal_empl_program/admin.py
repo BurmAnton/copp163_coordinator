@@ -184,6 +184,7 @@ class ApplicationAdmin(admin.ModelAdmin):
         'get_center',
         'citizen_category',
         'group',
+        'added_to_act'
         
     ]
     list_totals = ['payment_amount',]
@@ -201,7 +202,8 @@ class ApplicationAdmin(admin.ModelAdmin):
     list_filter = (
         ('project_year', RelatedOnlyDropdownFilter),
         ('flow_status', RelatedOnlyDropdownFilter),
-        ('citizen_category', RelatedOnlyDropdownFilter)
+        ('citizen_category', RelatedOnlyDropdownFilter),
+        'added_to_act'
     )
     
     #actions = ['allow_applications', 'get_job', 'get_jobless', 'get_paid', 'get_paid_part', 'cancel_payment']
