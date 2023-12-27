@@ -18,6 +18,17 @@
     <div id="switch-panel"><a  href="{% url 'groups_list' 2023 %}"><button class="btn btn-primary">Мониторинг потоков</button></a></div>
     <div id="groups-list">
         <h2>Счета по трудоустройству (30%)</h2>
+        <div class="training-stats">
+            <div class="training-stat" style="background-color: #426cf8;">
+                <h5>Счетов оплачено:<br>{{stats|get_item:"invoices_count"}}</h5>
+            </div>
+            <div class="training-stat" style="background-color: #02509e;">
+                <h5>Слушателей оплачено:<br>{{stats|get_item:"appl_count"}}</h5>
+            </div>
+            <div class="training-stat">
+                <h5>Денег выплачено: <br>{{stats|get_item:"paid_amount"}}</h5>
+            </div>
+        </div>
         <div id="control-panel">
             {% if user.role != 'CO' %}
             <div id="filters">
@@ -54,7 +65,7 @@
                 <th scope="col" class="align-col-left">ЦО</th>
                 <th scope="col" class="align-col-left">Договор</th>
                 <th scope="col">Статус</th>
-                <th scope="col">Потоки</th>
+                {% if user.role != 'CNT' %}<th scope="col">Потоки</th>{% endif %}
                 <th scope="col">Кол-во чел.</th>
                 <th scope="col">Запросили счёт?</th>
                 <th scope="col">Счёт</th>
@@ -66,11 +77,13 @@
                     <td class="align-col-left"><a href="{% url 'invoice_view' invoice.id %}" target="_blank">{{invoice.contract.ed_center.ed_center.flow_name}}</a></td>
                     <td class="align-col-left">{{invoice.contract.number}}</td>
                     <td>{{invoice.get_stage_display}}</td>
-                    <td>
-                        {% for group in invoice|get_groups %}
-                            <a href="{% url 'group_view' group.id %}" target="_blank">Поток №{{group.flow_id}}</a><br>
-                        {% endfor %}
-                    </td>
+                    {% if user.role != 'CNT' %}
+                        <td>
+                            {% for group in invoice|get_groups %}
+                                <a href="{% url 'group_view' group.id %}" target="_blank">Поток №{{group.flow_id}}</a><br>
+                            {% endfor %}
+                        </td>
+                    {% endif %}
                     <td>{{invoice.applications.all.count}}</td>
                     <td>
                         <div class="form-check">

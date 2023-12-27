@@ -508,14 +508,32 @@ def invoices_list(request, year=2023):
         invoices = invoices.filter(contract__ed_center__ed_center__in=request.user.education_centers.all())
         ed_centers = ed_centers.filter(id__in=request.user.education_centers.all())
 
+    invoices = invoices.order_by(
+        Case( 
+            When (stage="SPD", then=Value(0)),
+            When (stage="NVC", then=Value(1)),
+            When (stage="GNRT", then=Value(2)),
+            When (stage="PD", then=Value(3))
+        ),
+    )
+
+    
+    applications = Application.objects.filter(employment_invoice__in=invoices).count()
+    applications_paid =  Application.objects.filter(employment_invoice__in=invoices.filter(stage="PD")).count()
+    stats = {
+        "appl_count": f'{applications_paid}/{applications}',
+        "invoices_count": f'{invoices.filter(stage="PD").count()}/{invoices.count()}',
+        "paid_amount": '{:,.2f} ₽'.format(EmploymentInvoice.objects.filter(stage='PD').aggregate(paid_amount=Sum("amount"))["paid_amount"]).replace(',', ' ')
+    }
+
     return render(request, 'federal_empl_program/invoices_list.html', {
         'invoices': invoices,
         'ed_centers': ed_centers,
-        'project_year': project_year
+        'project_year': project_year,
+        'stats': stats
     })
 
 
-@login_required
 @csrf_exempt
 def invoice_view(request, invoice_id):
     invoice = get_object_or_404(EmploymentInvoice, id=invoice_id)
