@@ -40,9 +40,13 @@ class ClosingDocumentAdmin(admin.ModelAdmin):
 class ContractAdmin(admin.ModelAdmin):
     list_display = [
         'number',
-        'ed_center',
+        'get_name',
         'get_sum'
     ]
+
+    def get_name(self, contract):
+        return contract.ed_center.ed_center.flow_name
+    get_name.short_description='ЦО'
 
     def get_sum(self, contract):
         applications_w = Application.objects.filter(contract=contract, added_to_act=True, flow_status=find_wrk_status)
