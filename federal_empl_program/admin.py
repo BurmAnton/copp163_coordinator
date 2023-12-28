@@ -133,9 +133,9 @@ class ApplicationAdmin(admin.ModelAdmin):
             'fields': ('get_applicant', 'id', 'project_year', 'get_phone', 'get_email', 'get_city')
         }),
         ('Работа с заявкой', {
-            'fields': ('flow_status', 'change_status_date', 'citizen_category',
+            'fields': ('flow_status', 'citizen_category',
                         'competence', 'education_program', 'education_center',
-                        'group'
+                        'group', 'price'
                     ),
         }),
     )
