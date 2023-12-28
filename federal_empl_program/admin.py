@@ -19,12 +19,15 @@ from field_history.models import FieldHistory
 from education_centers.models import EducationCenter, EducationProgram
 from users.models import Group, User
 
-from .models import (Application, CitizenApplication, CitizenCategory, ClosingDocument,
+from .models import (Application, CitizenApplication, CitizenCategory, ClosingDocument, Contract,
                      EdCenterEmployeePosition, EdCenterQuotaRequest,
                      EducationCenterProjectYear, EmploymentInvoice, FlowStatus, Grant, Indicator,
                      ProgramQuotaRequest, ProjectPosition, ProjectYear,
                      QuotaRequest)
 
+
+check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоустройства')
+find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
 
 @admin.register(ClosingDocument)
 class ClosingDocumentAdmin(admin.ModelAdmin):
@@ -33,9 +36,29 @@ class ClosingDocumentAdmin(admin.ModelAdmin):
         'is_paid'
     ]
 
-#@admin.register(EdCenterQuotaRequest)
-class EdCenterQuotaAdmin(admin.ModelAdmin):
-    pass
+@admin.register(Contract)
+class ContractAdmin(admin.ModelAdmin):
+    list_display = [
+        'number',
+        'ed_center',
+        'get_sum'
+    ]
+
+    def get_sum(self, contract):
+        applications_w = Application.objects.filter(contract=contract, added_to_act=True, flow_status=find_wrk_status)
+        applications_w = applications_w.aggregate(sum_price=Sum('price'))['sum_price']
+        if applications_w == None:
+            applications_w = 0
+        applications_w0 = Application.objects.filter(contract=contract, added_to_act=True, flow_status=check_wrk_status)
+        applications_w0 = applications_w0.aggregate(sum_price=Sum('price'))['sum_price']
+        if applications_w0 != None:
+            applications_w0 = round(applications_w0 * 0.3, 2)
+        else:
+            applications_w0 = 0
+        contract_sum = applications_w + applications_w0
+        return contract_sum
+    get_sum.short_description='Сумма'
+
 
 #@admin.register(ProgramQuotaRequest)
 class ProgramQuotaRequestAdmin(admin.ModelAdmin):
