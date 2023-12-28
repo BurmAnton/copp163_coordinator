@@ -192,7 +192,7 @@ class GroupAdmin(admin.ModelAdmin):
         ('workshop', RelatedOnlyDropdownFilter),
     )
     search_fields = ['flow_id', 'start_date', 'end_date']
-    list_display = ('flow_id', 'education_period')
+    list_display = ('flow_id', 'education_period', 'pay_status')
 
     def education_period(self, group):
         start_date = group.start_date.strftime('%d/%m/%y')
@@ -201,6 +201,12 @@ class GroupAdmin(admin.ModelAdmin):
         return period
     education_period.short_description = 'Период обучения'
     education_period.admin_order_field = 'start_date'
+
+    actions = ['change_to_pay_statys', ]
+
+    def change_to_pay_statys(self, request, queryset):
+        queryset.update(pay_status='PDB')
+    change_to_pay_statys.short_description='Изменить статус на оплачен'
 
 
 CitizenForm = select2_modelform(Application, attrs={'width': '400px'})

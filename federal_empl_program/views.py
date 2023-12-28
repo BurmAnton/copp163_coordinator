@@ -718,7 +718,6 @@ def group_view(request, group_id):
             doc.bill_file.name = unidecode.unidecode(doc.bill_file.name)
             doc.bill_id = request.POST['bill_id']
         doc.save()
-        group.pay_status = 'WFB'
         group.save()
     elif 'add-bill' in request.POST:
         doc_id = request.POST['doc_id']
@@ -726,7 +725,6 @@ def group_view(request, group_id):
         doc.bill_file = request.FILES['bill_file']
         doc.bill_id = request.POST['bill_id']
         doc.save()
-        group.pay_status = 'WFB'
         group.save()
     elif 'group-comment' in request.POST:
         group.group_commentary = request.POST['group_commentary']
@@ -746,7 +744,6 @@ def group_view(request, group_id):
         if 'bill_file' in request.FILES:
             doc.bill_file = request.FILES['bill_file']
             doc.bill_file.name = unidecode.unidecode(doc.bill_file.name)
-        group.pay_status = 'WFB'
         group.save()
         doc.save()
     elif 'delete-doc' in request.POST:
