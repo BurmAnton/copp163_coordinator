@@ -671,10 +671,13 @@ def groups_list(request, year=2023):
     #Training stats
     applicants = Application.objects.filter(project_year=project_year, flow_status__is_rejected=False, education_center__in=ed_centers)    
     today = date.today()
+    check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоустройства')
+    remain_sum = Application.objects.filter(flow_status=check_wrk_status, added_to_act=True).aggregate(price_sum=Sum('price'))['price_sum'] * 0.3
     stats = {
         "is_employed": f'{applicants.filter(flow_status=find_wrk_status, added_to_act=True).count()}/{applicants.filter(group__end_date__lte=today, added_to_act=True).count()} | {applicants.filter(is_working=True, flow_status=check_wrk_status, added_to_act=True).count()}',
         "groups_paid": f'{groups.filter(pay_status="PDB").count()}/{groups.count()}',
-        "paid_amount": '{:,.2f} ₽'.format(ClosingDocument.objects.filter(is_paid=True).aggregate(paid_amount=Sum("bill_sum"))["paid_amount"]).replace(',', ' ')
+        "paid_amount": '{:,.2f} ₽'.format(ClosingDocument.objects.filter(is_paid=True).aggregate(paid_amount=Sum("bill_sum"))["paid_amount"]).replace(',', ' '),
+        "remain_sum": '{:,.2f} ₽'.format(remain_sum)
     }
 
     if request.user.role == 'CO':
