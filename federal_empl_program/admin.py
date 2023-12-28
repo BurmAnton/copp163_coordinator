@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import math
 from pickle import TRUE
 
 from django.contrib import admin
@@ -162,6 +163,11 @@ class ApplicationAdmin(admin.ModelAdmin):
         return city
     get_city.short_description='Город'
 
+    def get_empl(self, application):
+        amount = round(application.price * 0.3, 2)
+        return amount
+    get_empl.short_description='30%'
+
     def get_center(self, application):
         if application.education_center == None:
             return "-"
@@ -184,7 +190,8 @@ class ApplicationAdmin(admin.ModelAdmin):
         'get_center',
         'citizen_category',
         'group',
-        'added_to_act'
+        'added_to_act',
+        'get_empl'
         
     ]
     list_totals = ['payment_amount',]
