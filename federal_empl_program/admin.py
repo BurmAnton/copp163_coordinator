@@ -41,27 +41,18 @@ class ContractAdmin(admin.ModelAdmin):
     list_display = [
         'number',
         'get_name',
-        'get_sum'
+        'get_applications_count'
     ]
 
     def get_name(self, contract):
         return contract.ed_center.ed_center.flow_name
     get_name.short_description='ЦО'
 
-    def get_sum(self, contract):
-        applications_w = Application.objects.filter(contract=contract, added_to_act=True, flow_status=find_wrk_status)
-        applications_w = applications_w.aggregate(sum_price=Sum('price'))['sum_price']
-        if applications_w == None:
-            applications_w = 0
-        applications_w0 = Application.objects.filter(contract=contract, added_to_act=True, flow_status=check_wrk_status)
-        applications_w0 = applications_w0.aggregate(sum_price=Sum('price'))['sum_price']
-        if applications_w0 != None:
-            applications_w0 = round(applications_w0 * 0.3, 2)
-        else:
-            applications_w0 = 0
-        contract_sum = applications_w + applications_w0
-        return contract_sum
-    get_sum.short_description='Сумма'
+    def get_applications_count(self, contract):
+        return Application.objects.filter(
+            flow_status__in=[find_wrk_status, check_wrk_status],
+            contract=contract).count()
+    get_applications_count.short_description='Колво слушателей'
 
 
 #@admin.register(ProgramQuotaRequest)
@@ -112,8 +103,29 @@ class ProjectYearAdmin(admin.ModelAdmin):
 
 @admin.register(EducationCenterProjectYear)
 class EducationCenterProjectYearAdmin(admin.ModelAdmin):
-    list_display = ['ed_center', 'is_federal']
+    list_display = ['get_name', 'count_pay', 'is_federal']
     search_fields = ['ed_center__name', 'ed_center__flow_name', 'ed_center__short_name']
+
+    def get_name(self, center_year):
+        return center_year.ed_center.flow_name
+    get_name.short_description='ЦО'
+
+    def count_pay(self, center_year):
+        education_sum = ClosingDocument.objects.filter(
+            group__education_program__ed_center=center_year.ed_center
+        ).aggregate(sum_ammount=Sum('bill_sum'))['sum_ammount']
+        if education_sum == None:
+            education_sum = 0
+        employment_sum = EmploymentInvoice.objects.filter(contract__ed_center=center_year).aggregate(sum_ammount=Sum('amount'))['sum_ammount'] 
+        if employment_sum == None:
+            employment_sum = 0
+        return education_sum + employment_sum
+    count_pay.short_description='Оплачено'
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request).exclude(ed_center__flow_name="")
+
+        return queryset.exclude(quota_256=0, quota_72=0, quota_144=0)
 
 
 #@admin.register(Indicator)
