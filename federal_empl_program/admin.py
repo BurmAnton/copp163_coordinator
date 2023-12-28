@@ -119,7 +119,7 @@ class EducationCenterProjectYearAdmin(admin.ModelAdmin):
         employment_sum = EmploymentInvoice.objects.filter(contract__ed_center=center_year).aggregate(sum_ammount=Sum('amount'))['sum_ammount'] 
         if employment_sum == None:
             employment_sum = 0
-        return education_sum + employment_sum
+        return round(education_sum + employment_sum, 2)
     count_pay.short_description='Оплачено'
 
     def get_queryset(self, request):
