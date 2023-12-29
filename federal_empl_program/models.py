@@ -464,7 +464,7 @@ class Application(models.Model):
         blank=True,
         on_delete=CASCADE
     )
-    added_to_act = models.BooleanField("Трудоустроен", default=False)
+    added_to_act = models.BooleanField("Актирован", default=False)
     contract = models.ForeignKey(
         Contract, 
         verbose_name="Договор",
