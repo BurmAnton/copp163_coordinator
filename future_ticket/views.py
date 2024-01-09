@@ -224,7 +224,7 @@ def export_ticket_programs(request):
 def schools_application(request):
     message = None
     if request.method == 'POST':
-        project_year = datetime.now().year
+        project_year = 2023
         project_year = get_object_or_404(TicketProjectYear, year=project_year)
         form = ImportTicketDataForm(request.POST, request.FILES)
         if form.is_valid():
@@ -272,7 +272,7 @@ def schools_applications(request):
 
 @csrf_exempt
 def center_events(request, ed_center_id):
-    project_year = datetime.now().year
+    project_year = 2023
     project_year = get_object_or_404(TicketProjectYear, year=project_year)
     center_year = get_object_or_404(
         EducationCenterTicketProjectYear, 
