@@ -61,7 +61,7 @@ def applications(request):
     project_year = request.GET.get('y', '')
     if 'bilet' in request.POST: project = 'bilet'
     if project_year != '': project_year = int(project_year)
-    else: project_year = datetime.now().year
+    else: project_year = 2023
     if project == 'bilet':
         project_year = get_object_or_404(TicketProjectYear, year=project_year)
         centers_project_year = EducationCenterTicketProjectYear.objects.filter(
@@ -167,7 +167,7 @@ def ed_center_application(request, ed_center_id):
     if 'bilet' in request.POST: project = 'bilet'
     project_year = request.GET.get('y', '')
     if project_year != '': project_year = int(project_year)
-    else: project_year = datetime.now().year
+    else: project_year = 2023
     stage = request.GET.get('s', '')
     if stage != '': stage = int(stage)
     else: stage = 1

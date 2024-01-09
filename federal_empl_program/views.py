@@ -268,7 +268,7 @@ def flow_appls_dashboard(request, year=2023):
                                        )
         week_now = start_date_p.isocalendar()[1]
     else:
-        week_now = date.today().isocalendar()[1]
+        week_now = 50
     weeks = []
     weeks_stat = {
         'Начали обучение': [],
