@@ -19,6 +19,7 @@ from education_centers.models import (Competence, EducationCenter,
                                       Teacher, Workshop)
 from future_ticket.tasks import (find_participants_dublicates,
                                  update_completed_quota)
+from organizations.models import Organization
 from users.models import DisabilityType
 
 
@@ -709,6 +710,45 @@ class EventsCycle(models.Model):
 @receiver(post_delete, sender=EventsCycle, dispatch_uid='EventsCycle_delete_signal')
 def change_number_cycles(sender, instance, using, **kwargs):
     number_cycles()
+
+
+class PartnerEvent(models.Model):
+    name = models.CharField("Название мероприятия", max_length=250)
+    partner = models.ForeignKey(
+        Organization,
+        verbose_name="Организатор",
+        related_name="events",
+        on_delete=CASCADE,
+        blank=False,
+        null=False
+    )
+    description = models.TextField("Описание мероприятия", default="")
+    instruction = models.TextField("Инструкция", default="")
+    city = models.CharField("Населённый пункт", max_length=250, blank=True, null=True)
+    contact = models.CharField("Контактное лицо", max_length=250, blank=True, null=True)
+    contact_phone = models.CharField("Телефон", max_length=30, blank=True, null=True)
+    contact_email = models.EmailField(_('email address'), blank=True, null=True)
+
+    STATUSES = [
+        ("CRT", "Создана"),
+        ("PRV", "Одобрено"),
+    ]
+    status = models.CharField(
+        "Статус", 
+        max_length=6, 
+        choices=STATUSES,
+        null=False,
+        blank=False,
+        default="CRT"
+    )
+
+    class Meta:
+        verbose_name = "Партнёрское мероприятие"
+        verbose_name_plural = "Партнёрские мероприятия"
+
+    def __str__(self):
+        return f'{self.name} ({self.partner})'
+
 
 class TicketEvent(models.Model):
     ed_center = models.ForeignKey(

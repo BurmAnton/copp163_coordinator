@@ -5,7 +5,7 @@ from easy_select2 import select2_modelform
 
 from .models import (AgeGroup, ContractorsDocumentTicket, DocumentTypeTicket,
                      EdCenterTicketIndicator, EducationCenterTicketProjectYear,
-                     EventsCycle, ProfEnviroment, ProgramAuthor,
+                     EventsCycle, PartnerEvent, ProfEnviroment, ProgramAuthor,
                      SchoolProjectYear, StudentBVB,
                      TicketEdCenterEmployeePosition, TicketEvent,
                      TicketFullQuota, TicketIndicator, TicketProfession,
@@ -184,6 +184,32 @@ class EventsCycleAdmin(admin.ModelAdmin):
         'status', 
         
     ]
+
+
+@admin.register(PartnerEvent)
+class PartnerEventAdmin(admin.ModelAdmin):
+    search_fields = ['name', 'partner__name', 'contact', 'contact_phone', 'contact_email']
+    list_filter = ['status']
+    list_display = [
+        'name', 
+        'get_partner',
+        'city',
+        'contact', 
+        'contact_phone', 
+        'contact_email',
+        'description',
+        'instruction',
+    ]
+
+    def get_partner(self, event):
+        return event.partner.name
+    get_partner.short_description = 'Партнёр'
+    
+    actions = ['approve_event',]
+    def approve_event(self, request, queryset):
+        queryset.update(status='PRV')
+    approve_event.short_description='Одобрить мероприятия'
+
 
 
 @admin.register(TicketEvent)

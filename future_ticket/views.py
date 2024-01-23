@@ -12,10 +12,11 @@ from education_centers.forms import (ImportSchoolOrderDataForm,
                                      ImportTicketDataForm)
 from education_centers.models import EducationCenter
 from future_ticket.models import (EducationCenterTicketProjectYear,
-                                  EventsCycle, QuotaEvent, SchoolProjectYear,
+                                  EventsCycle, PartnerEvent, QuotaEvent, SchoolProjectYear,
                                   StudentBVB, TicketEvent, TicketFullQuota,
                                   TicketProfession, TicketProjectYear,
                                   TicketQuota)
+from organizations.models import Organization
 
 from . import exports, imports
 from .forms import ImportDataForm, ImportDocumentForm, ImportParticipantsForm
@@ -470,3 +471,42 @@ def center_events(request, ed_center_id):
         'form': ImportDocumentForm()
     })
 
+
+@csrf_exempt
+def partners_events(request):
+    message = None
+    if 'add-event' in request.POST:
+        partner = Organization.objects.create(
+            name=request.POST["partner"].strip()
+        )
+        status = "PRV" if request.user.is_superuser else "CRT"
+            
+        PartnerEvent.objects.get_or_create(
+            name=request.POST["name"].strip(),
+            partner=partner,
+            status=status,
+            city=request.POST["city"].strip(),
+            contact=request.POST["contact"].strip(),
+            contact_email=request.POST["contact_email"].strip(),
+            contact_phone=request.POST["contact_phone"].strip(),
+            description=request.POST["description"],
+            instruction=request.POST["instruction"]
+        )
+        message = "EventAddedSuccessfully"
+    events = PartnerEvent.objects.filter(status='PRV')
+    cities = events.values_list("city").distinct()
+
+    chosen_cities = None
+    if 'filter-events' in request.POST:
+        chosen_cities = request.POST.getlist('cities')
+        if len(chosen_cities) != 0:
+            events = events.filter(city__in=chosen_cities)
+        else:
+            chosen_cities = None
+
+    return render(request, "future_ticket/partners_events.html", {
+        'events': events,
+        'message': message,
+        'cities': cities,
+        'chosen_cities': chosen_cities
+    })
