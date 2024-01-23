@@ -60,4 +60,9 @@ urlpatterns = [
         views.schools_applications, 
         name='schools_applications'
     ),
+    path(
+        'partners/events',
+        views.partners_events,
+        name="partners_events"
+    ),
 ]

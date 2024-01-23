@@ -4,7 +4,6 @@ from django.db.models.deletion import CASCADE, DO_NOTHING
 from django.db.models.enums import Choices
 from field_history.tracker import FieldHistoryTracker
 
-from organizations.models import Company
 from users.models import User
 
 

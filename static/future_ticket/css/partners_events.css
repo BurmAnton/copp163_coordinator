@@ -1,0 +1,91 @@
+.page-hdr {
+  margin-top: 25px;
+  display: grid;
+  justify-content: center;
+  justify-items: center;
+  grid-template-columns: 25% 50% 25%;
+  align-items: flex-start;
+}
+.page-hdr h1 {
+  font-size: 30px;
+  grid-column: 2;
+  text-align: center;
+}
+.page-hdr div {
+  grid-column: 3;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+
+#control-panel {
+  width: 75%;
+  margin: auto;
+}
+#control-panel form {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+#control-panel form .dropdown-toggle {
+  width: 300px;
+}
+
+#events-list {
+  display: flex;
+  justify-content: left;
+  width: 75%;
+  margin: auto;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  margin-top: 20px;
+  gap: 15px 25px;
+  flex-wrap: wrap;
+}
+#events-list .event-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 450px;
+  background-color: #f2f2f2;
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
+  color: #394959;
+  border-radius: 10px;
+}
+#events-list .event-card .event-card-hdr, #events-list .event-card .event-card-body, #events-list .event-card .event-card-footer {
+  padding: 8px 15px;
+}
+#events-list .event-card .event-card-hdr p, #events-list .event-card .event-card-body p, #events-list .event-card .event-card-footer p {
+  margin-bottom: 3px;
+}
+#events-list .event-card .event-card-hdr .field, #events-list .event-card .event-card-body .field, #events-list .event-card .event-card-footer .field {
+  font-weight: 500;
+}
+#events-list .event-card .event-card-body {
+  min-height: 200px;
+  height: 100%;
+  font-size: 16px;
+}
+#events-list .event-card .event-card-hdr {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 400;
+  border-bottom: 2px solid #394959;
+}
+#events-list .event-card .event-card-hdr .profession-hdr {
+  text-align: center;
+  font-size: 16px;
+  display: inline-block;
+}
+#events-list .event-card .event-card-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border-top: 1px solid #394959;
+}
+#events-list .event-card .event-card-footer .btn {
+  width: 100%;
+  background-color: white;
+  font-weight: 500;
+}/*# sourceMappingURL=partners_events.css.map */

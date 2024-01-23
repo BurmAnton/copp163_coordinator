@@ -10,7 +10,6 @@ from field_history.tracker import FieldHistoryTracker
 from citizens.models import Citizen
 from education_centers.models import (Competence, EducationCenter,
                                       EducationProgram, Employee, Group)
-from organizations.models import Company
 from users.models import User
 
 

@@ -1,12 +1,8 @@
 from django.contrib import admin
 
-from .models import Company, Vacancy
+from .models import Organization
 
-# Register your models here.
-#@admin.register(Company)
-class CompanyAdmin(admin.ModelAdmin):
-    pass
 
-#@admin.register(Vacancy)
-class VacancyAdmin(admin.ModelAdmin):
+@admin.register(Organization)
+class OrganizationAdmin(admin.ModelAdmin):
     pass
