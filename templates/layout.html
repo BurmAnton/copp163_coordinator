@@ -72,7 +72,6 @@
                                                             <li><a class="dropdown-item" href="{% url 'applications' %}?p=bilet">Мониторинг заявок</a></li>
                                                         {%endif%}
                                                         {% if request.user.is_superuser %}
-                                                            
                                                             <li><a class="dropdown-item" href="{% url 'quotas' %}?p=bilet">Управление квотой</a></li>
                                                             <li><a class="dropdown-item" href="{% url 'schools_applications' %}">Ответственные от школ</a></li>
                                                         {% endif %}
@@ -80,6 +79,7 @@
                                                             <li><a class="dropdown-item" href="{% url 'ed_center_application' ed_center_id=request.user.education_centers.first.id %}?p=bilet">Заявки на ПКО</a></li>
                                                             <li><a class="dropdown-item" href="{% url 'ticket_center_events' ed_center_id=request.user.education_centers.first.id %}?p=bilet">Мероприятия</a></li>
                                                         {%  endif %}
+                                                        <li><a class="dropdown-item" href="{% url 'partners_events' %}">Партнёрские мероприятия</a></li>
                                                     </ul>
                                                 </li>
                                             </li>
