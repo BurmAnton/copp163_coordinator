@@ -476,12 +476,12 @@ def center_events(request, ed_center_id):
 def partners_events(request):
     message = None
     if 'add-event' in request.POST:
-        partner = Organization.objects.create(
+        partner, is_new = Organization.objects.get_or_create(
             name=request.POST["partner"].strip()
         )
         status = "PRV" if request.user.is_superuser else "CRT"
             
-        PartnerEvent.objects.get_or_create(
+        event, is_new = PartnerEvent.objects.get_or_create(
             name=request.POST["name"].strip(),
             partner=partner,
             status=status,
@@ -492,6 +492,8 @@ def partners_events(request):
             description=request.POST["description"],
             instruction=request.POST["instruction"]
         )
+        if is_new == False:
+            return HttpResponseRedirect(reverse("partners_events"))
         message = "EventAddedSuccessfully"
     events = PartnerEvent.objects.filter(status='PRV')
     cities = events.values_list("city").distinct()
