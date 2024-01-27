@@ -25,35 +25,47 @@
                         <div class="modal-body">
                             <div class="form-floating mb-3">
                                 <input type="input" class="form-control" id="EventName" name="name" placeholder="Название" maxlength="250" required>
-                                <label for="EventName">Название мероприятия</label>
+                                <label for="EventName" class="form-label required-field">Название мероприятия<span>*</span></label>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="input" class="form-control" id="EventPartner" name="partner" placeholder="Организация" maxlength="250" required>
-                                <label for="EventPartner">Организация</label>
+                                <label for="EventPartner" class="form-label required-field">Организация<span>*</span></label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="EventPartner" name="city" placeholder="Населённый пункт" maxlength="250" required>
-                                <label for="EventPartner">Населённый пункт</label>
+                                <select class="selectpicker w-100" title="Населённый пункт *" data-live-search="true" name="city" required>
+                                    {% for city in cities %}
+                                        <option value='{{city.id}}'>{{city.name}} ({{city.city_type.name}})</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="input" class="form-control" id="EventPartner" name="contact" placeholder="Контактное лицо (ФИО)" maxlength="250" required>
-                                <label for="EventPartner">Контактное лицо (ФИО)</label>
+                                <label for="EventPartner" class="form-label required-field">Контактное лицо (ФИО)<span>*</span></label>
                             </div>
+                            
                             <div class="form-floating mb-3">
                                 <input type="email" class="form-control" id="ContactEmail" name="contact_email" placeholder="name@example.com" required>
-                                <label for="ContactEmail">Контактный email</label>
+                                <label for="ContactEmail" class="form-label required-field">Контактный email<span>*</span></label>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="ContactPhone" name="contact_phone" placeholder="Контактный телефон" maxlength="30" required>
-                                <label for="ContactPhone" class="form-label">Контактный телефон</label>
+                                <label for="ContactPhone" class="form-label required-field">Контактный телефон<span>*</span></label>
                             </div>
                             <div class="">
-                                <label for="EventDescription">Описание мероприятия</label>
-                                <textarea class="form-control" placeholder="Описание мероприятия" id="EventDescription" name="description" style="height: 100px; margin-bottom: 15px;" required></textarea>
+                                <label for="EventDescription" class="form-label required-field">Описание мероприятия<span>*</span></label>
+                                <textarea class="form-control" placeholder="Описание мероприятия, адрес, какие ограничения по колву участников и тп" id="EventDescription" name="description" style="height: 100px; margin-bottom: 15px;" required></textarea>
                             </div>
                             <div class="">
                                 <label for="EventInstruction">Инструкция для записи</label>
-                                <textarea class="form-control" placeholder="Инструкция для записи" id="EventInstruction" name="instruction" style="height: 100px"></textarea>
+                                <textarea class="form-control" placeholder="Как записаться на мероприятие" id="EventInstruction" name="instruction" style="height: 100px;margin-bottom: 15px;"></textarea>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" id="SignupLink" name="signup_link" placeholder="Ссылка на запись">
+                                <label for="SignupLink" class="form-label">Ссылка на запись</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" id="Period" name="period" placeholder="Период проведения">
+                                <label for="Period" class="form-label">Период проведения</label>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -66,46 +78,54 @@
             </div>
         </div>
         {% for event in events %}
-            <div class="modal fade" id="AddEvent{{event.id}}Modal" tabindex="-1" aria-labelledby="#AddEvent{{event.id}}ModalLabel" aria-hidden="true">
-                <div class="modal-dialog" style="max-width: 700px;">
+            <div class="modal fade event-modal" id="AddEvent{{event.id}}Modal" tabindex="-1" aria-labelledby="#AddEvent{{event.id}}ModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="max-width: 40%; min-width: 700px;">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="#AddEvent{{event.id}}ModalLabel">Добавить мероприятие</h5>
+                            <h5 class="modal-title" id="#AddEvent{{event.id}}ModalLabel">Описание партнёрского мероприятия</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <div class="form-floating mb-3">
+                            <div class="form-floating mb-3 w-100">
                                 <input type="input" class="form-control" placeholder="Название" value="{{event.name}}" readonly style="background-color: white;">
                                 <label for="EventName">Название мероприятия</label>
                             </div>
-                            <div class="form-floating mb-3">
+                            <div class="form-floating mb-3 w-100">
                                 <input type="input" class="form-control" placeholder="Организация" value="{{event.partner}}" readonly style="background-color: white;">
                                 <label for="EventPartner">Организация</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="input" class="form-control" placeholder="Населённый пункт" value="{{event.city}}" readonly style="background-color: white;">
-                                <label for="EventPartner">Населённый пункт</label>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="input" class="form-control" placeholder="Контактное лицо (ФИО)" value="{{event.contact}}" readonly style="background-color: white;">
                                 <label for="EventPartner">Контактное лицо (ФИО)</label>
                             </div>
                             <div class="form-floating mb-3">
+                                <input type="input" class="form-control" placeholder="Населённый пункт" value="{{event.city}}" readonly style="background-color: white;">
+                                <label for="EventPartner">Населённый пункт</label>
+                            </div>
+                            <div class="form-floating mb-3">
                                 <input type="email" class="form-control" placeholder="name@example.com" value="{{event.contact_email}}" readonly style="background-color: white;">
                                 <label for="ContactEmail">Контактный email</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" name="signup_link" value="{{event.signup_link}}" readonly placeholder="Ссылка на запись" style="background-color: white;">
+                                <label for="SignupLink" class="form-label">Ссылка на запись</label>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" placeholder="Контактный телефон" value="{{event.contact_phone}}" readonly style="background-color: white;">
                                 <label for="ContactPhone" class="form-label">Контактный телефон</label>
                             </div>
-                            <div class="">
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" name="period" value="{{event.period}}" placeholder="Период проведения" style="background-color: white;">
+                                <label for="Period" class="form-label">Период проведения</label>
+                            </div>
+                            <div class="textarea">
                                 <label for="EventDescription">Описание мероприятия</label>
-                                <textarea class="form-control" placeholder="Описание мероприятия" style="height: 200px; margin-bottom: 15px; background-color: white;" readonly>{{event.description}}</textarea>
+                                <textarea class="form-control" placeholder="Описание мероприятия" style="background-color: white; height: 150px; margin-bottom: 10px;" readonly>{{event.description}}</textarea>
                             </div>
                             {% if event.instruction != "" %}
-                                <div class="">
+                                <div class="textarea">
                                     <label for="EventInstruction">Инструкция для записи</label>
-                                    <textarea class="form-control" placeholder="Инструкция для записи" readonly style="background-color: white;">{{event.instruction}}</textarea>
+                                    <textarea class="form-control" placeholder="Инструкция для записи" readonly style="background-color: white; height: 100px;">{{event.instruction}}</textarea>
                                 </div>
                             {% endif %}
                         </div>
@@ -146,17 +166,17 @@
             <div class="form-floating mb-3 filter-selectpicker">
                 <select class="selectpicker" data-width="100%" data-live-search="true" title="Статусы" name="cities" multiple>
                     {% for city in cities %}
-                        {% if city.0 in chosen_cities %}
-                            <option selected value="{{city.0}}">{{city.0}}</option>
+                        {% if city.name in chosen_cities %}
+                            <option selected value="{{city.name}}">{{city.name}}</option>
                         {% else %}
-                            <option value="{{city.0}}">{{city.0}}</option>
+                            <option value="{{city.name}}">{{city.name}}</option>
                         {% endif %}
                     {% endfor %}
                 </select>
             </div>
             <button type="submit" class="btn btn-outline-primary" name="filter-events">Фильтровать</button>
             {% if chosen_cities.count is not None %}
-                <a class="btn btn-outline-danger" href="{% url 'partners_events' %}">Отменить фильтр</a>
+                <a class="btn btn-outline-danger" href="{% url 'partners_events' %}">Сбросить фильтр</a>
             {% endif %}
         </form>
     </div>
@@ -182,7 +202,10 @@
                             </button>
                         </div>
                     </div>
-                    
+            {% empty %}
+                <div id="none-events-msg">
+                    Партнёрских мероприятий  не найдено!
+                </div>
             {% endfor %}
         </div>
     </div>
