@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('education_centers', '0001_squashed_0049_auto_20230616_1519'),
-        ('organizations', '__first__'),
+        ('regions', '__first__'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -97,7 +97,7 @@ class Migration(migrations.Migration):
                 ('position', models.CharField(max_length=50, verbose_name='Должность')),
                 ('start_date', models.DateField(verbose_name='Дата начала работы')),
                 ('end_date', models.DateField(verbose_name='Дата окончания работы')),
-                ('place_of_work', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='employees', to='organizations.company', verbose_name='Место работы')),
+                ('place_of_work', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='employees', to='regions.company', verbose_name='Место работы')),
                 ('worker', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='jobs', to='citizens.citizen')),
             ],
             options={

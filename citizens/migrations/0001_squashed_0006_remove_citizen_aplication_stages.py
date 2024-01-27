@@ -12,9 +12,9 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('organizations', '__first__'),
+        ('regions', '__first__'),
         ('education_centers', '0001_squashed_0049_auto_20230616_1519'),
-        ('organizations', '0001_initial'),
+        ('regions', '0001_initial'),
         ('education_centers', '0003_auto_20230330_1206'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]

@@ -19,8 +19,7 @@ from education_centers.models import (Competence, EducationCenter,
                                       Teacher, Workshop)
 from future_ticket.tasks import (find_participants_dublicates,
                                  update_completed_quota)
-from organizations.models import Organization
-from users.models import DisabilityType
+from users.models import DisabilityType, Organization
 
 
 # Create your models here.
@@ -719,8 +718,8 @@ class PartnerEvent(models.Model):
         verbose_name="Организатор",
         related_name="events",
         on_delete=CASCADE,
-        blank=False,
-        null=False
+        blank=True,
+        null=True
     )
     description = models.TextField("Описание мероприятия", default="")
     instruction = models.TextField("Инструкция", default="")

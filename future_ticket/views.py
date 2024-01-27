@@ -16,7 +16,7 @@ from future_ticket.models import (EducationCenterTicketProjectYear,
                                   StudentBVB, TicketEvent, TicketFullQuota,
                                   TicketProfession, TicketProjectYear,
                                   TicketQuota)
-from organizations.models import Organization
+from users.models import Organization
 
 from . import exports, imports
 from .forms import ImportDataForm, ImportDocumentForm, ImportParticipantsForm

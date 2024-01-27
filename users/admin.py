@@ -4,9 +4,7 @@ from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter
 from easy_select2 import select2_modelform
 
 from .forms import CustomUserChangeForm, CustomUserCreationForm
-from .models import (DisabilityType, Group, PartnerContact,
-                     PartnerContactEmail, PartnerContactPhone,
-                     PartnerOrganization, Project, User)
+from .models import (DisabilityType, Group, Organization, User)
 
 
 @admin.register(User)
@@ -75,39 +73,12 @@ class UserAdmin(UserAdmin):
 class GroupAdmin(GroupAdmin):
     pass
 
-@admin.register(PartnerOrganization)
-class PartnerOrganizationAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(Project)
-class ProjectAdmin(admin.ModelAdmin):
-    pass
-
 
 @admin.register(DisabilityType)
 class DisabilityTypeAdmin(admin.ModelAdmin):
     pass
 
 
-class PartnerContactEmailInline(admin.StackedInline):
-    model = PartnerContactEmail
-
-class PartnerContactPhoneInline(admin.StackedInline):
-    model = PartnerContactPhone
-
-PartnerContactForm = select2_modelform(PartnerContact, attrs={'width': '400px'})
-
-@admin.register(PartnerContact)
-class PartnerContactAdmin(admin.ModelAdmin):
-    form = PartnerContactForm
-    inlines = [PartnerContactEmailInline, PartnerContactPhoneInline]
-
-    fieldsets = (
-        (None, {
-            'fields': ('user', 'first_name', 'middle_name', 'last_name', 'job_title', 'organization', 'commentary')
-        }),
-        (None, {
-            'fields': ('projects',)
-        })
-    )
+@admin.register(Organization)
+class OrganizationAdmin(admin.ModelAdmin):
+    list_display = ['name', ]
