@@ -16,6 +16,7 @@ from future_ticket.models import (EducationCenterTicketProjectYear,
                                   StudentBVB, TicketEvent, TicketFullQuota,
                                   TicketProfession, TicketProjectYear,
                                   TicketQuota)
+from regions.models import City
 from users.models import Organization
 
 from . import exports, imports
@@ -480,12 +481,15 @@ def partners_events(request):
             name=request.POST["partner"].strip()
         )
         status = "PRV" if request.user.is_superuser else "CRT"
+        сity = get_object_or_404(City, id=request.POST["city"])
             
         event, is_new = PartnerEvent.objects.get_or_create(
             name=request.POST["name"].strip(),
             partner=partner,
             status=status,
-            city=request.POST["city"].strip(),
+            city=сity,
+            period=request.POST["period"].strip(),
+            signup_link=request.POST["signup_link"].strip(),
             contact=request.POST["contact"].strip(),
             contact_email=request.POST["contact_email"].strip(),
             contact_phone=request.POST["contact_phone"].strip(),
@@ -496,13 +500,14 @@ def partners_events(request):
             return HttpResponseRedirect(reverse("partners_events"))
         message = "EventAddedSuccessfully"
     events = PartnerEvent.objects.filter(status='PRV')
-    cities = events.values_list("city").distinct()
+    cities = City.objects.all()
+    filter_cities = cities.exclude(events=None)
 
     chosen_cities = None
     if 'filter-events' in request.POST:
         chosen_cities = request.POST.getlist('cities')
         if len(chosen_cities) != 0:
-            events = events.filter(city__in=chosen_cities)
+            events = events.filter(city__name__in=chosen_cities)
         else:
             chosen_cities = None
 
@@ -510,5 +515,6 @@ def partners_events(request):
         'events': events,
         'message': message,
         'cities': cities,
+        'filter_cities': filter_cities,
         'chosen_cities': chosen_cities
     })

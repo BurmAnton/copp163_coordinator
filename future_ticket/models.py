@@ -19,6 +19,7 @@ from education_centers.models import (Competence, EducationCenter,
                                       Teacher, Workshop)
 from future_ticket.tasks import (find_participants_dublicates,
                                  update_completed_quota)
+from regions.models import City
 from users.models import DisabilityType, Organization
 
 
@@ -721,12 +722,19 @@ class PartnerEvent(models.Model):
         blank=True,
         null=True
     )
-    description = models.TextField("Описание мероприятия", default="")
-    instruction = models.TextField("Инструкция", default="")
-    city = models.CharField("Населённый пункт", max_length=250, blank=True, null=True)
+    city = models.ForeignKey(
+        City,
+        verbose_name="Населённый пункт",
+        related_name="events",
+        on_delete=CASCADE,
+        blank=True,
+        null=True
+    )
     contact = models.CharField("Контактное лицо", max_length=250, blank=True, null=True)
     contact_phone = models.CharField("Телефон", max_length=30, blank=True, null=True)
     contact_email = models.EmailField(_('email address'), blank=True, null=True)
+    period = models.CharField("Период проведения", max_length=250, blank=True, null=True)
+    signup_link = models.URLField("Ссылка на запись", blank=True, null=True)
 
     STATUSES = [
         ("CRT", "Создана"),
@@ -740,6 +748,8 @@ class PartnerEvent(models.Model):
         blank=False,
         default="CRT"
     )
+    description = models.TextField("Описание мероприятия", default="")
+    instruction = models.TextField("Инструкция", default="")
 
     class Meta:
         verbose_name = "Партнёрское мероприятие"

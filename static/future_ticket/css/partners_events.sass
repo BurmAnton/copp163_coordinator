@@ -1,3 +1,22 @@
+.required-field
+    font-weight: 500 !important
+    span
+        color: red
+        padding-left: 2px
+.event-modal
+    .modal-body
+        display: flex
+        flex-wrap: wrap
+        justify-content: space-around
+        .w-100
+            width: 100% !important
+        .mb-3
+            width: fit-content
+            min-width: 49%
+        .textarea
+            width: 100%
+            textarea
+                resize: vertical
 .page-hdr
     margin-top: 25px
     display: grid
@@ -22,6 +41,7 @@
         align-items: flex-start
         gap: 15px
         .dropdown-toggle
+            max-width: 300px
             width: 300px
 #events-list
     display: flex
@@ -71,3 +91,9 @@
                 width: 100%
                 background-color: white
                 font-weight: 500
+    #none-events-msg
+        margin-top: 10vh
+        width: 100%
+        text-align: center
+        font-size: 28px
+        font-weight: 400
