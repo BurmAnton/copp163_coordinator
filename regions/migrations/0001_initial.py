@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('job_title', models.CharField(default='', max_length=50, verbose_name='Имя')),
                 ('salary', models.IntegerField(blank=True, null=True, verbose_name='Зарплата')),
-                ('company', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='vacancies', to='organizations.company', verbose_name='Компания')),
+                ('company', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='vacancies', to='regions.company', verbose_name='Компания')),
             ],
             options={
                 'verbose_name': 'Вакасия',
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('middle_name', models.CharField(blank=True, max_length=30, null=True, verbose_name='Отчество')),
                 ('email', models.EmailField(blank=True, max_length=320, null=True, verbose_name='Email')),
                 ('phone_number', models.CharField(blank=True, max_length=16, null=True, verbose_name='Номер телефона')),
-                ('company', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='organizations.company', verbose_name='Контактное лицо')),
+                ('company', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='regions.company', verbose_name='Контактное лицо')),
             ],
             options={
                 'verbose_name': 'Контактное лицо',

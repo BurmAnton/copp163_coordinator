@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('organizations', '0002_organization_remove_contactpersone_company_and_more'),
+        ('regions', '0002_organization_remove_contactpersone_company_and_more'),
         ('future_ticket', '0027_educationcenterticketprojectyear_ndc_bill_file'),
     ]
 
@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('instruction', models.TextField(default='', verbose_name='Инструкция')),
                 ('phone', models.CharField(blank=True, max_length=30, null=True, verbose_name='Телефон')),
                 ('email', models.EmailField(blank=True, max_length=254, null=True, verbose_name='email address')),
-                ('partner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='events', to='organizations.organization', verbose_name='Организатор')),
+                ('partner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='events', to='regions.organization', verbose_name='Организатор')),
             ],
             options={
                 'verbose_name': 'Цикл проб',

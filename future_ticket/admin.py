@@ -202,7 +202,7 @@ class PartnerEventAdmin(admin.ModelAdmin):
     ]
 
     def get_partner(self, event):
-        return event.partner.name
+        return event.partner
     get_partner.short_description = 'Партнёр'
     
     actions = ['approve_event',]

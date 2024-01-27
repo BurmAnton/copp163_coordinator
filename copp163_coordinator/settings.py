@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'field_history',
     'django_admin_listfilter_dropdown',
     'users',
-    'organizations',
+    'regions',
     'citizens',
     'education_centers',
     'federal_empl_program',
