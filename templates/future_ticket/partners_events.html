@@ -60,7 +60,7 @@
                                 <textarea class="form-control" placeholder="Как записаться на мероприятие" id="EventInstruction" name="instruction" style="height: 100px;margin-bottom: 15px;"></textarea>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="input" class="form-control" id="SignupLink" name="signup_link" placeholder="Ссылка на запись">
+                                <input type="url" class="form-control" id="SignupLink" name="signup_link" placeholder="Ссылка на запись">
                                 <label for="SignupLink" class="form-label">Ссылка на запись</label>
                             </div>
                             <div class="form-floating mb-3">
@@ -201,7 +201,7 @@
                                 <p><span class="field">Место проведения:</span> {{event.city}}</p>
                             {% endif %}
                             {% if event.signup_link != "" and event.signup_link != None %}
-                                <p><span class="field">Ссылка на запись:</span> {{event.signup_link}}</p>
+                                <p><span class="field">Ссылка на запись:</span> <a href="{{event.signup_link}}" target="_blank" rel="noopener noreferrer">{{event.signup_link}}</a></p>
                             {% endif %}
                             {% if event.period != "" and event.period != None %}
                                 <p><span class="field">Период проведения:</span> {{event.period}}</p>
