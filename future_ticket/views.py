@@ -481,7 +481,10 @@ def partners_events(request):
             name=request.POST["partner"].strip()
         )
         status = "PRV" if request.user.is_superuser else "CRT"
-        сity = get_object_or_404(City, id=request.POST["city"])
+        if request.POST["city"] != "":
+            сity = get_object_or_404(City, id=request.POST["city"])
+        else:
+            сity = None
             
         event, is_new = PartnerEvent.objects.get_or_create(
             name=request.POST["name"].strip(),

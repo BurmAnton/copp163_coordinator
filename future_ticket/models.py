@@ -756,7 +756,7 @@ class PartnerEvent(models.Model):
         verbose_name_plural = "Партнёрские мероприятия"
 
     def __str__(self):
-        return f'{self.name}'
+        return f'{self.name} ({self.partner})'
 
 
 class TicketEvent(models.Model):

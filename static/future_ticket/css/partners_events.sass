@@ -4,15 +4,29 @@
         color: red
         padding-left: 2px
 .event-modal
+    .modal-content
+        @media (max-device-width: 720px)
+            border-radius: 0
+    .modal-dialog
+        max-width: 40%
+        min-width: 700px
+        @media (max-device-width: 720px)
+            max-width: 100%
+            min-width: 100%
+            height: 100%
+            margin: auto
     .modal-body
         display: flex
         flex-wrap: wrap
-        justify-content: space-around
+        justify-content: flex-start
+        gap: 2%
         .w-100
             width: 100% !important
         .mb-3
             width: fit-content
             min-width: 49%
+            @media (max-device-width: 720px)
+                min-width: 100%
         .textarea
             width: 100%
             textarea
@@ -23,76 +37,120 @@
     justify-content: center
     justify-items: center
     grid-template-columns: 25% 50% 25%
+    @media (max-device-width: 830px)
+        grid-template-columns: 100%
     align-items: flex-start
     h1
         font-size: 30px
         grid-column: 2
+        @media (max-device-width: 830px)
+            grid-column: 1
         text-align: center
     div
         grid-column: 3
         display: flex
         gap: 10px
         flex-direction: column
+        @media (max-device-width: 830px)
+            width: 450px
+            grid-column: 1
+            grid-row: 2
+            flex-direction: row
+            flex-wrap: wrap
+            button, a
+                width: 100%
+        @media (max-device-width: 470px)
+            width: 95%
 #control-panel
-    width: 75%
+    max-width: 1400px
+    @media (max-device-width: 1749px)
+        width: 925px
+    @media (max-device-width: 973px)
+        width: 450px
+    @media (max-device-width: 470px)
+        width: 95%
     margin: auto
     form 
         display: flex
         align-items: flex-start
         gap: 15px
+        @media (max-device-width: 830px)
+            margin-top: 40px
+            margin-bottom: 40px
+            gap: 0
+            align-items: stretch
+            flex-direction: column
         .dropdown-toggle
             max-width: 300px
             width: 300px
-#events-list
-    display: flex
-    justify-content: left
-    width: 75%
+            @media (max-device-width: 830px)
+                max-width: 100%
+                width: 100%
+#events-wrapper
+    width: 80%
+    @media (max-device-width: 1200px)
+         width: 95%
     margin: auto
-    padding-top: 25px
-    padding-bottom: 25px
-    gap: 15px 25px
-    flex-wrap: wrap
-    .event-card
+    display: flex
+    justify-content: center
+    #events-list
         display: flex
-        flex-direction: column
-        justify-content: space-between
-        width: 450px
-        background-color: #f2f2f2
-        box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078)
-        color: #394959
-        border-radius: 10px
-        .event-card-hdr, .event-card-body, .event-card-footer
-            padding: 8px 15px
-            p
-                margin-bottom: 3px
-            .field
-                font-weight: 500
-        .event-card-body
-            min-height: 200px
-            height: 100%
-            font-size: 16px
-        .event-card-hdr
-            position: relative
-            display: flex
-            justify-content: space-between
-            font-weight: 400
-            border-bottom: 2px solid #394959          
-            .profession-hdr
-                text-align: center
-                font-size: 16px
-                display: inline-block
-        .event-card-footer
+        justify-content: left
+        width: 1400px
+        @media (max-device-width: 1749px)
+            width: 925px
+        @media (max-device-width: 973px)
+            width: 450px
+        @media (max-device-width: 470px)
+            width: 100%
+        padding-top: 25px
+        padding-bottom: 25px
+        gap: 15px 25px
+        flex-wrap: wrap
+        .event-card
             display: flex
             flex-direction: column
-            gap: 15px
-            border-top: 1px solid #394959
-            .btn
+            justify-content: space-between
+            width: 450px
+            @media (max-device-width: 470px)
                 width: 100%
-                background-color: white
-                font-weight: 500
-    #none-events-msg
-        margin-top: 10vh
-        width: 100%
-        text-align: center
-        font-size: 28px
-        font-weight: 400
+            background-color: #f2f2f2
+            box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078)
+            color: #394959
+            border-radius: 10px
+            word-wrap: break-word
+            .event-card-hdr, .event-card-body, .event-card-footer
+                padding: 8px 15px
+                p
+                    margin-bottom: 3px
+                .field
+                    font-weight: 500
+            .event-card-body
+                min-height: 200px
+                height: 100%
+                font-size: 16px
+            .event-card-hdr
+                position: relative
+                display: flex
+                justify-content: space-between
+                font-weight: 400
+                border-bottom: 2px solid #394959          
+                .profession-hdr
+                    text-align: center
+                    font-size: 16px
+                    display: inline-block
+            .event-card-footer
+                display: flex
+                flex-direction: column
+                gap: 15px
+                border-top: 1px solid #394959
+                .btn
+                    width: 100%
+                    background-color: white
+                    font-weight: 500
+        #none-events-msg
+            margin-top: 10vh
+            width: 100%
+            text-align: center
+            font-size: 28px
+            font-weight: 400
