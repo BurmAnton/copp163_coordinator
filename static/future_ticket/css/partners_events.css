@@ -185,6 +185,7 @@
   color: #394959;
   border-radius: 10px;
   word-wrap: break-word;
+  word-break: break-all;
 }
 @media (max-device-width: 470px) {
   #events-wrapper #events-list .event-card {
