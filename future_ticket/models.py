@@ -749,7 +749,7 @@ class PartnerEvent(models.Model):
         default="CRT"
     )
     description = models.TextField("Описание мероприятия", default="")
-    instruction = models.TextField("Инструкция", default="")
+    instruction = models.TextField("Инструкция", default="", blank=True)
 
     class Meta:
         verbose_name = "Партнёрское мероприятие"
