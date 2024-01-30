@@ -32,7 +32,7 @@
                                 <label for="EventPartner" class="form-label required-field">Организация<span>*</span></label>
                             </div>
                             <div class="form-floating mb-3">
-                                <select class="selectpicker w-100" title="Населённый пункт *" data-live-search="true" name="city" required>
+                                <select class="selectpicker w-100" title="Населённый пункт" data-live-search="true" name="city">
                                     {% for city in cities %}
                                         <option value='{{city.id}}'>{{city.name}} ({{city.city_type.name}})</option>
                                     {% endfor %}
@@ -79,7 +79,7 @@
         </div>
         {% for event in events %}
             <div class="modal fade event-modal" id="AddEvent{{event.id}}Modal" tabindex="-1" aria-labelledby="#AddEvent{{event.id}}ModalLabel" aria-hidden="true">
-                <div class="modal-dialog" style="max-width: 40%; min-width: 700px;">
+                <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="#AddEvent{{event.id}}ModalLabel">Описание партнёрского мероприятия</h5>
@@ -98,26 +98,32 @@
                                 <input type="input" class="form-control" placeholder="Контактное лицо (ФИО)" value="{{event.contact}}" readonly style="background-color: white;">
                                 <label for="EventPartner">Контактное лицо (ФИО)</label>
                             </div>
-                            <div class="form-floating mb-3">
-                                <input type="input" class="form-control" placeholder="Населённый пункт" value="{{event.city}}" readonly style="background-color: white;">
-                                <label for="EventPartner">Населённый пункт</label>
-                            </div>
+                            {% if event.city != "" and event.city != None %}
+                                <div class="form-floating mb-3">
+                                    <input type="input" class="form-control" placeholder="Населённый пункт" value="{{event.city}}" readonly style="background-color: white;">
+                                    <label for="EventPartner">Населённый пункт</label>
+                                </div>
+                            {% endif %}
                             <div class="form-floating mb-3">
                                 <input type="email" class="form-control" placeholder="name@example.com" value="{{event.contact_email}}" readonly style="background-color: white;">
                                 <label for="ContactEmail">Контактный email</label>
                             </div>
-                            <div class="form-floating mb-3">
-                                <input type="input" class="form-control" name="signup_link" value="{{event.signup_link}}" readonly placeholder="Ссылка на запись" style="background-color: white;">
-                                <label for="SignupLink" class="form-label">Ссылка на запись</label>
-                            </div>
+                            {% if event.signup_link != "" and event.signup_link != None %}
+                                <div class="form-floating mb-3">
+                                    <input type="input" class="form-control" name="signup_link" value="{{event.signup_link}}" readonly placeholder="Ссылка на запись" style="background-color: white;">
+                                    <label for="SignupLink" class="form-label">Ссылка на запись</label>
+                                </div>
+                            {% endif %}
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" placeholder="Контактный телефон" value="{{event.contact_phone}}" readonly style="background-color: white;">
                                 <label for="ContactPhone" class="form-label">Контактный телефон</label>
                             </div>
-                            <div class="form-floating mb-3">
-                                <input type="input" class="form-control" name="period" value="{{event.period}}" placeholder="Период проведения" style="background-color: white;">
-                                <label for="Period" class="form-label">Период проведения</label>
-                            </div>
+                            {% if event.period != "" and event.period != None %}
+                                <div class="form-floating mb-3">
+                                    <input type="input" class="form-control" name="period" value="{{event.period}}" placeholder="Период проведения" style="background-color: white;">
+                                    <label for="Period" class="form-label">Период проведения</label>
+                                </div>
+                            {% endif %}
                             <div class="textarea">
                                 <label for="EventDescription">Описание мероприятия</label>
                                 <textarea class="form-control" placeholder="Описание мероприятия" style="background-color: white; height: 150px; margin-bottom: 10px;" readonly>{{event.description}}</textarea>
@@ -180,7 +186,7 @@
             {% endif %}
         </form>
     </div>
-    <div>
+    <div id="events-wrapper">
         <div id="events-list">
                 {% for event in events %}
                     <div class="event-card">
@@ -191,7 +197,9 @@
                         </div>
                         <div class="event-card-body">
                             <p><span class="field">Организатор:</span> {{event.partner }}</p>
-                            <p><span class="field">Место проведения:</span> {{event.city }}</p>
+                            {% if event.city != "" and event.city != None %}
+                                <p><span class="field">Место проведения:</span> {{event.city}}</p>
+                            {% endif %}
                             {% if event.signup_link != "" and event.signup_link != None %}
                                 <p><span class="field">Ссылка на запись:</span> {{event.signup_link}}</p>
                             {% endif %}
