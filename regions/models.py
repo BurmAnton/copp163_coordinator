@@ -68,7 +68,7 @@ class City(models.Model):
     )
 
     def __str__(self):
-        return  f"{self.city_type} {self.name}"
+        return  f"{self.name}"
 
     class Meta:
         verbose_name = "Населённый пункт"
