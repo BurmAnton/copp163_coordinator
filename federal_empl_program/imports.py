@@ -32,26 +32,23 @@ project_year = ProjectYear.objects.get(year=2023)
 
 def get_sheet(form):
     workbook = load_workbook(form.cleaned_data['import_file'])
-    sheet = workbook.active
-    return sheet
+    return workbook.active
 
 def cheak_col_match(sheet, fields_names_set):
     i = 0
     col_count = sheet.max_column
     sheet_fields = []
     sheet_col = {}
-    if sheet[f"A2"].value is None:
+    if sheet["A2"].value is None:
         return ['Import', 'EmptySheet']
     try:
         for col_header in range(1, col_count+1):
             if sheet.cell(row=1,column=col_header).value is not None:
                 sheet_fields.append(sheet.cell(row=1,column=col_header).value)
                 sheet_col[col_header] = sheet.cell(row=1,column=col_header).value
-        missing_fields = []
-        for field in fields_names_set:
-            if field not in sheet_fields:
-                missing_fields.append(field)
-        if len(missing_fields) != 0:
+        if missing_fields := [
+            field for field in fields_names_set if field not in sheet_fields
+        ]:
             return ['Error', 'MissingFieldsError', missing_fields]
     except IndexError:
             return ['Error', 'IndexError']
@@ -75,7 +72,7 @@ def load_worksheet_dict(sheet, fields_names_set):
 def import_applications(form, year):
     try: sheet = get_sheet(form)
     except IndexError: return ['Error', 'IndexError']
-    
+
     #Требуемые поля таблицы
     fields_names = {
         "Номер заявки", "Фамилия", "Имя", "Отчество", "СНИЛС", "Телефон",
@@ -92,9 +89,9 @@ def import_applications(form, year):
     cheak_col_names = cheak_col_match(sheet, fields_names)
     if cheak_col_names[0] != True:
         return cheak_col_names
-    
+
     sheet = load_worksheet_dict(sheet, cheak_col_names[1])
-    missing_fields = list()
+    missing_fields = []
     citizen_added = 0
     citizen_updated = 0
     application_added = 0
@@ -107,37 +104,33 @@ def import_applications(form, year):
 
     for row in range(len(sheet['Номер заявки'])):
         citizen_input = create_citizen(sheet, row)
-        if citizen_input['status'] != True:
-            if citizen_input not in missing_fields:
-                missing_fields.append(citizen_input)
-        else:
+        if citizen_input['status'] == True:
             citizen = citizen_input['value']
             if citizen_input['is_new']: citizen_added += 1
             else: citizen_updated += 1
             application_input = create_application(sheet, row, citizen, project_year)
-            if application_input['status'] != True:
-                if application_input not in missing_fields:
-                    if application_input['status'] != 'EdProgramMissingFed':
-                        missing_fields.append(application_input)
-                    else:
-                        if citizen_input['is_new']: citizen_added -= 1
-                        else: citizen_updated -= 1
-            else:
-                application = application_input['value']
+            if application_input['status'] == True:
                 if application_input['is_new']: application_added += 1
                 else: application_updated += 1
-                if sheet["Идентификатор потока"][row] != "" \
-                    and sheet["Идентификатор потока"][row] != None:
+                if sheet["Идентификатор потока"][row] not in ["", None]:
+                    application = application_input['value']
                     group_input = create_group(sheet, row, application)
                     if group_input['is_new']: group_added += 1
                     else: group_updated += 1
+            elif application_input not in missing_fields:
+                if application_input['status'] != 'EdProgramMissingFed':
+                    missing_fields.append(application_input)
+                elif citizen_input['is_new']: citizen_added -= 1
+                else: citizen_updated -= 1
+        elif citizen_input not in missing_fields:
+            missing_fields.append(citizen_input)
     missing_fields = sorted(missing_fields, key=lambda d: d['status'])
     return ['OK', missing_fields, citizen_added, citizen_updated,
              application_added, application_updated, group_added, group_updated]
 
 def create_citizen(sheet, row):
     snils_number = sheet["СНИЛС"][row]
-    if snils_number == "" or None:
+    if snils_number == "" or snils_number is None:
         return {"status": "SnilsMissing", "value": row+2}
     citizen, is_new = Citizen.objects.get_or_create(
         snils_number=snils_number
@@ -155,7 +148,7 @@ def create_citizen(sheet, row):
     if education_type in EDUCATION_CHOICES:
         citizen.education_type = EDUCATION_CHOICES[education_type]
     citizen.save()
-    
+
     return {"status": True, "value": citizen, "is_new": is_new}
 
 def create_application(sheet, row, citizen, project_year):
@@ -213,7 +206,7 @@ def create_application(sheet, row, citizen, project_year):
         application.contract = contract
     program_flow_id = sheet["Идентификатор образовательной программы"][row]
     application.education_program = get_education_program(program_flow_id)
-    if application.education_program == None:
+    if application.education_program is None:
         application.delete()
         education_center_year = EducationCenterProjectYear.objects.get(
             ed_center=education_center[0], project_year=project_year
@@ -223,8 +216,7 @@ def create_application(sheet, row, citizen, project_year):
             return {"status": "EdProgramMissingFed", "value": program_flow_id}
         return {"status": "EdProgramMissing", "value": program_flow_id}
     price = sheet["Стоимость договора гражданина"][row]
-    if price == "" or price == None: price = 0
-    else: price = price.split(".")[0]
+    price = 0 if price == "" or price is None else price.split(".")[0]
     application.price = int(price)
     application.save()
     return {"status": True, "value": application, "is_new": is_new}
@@ -258,6 +250,4 @@ def create_contract(number: str, ed_center: EducationCenter):
 def get_education_program(program_flow_id):
     education_program = EducationProgram.objects.filter(
         flow_id=program_flow_id)
-    if len(education_program) != 0: 
-        return education_program[0]
-    return None
+    return education_program[0] if len(education_program) != 0 else None

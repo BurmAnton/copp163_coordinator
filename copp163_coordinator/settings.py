@@ -28,7 +28,6 @@ CELERY_TIMEZONE = 'Europe/Samara'
 
 
 INSTALLED_APPS = [
-    'celery',
     'coverage',
     'debug_toolbar',
     'rest_framework',
