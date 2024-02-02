@@ -17,8 +17,7 @@ from copp163_coordinator import settings
 from education_centers.models import (Competence, EducationCenter,
                                       EducationProgram, Employee, Group,
                                       Teacher, Workshop)
-from future_ticket.tasks import (find_participants_dublicates,
-                                 update_completed_quota)
+
 from regions.models import City
 from users.models import DisabilityType, Organization
 
@@ -882,7 +881,7 @@ class QuotaEvent(models.Model):
             )['participants_limit']
         self.event.participants_limit = participants_limit
         self.event.save()
-        update_completed_quota.delay()
+        #update_completed_quota.delay()
 
 @receiver(pre_delete, sender=QuotaEvent, dispatch_uid='quotaEvent_delete_signal')
 def change_quota(sender, instance, using, **kwargs):
