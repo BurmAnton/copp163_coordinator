@@ -6,6 +6,7 @@ from django.db import models
 from django.db.models.deletion import CASCADE, DO_NOTHING
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+import unidecode
 
 
 from users.managers import CustomUserManager
@@ -126,6 +127,18 @@ class EducationProgram(models.Model):
     disability_types = models.ManyToManyField(
         DisabilityType, 
         verbose_name="ОВЗ", 
+        blank=True
+    )
+
+    def doc_directory_path(instance, filename):
+        return 'media/programs/{0}/{1}'.format(
+            instance.ed_center.id, unidecode.unidecode(filename)
+        )
+    
+    program_file = models.FileField(
+        "Программа (документ)", 
+        upload_to=doc_directory_path,
+        null=True,
         blank=True
     )
 

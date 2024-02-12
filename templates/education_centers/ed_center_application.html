@@ -1053,8 +1053,8 @@
     <div class="page-hdr">
         <h1>Формирование заявки на ПКО</h1>
         <div class="project-choice">
-            <a data-project="bilet" href="{% url 'ed_center_application' ed_center.id %}?p=bilet" class="project-btn btn {%if project == 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Билет в будущее</a>
-            <a data-project="zan" href="{% url 'ed_center_application' ed_center.id %}?p=zan" class="project-btn btn {%if project != 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Содействие занятости</a>
+            <a data-project="bilet" style="display: none;" href="{% url 'ed_center_application' ed_center.id %}?p=bilet" class="project-btn btn {%if project == 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Билет в будущее</a>
+            <a data-project="zan" style="display: none;" href="{% url 'ed_center_application' ed_center.id %}?p=zan" class="project-btn btn {%if project != 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Содействие занятости</a>
         </div>
     </div>
     <div class="steps">
@@ -1066,7 +1066,7 @@
                 <a data-step="3" class="step-btn btn {%if stage == 3%}btn-primary{%else%}btn-outline-primary{%endif%}">Программы</a>
                 <a data-step="4" class="step-btn btn {%if stage == 4%}btn-primary{%else%}btn-outline-primary{%endif%}">Кадры</a>
                 <a data-step="5" class="step-btn btn {%if stage == 5%}btn-primary{%else%}btn-outline-primary{%endif%}">МТБ</a>
-                <a data-step="6" class="step-btn btn {%if stage == 6%}btn-primary{%else%}btn-outline-primary{%endif%}">Показатели</a>
+                <a data-step="6" style="display: none;" class="step-btn btn {%if stage == 6%}btn-primary{%else%}btn-outline-primary{%endif%}">Показатели</a>
                 {% if project == 'bilet' %}<a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Квоты</a>{% endif %}
                 {% if project == 'bilet' %}
                     {% if center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'DWNLD' or center_project_year.stage == 'FNSHD'%}
@@ -1472,11 +1472,10 @@
                             <th scope="col">Название</th>
                             <th scope="col">Направление программы</th>
                             <th scope="col">Профессия</th>
-                            <th scope="col">Вид программы</th>
-                            <th scope="col">Колво часов</th>
                             <th scope="col">Обеспечение</th>
                             <th scope="col">Форма обучения</th>
                             <th scope="col">Входные требования</th>
+                            <th scope="col">Программа</th>
                         {% endif %}
                     </tr>
                     {% for program in programs %}
@@ -1504,17 +1503,34 @@
                                 </td>
                             {%else%}
                                 <td scope="row">{{ forloop.counter }}</td>
-                                <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeProgramModal{{program.id}}">{{program.program_name}}</td>
+                                <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeProgramModal{{program.id}}">{{program.program_name}} ({{program.get_program_type_display}}, {{program.duration}})</td>
                                 <td scope="row">{{program.competence}}</td>
                                 <td scope="row">{{program.profession}}</td>
-                                <td scope="row">{{program.get_program_type_display}}</td>
-                                <td scope="row">{{program.duration}}</td>
                                 <td scope="row">
                                     {{program.num_teachers}} педагогов <br>
                                     {{program.num_workshops}} аудиторий 
                                 </td>
                                 <td scope="row">{{program.get_education_form_display}}</td>
                                 <td scope="row">{{program.get_entry_requirements_display}}</td>
+                                <td>
+                                    {{program_file}}
+                                    {% if program.program_file.url != None  %}
+                                    <a class="bill-link btn btn-outline-primary" href="{{program.program_file.url}}">Программа</a>
+                                    {% else %}
+                                        <form action="{% url 'ed_center_application' ed_center.id %}" method="post" enctype="multipart/form-data">
+                                                <input style="display: none;" type="text" value={{program.id}} name="program_id">
+                                                <div class="mb-3">
+                                                    {% csrf_token %}
+                                                    {{ form.non_field_errors }}
+                                                    {{ form.import_file.help_text }}
+                                                    {{ form.import_file.errors }}
+                                                    {{ form.import_file }}
+                                                </div>
+                                                <button style="width: 100%;" class="btn btn-outline-primary" name="import-program">Загрузить</button>
+                                        </form>
+                                            
+                                    {% endif %}
+                                </td>
                             {%endif%}
                         </tr>
                     {% empty %}

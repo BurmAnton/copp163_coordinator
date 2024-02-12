@@ -787,11 +787,20 @@ def ed_center_application(request, ed_center_id):
                 contract.doc_file = request.FILES['import_file']
                 contract.doc_file.name = unidecode.unidecode(contract.doc_file.name)
                 contract.save()
+        elif 'import-program' in request.POST:
+            form = ImportTicketContractForm(request.POST, request.FILES)
+            if form.is_valid():
+                program_id = request.POST['program_id']
+                program = EducationProgram.objects.get(id=program_id)
+                program.program_file = request.FILES['import_file']
+                program.save()
+    
     approved_programs = None
     chosen_professions = None
     schools = None
     ticket_programs = None
     professions = None
+    
     workshops = Workshop.objects.filter(education_center=ed_center
         ).exclude(name=None)
     teachers = ed_center.teachers.all().annotate(
