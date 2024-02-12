@@ -442,8 +442,9 @@ def ed_center_application(request, ed_center_id):
             workshop = Workshop(
                 name=name,
                 education_center=ed_center,
-                classes_type = request.POST['classes_type'],
-                equipment = request.POST['equipment'],
+                classes_type=request.POST['classes_type'],
+                equipment=request.POST['equipment'],
+                address=request.POST['address']
             )
             workshop.save()
             if 'bilet' in request.POST:
@@ -615,6 +616,7 @@ def ed_center_application(request, ed_center_id):
             workshop.education_center=ed_center
             workshop.classes_type = request.POST['classes_type']
             workshop.equipment = request.POST['equipment']
+            workshop.address=request.POST['address']
             workshop.save()
             if 'bilet' in request.POST:
                 workshop.ticket_programs.clear()

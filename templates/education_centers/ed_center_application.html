@@ -393,6 +393,10 @@
                                         <option value="TP">Практические и теоретические занятия</option>
                                     </select>
                                 </div>
+                                <div class="form-floating mb-3">
+                                    <input type="input" class="form-control" id="AddressWorkshopInput" name="address" maxlength="500" placeholder="Адрес"required>
+                                    <label for="NameWorkshopInput{{workshop.id}}">Адрес помещения</label>
+                                </div>
                                 <div class="form mb-3 filter-selectpicker">
                                     <select class="selectpicker w-100" title="Программы профпроб (реализуемые в аудитории)" data-live-search="true" name="programs" multiple>
                                         {% if project == 'bilet'%}
@@ -912,10 +916,10 @@
                                 <div class="form mb-3 filter-selectpicker">
                                     <select class="selectpicker w-100" title="Программы профпроб (реализуемые педагогом)" data-live-search="true" name="programs" multiple>
                                             {% for program in teacher.programs.all %}
-                                                <option value="{{program.id}}" selected>{{program.program_name}}</option>
+                                                <option value="{{program.id}}" selected>{{program.program_name}} ({{program.get_program_type_display}}, {{program.duration}})</option>
                                             {% endfor %}
                                             {% for program in programs|exclude_programs:teacher.ticket_programs.all %}
-                                                <option value="{{program.id}}">{{program.program_name}}</option>
+                                                <option value="{{program.id}}">{{program.program_name}} ({{program.get_program_type_display}}, {{program.duration}})</option>
                                             {% endfor %}
                                     </select>
                                 </div>
@@ -980,13 +984,17 @@
                                         <option value="TP">Практические и теоретические занятия</option>
                                     </select>
                                 </div>
+                                <div class="form-floating mb-3">
+                                    <input type="input" class="form-control" id="AddressWorkshopInput{{workshop.id}}" name="address" maxlength="500" placeholder="Адрес" value="{{workshop.address}}" required>
+                                    <label for="NameWorkshopInput{{workshop.id}}">Адрес помещения</label>
+                                </div>
                                 <div class="form mb-3 filter-selectpicker">
                                     <select class="selectpicker w-100" title="Программы профпроб (реализуемые в аудитории)" data-live-search="true" name="programs" multiple>
                                         {%for program in workshop.programs.all %}  
-                                            <option value="{{program.id}}" selected>{{program.program_name}}</option>
+                                            <option value="{{program.id}}" selected>{{program.program_name}} ({{program.get_program_type_display}}, {{program.duration}})</option>
                                         {% endfor %}
                                         {% for program in programs|exclude_programs:workshop.programs.all %}
-                                            <option value="{{program.id}}">{{program.program_name}}</option>
+                                            <option value="{{program.id}}">{{program.program_name}} ({{program.get_program_type_display}}, {{program.duration}})</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -1081,8 +1089,11 @@
                         {% endif %}
                     {% endif %}
                 </form>
-                {% if ser.is_superuser or project != 'bilet' and center_project_year.stage != 'FLLNG' and center_project_year.stage != 'RWRK' and center_project_year.stage != 'FLLD' %}
-                    <input style="height: 100%;" type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#GenerateApplicationModal" value="Сгенерировать заявку">
+                {% if user.is_superuser or project != 'bilet' and center_project_year.stage != 'FLLNG' and center_project_year.stage != 'RWRK' and center_project_year.stage != 'FLLD' %}
+                    <!--<input style="height: 100%;" type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#GenerateApplicationModal" value="Сгенерировать заявку">-->
+                {% endif %}
+                {% if project != 'bilet' %}
+                    <input style="height: 100%;" type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#GenerateNetAgreementModal" value="Создать сетевой договор">
                 {% endif %}
             </div>
         </div>
@@ -1637,6 +1648,7 @@
                     <tr class=""> 
                         <th scope="row">№</th>
                         <th scope="col">Наименование аудитории</th>
+                        <th scope="col">Адрес</th>
                         <th scope="col">Вид занятий</th>
                         {% if project == 'bilet' %}
                             <th scope="col">Профессии</th>
@@ -1647,6 +1659,7 @@
                         <tr>
                             <td scope="row">{{ forloop.counter }}</td>
                             <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeWorkshopModal{{workshop.id}}">{{workshop.name}}</td>
+                            <td scope="row">{{workshop.address}}</td>
                             <td scope="row">{{workshop.get_classes_type_display}}</td>
                             {% if project == 'bilet' %}
                                 <td scope="col">
