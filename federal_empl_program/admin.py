@@ -122,11 +122,6 @@ class EducationCenterProjectYearAdmin(admin.ModelAdmin):
         return round(education_sum + employment_sum, 2)
     count_pay.short_description='Оплачено'
 
-    def get_queryset(self, request):
-        queryset = super().get_queryset(request).exclude(ed_center__flow_name="")
-
-        return queryset.exclude(quota_256=0, quota_72=0, quota_144=0)
-
 
 #@admin.register(Indicator)
 class IndicatorAdmin(admin.ModelAdmin):
