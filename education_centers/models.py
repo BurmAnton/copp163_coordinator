@@ -203,6 +203,18 @@ class Teacher(models.Model):
         "Наличие доп. проф. образования по профилю программы за последние 3 года", 
         null=True, blank=True
     )
+    def doc_directory_path(instance, filename):
+        return 'media/consents/{0}/{1}/{2}'.format(
+            instance.organization.id, 
+            instance.id, 
+            unidecode.unidecode(filename)
+        )
+    consent_file = models.FileField(
+        "Согласие",
+        null=True, 
+        blank=True,
+        upload_to=doc_directory_path
+    )
 
     class Meta:
         verbose_name = "Педагог"
