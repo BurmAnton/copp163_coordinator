@@ -31,7 +31,7 @@ from users.models import DisabilityType
 
 from . import exports, imports
 from .contracts import (combine_all_docx, create_application, create_document,
-                        create_ticket_application)
+                        create_ticket_application, generate_concent_doc)
 from .forms import (ImportDataForm, ImportTicketContractForm,
                     ImportTicketDataForm)
 from .models import (AbilimpicsWinner, BankDetails, Competence,
@@ -788,12 +788,31 @@ def ed_center_application(request, ed_center_id):
                 contract.doc_file.name = unidecode.unidecode(contract.doc_file.name)
                 contract.save()
         elif 'import-program' in request.POST:
+            stage = 3
             form = ImportTicketContractForm(request.POST, request.FILES)
             if form.is_valid():
                 program_id = request.POST['program_id']
                 program = EducationProgram.objects.get(id=program_id)
                 program.program_file = request.FILES['import_file']
                 program.save()
+        elif 'generate_consent' in request.POST:
+            stage = 4
+            teacher_id = request.POST['teacher_id']
+            teacher = Teacher.objects.get(id=teacher_id)
+            document = generate_concent_doc(teacher)
+            response = HttpResponse(content_type=f'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            response['Content-Disposition'] = f'attachment; filename={unidecode.unidecode(f"согласие_{teacher.last_name}")}.docx'
+            document.save(response)
+            return response
+        elif 'import-consent' in request.POST:
+            stage = 4
+            form = ImportTicketContractForm(request.POST, request.FILES)
+            if form.is_valid():
+                teacher_id = request.POST['teacher_id']
+                teacher = Teacher.objects.get(id=teacher_id)
+                teacher.consent_file = request.FILES['import_file']
+                teacher.save()
+
     
     approved_programs = None
     chosen_professions = None

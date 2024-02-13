@@ -1052,9 +1052,9 @@
     
     <div class="page-hdr">
         <h1>Формирование заявки на ПКО</h1>
-        <div class="project-choice">
+        <div class="project-choice" style="display: none;">
             <a data-project="bilet" style="display: none;" href="{% url 'ed_center_application' ed_center.id %}?p=bilet" class="project-btn btn {%if project == 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Билет в будущее</a>
-            <a data-project="zan" style="display: none;" href="{% url 'ed_center_application' ed_center.id %}?p=zan" class="project-btn btn {%if project != 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Содействие занятости</a>
+            <a data-project="zan"  href="{% url 'ed_center_application' ed_center.id %}?p=zan" class="project-btn btn {%if project != 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Содействие занятости</a>
         </div>
     </div>
     <div class="steps">
@@ -1488,8 +1488,8 @@
                                 <td scope="row">{{program.author}}</td>
                                 <td scope="row">{{program.get_status_display}}</td>
                                 <td scope="row">
-                                    {{program|count_teachers:ed_center}} педагогов <br>
-                                    {{program|count_workshops:ed_center}} аудиторий 
+                                    педагогов: {{program|count_teachers:ed_center}}  <br>
+                                    аудиторий: {{program|count_workshops:ed_center}}  
                                 </td>
                                 <td scope="row">
                                     {% if program.program_link != None and program.program_link != "" %}
@@ -1507,8 +1507,8 @@
                                 <td scope="row">{{program.competence}}</td>
                                 <td scope="row">{{program.profession}}</td>
                                 <td scope="row">
-                                    {{program.num_teachers}} педагогов <br>
-                                    {{program.num_workshops}} аудиторий 
+                                    педагогов: {{program.num_teachers}} <br>
+                                    аудиторий: {{program.num_workshops}}  
                                 </td>
                                 <td scope="row">{{program.get_education_form_display}}</td>
                                 <td scope="row">{{program.get_entry_requirements_display}}</td>
@@ -1582,24 +1582,22 @@
                     <tr class=""> 
                         <th scope="col">№</th>
                         <th scope="col">ФИО</th>
-                        <th scope="col">Тип трудоустройства</th>
-                        <th scope="col">Уровень образования</th>
                         <th scope="col">Специальность и квалификация</th>
                         <th scope="col">Ученая степень/должность</th>
                         <th scope="col">Наличие опыта педагогической и/или производственной деятельности</th>
                         {% if project == 'bilet' %}
                             <th scope="col">Профессии</th>
                             <th scope="col">Наличие профессиональных сертификаций по компетенции или диплома победителей/призеров конкурсов профмастерства</th>
-                        {% else %}
-                            <th scope="col">Наличие доп. образования/опыта по профилю программы за последние 3 года.</th>
+                        {%else %}
+                        
+                        <th scope="col">Согласии на сотрудничество в качестве преподавателя</th>
+                        <th scope="col">Шаблон</th>
                         {% endif %}
                     </tr>
                     {% for teacher in teachers %}
                         <tr>
                             <td scope="row">{{ forloop.counter }}</td>
                             <td scope="row" class="data-bs-target" data-bs-toggle="modal" data-bs-target="#ChangeTeacherModal{{teacher.id}}">{{teacher.full_name}}</td>
-                            <td scope="row">{{teacher.get_employment_type_display}}</td>
-                            <td scope="row">{{teacher.get_education_level_display}}</td>
                             <td scope="row">{{teacher.education_major}}</td>
                             <td scope="row">{{teacher.position}}</td>
                             <td scope="row">{{teacher.experience}}</td>
@@ -1611,7 +1609,29 @@
                                 </td>
                                 <td scope="col">{{teacher.bvb_experience}}</td>
                             {% else %}
-                                <td scope="row">{{teacher.additional_education}}</td>
+                                <td scope="col">
+                                    {% if teacher.consent_file.url != None  %}
+                                        <a class="bill-link btn btn-primary btn-sm" style="width: 100%; margin-bottom: 10px;" href="{{teacher.consent_file.url}}">Скан согласия</a>
+                                    {% endif %}
+                                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post" enctype="multipart/form-data">
+                                        <input style="display: none;" type="text" value={{teacher.id}} name="teacher_id">
+                                        <div class="mb-3">
+                                            {% csrf_token %}
+                                            {{ form.non_field_errors }}
+                                            {{ form.import_file.help_text }}
+                                            {{ form.import_file.errors }}
+                                            {{ form.import_file }}
+                                        </div>
+                                        <button style="width: 100%;" class="btn btn-outline-primary btn-sm" name="import-consent">Загрузить</button>
+                                    </form>
+                                </td>
+                                <td scope="col">
+                                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                                        <input style="display: none;" type="input" name="step" value="4" required>
+                                        <input style="display: none;" type="input" name="teacher_id" value="{{teacher.id}}" required>
+                                        <button name='generate_consent'  class="btn btn-outline-primary btn-sm">Скачать</button>
+                                    </form>
+                                </td>
                             {% endif %}
                         </tr>
                         {% empty %}

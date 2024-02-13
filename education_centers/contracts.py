@@ -7,6 +7,7 @@ from django.utils.formats import date_format
 from docx import Document as Document_compose
 from docxcompose.composer import Composer
 from docxtpl import DocxTemplate
+import unidecode
 
 from federal_empl_program.models import (EdCenterEmployeePosition,
                                          EdCenterIndicator, ProjectPosition)
@@ -80,6 +81,26 @@ def create_document(doc_type, contractor, doc_date, parent_doc, groups):
     else: contract.groups.add(groups)
 
     return contract
+
+def generate_concent_doc(teacher: Teacher) -> DocxTemplate:
+    doc_type = get_object_or_404(DocumentType, name="Согласие (2024)")
+    context = {
+        'teacher' : teacher,
+    }
+    
+    document = DocxTemplate(doc_type.template)
+    document.render(context)
+
+    path = f'media/consents/generate/{teacher.id}' 
+    isExist = os.path.exists(path)
+    if not isExist:
+        os.makedirs(path)
+    doc_name = unidecode.unidecode(f"согласие_{teacher.last_name}")
+    path_to_doc = f'{path}/{doc_name}.docx'
+    document.save(path_to_doc)
+
+    return document
+
 
 def combine_all_docx(filename_master,files_list, file_name):
     number_of_sections=len(files_list)
