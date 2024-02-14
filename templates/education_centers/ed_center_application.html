@@ -1543,7 +1543,6 @@
                                 <td scope="row">{{program.get_education_form_display}}</td>
                                 <td scope="row">{{program.get_entry_requirements_display}}</td>
                                 <td>
-                                    {{program_file}}
                                     {% if program.program_file.url != None  %}
                                     <a class="bill-link btn btn-outline-primary" href="{{program.program_file.url}}">Программа</a>
                                     {% else %}
@@ -1557,8 +1556,7 @@
                                                     {{ form.import_file }}
                                                 </div>
                                                 <button style="width: 100%;" class="btn btn-outline-primary" name="import-program">Загрузить</button>
-                                        </form>
-                                            
+                                        </form> 
                                     {% endif %}
                                 </td>
                             {%endif%}
@@ -1775,10 +1773,39 @@
                 </form>
             {% endif %}
             <div class="collapse show" id="collapseIndicators">
+                
+                {% if net_agreement.programs.all.count != 0 %}
+                <div class="table-hdr">
+                    <h3>Договор</h3>
+                </div>
+                    {% if net_agreement.agreement_file.url != None  %}
+                        <a class="bill-link btn btn-primary btn-sm" href="{{net_agreement.agreement_file.url}}" style="width: 350px; margin-bottom: 10px;">
+                            Скачать договор {% if net_agreement.stage == 'PRVD' %}(подписанный){%endif%}
+                        </a>
+                    {% endif %}
+                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post" enctype="multipart/form-data" style="width: 350px;">
+                            <div class="mb-3">
+                                {% csrf_token %}
+                                {{ form.non_field_errors }}
+                                {{ form.import_file.help_text }}
+                                {{ form.import_file.errors }}
+                                {{ form.import_file }}
+                            </div>
+                            <button style="width: 100%;" class="btn btn-outline-primary" name="import-net">Загрузить</button>
+                    </form> 
+                
+                {% endif %}
                 <div class="table-hdr">
                     <h3>Список программ</h3>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddProgramsNetModal">Добавить программы</button>
+                    <div style="display: flex; gap: 10px;">
+                        <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                            <input style="display: none;" type="input" name="step" value="6" required>
+                            <button name='generate-net'  class="btn btn-outline-primary">Сформировать договор</button>
+                        </form>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddProgramsNetModal">Добавить программы</button>
                 </div>
+                    </div>
+                    
                 <table class="table">
                     <tr> 
                         <th scope="col">№</th>
@@ -1813,7 +1840,7 @@
                         </tr>
                     {% empty %}
                         <tr>
-                            <td scope="row" class="none-alert" colspan="4">Не добавлено ни одной программы</td>
+                            <td scope="row" class="none-alert" colspan="5">Не добавлено ни одной программы</td>
                         </tr>
                     {% endfor %}
                 </table>

@@ -10,7 +10,7 @@ from docxtpl import DocxTemplate
 import unidecode
 
 from federal_empl_program.models import (EdCenterEmployeePosition,
-                                         EdCenterIndicator, ProjectPosition)
+                                         EdCenterIndicator, NetworkAgreement, ProjectPosition)
 from future_ticket.models import (EdCenterTicketIndicator,
                                   TicketEdCenterEmployeePosition,
                                   TicketProfession, TicketProjectPosition)
@@ -82,8 +82,35 @@ def create_document(doc_type, contractor, doc_date, parent_doc, groups):
 
     return contract
 
+def generate_net_agreement(agreement: NetworkAgreement) -> DocxTemplate:
+    doc_type = get_object_or_404(DocumentType, name="Сетевой договор (2024)")
+    ed_center = agreement.ed_center_year.ed_center
+    sign_position = ProjectPosition.objects.get(
+        position="Должностное лицо, подписывающее договор")
+    context = {
+        'number' : agreement.agreement_number,
+        'programs': agreement.programs.all(),
+        'ed_center': ed_center,
+        'sign_employee': EdCenterEmployeePosition.objects.filter(
+            ed_center=ed_center, position=sign_position).first(),
+
+    }
+    document = DocxTemplate(doc_type.template)
+    document.render(context)
+
+    path = f'media/federal_empl/net_agreements_new/{ed_center.id}' 
+    isExist = os.path.exists(path)
+    if not isExist:
+        os.makedirs(path)
+    doc_name = unidecode.unidecode(f"стетевой_договор_{agreement.agreement_number}")
+    path_to_doc = f'{path}/{doc_name}.docx'
+    document.save(path_to_doc)
+
+    return document
+
 def generate_concent_doc(teacher: Teacher) -> DocxTemplate:
     doc_type = get_object_or_404(DocumentType, name="Согласие (2024)")
+    
     context = {
         'teacher' : teacher,
     }
