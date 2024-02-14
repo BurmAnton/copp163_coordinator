@@ -1020,6 +1020,36 @@
             </div>
         {% endfor %}
     {% endif %}
+    
+    <div class="modal fade add-net-modal" id="AddProgramsNetModal" tabindex="-1" aria-labelledby="AddProgramsNetModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddProgramsNetModalLabel">Добавление программ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                    <div class="modal-body">
+                        <div class="alert alert-warning w-90" role="alert">
+                            В список программ попадают только программы с минимум 2 преподавателями (преподаватели должны иметь согласия на сотрудничество) и минимум 1 помещением (с указанным адресом)!
+                        </div>
+                        <div class="form mb-3 filter-selectpicker">
+                            <select class="selectpicker w-100" title="Программы" data-live-search="true" name="qualified_programs" multiple>
+                                {%for program in qualified_programs %}  
+                                    <option value="{{program.id}}">{{program.program_name}} ({{program.get_program_type_display}}, {{program.duration}}ч.)</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div> 
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <input type="submit" class="btn btn-primary" name="add-network" value="Сохранить">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <div class="modal fade generate-application-modal" id="GenerateApplicationModal" tabindex="-1" aria-labelledby="GenerateApplicationModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -1051,7 +1081,7 @@
     </div>
     
     <div class="page-hdr">
-        <h1>Формирование заявки на ПКО</h1>
+        <h1>Формирование заявки на ПКО<br>(сетевой договор)</h1>
         <div class="project-choice" style="display: none;">
             <a data-project="bilet" style="display: none;" href="{% url 'ed_center_application' ed_center.id %}?p=bilet" class="project-btn btn {%if project == 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Билет в будущее</a>
             <a data-project="zan"  href="{% url 'ed_center_application' ed_center.id %}?p=zan" class="project-btn btn {%if project != 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Содействие занятости</a>
@@ -1066,7 +1096,7 @@
                 <a data-step="3" class="step-btn btn {%if stage == 3%}btn-primary{%else%}btn-outline-primary{%endif%}">Программы</a>
                 <a data-step="4" class="step-btn btn {%if stage == 4%}btn-primary{%else%}btn-outline-primary{%endif%}">Кадры</a>
                 <a data-step="5" class="step-btn btn {%if stage == 5%}btn-primary{%else%}btn-outline-primary{%endif%}">МТБ</a>
-                <a data-step="6" style="display: none;" class="step-btn btn {%if stage == 6%}btn-primary{%else%}btn-outline-primary{%endif%}">Показатели</a>
+                <a data-step="6" class="step-btn btn {%if stage == 6%}btn-primary{%else%}btn-outline-primary{%endif%}" {%if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'FLLD' or center_project_year.stage ==  'RWRK' %} style="display: none;"{%endif%}>Договор</a>
                 {% if project == 'bilet' %}<a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Квоты</a>{% endif %}
                 {% if project == 'bilet' %}
                     {% if center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'DWNLD' or center_project_year.stage == 'FNSHD'%}
@@ -1718,9 +1748,9 @@
             <div class="step-hdr">
                 <h2>
                     {% if center_project_year.step_6_check %}
-                        <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon"> Показатели эффективности участника ПКО
+                        <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon"> Формирование договора о сетевом сотрудничестве
                     {% else %}
-                        6. Показатели эффективности участника ПКО
+                        6. Формирование договора о сетевом сотрудничестве
                     {% endif %}
                 </h2>
                 {% if user.is_superuser and center_project_year.step_6_check == False %}
@@ -1746,59 +1776,48 @@
             {% endif %}
             <div class="collapse show" id="collapseIndicators">
                 <div class="table-hdr">
-                    <h3>Показатели эффективности</h3>
+                    <h3>Список программ</h3>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddProgramsNetModal">Добавить программы</button>
                 </div>
-                <form action="" method="post">
-                    {% if project == 'bilet'%}
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="is_disability" name="is_disability" {% if center_project_year.is_disability %} checked {% endif %}>
-                            <label style="padding-top: 2px !important" class="form-check-label" for="is_disability">
-                                Имеется возможность обеспечения участия в Проекте участников с ОВЗ, наличие безбарьерной архитектурной доступности и специальных условий к прохождению практических мероприятий
-                            </label>
-                        </div>
-                    {% endif %}
-                    {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
-                    <table class="table">
+                <table class="table">
+                    <tr> 
+                        <th scope="col">№</th>
+                        <th scope="col">Название</th>
+                        <th scope="col">Помещения</th>
+                        <th scope="col">Преподователи</th>
+                        <th scope="col">Программа</th>
+                    </tr>
+                    {% for program in net_agreement.programs.all %}
                         <tr>
-                            <th scope="row">№</th>
-                            <th scope="col">Показатель эффективности</th>
-                            {% if project == 'bilet' %}
-                                <th scope="col">Общее количество участников мероприятий за последние 3 года, чел.</th>
-                            {% else %}
-                                <th scope="col">2021</th>
-                                <th scope="col">2022</th>
-                            {% endif %}
-                        </tr>
-                        {% for indicator in indicators %}
-                            <tr>
-                                <td scope="row">{{ forloop.counter }}</td>
-                                <td scope="row">{{indicator.name}}</td>
-                                {% if project == 'bilet' %}
-                                <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}" placeholder="" value="{{indicator.ed_center_indicator}}" required></td>
-                                {% else %}
-                                    <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2021" placeholder="" value="{{indicator.ed_center_indicator_2021}}" required></td>
-                                    <td scope="row"><input type="input" class="form-control" name="{{indicator.id}}_2022" placeholder="" value="{{indicator.ed_center_indicator_2022}}" required></td>
+                            <td scope="row">{{ forloop.counter }}</td>
+                            <td scope="row">{{program.program_name}} ({{program.get_program_type_display}}, {{program.duration}})</td>
+                            <td scope="row">
+                                    {%for workshop in program.workshops.all %}
+                                        {% if workshop.address is not None %}
+                                            {{workshop.address}}<br>
+                                        {% endif %}
+                                    {%endfor %}
+                            </td>
+                            <td scope="row">
+                                {% for teacher in program.teachers.all %}
+                                    {% if teacher.consent_file is not None %}
+                                        {{teacher.get_name}}<br>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td scope="row">
+                                {% if program.program_file.url != None  %}
+                                    <a class="bill-link btn btn-outline-primary" href="{{program.program_file.url}}">Программа</a>
                                 {% endif %}
-                            </tr>
-                        {% endfor %}
-                    </table>
-                    {% if free_indicators.count != 0 %}
-                        <h3>6.1 Доп. сведения участника ПКО</h3>
-                        {% for indicator in free_indicators %}
-                            <div class="mb-3 free-indicator">
-                                <label for="NotesIndicatorInput{{indicator.id}}" class="form-label">{{indicator.name}}</label>
-                                <textarea class="form-control" id="NotesIndicatorInput{{indicator.id}}" name="{{indicator.id}}" rows="3">{{indicator.ed_center_indicator}}</textarea>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                    {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
-                        <div class="submit">
-                            <input type="submit" class="btn btn-primary" name="add-indicators" value="Сохранить">
-                        </div>
-                    {% endif %}
-                </form>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td scope="row" class="none-alert" colspan="4">Не добавлено ни одной программы</td>
+                        </tr>
+                    {% endfor %}
+                </table>
             </div>
-        </div>
         <div class="quota-step step" data-step="7" {%if stage == 7%}style="display:block;"{%else%}style="display:none;"{%endif%}>
             <div class="step-hdr" style="display: flex;flex-direction: column;">
                 {% if project == 'bilet' %}
@@ -1947,5 +1966,6 @@
                 {% endif %}
             </div>
         {% endif %}
+    </div>
     </div>
 {% endblock %}

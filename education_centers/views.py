@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 from citizens.models import School
 from federal_empl_program.models import (EdCenterEmployeePosition,
                                          EdCenterIndicator,
-                                         EducationCenterProjectYear, Indicator,
+                                         EducationCenterProjectYear, Indicator, NetworkAgreement,
                                          ProjectPosition, ProjectYear)
 from future_ticket.models import (AgeGroup, ContractorsDocumentTicket,
                                   DocumentTypeTicket, EdCenterTicketIndicator,
@@ -160,6 +160,16 @@ def abilimpics(request):
         'stage': stage,
         'template': template
     })
+
+
+def get_qualified_programs(programs):
+    programs = programs.exclude(num_teachers__lt=2, num_workshops__lt=1)
+    qualified_programs = []
+    for program in programs:
+        if program.teachers.exclude(consent_file=None).count() >= 2:
+            if program.workshops.exclude(address=None).count() >= 1:
+                qualified_programs.append(program)
+    return qualified_programs
 
 @csrf_exempt
 def ed_center_application(request, ed_center_id):
@@ -763,8 +773,7 @@ def ed_center_application(request, ed_center_id):
                center_project_year.step_2_check and \
                center_project_year.step_3_check and \
                center_project_year.step_4_check and \
-               center_project_year.step_5_check and \
-               center_project_year.step_6_check:
+               center_project_year.step_5_check:
                 center_project_year.stage = 'VRFD'
             center_project_year.save()
         elif 'send-application' in request.POST:
@@ -934,6 +943,15 @@ def ed_center_application(request, ed_center_id):
     disability_types = DisabilityType.objects.all().values('id', 'name')
     age_groups = AgeGroup.objects.all()
 
+    net_agreement, is_new = NetworkAgreement.objects.get_or_create(
+        ed_center_year=center_project_year
+    )
+    qualified_programs = get_qualified_programs(programs)
+    if 'add-network' in request.POST:
+        net_agreement.programs.add(*request.POST.getlist('qualified_programs'))
+        net_agreement.save()
+
+
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
         'employees': employees,
@@ -959,7 +977,9 @@ def ed_center_application(request, ed_center_id):
         'stage': stage,
         'ticket_programs': ticket_programs,
         'form': form,
-        'contract': contract
+        'contract': contract,
+        'net_agreement': net_agreement,
+        'qualified_programs': qualified_programs
     })
 
 @csrf_exempt

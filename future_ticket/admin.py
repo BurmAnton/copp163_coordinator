@@ -86,6 +86,7 @@ class ProgramAuthorAdmin(admin.ModelAdmin):
     list_display = ['teacher', 'phone', 'email']
 
 
+
 @admin.register(AgeGroup)
 class AgeGroupAdmin(admin.ModelAdmin):
     list_display = ['name']
