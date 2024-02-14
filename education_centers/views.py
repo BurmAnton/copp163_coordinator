@@ -837,6 +837,8 @@ def ed_center_application(request, ed_center_id):
             if form.is_valid():
                 net_agreement.agreement_file = request.FILES['import_file']
                 net_agreement.save()
+                center_project_year.stage = 'DWNLD'
+                center_project_year.save()
     
     approved_programs = None
     chosen_professions = None
