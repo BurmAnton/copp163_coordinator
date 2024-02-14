@@ -21,7 +21,7 @@ from users.models import Group, User
 
 from .models import (Application, CitizenApplication, CitizenCategory, ClosingDocument, Contract,
                      EdCenterEmployeePosition, EdCenterQuotaRequest,
-                     EducationCenterProjectYear, EmploymentInvoice, FlowStatus, Grant, Indicator,
+                     EducationCenterProjectYear, EmploymentInvoice, FlowStatus, Grant, Indicator, NetworkAgreement,
                      ProgramQuotaRequest, ProjectPosition, ProjectYear,
                      QuotaRequest)
 
@@ -107,6 +107,8 @@ class EducationCenterProjectYearAdmin(admin.ModelAdmin):
     search_fields = ['ed_center__name', 'ed_center__flow_name', 'ed_center__short_name']
 
     def get_name(self, center_year):
+        if center_year.ed_center.flow_name == "":
+             return center_year.ed_center.name
         return center_year.ed_center.flow_name
     get_name.short_description='ЦО'
 
@@ -122,6 +124,23 @@ class EducationCenterProjectYearAdmin(admin.ModelAdmin):
         return round(education_sum + employment_sum, 2)
     count_pay.short_description='Оплачено'
 
+    actions = ['scratch_steps_check',]
+
+    def scratch_steps_check(self, request, queryset):
+        queryset.update(
+            step_1_check=False,
+            step_2_check=False,
+            step_3_check=False,
+            step_4_check=False,
+            step_5_check=False,
+            step_6_check=False
+        )
+    scratch_steps_check.short_description='Снять проверку этапов'
+
+
+@admin.register(NetworkAgreement)
+class NetworkAgreementAdmin(admin.ModelAdmin):
+    pass
 
 #@admin.register(Indicator)
 class IndicatorAdmin(admin.ModelAdmin):

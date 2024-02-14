@@ -2,6 +2,9 @@ body {
   background-color: rgba(242, 242, 242, 0.5411764706);
   #transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
 }
+body .body {
+  min-height: calc(100vh - 273px) !important;
+}
 body h2 {
   font-size: 24px;
 }

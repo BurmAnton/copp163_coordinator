@@ -6,6 +6,7 @@ from django.db.models.deletion import CASCADE, SET_NULL
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from field_history.tracker import FieldHistoryTracker
+import unidecode
 
 from citizens.models import Citizen
 from education_centers.models import (Competence, EducationCenter,
@@ -59,11 +60,11 @@ class EducationCenterProjectYear(models.Model):
     STAGES = [
         ('FLLNG', "заполнение"),
         ('FLLD', "на проверке"),
-        ('RWRK', "отправлена на доработку"),
-        ('VRFD', "проверена"),
-        ('FRMD', "сформирована"),
-        ('DWNLD', "подгружена"),
-        ('PRVD', "принята"),
+        ('RWRK', "отправлен на доработку"),
+        ('VRFD', "проверен"),
+        ('FRMD', "договор сформирован"),
+        ('DWNLD', "договор подгружен"),
+        ('PRVD', "договор подписан"),
         ('FNSHD', "ПКО пройден"),
     ]
     stage = models.CharField("Работа с заявкой", max_length=5, 
@@ -105,6 +106,55 @@ class EducationCenterProjectYear(models.Model):
     class Meta:
         verbose_name = "Данные колледжа на год"
         verbose_name_plural = "Данные колледжей на годы"
+
+
+def number_agreement(agreement):
+    agreements_count = NetworkAgreement.objects.all().count()
+    agreement.agreement_number = agreements_count
+    agreement.save(agreement_number=True)
+
+class NetworkAgreement(models.Model):
+    agreement_number = models.IntegerField("№ цикла", default=1)
+    ed_center_year = models.ForeignKey(
+        EducationCenterProjectYear, 
+        verbose_name="Центра обучения (год проекта)",
+        related_name="net_agreements",
+        null=True, 
+        blank=True,
+        on_delete=models.CASCADE
+    )
+    programs = models.ManyToManyField(
+        EducationProgram,
+        verbose_name="Программы",
+        related_name="new_agreements",
+        blank=True
+    )
+    STAGES = [
+        ('FLLNG', "заполнение"),
+        ('DWNLD', "договор подгружен"),
+        ('PRVD', "договор подписан"),
+    ]
+    stage = models.CharField(
+        "Статус договора", max_length=5, 
+        default='FLLNG', choices=STAGES
+    )
+    def agreement_path(instance, filename):
+        return 'media/federal_empl/net_agreements/{0}'.format(
+            unidecode.unidecode(filename)
+        )
+    agreement_file = models.FileField("Договор", null=True, blank=True,  upload_to=agreement_path)
+
+    def __str__(self):
+        return f'Договор №{self.agreement_number}'
+
+    class Meta:
+        verbose_name = "Сетевой договор"
+        verbose_name_plural = "Сетевые договоры"    
+
+    def save(self, agreement_number=False, *args, **kwargs):
+        super(NetworkAgreement, self).save(*args, **kwargs)
+        if agreement_number == False:
+            number_agreement(self)
 
 
 class QuotaRequest(models.Model):
