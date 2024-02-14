@@ -31,7 +31,7 @@ from users.models import DisabilityType
 
 from . import exports, imports
 from .contracts import (combine_all_docx, create_application, create_document,
-                        create_ticket_application, generate_concent_doc)
+                        create_ticket_application, generate_concent_doc, generate_net_agreement)
 from .forms import (ImportDataForm, ImportTicketContractForm,
                     ImportTicketDataForm)
 from .models import (AbilimpicsWinner, BankDetails, Competence,
@@ -212,7 +212,10 @@ def ed_center_application(request, ed_center_id):
         center_project_year = EducationCenterProjectYear.objects.get_or_create(
                 project_year=project_year, ed_center=ed_center)[0]
         center_quota = None
-    
+    net_agreement, is_new = NetworkAgreement.objects.get_or_create(
+        ed_center_year=center_project_year
+    )
+
     if request.method == "POST":
         if 'download-contract' in request.POST:
                 if contract != None:
@@ -813,6 +816,13 @@ def ed_center_application(request, ed_center_id):
             response['Content-Disposition'] = f'attachment; filename={unidecode.unidecode(f"согласие_{teacher.last_name}")}.docx'
             document.save(response)
             return response
+        elif 'generate-net' in request.POST:
+            stage = 6
+            agreement = generate_net_agreement(net_agreement)
+            response = HttpResponse(content_type=f'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            response['Content-Disposition'] = f'attachment; filename={unidecode.unidecode(f"сетевой_договор_{net_agreement.agreement_number}")}.docx'
+            agreement.save(response)
+            return response
         elif 'import-consent' in request.POST:
             stage = 4
             form = ImportTicketContractForm(request.POST, request.FILES)
@@ -821,7 +831,12 @@ def ed_center_application(request, ed_center_id):
                 teacher = Teacher.objects.get(id=teacher_id)
                 teacher.consent_file = request.FILES['import_file']
                 teacher.save()
-
+        elif 'import-net' in request.POST:
+            stage = 6
+            form = ImportTicketContractForm(request.POST, request.FILES)
+            if form.is_valid():
+                net_agreement.agreement_file = request.FILES['import_file']
+                net_agreement.save()
     
     approved_programs = None
     chosen_professions = None
@@ -943,13 +958,12 @@ def ed_center_application(request, ed_center_id):
     disability_types = DisabilityType.objects.all().values('id', 'name')
     age_groups = AgeGroup.objects.all()
 
-    net_agreement, is_new = NetworkAgreement.objects.get_or_create(
-        ed_center_year=center_project_year
-    )
+    
     qualified_programs = get_qualified_programs(programs)
     if 'add-network' in request.POST:
         net_agreement.programs.add(*request.POST.getlist('qualified_programs'))
         net_agreement.save()
+        stage = 6
 
 
     return render(request, "education_centers/ed_center_application.html", {
