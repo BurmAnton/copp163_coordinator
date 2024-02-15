@@ -132,3 +132,59 @@ def programs(agreements):
     response['Content-Disposition'] = "attachment; filename=" + \
         escape_uri_path(f'programs_list ({time_now}).xlsx')
     return response
+
+
+def get_full_program_type(program_type):
+    if program_type == 'DPOPK':
+        return "Дополнительное профессиональное образование (повышение квалификации)"
+    elif program_type == 'DPOPP':
+        return "Дополнительное профессиональное образование (профессиональная переподготовка)"
+    elif program_type == 'POPP':
+       return "Профессиональное обучение (переподготовка)"
+    elif program_type == 'POP':
+        return "Профессиональное обучение (профессиональная подготовка)" 
+    return "Профессиональное обучение (повышение квалификации)"
+
+
+def programs_w_people(agreements):
+    programs = EducationProgram.objects.filter(new_agreements__in=agreements)
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Учебные программы"
+    col_titles = [
+        "Фамилия, имя, отчество",
+        "Уровень образования (ВО или СПО), специальность и квалификация по диплому",
+        "Наличие опыта педагогической и/или производственной деятельности (указать стаж и должность)",
+        "Сетевая форма организации сотрудничества (да/нет)",
+        "Номер договора о сетевом взаимодействии"
+    ]
+    for col_number, col_title in enumerate(col_titles, start=1):
+        ws.cell(row=1, column=col_number, value=col_title)
+
+    row_number = 2
+    for row_program, program in enumerate(programs, start=1):
+        ws.cell(row=row_number, column=1, value=f'{row_program}. {get_full_program_type(program.program_type)} {program.program_name}')
+        ws.merge_cells(start_row=row_number, start_column=1, end_row=row_number, end_column=5)
+        row_number += 1
+        agreement = program.new_agreements.first()
+        if agreement.suffix == None:
+            number = f'{agreement.agreement_number}/СЗ' 
+        else: number = f'{agreement.agreement_number}/СЗ{agreement.suffix}'
+        for row_teacher, teacher in enumerate(program.teachers.exclude(consent_file=None), start=1):
+            ws.cell(row=row_number, column=1, value=f'{row_teacher}. {teacher.get_name()}')
+            ws.cell(row=row_number, column=2, value=f'{teacher.get_education_level_display()}\n{teacher.education_major}')
+            ws.cell(row=row_number, column=3, value=f'{teacher.position}\n{teacher.experience}')
+            ws.cell(row=row_number, column=4, value='да')
+            ws.cell(row=row_number, column=5, value=number)
+            row_number += 1
+    
+    wb.template = False
+    response = HttpResponse(
+        content=save_virtual_workbook(wb), 
+        content_type='application/vnd.openxmlformats-\
+        officedocument.spreadsheetml.sheet'
+    )
+    time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
+    response['Content-Disposition'] = "attachment; filename=" + \
+        escape_uri_path(f'staffing_list ({time_now}).xlsx')
+    return response

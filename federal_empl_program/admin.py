@@ -169,7 +169,11 @@ class NetworkAgreementAdmin(admin.ModelAdmin):
         return "Да"
     is_agreement_file_upload.short_description='Договор подгружен?'
 
-    actions = ['download_archive', 'get_programs_list']
+    actions = [
+        'download_archive', 
+        'get_programs_list',
+        'get_programs_w_people_list'
+    ]
     def download_archive(self, request, queryset):
         return exports.net_agreements(queryset)
     download_archive.short_description='Скачать архив договоров'
@@ -177,6 +181,11 @@ class NetworkAgreementAdmin(admin.ModelAdmin):
     def get_programs_list(self, request, queryset):
         return exports.programs(queryset)
     get_programs_list.short_description='Скачать перечень программ'
+
+    def get_programs_w_people_list(self, request, queryset):
+        return exports.programs_w_people(queryset)
+    get_programs_w_people_list.short_description='Скачать кадровое обеспечение'
+    
 
 
 
