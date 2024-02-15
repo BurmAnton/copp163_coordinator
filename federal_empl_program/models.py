@@ -7,6 +7,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from field_history.tracker import FieldHistoryTracker
 import unidecode
+from django.db.models import Max
 
 from citizens.models import Citizen
 from education_centers.models import (Competence, EducationCenter,
@@ -109,9 +110,9 @@ class EducationCenterProjectYear(models.Model):
 
 
 def number_agreement(agreement):
-    agreements_count = NetworkAgreement.objects.all().count()
+    agreements_count = NetworkAgreement.objects.all().aggregate(max_number=Max('agreement_number'))
     if agreement.agreement_number == 0:
-        agreement.agreement_number = agreements_count
+        agreement.agreement_number = agreements_count['max_number'] + 1
         agreement.save(agreement_number=True)
 
 class NetworkAgreement(models.Model):
