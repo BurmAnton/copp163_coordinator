@@ -8,6 +8,7 @@ from django.utils.safestring import mark_safe
 from django_admin_listfilter_dropdown.filters import (
     ChoiceDropdownFilter, DropdownFilter, RelatedOnlyDropdownFilter)
 from easy_select2 import select2_modelform
+from education_centers import exports
 
 import users
 from citizens.models import Citizen, School
@@ -22,6 +23,29 @@ from .models import (AbilimpicsWinner, BankDetails, Competence,
                      ContractorsDocument, DocumentType, EducationCenter,
                      EducationProgram, Group, Teacher, Workshop)
 
+
+@admin.register(Teacher)
+class TeacherAdmin(admin.ModelAdmin):
+    list_display = ['last_name', 'first_name', 'middle_name', 'organization', 'is_consent_file_upload']
+    search_fields = [
+        'organization__name', 
+        'organization__flow_name', 
+        'organization__short_name',
+        'last_name', 
+        'first_name', 
+        'middle_name'
+    ]
+
+    def is_consent_file_upload(self, teacner):
+        if teacner.consent_file.name == None:
+            return "Нет"
+        return "Да"
+    is_consent_file_upload.short_description='Согласие подгружено?'
+
+    actions = ['download_archive']
+    def download_archive(self, request, queryset):
+        return exports.consent_teachers(queryset)
+    download_archive.short_description='Скачать архив согласий'
 
 @admin.register(BankDetails)
 class BankDetailsAdmin(admin.ModelAdmin):
