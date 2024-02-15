@@ -140,7 +140,33 @@ class EducationCenterProjectYearAdmin(admin.ModelAdmin):
 
 @admin.register(NetworkAgreement)
 class NetworkAgreementAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['get_ed_center', 'get_number', 'is_agreement_file_upload']
+    search_fields = [
+        'ed_center_year__ed_center__name', 
+        'ed_center_year__ed_center__flow_name',
+        'ed_center_year__ed_center__short_name',
+        'agreement_number'
+    ]
+
+
+    def get_ed_center(self, agreement):
+        if agreement.ed_center_year.ed_center.flow_name == "":
+            return agreement.ed_center_year.ed_center.name
+        return agreement.ed_center_year.ed_center.flow_name
+    get_ed_center.short_description='ЦО'
+
+    def get_number(self, agreement):
+        if agreement.suffix is None:
+            return f'{agreement.agreement_number}/СЗ'
+        return f'{agreement.agreement_number}/СЗ{agreement.suffix}'
+    get_number.short_description='Номер'
+    get_number.admin_order_field = 'agreement_number'
+
+    def is_agreement_file_upload(self, agreement):
+        if agreement.agreement_file.name == "":
+            return "Нет"
+        return "Да"
+    is_agreement_file_upload.short_description='Договор подгружен?'
 
 #@admin.register(Indicator)
 class IndicatorAdmin(admin.ModelAdmin):
