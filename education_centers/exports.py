@@ -1,4 +1,6 @@
 from datetime import datetime
+import os
+from zipfile import ZipFile
 
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -155,4 +157,21 @@ def workshops(project_years=2023):
     )
     response['Content-Disposition'] = "attachment; filename=" + \
         escape_uri_path(f'Workshops ({datetime.now().strftime("%d/%m/%y %H:%M:%S")}).xlsx')
+    return response
+
+
+def consent_teachers(teachers):
+    path_to_archive = "media/archive/network_agreements.zip"
+    with ZipFile(path_to_archive, 'w') as consent_archive:
+        teachers_w_file = teachers.exclude(consent_file='').exclude(consent_file=None)
+        for teacher in teachers_w_file:
+            file_path = teacher.consent_file.name
+            _, file_extension = os.path.splitext(file_path)
+            destination = f'{teacher.organization.name}/{teacher.get_name()}_согласие{file_extension}'
+            consent_archive.write(teacher.consent_file.name, destination)
+
+    zip_file = open(path_to_archive, 'rb')
+    response = HttpResponse(content=zip_file, content_type='application/force-download')
+    time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
+    response['Content-Disposition'] = f'attachment; filename=teachers_consents ({time_now}).zip'
     return response
