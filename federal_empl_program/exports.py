@@ -163,7 +163,7 @@ def programs_w_people(agreements):
 
     row_number = 2
     for row_program, program in enumerate(programs, start=1):
-        ws.cell(row=row_number, column=1, value=f'{row_program}. {get_full_program_type(program.program_type)} {program.program_name}')
+        ws.cell(row=row_number, column=1, value=f'{row_program}. {get_full_program_type(program.program_type)} «{program.program_name}»')
         ws.merge_cells(start_row=row_number, start_column=1, end_row=row_number, end_column=5)
         row_number += 1
         agreement = program.new_agreements.first()
@@ -187,4 +187,49 @@ def programs_w_people(agreements):
     time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
     response['Content-Disposition'] = "attachment; filename=" + \
         escape_uri_path(f'staffing_list ({time_now}).xlsx')
+    return response
+
+def programs_w_workshops(agreements):
+    programs = EducationProgram.objects.filter(new_agreements__in=agreements)
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Учебные программы"
+    col_titles = [
+        "1",
+        "Наименование вида образования, профессия, подвид дополнительного образования",
+        "Наименование объекта, подтверждающего наличие материально-технического обеспечения, с перечнем основного оборудования",
+        "Реквизиты заключения Государственной инспекции безопасности дорожного движения Министерства внутренних дел Российской Федерации о соответствии учебно-материальной базы установленным требованиям (при наличии образовательных программ подготовки водителей автомототранспортных средств)",
+        "Сетевая форма реализации (да/нет)",
+        "Номер договора о сетевом взаимодействии"
+    ]
+    for col_number, col_title in enumerate(col_titles, start=1):
+        ws.cell(row=1, column=col_number, value=col_title)
+        ws.cell(row=2, column=col_number, value=col_number)
+
+    row_number = 3
+    for row_program, program in enumerate(programs, start=1):
+        agreement = program.new_agreements.first()
+        if agreement.suffix == None:
+            number = f'{agreement.agreement_number}/СЗ' 
+        else: number = f'{agreement.agreement_number}/СЗ{agreement.suffix}'
+        name = f'{get_full_program_type(program.program_type)} «{program.program_name}»'
+        if program.program_type not in ['DPOPK', 'DPOPP']:
+            name += '(профессия)'
+        for workshop in program.workshops.exclude(address=None).exclude(name=None).exclude(programs=None).exclude(address=""):
+            ws.cell(row=row_number, column=1, value=f'{row_number - 2}.')
+            ws.cell(row=row_number, column=2, value=name)
+            ws.cell(row=row_number, column=3, value=f'{workshop.address}\n{workshop.name}\n{workshop.equipment}')
+            ws.cell(row=row_number, column=5, value="да")
+            ws.cell(row=row_number, column=6, value=number)
+            row_number += 1
+    
+    wb.template = False
+    response = HttpResponse(
+        content=save_virtual_workbook(wb), 
+        content_type='application/vnd.openxmlformats-\
+        officedocument.spreadsheetml.sheet'
+    )
+    time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
+    response['Content-Disposition'] = "attachment; filename=" + \
+        escape_uri_path(f'workshops_list ({time_now}).xlsx')
     return response
