@@ -120,7 +120,7 @@ def programs(project_years=None, ed_centers=None):
     return response
 
 def workshops(project_years=2023):
-    workshops = Workshop.objects.exclude(address="", name=None, programs=None)
+    workshops = Workshop.objects.exclude(address=None).exclude(name=None).exclude(programs=None).exclude(address="")
     wb = Workbook()
     ws = wb.active
     ws.title = "Аудитории"
