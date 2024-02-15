@@ -110,12 +110,12 @@ class EducationCenterProjectYear(models.Model):
 
 def number_agreement(agreement):
     agreements_count = NetworkAgreement.objects.all().count()
-    if agreement.agreement_number == 1:
+    if agreement.agreement_number == 0:
         agreement.agreement_number = agreements_count
         agreement.save(agreement_number=True)
 
 class NetworkAgreement(models.Model):
-    agreement_number = models.IntegerField("№ цикла", default=1)
+    agreement_number = models.IntegerField("№ цикла", default=0)
     ed_center_year = models.ForeignKey(
         EducationCenterProjectYear, 
         verbose_name="Центра обучения (год проекта)",
