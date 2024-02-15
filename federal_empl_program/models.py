@@ -117,6 +117,9 @@ def number_agreement(agreement):
 
 class NetworkAgreement(models.Model):
     agreement_number = models.IntegerField("№ цикла", default=0)
+    suffix = models.CharField(
+        "Доп. номер", max_length=10, null=True, blank=True
+    )
     ed_center_year = models.ForeignKey(
         EducationCenterProjectYear, 
         verbose_name="Центра обучения (год проекта)",
