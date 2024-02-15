@@ -17,6 +17,7 @@ from easy_select2 import select2_modelform
 from field_history.models import FieldHistory
 
 from education_centers.models import EducationCenter, EducationProgram
+from federal_empl_program import exports
 from users.models import Group, User
 
 from .models import (Application, CitizenApplication, CitizenCategory, ClosingDocument, Contract,
@@ -167,6 +168,13 @@ class NetworkAgreementAdmin(admin.ModelAdmin):
             return "Нет"
         return "Да"
     is_agreement_file_upload.short_description='Договор подгружен?'
+
+    actions = ['download_archive']
+    def download_archive(self, request, queryset):
+        return exports.net_agreements(queryset)
+    download_archive.short_description='Скачать архив договоров'
+
+
 
 #@admin.register(Indicator)
 class IndicatorAdmin(admin.ModelAdmin):

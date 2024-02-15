@@ -1,4 +1,6 @@
 from datetime import datetime
+import os
+from zipfile import ZipFile
 
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -46,4 +48,25 @@ def quota_request(request):
     )
     response['Content-Disposition'] = "attachment; filename=" + \
         escape_uri_path(f'kvota_{request.send_date}.xlsx')
+    return response
+
+
+
+def net_agreements(agreements):
+    path_to_archive = "media/archive/network_agreements.zip"
+    with ZipFile(path_to_archive, 'w') as aggr_archive:
+        agreements_w_file = agreements.exclude(agreement_file='')
+        for agreement in agreements_w_file:
+            file_name, file_extension = os.path.splitext(agreement.agreement_file.name)
+            if agreement.suffix is None:
+                number = f'{agreement.agreement_number}СЗ'
+            else:
+                number = f'{agreement.agreement_number}СЗ{agreement.suffix}'
+            destination = f'сетевое_соглашение_№{number}{file_extension}'
+            aggr_archive.write(agreement.agreement_file.name, destination)
+
+    zip_file = open(path_to_archive, 'rb')
+    response = HttpResponse(content=zip_file, content_type='application/force-download')
+    time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
+    response['Content-Disposition'] = f'attachment; filename=network_agreements ({time_now}).zip'
     return response
