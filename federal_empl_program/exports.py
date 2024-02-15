@@ -8,6 +8,8 @@ from django.utils.encoding import escape_uri_path
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 
+from education_centers.models import EducationProgram
+
 
 def quota_request(request):
     wb = Workbook()
@@ -69,4 +71,64 @@ def net_agreements(agreements):
     response = HttpResponse(content=zip_file, content_type='application/force-download')
     time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
     response['Content-Disposition'] = f'attachment; filename=network_agreements ({time_now}).zip'
+    return response
+
+
+def programs(agreements):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Учебные программы"
+    col_titles = [
+        "№ п/п",
+        "Наименование программы",
+        "Наименование профессии",
+        "Вид программы (подвид для ДПО)",
+        "Количество часов",
+        "Форма обучения",
+        "Сетевая форма реализации (да/нет)",
+        "Номер договора о сетевом взаимодействии",
+        "Субъект(ы) РФ, в которых планируется реализация образовательной программы"
+    ]
+    
+    for col_number, col_title in enumerate(col_titles, start=1):
+        ws.cell(row=1, column=col_number, value=col_title)
+        ws.cell(row=2, column=col_number, value=col_number)
+
+    row_number = 3
+    programs = EducationProgram.objects.filter(new_agreements__in=agreements)
+    for program in programs:
+        if program.program_type == 'DPOPK':
+            program_type = "Дополнительное профессиональное образование (повышение квалификации)"
+        elif program.program_type == 'DPOPP':
+            program_type = "Дополнительное профессиональное образование (профессиональная переподготовка)"
+        elif program.program_type == 'POPP':
+            program_type = "Профессиональное обучение (переподготовка)"
+        elif program.program_type == 'POP':
+            program_type = "Профессиональное обучение (профессиональная подготовка)" 
+        elif program.program_type == 'POPK':
+            program_type ="Профессиональное обучение (повышение квалификации)"
+        agreement = program.new_agreements.first()
+        if agreement.suffix == None:
+            number = f'{agreement.agreement_number}/СЗ' 
+        else: number = f'{agreement.agreement_number}/СЗ{agreement.suffix}'
+        ws.cell(row=row_number, column=1, value=row_number - 2)
+        ws.cell(row=row_number, column=2, value=program.program_name)
+        ws.cell(row=row_number, column=3, value=program.profession)
+        ws.cell(row=row_number, column=4, value=program_type)
+        ws.cell(row=row_number, column=5, value=program.duration)
+        ws.cell(row=row_number, column=6, value=program.get_education_form_display())
+        ws.cell(row=row_number, column=7, value="да")
+        ws.cell(row=row_number, column=8, value=number)
+        ws.cell(row=row_number, column=9, value="Самарская область")
+        row_number += 1
+
+    wb.template = False
+    response = HttpResponse(
+        content=save_virtual_workbook(wb), 
+        content_type='application/vnd.openxmlformats-\
+        officedocument.spreadsheetml.sheet'
+    )
+    time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
+    response['Content-Disposition'] = "attachment; filename=" + \
+        escape_uri_path(f'programs_list ({time_now}).xlsx')
     return response
