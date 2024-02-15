@@ -8,7 +8,7 @@ from openpyxl.writer.excel import save_virtual_workbook
 
 from federal_empl_program.models import EducationCenterProjectYear, ProjectYear
 
-from .models import EducationCenter, EducationProgram
+from .models import EducationCenter, EducationProgram, Workshop
 
 
 def ed_centers():
@@ -117,4 +117,42 @@ def programs(project_years=None, ed_centers=None):
     )
     response['Content-Disposition'] = "attachment; filename=" + \
         escape_uri_path(f'Programs_{datetime.now().strftime("%d/%m/%y")}.xlsx')
+    return response
+
+def workshops(project_years=2023):
+    workshops = Workshop.objects.exclude(address=None, name=None, programs=None)
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Аудитории"
+    col_titles = [
+        "Название", 
+        "Центр обучения", 
+        "Адрес",
+        "Программы",
+        "Вид занятий",
+        "Оборудование"
+    ]
+    for col_number, col_title in enumerate(col_titles, start=1):
+        ws.cell(row=1, column=col_number, value=col_title)
+    
+    row_number = 2
+    for workshop in workshops:
+        ws.cell(row=row_number, column=1, value=workshop.name)
+        ws.cell(row=row_number, column=2, value=workshop.education_center.name)
+        ws.cell(row=row_number, column=3, value=workshop.address)
+        programs = workshop.programs.all().values_list("program_name", flat=True)
+        programs = '\n'.join(list(programs))
+        ws.cell(row=row_number, column=4, value=programs)
+        ws.cell(row=row_number, column=5, value=workshop.get_classes_type_display())
+        ws.cell(row=row_number, column=6, value=workshop.equipment)
+        row_number += 1
+
+    wb.template = False
+    response = HttpResponse(
+        content=save_virtual_workbook(wb), 
+        content_type='application/vnd.openxmlformats-\
+        officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = "attachment; filename=" + \
+        escape_uri_path(f'Workshops ({datetime.now().strftime("%d/%m/%y %H:%M:%S")}).xlsx')
     return response

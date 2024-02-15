@@ -56,6 +56,11 @@ def export_ed_centers(request):
     return exports.ed_centers()
 
 @csrf_exempt
+def export_workshops(request):
+    return exports.workshops()
+
+
+@csrf_exempt
 def applications(request):
     project = request.GET.get('p', '')
     project_year = request.GET.get('y', '')

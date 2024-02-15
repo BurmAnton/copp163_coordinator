@@ -5,13 +5,13 @@
     <li>
       {% url cl.opts|admin_urlname:'add' as add_url %}
       <a href="{% add_preserved_filters add_url is_popup to_field %}" class="addlink">
-        Добавить программу
+        Добавить мастерскую
       </a>
     </li>
     {% if request.user.is_superuser %}
       <li>
-        <a href="{% url 'export_programs' %}" class="addlink">
-          Экспорт программ (2023 г.)
+        <a href="{% url 'export_workshops' %}" class="addlink">
+          Экспорт мероприятий
         </a>
       </li>
     {% endif %}

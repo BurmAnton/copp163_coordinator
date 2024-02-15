@@ -6,6 +6,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('export/programs/', views.export_programs, name='export_programs'),
     path('export/ed_centers/', views.export_ed_centers, name='export_ed_centers'),
+    path('export/workshops/', views.export_workshops, name='export_workshops'),
     path(
         '<int:ed_center>/groups',
         views.ed_center_groups, 
