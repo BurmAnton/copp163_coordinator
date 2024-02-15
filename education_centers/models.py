@@ -333,16 +333,17 @@ class Workshop(models.Model):
     education_center = models.ForeignKey(EducationCenter, verbose_name="Центр обучения", on_delete=CASCADE, related_name='workshops')
     competence = models.ForeignKey(Competence, verbose_name="Компетенция", on_delete=CASCADE, null=True, blank=True, related_name='workshops')
     address = models.CharField("Адрес", max_length=500, null=True, blank=True)
-    CLASSES_TYPES = (
-        ('T', 'Теоретические занятия'),
-        ('P', 'Практические занятия'),
-        ('TP', 'Практические и теоретические занятия'),
-    )
+    
     programs = models.ManyToManyField(
         EducationProgram,
         verbose_name='программы', 
         related_name='workshops',
         blank=True
+    )
+    CLASSES_TYPES = (
+        ('T', 'Теоретические занятия'),
+        ('P', 'Практические занятия'),
+        ('TP', 'Практические и теоретические занятия'),
     )
     classes_type = models.CharField(max_length=4, choices=CLASSES_TYPES, verbose_name='Вид занятий', blank=True, null=True)
     equipment = models.TextField("Оборудование", null=True, blank=True)
@@ -352,7 +353,7 @@ class Workshop(models.Model):
         verbose_name_plural = "Мастерские"
 
     def __str__(self):
-        return f"{self.education_center} ({self.adress})"
+        return f"{self.education_center} ({self.address})"
 
 class Group(models.Model):   
     name = models.CharField("Номер группы", max_length=50)
