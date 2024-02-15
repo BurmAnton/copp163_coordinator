@@ -6,7 +6,7 @@ from django.utils.encoding import escape_uri_path
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 
-from federal_empl_program.models import EducationCenterProjectYear, ProjectYear
+from federal_empl_program.models import EducationCenterProjectYear, NetworkAgreement, ProjectYear
 
 from .models import EducationCenter, EducationProgram, Workshop
 
