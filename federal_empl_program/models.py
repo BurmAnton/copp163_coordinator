@@ -110,8 +110,9 @@ class EducationCenterProjectYear(models.Model):
 
 def number_agreement(agreement):
     agreements_count = NetworkAgreement.objects.all().count()
-    agreement.agreement_number = agreements_count
-    agreement.save(agreement_number=True)
+    if agreement.agreement_number == 1:
+        agreement.agreement_number = agreements_count
+        agreement.save(agreement_number=True)
 
 class NetworkAgreement(models.Model):
     agreement_number = models.IntegerField("№ цикла", default=1)
