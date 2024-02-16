@@ -214,7 +214,7 @@ def programs_w_workshops(agreements):
         else: number = f'{agreement.agreement_number}/СЗ{agreement.suffix}'
         name = f'{get_full_program_type(program.program_type)} «{program.program_name}»'
         if program.program_type not in ['DPOPK', 'DPOPP']:
-            name += '(профессия)'
+            name += f'({program.profession})'
         for workshop in program.workshops.exclude(address=None).exclude(name=None).exclude(programs=None).exclude(address=""):
             ws.cell(row=row_number, column=1, value=f'{row_number - 2}.')
             ws.cell(row=row_number, column=2, value=name)
