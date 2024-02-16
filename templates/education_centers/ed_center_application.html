@@ -692,7 +692,7 @@
                                     </select>
                                 </div>
                                 <div class="form mb-3 filter-selectpicker">
-                                    <select class="selectpicker w-100" title="Программы профпроб (реализуемые в аудитории)" data-live-search="true" name="programs" multiple>
+                                    <select class="selectpicker w-100" title="Программы (реализуемые в аудитории)" data-live-search="true" name="programs" multiple>
                                         {% for program in workshop.ticket_programs.all %}
                                             <option value="{{program.id}}" selected>{{program.profession.name}}</option>
                                         {% endfor %}
