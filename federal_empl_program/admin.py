@@ -151,7 +151,7 @@ class NetworkAgreementAdmin(admin.ModelAdmin):
 
 
     def get_ed_center(self, agreement):
-        if agreement.ed_center_year.ed_center.flow_name == "":
+        if agreement.ed_center_year.ed_center.flow_name == "" or agreement.ed_center_year.ed_center.flow_name is None:
             return agreement.ed_center_year.ed_center.name
         return agreement.ed_center_year.ed_center.flow_name
     get_ed_center.short_description='ЦО'
