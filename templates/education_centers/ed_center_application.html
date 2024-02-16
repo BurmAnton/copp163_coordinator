@@ -321,7 +321,7 @@
                                     </select>
                                 </div>
                                 <div class="form mb-3 filter-selectpicker">
-                                    <select class="selectpicker w-100" title="Программы профпроб (реализуемые педагогом)" data-live-search="true" name="programs" multiple>
+                                    <select class="selectpicker w-100" title="Программы (реализуемые педагогом)" data-live-search="true" name="programs" multiple>
                                         {% if project == 'bilet'%}
                                             {% for program in programs %}
                                                 <option value="{{program.id}}">{{program}}</option>
@@ -398,7 +398,7 @@
                                     <label for="NameWorkshopInput{{workshop.id}}">Адрес помещения</label>
                                 </div>
                                 <div class="form mb-3 filter-selectpicker">
-                                    <select class="selectpicker w-100" title="Программы профпроб (реализуемые в аудитории)" data-live-search="true" name="programs" multiple>
+                                    <select class="selectpicker w-100" title="Программы (реализуемые в аудитории)" data-live-search="true" name="programs" multiple>
                                         {% if project == 'bilet'%}
                                             {% for program in programs %}
                                                 <option value="{{program.id}}">{{program}}</option>
@@ -620,7 +620,7 @@
                                     </select>
                                 </div>
                                 <div class="form mb-3 filter-selectpicker">
-                                    <select class="selectpicker w-100" title="Программы профпроб (реализуемые педагогом)" data-live-search="true" name="programs" multiple>
+                                    <select class="selectpicker w-100" title="Программы (реализуемые педагогом)" data-live-search="true" name="programs" multiple>
                                             {% for program in teacher.ticket_programs.all %}
                                                 <option value="{{program.id}}" selected>{{program.profession.name}}</option>
                                             {% endfor %}
@@ -914,7 +914,7 @@
                                     </select>
                                 </div>
                                 <div class="form mb-3 filter-selectpicker">
-                                    <select class="selectpicker w-100" title="Программы профпроб (реализуемые педагогом)" data-live-search="true" name="programs" multiple>
+                                    <select class="selectpicker w-100" title="Программы (реализуемые педагогом)" data-live-search="true" name="programs" multiple>
                                             {% for program in teacher.programs.all %}
                                                 <option value="{{program.id}}" selected>{{program.program_name}} ({{program.get_program_type_display}}, {{program.duration}})</option>
                                             {% endfor %}
@@ -989,7 +989,7 @@
                                     <label for="NameWorkshopInput{{workshop.id}}">Адрес помещения</label>
                                 </div>
                                 <div class="form mb-3 filter-selectpicker">
-                                    <select class="selectpicker w-100" title="Программы профпроб (реализуемые в аудитории)" data-live-search="true" name="programs" multiple>
+                                    <select class="selectpicker w-100" title="Программы (реализуемые в аудитории)" data-live-search="true" name="programs" multiple>
                                         {%for program in workshop.programs.all %}  
                                             <option value="{{program.id}}" selected>{{program.program_name}} ({{program.get_program_type_display}}, {{program.duration}})</option>
                                         {% endfor %}
