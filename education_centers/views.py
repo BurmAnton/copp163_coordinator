@@ -1,7 +1,6 @@
 import json
 from datetime import date, datetime
 
-import unidecode
 from django.core.files import File
 from django.db.models import Case, Count, OuterRef, Subquery, Sum, Value, When
 from django.db.models.functions import Concat
@@ -106,7 +105,7 @@ def applications(request):
             ed_center_name = ed_center_name.strip().replace("  ", " ").replace(" ", "_")
             certificate = generate_ticket_certificate(center_year)
             response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-            response['Content-Disposition'] = f'attachment; filename=spravka_{unidecode.unidecode(ed_center_name)}.docx'
+            response['Content-Disposition'] = f'attachment; filename=справка_{ed_center_name}.docx'
             certificate.save(response)
             return response
         else:
@@ -802,7 +801,7 @@ def ed_center_application(request, ed_center_id):
             form = ImportTicketDataForm(request.POST, request.FILES)
             if form.is_valid():
                 contract.doc_file = request.FILES['import_file']
-                contract.doc_file.name = unidecode.unidecode(contract.doc_file.name)
+                contract.doc_file.name = contract.doc_file.name
                 contract.save()
         elif 'import-program' in request.POST:
             stage = 3
@@ -818,14 +817,14 @@ def ed_center_application(request, ed_center_id):
             teacher = Teacher.objects.get(id=teacher_id)
             document = generate_concent_doc(teacher)
             response = HttpResponse(content_type=f'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-            response['Content-Disposition'] = f'attachment; filename={unidecode.unidecode(f"согласие_{teacher.last_name}")}.docx'
+            response['Content-Disposition'] = f'attachment; filename={f"согласие_{teacher.last_name}"}.docx'
             document.save(response)
             return response
         elif 'generate-net' in request.POST:
             stage = 6
             agreement = generate_net_agreement(net_agreement)
             response = HttpResponse(content_type=f'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-            response['Content-Disposition'] = f'attachment; filename={unidecode.unidecode(f"сетевой_договор_{net_agreement.agreement_number}")}.docx'
+            response['Content-Disposition'] = f'attachment; filename={f"сетевой_договор_{net_agreement.agreement_number}"}.docx'
             agreement.save(response)
             return response
         elif 'import-consent' in request.POST:

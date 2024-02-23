@@ -6,7 +6,6 @@ from django.db.models.deletion import CASCADE, SET_NULL
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from field_history.tracker import FieldHistoryTracker
-import unidecode
 from django.db.models import Max
 
 from citizens.models import Citizen
@@ -144,9 +143,7 @@ class NetworkAgreement(models.Model):
         default='FLLNG', choices=STAGES
     )
     def agreement_path(instance, filename):
-        return 'media/federal_empl/net_agreements/{0}'.format(
-            unidecode.unidecode(filename)
-        )
+        return f'media/federal_empl/net_agreements/{filename}'
     agreement_file = models.FileField("Договор", null=True, blank=True,  upload_to=agreement_path)
 
     def __str__(self):

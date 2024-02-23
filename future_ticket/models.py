@@ -1,7 +1,6 @@
 import datetime
 from datetime import date
 
-import unidecode
 from django.db import models
 from django.db.models import Sum
 from django.db.models.deletion import CASCADE, DO_NOTHING
@@ -282,7 +281,7 @@ class EducationCenterTicketProjectYear(models.Model):
     
     def doc_dir_path(instance, filename):
         return 'media/applications/{0}/{1}'.format(
-            instance.id, unidecode.unidecode(filename)
+            instance.id, filename
         )
     act_file = models.FileField(
         "Подписанный акт",
