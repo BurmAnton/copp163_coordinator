@@ -5,7 +5,6 @@ import string
 from datetime import date, datetime, timedelta
 from email.mime import application
 
-import unidecode
 from dateutil.relativedelta import relativedelta
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
@@ -558,7 +557,7 @@ def invoice_view(request, invoice_id):
             bill_sum=request.POST['amount']
         )
         doc.doc_file = request.FILES['bill_file']
-        doc.doc_file.name = unidecode.unidecode(doc.doc_file.name)
+        doc.doc_file.name = doc.doc_file.name
         doc.save()
     if request.method == 'POST':
         return HttpResponseRedirect(reverse(
@@ -714,10 +713,10 @@ def group_view(request, group_id):
             bill_sum = request.POST['bill_sum']
         )
         doc.doc_file = request.FILES['act_file']
-        doc.doc_file.name = unidecode.unidecode(doc.doc_file.name)
+        doc.doc_file.name = doc.doc_file.name
         if 'bill_file' in request.FILES:
             doc.bill_file = request.FILES['bill_file']
-            doc.bill_file.name = unidecode.unidecode(doc.bill_file.name)
+            doc.bill_file.name = doc.bill_file.name
             doc.bill_id = request.POST['bill_id']
         doc.save()
         group.save()
@@ -742,10 +741,10 @@ def group_view(request, group_id):
         doc.bill_id = request.POST['bill_id']
         if 'act_file' in request.FILES:
             doc.doc_file = request.FILES['act_file']
-            doc.doc_file.name = unidecode.unidecode(doc.doc_file.name)
+            doc.doc_file.name = doc.doc_file.name
         if 'bill_file' in request.FILES:
             doc.bill_file = request.FILES['bill_file']
-            doc.bill_file.name = unidecode.unidecode(doc.bill_file.name)
+            doc.bill_file.name = doc.bill_file.name
         group.save()
         doc.save()
     elif 'delete-doc' in request.POST:

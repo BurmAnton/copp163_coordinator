@@ -7,7 +7,6 @@ from django.utils.formats import date_format
 from docx import Document as Document_compose
 from docxcompose.composer import Composer
 from docxtpl import DocxTemplate
-import unidecode
 
 from federal_empl_program.models import (EdCenterEmployeePosition,
                                          EdCenterIndicator, NetworkAgreement, ProjectPosition)
@@ -102,7 +101,7 @@ def generate_net_agreement(agreement: NetworkAgreement) -> DocxTemplate:
     isExist = os.path.exists(path)
     if not isExist:
         os.makedirs(path)
-    doc_name = unidecode.unidecode(f"стетевой_договор_{agreement.agreement_number}")
+    doc_name = f"стетевой_договор_{agreement.agreement_number}"
     path_to_doc = f'{path}/{doc_name}.docx'
     document.save(path_to_doc)
 
@@ -122,7 +121,7 @@ def generate_concent_doc(teacher: Teacher) -> DocxTemplate:
     isExist = os.path.exists(path)
     if not isExist:
         os.makedirs(path)
-    doc_name = unidecode.unidecode(f"согласие_{teacher.last_name}")
+    doc_name = f"согласие_{teacher.last_name}"
     path_to_doc = f'{path}/{doc_name}.docx'
     document.save(path_to_doc)
 

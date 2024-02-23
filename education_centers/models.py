@@ -6,7 +6,6 @@ from django.db import models
 from django.db.models.deletion import CASCADE, DO_NOTHING
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
-import unidecode
 
 
 from users.managers import CustomUserManager
@@ -132,7 +131,7 @@ class EducationProgram(models.Model):
 
     def doc_directory_path(instance, filename):
         return 'media/programs/{0}/{1}'.format(
-            instance.ed_center.id, unidecode.unidecode(filename)
+            instance.ed_center.id, filename
         )
     
     program_file = models.FileField(
@@ -207,7 +206,7 @@ class Teacher(models.Model):
         return 'media/consents/{0}/{1}/{2}'.format(
             instance.organization.id, 
             instance.id, 
-            unidecode.unidecode(filename)
+            filename
         )
     consent_file = models.FileField(
         "Согласие",
