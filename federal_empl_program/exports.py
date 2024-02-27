@@ -81,6 +81,7 @@ def programs(agreements):
     col_titles = [
         "№ п/п",
         "Наименование программы",
+        "ЦО",
         "Наименование профессии",
         "Вид программы (подвид для ДПО)",
         "Количество часов",
@@ -113,13 +114,14 @@ def programs(agreements):
         else: number = f'{agreement.agreement_number}/СЗ{agreement.suffix}'
         ws.cell(row=row_number, column=1, value=row_number - 2)
         ws.cell(row=row_number, column=2, value=program.program_name)
-        ws.cell(row=row_number, column=3, value=program.profession)
-        ws.cell(row=row_number, column=4, value=program_type)
-        ws.cell(row=row_number, column=5, value=program.duration)
-        ws.cell(row=row_number, column=6, value=program.get_education_form_display())
-        ws.cell(row=row_number, column=7, value="да")
-        ws.cell(row=row_number, column=8, value=number)
-        ws.cell(row=row_number, column=9, value="Самарская область")
+        ws.cell(row=row_number, column=3, value=program.ed_center.short_name)
+        ws.cell(row=row_number, column=4, value=program.profession)
+        ws.cell(row=row_number, column=5, value=program_type)
+        ws.cell(row=row_number, column=6, value=program.duration)
+        ws.cell(row=row_number, column=7, value=program.get_education_form_display())
+        ws.cell(row=row_number, column=8, value="да")
+        ws.cell(row=row_number, column=9, value=number)
+        ws.cell(row=row_number, column=10, value="Самарская область")
         row_number += 1
 
     wb.template = False

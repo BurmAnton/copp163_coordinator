@@ -1802,9 +1802,11 @@
                             <input style="display: none;" type="input" name="step" value="6" required>
                             <button name='generate-net'  class="btn btn-outline-primary">Сформировать договор</button>
                         </form>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddProgramsNetModal">Добавить программы</button>
-                </div>
+                        {% if user.is_superuser %}
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddProgramsNetModal">Добавить программы</button>
+                        {% endif %}
                     </div>
+                </div>
                     
                 <table class="table">
                     <tr> 
