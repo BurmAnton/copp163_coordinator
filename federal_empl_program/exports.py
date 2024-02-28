@@ -53,6 +53,28 @@ def quota_request(request):
     return response
 
 
+def create_archive(path, name):
+    zip_file = open(path, 'rb')
+    response = HttpResponse(content=zip_file, content_type='application/force-download')
+    response['Content-Disposition'] = f'attachment; filename={name}.zip'
+    return response
+
+def programs_archive(agreements):
+    path_to_archive = "media/archive/network_agreements.zip"
+    with ZipFile(path_to_archive, 'w') as aggr_archive:
+        for agreement in agreements:
+            ed_center = agreement.ed_center_year.ed_center.short_name
+            for program in agreement.programs.exclude(program_file=None):
+                file_name, file_extension = os.path.splitext(agreement.agreement_file.name)
+                file_name = f'Программа {program.get_program_type_display()} «{program.program_name}» ({program.duration})'
+                destination = f'{ed_center}/{file_name}{file_extension}'
+                path = program.program_file.name
+                aggr_archive.write(path, destination)
+
+    time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
+    
+    return create_archive(path_to_archive, f'перечень_программ ({time_now})')
+
 
 def net_agreements(agreements):
     path_to_archive = "media/archive/network_agreements.zip"
@@ -67,12 +89,8 @@ def net_agreements(agreements):
             destination = f'сетевое_соглашение_№{number}{file_extension}'
             aggr_archive.write(agreement.agreement_file.name, destination)
 
-    zip_file = open(path_to_archive, 'rb')
-    response = HttpResponse(content=zip_file, content_type='application/force-download')
-    time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
-    response['Content-Disposition'] = f'attachment; filename=network_agreements ({time_now}).zip'
-    return response
-
+    return create_archive(path_to_archive, f'сетевые_соглашения({time_now})')
+    
 
 def programs(agreements):
     wb = Workbook()
