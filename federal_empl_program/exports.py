@@ -73,7 +73,7 @@ def programs_archive(agreements):
 
     time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
     
-    return create_archive(path_to_archive, f'перечень_программ ({time_now})')
+    return create_archive(path_to_archive, f'programs_archive ({time_now})')
 
 
 def net_agreements(agreements):
@@ -89,7 +89,8 @@ def net_agreements(agreements):
             destination = f'сетевое_соглашение_№{number}{file_extension}'
             aggr_archive.write(agreement.agreement_file.name, destination)
 
-    return create_archive(path_to_archive, f'сетевые_соглашения({time_now})')
+    time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
+    return create_archive(path_to_archive, f'network_agreements ({time_now})')
     
 
 def programs(agreements):
