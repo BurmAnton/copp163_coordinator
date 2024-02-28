@@ -172,6 +172,7 @@ class NetworkAgreementAdmin(admin.ModelAdmin):
     actions = [
         'download_archive', 
         'get_programs_list',
+        'get_programs_archive',
         'get_programs_w_people_list',
         'get_programs_w_workshops_list'
     ]
@@ -182,6 +183,10 @@ class NetworkAgreementAdmin(admin.ModelAdmin):
     def get_programs_list(self, request, queryset):
         return exports.programs(queryset)
     get_programs_list.short_description='Скачать перечень программ'
+
+    def get_programs_archive(self, request, queryset):
+        return exports.programs_archive(queryset)
+    get_programs_archive.short_description='Скачать архив программ'
 
     def get_programs_w_people_list(self, request, queryset):
         return exports.programs_w_people(queryset)
