@@ -12,18 +12,18 @@ register = template.Library()
 
 @register.filter
 def count_programs(center):
-    net_agreement, is_new = NetworkAgreement.objects.get_or_create(
+    net_agreement = NetworkAgreement.objects.get(
         ed_center_year=center
     )
     programs_count = net_agreement.programs.all().count()
     if programs_count == 0: return "-"
 
-    field_programs_count = net_agreement.programs.exclude(
+    filled_programs_count = net_agreement.programs.exclude(
         Q(program_word='') | Q(program_pdf='') | Q(teacher_review='') | Q(employer_review='') | Q(program_word=None) | Q(program_pdf=None) | Q(teacher_review=None) | Q(employer_review=None)
     ).count()
-    if field_programs_count == 0: return f'{field_programs_count}/{programs_count} (0.0%)'
+    if filled_programs_count == 0: return f'{filled_programs_count}/{programs_count} (0.0%)'
 
-    return f'{field_programs_count}/{programs_count} ({round(field_programs_count/programs_count, 2) * 100}%)'
+    return f'{filled_programs_count}/{programs_count} ({round(filled_programs_count/programs_count, 2) * 100}%)'
 
 @register.filter
 def count_people(ndc_type, pay_status):

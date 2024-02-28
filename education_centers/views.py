@@ -2,7 +2,7 @@ import json
 from datetime import date, datetime
 
 from django.core.files import File
-from django.db.models import Case, Count, OuterRef, Subquery, Sum, Value, When
+from django.db.models import Case, Count, OuterRef, Subquery, Sum, Value, When, Q
 from django.db.models.functions import Concat
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
@@ -63,6 +63,7 @@ def export_workshops(request):
 def applications(request):
     project = request.GET.get('p', '')
     project_year = request.GET.get('y', '')
+    programs_count = None
     if 'bilet' in request.POST: project = 'bilet'
     if project_year != '': project_year = int(project_year)
     else: project_year = 2023
@@ -78,7 +79,12 @@ def applications(request):
         ).select_related('ed_center')
         project = 'zen'
         stages = EducationCenterProjectYear.STAGES  
-
+        programs = EducationProgram.objects.exclude(new_agreements=None).count()
+        filled_programs = EducationProgram.objects.exclude(new_agreements=None).exclude(
+            Q(program_word='') | Q(program_pdf='') | Q(teacher_review='') | Q(employer_review='') | Q(program_word=None) | Q(program_pdf=None) | Q(teacher_review=None) | Q(employer_review=None)
+        ).count()
+        if filled_programs == 0: programs_count = f'{filled_programs}/{programs} (0.0%)'
+        else: programs_count = f'{filled_programs}/{programs} ({round(filled_programs/programs, 2) * 100}%)'
     chosen_stages = None
     if request.method == "POST":
         if 'filter-events' in request.POST:
@@ -132,6 +138,7 @@ def applications(request):
         'centers_project_year': centers_project_year,
         'stages': stages,
         'chosen_stages': chosen_stages,
+        'programs_count': programs_count
     })
 
 @csrf_exempt
