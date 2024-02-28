@@ -1,14 +1,29 @@
 from django import template
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import stringfilter
-from django.db.models import Sum
+from django.db.models import Sum, Q
 
 from education_centers.models import ContractorsDocument, DocumentType, EducationCenter
-from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndicator
+from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndicator, NetworkAgreement
 from future_ticket.models import ContractorsDocumentTicket,\
         DocumentTypeTicket, EducationCenterTicketProjectYear, TicketQuota
 
 register = template.Library()
+
+@register.filter
+def count_programs(center):
+    net_agreement, is_new = NetworkAgreement.objects.get_or_create(
+        ed_center_year=center
+    )
+    programs_count = net_agreement.programs.all().count()
+    if programs_count == 0: return "-"
+
+    field_programs_count = net_agreement.programs.exclude(
+        Q(program_word='') | Q(program_pdf='') | Q(teacher_review='') | Q(employer_review='') | Q(program_word=None) | Q(program_pdf=None) | Q(teacher_review=None) | Q(employer_review=None)
+    ).count()
+    if field_programs_count == 0: return f'{field_programs_count}/{programs_count} (0.0%)'
+
+    return f'{field_programs_count}/{programs_count} ({round(field_programs_count/programs_count, 2) * 100}%)'
 
 @register.filter
 def count_people(ndc_type, pay_status):

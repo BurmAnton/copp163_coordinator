@@ -31,7 +31,7 @@ from users.models import DisabilityType
 from . import exports, imports
 from .contracts import (combine_all_docx, create_application, create_document,
                         create_ticket_application, generate_concent_doc, generate_net_agreement)
-from .forms import (ImportDataForm, ImportTicketContractForm,
+from .forms import (IRPOProgramForm, ImportDataForm, ImportTicketContractForm,
                     ImportTicketDataForm)
 from .models import (AbilimpicsWinner, BankDetails, Competence,
                      ContractorsDocument, DocumentType, EducationCenter,
@@ -77,7 +77,7 @@ def applications(request):
             project_year=project_year
         ).select_related('ed_center')
         project = 'zen'
-        stages = EducationCenterProjectYear.STAGES
+        stages = EducationCenterProjectYear.STAGES  
 
     chosen_stages = None
     if request.method == "POST":
@@ -184,7 +184,7 @@ def ed_center_application(request, ed_center_id):
     else: project_year = 2023
     stage = request.GET.get('s', '')
     if stage != '': stage = int(stage)
-    else: stage = 1
+    else: stage = 6
     ed_center = get_object_or_404(EducationCenter, id=ed_center_id)
     full_quota = None
     contract = None
@@ -776,11 +776,13 @@ def ed_center_application(request, ed_center_id):
                 center_project_year.step_8_check = True
                 stage=8
                 center_project_year.stage = 'PRVD'
-            if center_project_year.step_1_check and \
-               center_project_year.step_2_check and \
-               center_project_year.step_3_check and \
-               center_project_year.step_4_check and \
-               center_project_year.step_5_check:
+            # if center_project_year.step_1_check and \
+            #    center_project_year.step_2_check and \
+            #    center_project_year.step_3_check and \
+            #    center_project_year.step_4_check and \
+            #    center_project_year.step_5_check:
+            #     center_project_year.stage = 'VRFD'
+            if center_project_year.step_6_check:
                 center_project_year.stage = 'VRFD'
             center_project_year.save()
         elif 'send-application' in request.POST:
@@ -843,7 +845,21 @@ def ed_center_application(request, ed_center_id):
                 net_agreement.save()
                 center_project_year.stage = 'DWNLD'
                 center_project_year.save()
-    
+        elif 'irpo-program-import' in request.POST:
+            stage = 6
+            form = IRPOProgramForm(request.POST, request.FILES)
+            if form.is_valid():
+                program_id = request.POST['program_id']
+                program = EducationProgram.objects.get(id=program_id)
+                if form.cleaned_data['program_word'] is not None:
+                    program.program_word = form.cleaned_data['program_word']
+                if form.cleaned_data['program_pdf'] is not None:
+                    program.program_pdf = form.cleaned_data['program_pdf']
+                if form.cleaned_data['teacher_review'] is not None:
+                    program.teacher_review = form.cleaned_data['teacher_review']
+                if form.cleaned_data['employer_review'] is not None:
+                    program.employer_review = form.cleaned_data['employer_review']
+                program.save()
     approved_programs = None
     chosen_professions = None
     schools = None
@@ -999,7 +1015,8 @@ def ed_center_application(request, ed_center_id):
         'form': form,
         'contract': contract,
         'net_agreement': net_agreement,
-        'qualified_programs': qualified_programs
+        'qualified_programs': qualified_programs,
+        'irpo_program_form': IRPOProgramForm
     })
 
 @csrf_exempt

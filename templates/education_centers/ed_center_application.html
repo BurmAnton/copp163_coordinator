@@ -1080,6 +1080,35 @@
         </div>
     </div>
     
+    {% for program in qualified_programs %}
+        <div class="modal fade irpo-program-import-modal" id="IRPOProgramImportModal{{program.id}}" tabindex="-1" aria-labelledby="IRPOProgramImportModal{{program.id}}Label" aria-hidden="true">
+            <div class="modal-dialog" style="max-width: 700px;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="IRPOProgramImportModal{{program.id}}Label">Загрузить данные программы</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{% url 'ed_center_application' ed_center.id %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <input type="text" name="program_id" value="{{program.id}}" style="display: none;">
+                            <div class="alert alert-danger w-90" style='display: none;' role="alert">
+                                Один или несколько добавленных файлов имеют неверное расширение. Для каждого поля указан необходимый тип файла.
+                            </div>
+                            {{irpo_program_form}}
+                        </div> 
+                        <div class="modal-footer">
+                            <div class="d-grid gap-2">
+                                <input type="submit" class="btn btn-primary irpo-program-import-btn" name="irpo-program-import" value="Загрузить">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+        
+    
     <div class="page-hdr">
         <h1>Формирование заявки на ПКО<br>(сетевой договор)</h1>
         <div class="project-choice" style="display: none;">
@@ -1096,7 +1125,7 @@
                 <a data-step="3" class="step-btn btn {%if stage == 3%}btn-primary{%else%}btn-outline-primary{%endif%}">Программы</a>
                 <a data-step="4" class="step-btn btn {%if stage == 4%}btn-primary{%else%}btn-outline-primary{%endif%}">Кадры</a>
                 <a data-step="5" class="step-btn btn {%if stage == 5%}btn-primary{%else%}btn-outline-primary{%endif%}">МТБ</a>
-                <a data-step="6" class="step-btn btn {%if stage == 6%}btn-primary{%else%}btn-outline-primary{%endif%}" {%if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'FLLD' or center_project_year.stage ==  'RWRK' %} style="display: none;"{%endif%}>Договор</a>
+                <a data-step="6" class="step-btn btn {%if stage == 6%}btn-primary{%else%}btn-outline-primary{%endif%}">Договор</a>
                 {% if project == 'bilet' %}<a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Квоты</a>{% endif %}
                 {% if project == 'bilet' %}
                     {% if center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'DWNLD' or center_project_year.stage == 'FNSHD'%}
@@ -1774,7 +1803,7 @@
             {% endif %}
             <div class="collapse show" id="collapseIndicators">
                 
-                {% if net_agreement.programs.all.count != 0 %}
+                {% comment %} {% if net_agreement.programs.all.count != 0 %}
                 <div class="table-hdr">
                     <h3>Договор</h3>
                 </div>
@@ -1794,26 +1823,28 @@
                             <button style="width: 100%;" class="btn btn-outline-primary" name="import-net">Загрузить</button>
                     </form> 
                 
-                {% endif %}
+                {% endif %} {% endcomment %}
                 <div class="table-hdr">
                     <h3>Список программ</h3>
+                    
                     <div style="display: flex; gap: 10px;">
-                        <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
-                            <input style="display: none;" type="input" name="step" value="6" required>
-                            <button name='generate-net'  class="btn btn-outline-primary">Сформировать договор</button>
-                        </form>
                         {% if user.is_superuser %}
+                            <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                                <input style="display: none;" type="input" name="step" value="6" required>
+                                <button name='generate-net'  class="btn btn-outline-primary">Сформировать договор</button>
+                            </form>
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddProgramsNetModal">Добавить программы</button>
                         {% endif %}
                     </div>
                 </div>
-                    
+                <p style="margin-left: 10px">Договор №{{net_agreement.agreement_number}}/СЗ{{net_agreement.suffix}} от «12» февраля 2024 г.</p>
                 <table class="table">
                     <tr> 
                         <th scope="col">№</th>
                         <th scope="col">Название</th>
                         <th scope="col">Помещения</th>
                         <th scope="col">Преподователи</th>
+                        <th scope="col">Документы для ИРПО</th>
                         <th scope="col">Программа</th>
                     </tr>
                     {% for program in net_agreement.programs.all %}
@@ -1835,10 +1866,24 @@
                                 {% endfor %}
                             </td>
                             <td scope="row">
-                                {% if program.program_file.url != None  %}
-                                    <a class="bill-link btn btn-outline-primary" href="{{program.program_file.url}}">Программа</a>
+                                {% if program.program_word.url != None  %}
+                                - <a class="" style="width: 100%; margin-bottom: 10px;" href="{{program.program_word.url}}">Программа по шаблону ЦОПП (word)</a><br>
+                                {% endif %}
+                                {% if program.program_pdf.url != None  %}
+                                    - <a class="" style="width: 100%; margin-bottom: 10px;" href="{{program.program_pdf.url}}">Программа по шаблону ЦОПП (pdf)</a><br>
+                                {% endif %}
+                                {% if program.teacher_review.url != None  %}
+                                    - <a class="" style="width: 100%; margin-bottom: 10px;" href="{{program.teacher_review.url}}">Рецензия преподавателя</a><br>
+                                {% endif %}
+                                {% if program.employer_review.url != None  %}
+                                    - <a class="" style="width: 100%; margin-bottom: 10px;" href="{{program.employer_review.url}}">Рецензия работодателя</a>
                                 {% endif %}
                             </td>
+                            {% if center_project_year.step_6_check == False or user.is_superuser %}
+                                <td scope="row">
+                                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#IRPOProgramImportModal{{program.id}}">загрузить документы</button>
+                                </td>
+                            {% endif %}
                         </tr>
                     {% empty %}
                         <tr>
