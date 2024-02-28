@@ -22,23 +22,55 @@ document.addEventListener('DOMContentLoaded', function() {
             })
         })
     })
-    document.querySelector('#IsNewProfession').addEventListener('click', (checkbox) => {
-        if (checkbox.srcElement.checked) {
-            document.querySelector('#Profession').parentElement.parentElement.style.display = 'none';
-            document.querySelector('#Profession').required = false;
-            document.querySelector('#NewProfession').parentElement.style.display = 'block';
-            document.querySelector('#NewProfession').required = true;
-            document.querySelector('#ProfEnviroment').parentElement.parentElement.style.display = 'block';
-            document.querySelector('#ProfEnviroment').required = true;
-        } else {
-            document.querySelector('#Profession').parentElement.parentElement.style.display = 'block';
-            document.querySelector('#Profession').required = true;
-            document.querySelector('#NewProfession').parentElement.style.display = 'none';
-            document.querySelector('#NewProfession').required = false;
-            document.querySelector('#ProfEnviroment').parentElement.parentElement.style.display = 'none';
-            document.querySelector('#ProfEnviroment').required = false;
-        }
+    //document.querySelector('#IsNewProfession').addEventListener('click', (checkbox) => {
+    //    if (checkbox.srcElement.checked) {
+    //         document.querySelector('#Profession').parentElement.parentElement.style.display = 'none';
+    //         document.querySelector('#Profession').required = false;
+    //         document.querySelector('#NewProfession').parentElement.style.display = 'block';
+    //         document.querySelector('#NewProfession').required = true;
+    //         document.querySelector('#ProfEnviroment').parentElement.parentElement.style.display = 'block';
+    //         document.querySelector('#ProfEnviroment').required = true;
+    //     } else {
+    //         document.querySelector('#Profession').parentElement.parentElement.style.display = 'block';
+    //         document.querySelector('#Profession').required = true;
+    //         document.querySelector('#NewProfession').parentElement.style.display = 'none';
+    //         document.querySelector('#NewProfession').required = false;
+    //         document.querySelector('#ProfEnviroment').parentElement.parentElement.style.display = 'none';
+    //         document.querySelector('#ProfEnviroment').required = false;
+    //     }
+    // })
+
+    document.querySelectorAll('.irpo-file-input').forEach(input =>{
+        input.addEventListener('change', () => {
+            let error_counter = 0
+            let form = input.parentElement.parentElement
+            form.querySelectorAll('.irpo-file-input').forEach(fileinput => {
+                if (fileinput.dataset.ext === 'word') {
+                    valid_extentions = ['doc', 'docx']
+                } else {
+                    valid_extentions = ['pdf']
+                }
+                if (!check_file_extention(fileinput, valid_extentions)) {
+                    error_counter += 1
+                }
+            })
+            if (error_counter === 0){
+                console.log('Correct')
+                form.querySelector('.alert').style.display = 'None';
+                form.querySelector('.irpo-program-import-btn').removeAttribute("disabled");
+            } else {
+                console.log('Not correct')
+                form.querySelector('.alert').style.display = 'block';
+                form.querySelector('.irpo-program-import-btn').setAttribute("disabled", true);
+            }
+        })
     })
-    
+
 })
 
+function check_file_extention(file, valid_extentions){
+    if (file.value === ''){
+        return true
+    }
+    return valid_extentions.some(ext => file.value.includes(ext))
+}

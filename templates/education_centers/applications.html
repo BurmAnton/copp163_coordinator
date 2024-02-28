@@ -144,6 +144,8 @@
                     {% if user.role != 'CNT' %}
                         <th scope="col">Справка</th>
                     {% endif %}
+                {% else %}
+                    <th scope="col">Программы</th>
                 {% endif %}
             </tr>
             {%for center in centers_project_year %}
@@ -225,6 +227,8 @@
                         {% endif %}
                     </td>
                     {% endif %}
+                {%else %}
+                <td>{{center|count_programs}}</td>
                 {% endif %}
                 </tr>
             {% endfor %}
