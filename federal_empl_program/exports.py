@@ -64,12 +64,12 @@ def programs_archive(agreements):
     with ZipFile(path_to_archive, 'w') as aggr_archive:
         for agreement in agreements:
             ed_center = agreement.ed_center_year.ed_center.short_name
-            for program in agreement.programs.exclude(program_file=None).exclude(program_file=''):
-                file_name, file_extension = os.path.splitext(agreement.agreement_file.name)
+            programs = agreement.programs.exclude(program_file=None).exclude(program_file='')
+            for program in programs:
+                file_name, file_extension = os.path.splitext(program.program_file.name)
                 file_name = f'Программа {program.get_program_type_display()} «{program.program_name}» ({program.duration})'
                 destination = f'{ed_center}/{file_name}{file_extension}'
-                path = program.program_file.name
-                aggr_archive.write(path, destination)
+                aggr_archive.write(program.program_file.name, destination)
 
     time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
     
