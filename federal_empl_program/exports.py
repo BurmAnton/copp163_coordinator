@@ -2,6 +2,7 @@ from datetime import datetime
 import os
 from zipfile import ZipFile
 
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import escape_uri_path
@@ -53,45 +54,90 @@ def quota_request(request):
     return response
 
 
-def create_archive(path, name):
+def get_archive(path, name):
     zip_file = open(path, 'rb')
-    response = HttpResponse(content=zip_file, content_type='application/force-download')
-    response['Content-Disposition'] = f'attachment; filename={name}.zip'
+    response = HttpResponse(content=zip_file, content_type='application/force-download; charset=utf-8')
+    time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
+    response['Content-Disposition'] = "attachment; filename=" + \
+        escape_uri_path(f'{name} ({time_now}).zip')
     return response
 
-def programs_archive(agreements):
+
+def net_agreements_archives(agreements, type='agreements'):
     path_to_archive = "media/archive/network_agreements.zip"
-    with ZipFile(path_to_archive, 'w') as aggr_archive:
-        for agreement in agreements:
-            ed_center = agreement.ed_center_year.ed_center.short_name
-            programs = agreement.programs.exclude(program_file=None).exclude(program_file='')
-            for program in programs:
-                file_name, file_extension = os.path.splitext(program.program_file.name)
-                file_name = f'Программа {program.get_program_type_display()} «{program.program_name}» ({program.duration})'
-                destination = f'{ed_center}/{file_name}{file_extension}'
-                aggr_archive.write(program.program_file.name, destination)
+    match type:
+        case 'agreements':
+            files = get_agreements_files(agreements)
+            archive_name = "Сетевые соглашения"
+        case 'programs':
+            files = get_pko_programs_files(agreements)
+            archive_name = "Программы ПКО"
+        case 'irpo_programs':
+            files = get_irpo_programs_files(agreements)
+            archive_name = "Программы (ИРПО) + рецензии"
 
-    time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
+    with ZipFile(path_to_archive, 'w') as archive:
+        for file in files:
+            archive.write(*file)
+
+    return get_archive(path_to_archive, archive_name)
+
+
+def get_irpo_programs_files(agreements):
+    irpo_programs_files = []
+    for agreement in agreements:
+        ed_center = agreement.ed_center_year.ed_center.short_name
+        programs = agreement.programs.all()
+        for program in programs:
+            path = f'Программа {program.get_program_type_display()} «{program.program_name}» ({program.duration})'
+            program_files = []
+            if program.program_word not in ['', None]:
+                file_name, file_extension = os.path.splitext(program.program_word.name)
+                program_files.append([program.program_word.name, f'{path}/Программа{file_extension}'])
+            if program.program_pdf not in ['', None]:
+                file_name, file_extension = os.path.splitext(program.program_pdf.name)
+                program_files.append([program.program_pdf.name, f'{path}/Программа (подписанная){file_extension}'])
+            if program.teacher_review not in ['', None]:
+                file_name, file_extension = os.path.splitext(program.teacher_review.name)
+                program_files.append([program.teacher_review.name, f'{path}/Рецензия преподавателя{file_extension}'])
+            if program.employer_review not in ['', None]:
+                file_name, file_extension = os.path.splitext(program.employer_review.name)
+                program_files.append([program.employer_review.name, f'{path}/Рецензия работадателя{file_extension}'])
+
+            for program in program_files:
+                irpo_programs_files.append(program)
     
-    return create_archive(path_to_archive, f'programs_archive ({time_now})')
+    return irpo_programs_files
 
 
-def net_agreements(agreements):
-    path_to_archive = "media/archive/network_agreements.zip"
-    with ZipFile(path_to_archive, 'w') as aggr_archive:
-        agreements_w_file = agreements.exclude(agreement_file='')
-        for agreement in agreements_w_file:
-            file_name, file_extension = os.path.splitext(agreement.agreement_file.name)
-            if agreement.suffix is None:
-                number = f'{agreement.agreement_number}СЗ'
-            else:
-                number = f'{agreement.agreement_number}СЗ{agreement.suffix}'
-            destination = f'сетевое_соглашение_№{number}{file_extension}'
-            aggr_archive.write(agreement.agreement_file.name, destination)
-
-    time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
-    return create_archive(path_to_archive, f'network_agreements ({time_now})')
+def get_pko_programs_files(agreements):
+    argeements_files = []
+    for agreement in agreements:
+        ed_center = agreement.ed_center_year.ed_center.short_name
+        programs = agreement.programs.exclude(Q(program_file=None) | Q(program_file=''))
+        for program in programs:
+            file_name, file_extension = os.path.splitext(program.program_file.name)
+            file_name = f'Программа {program.get_program_type_display()} «{program.program_name}» ({program.duration})'
+            destination = f'{ed_center}/{file_name}{file_extension}'
+            argeements_files.append([program.program_file.name, destination])
     
+    return argeements_files
+
+
+def get_agreements_files(agreements):
+    agreements_w_file = agreements.exclude(agreement_file='')
+    argeements_files = []
+    for agreement in agreements_w_file:
+        file_name, file_extension = os.path.splitext(agreement.agreement_file.name)
+        if agreement.suffix is None:
+            number = f'{agreement.agreement_number}СЗ'
+        else:
+            number = f'{agreement.agreement_number}СЗ{agreement.suffix}'
+        destination = f'сетевое_соглашение_№{number}{file_extension}'
+        argeements_files.append([agreement.agreement_file.name, destination])
+
+    return argeements_files
+
 
 def programs(agreements):
     wb = Workbook()
@@ -207,7 +253,7 @@ def programs_w_people(agreements):
     )
     time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
     response['Content-Disposition'] = "attachment; filename=" + \
-        escape_uri_path(f'staffing_list ({time_now}).xlsx')
+        escape_uri_path(f'Список кадров ({time_now}).xlsx')
     return response
 
 def programs_w_workshops(agreements):
@@ -248,9 +294,9 @@ def programs_w_workshops(agreements):
     response = HttpResponse(
         content=save_virtual_workbook(wb), 
         content_type='application/vnd.openxmlformats-\
-        officedocument.spreadsheetml.sheet'
+        officedocument.spreadsheetml.sheet; charset=utf-8'
     )
     time_now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
     response['Content-Disposition'] = "attachment; filename=" + \
-        escape_uri_path(f'workshops_list ({time_now}).xlsx')
+        escape_uri_path(f'список МТО ({time_now}).xlsx')
     return response
