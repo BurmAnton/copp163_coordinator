@@ -65,16 +65,15 @@ def get_archive(path, name):
 
 def net_agreements_archives(agreements, type='agreements'):
     path_to_archive = "media/archive/network_agreements.zip"
-    match type:
-        case 'agreements':
-            files = get_agreements_files(agreements)
-            archive_name = "Сетевые соглашения"
-        case 'programs':
-            files = get_pko_programs_files(agreements)
-            archive_name = "Программы ПКО"
-        case 'irpo_programs':
-            files = get_irpo_programs_files(agreements)
-            archive_name = "Программы (ИРПО) + рецензии"
+    if type == 'agreements':
+        files = get_agreements_files(agreements)
+        archive_name = "Сетевые соглашения"
+    elif type == 'programs':
+        files = get_pko_programs_files(agreements)
+        archive_name = "Программы ПКО"
+    elif type == 'irpo_programs':
+        files = get_irpo_programs_files(agreements)
+        archive_name = "Программы (ИРПО) + рецензии"
 
     with ZipFile(path_to_archive, 'w') as archive:
         for file in files:
@@ -101,7 +100,7 @@ def get_irpo_programs_files(agreements):
                 file_name, file_extension = os.path.splitext(program.teacher_review.name)
                 program_files.append([program.teacher_review.name, f'{path}/Рецензия преподавателя{file_extension}'])
             if program.employer_review not in ['', None]:
-                file_name, file_extension = os.path.splitext(program.employer_review.name)
+                file_name, file_extension = os.path.splitext(program.teacher_review.name)
                 program_files.append([program.employer_review.name, f'{path}/Рецензия работадателя{file_extension}'])
 
             for program in program_files:
