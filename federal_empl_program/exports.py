@@ -88,20 +88,23 @@ def get_irpo_programs_files(agreements):
         ed_center = agreement.ed_center_year.ed_center.short_name
         programs = agreement.programs.all()
         for program in programs:
-            path = f'Программа {program.get_program_type_display()} «{program.program_name}» ({program.duration})'
+            if len(program.program_name) > 200:
+                path = f'6320046206 {program.get_program_type_display()} «{program.program_name[:197]}...» {program.duration}ч'
+            else:
+                path = f'6320046206 {program.get_program_type_display()} «{program.program_name}» {program.duration}ч'
             program_files = []
             if program.program_word not in ['', None]:
                 file_name, file_extension = os.path.splitext(program.program_word.name)
-                program_files.append([program.program_word.name, f'{path}/Программа{file_extension}'])
+                program_files.append([program.program_word.name, f'{path}/{path}{file_extension}'])
             if program.program_pdf not in ['', None]:
                 file_name, file_extension = os.path.splitext(program.program_pdf.name)
-                program_files.append([program.program_pdf.name, f'{path}/Программа (подписанная){file_extension}'])
+                program_files.append([program.program_pdf.name, f'{path}/{path}{file_extension}'])
             if program.teacher_review not in ['', None]:
                 file_name, file_extension = os.path.splitext(program.teacher_review.name)
-                program_files.append([program.teacher_review.name, f'{path}/Рецензия преподавателя{file_extension}'])
+                program_files.append([program.teacher_review.name, f'{path}/{path} (рецензия преподавателя){file_extension}'])
             if program.employer_review not in ['', None]:
                 file_name, file_extension = os.path.splitext(program.teacher_review.name)
-                program_files.append([program.employer_review.name, f'{path}/Рецензия работадателя{file_extension}'])
+                program_files.append([program.employer_review.name, f'{path}/{path} (рецензия работодателя){file_extension}'])
 
             for program in program_files:
                 irpo_programs_files.append(program)
