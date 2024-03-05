@@ -146,7 +146,7 @@ class EducationProgramAdmin(admin.ModelAdmin):
     list_filter = (
         ('program_type'),
         ('duration'),
-        ('competence', RelatedOnlyDropdownFilter)
+        ('competence', RelatedOnlyDropdownFilter),
     )
     search_fields = ['program_name', 'ed_center__short_name', 'ed_center__name', 'ed_center__flow_name']
 
