@@ -167,7 +167,7 @@ class EducationProgram(models.Model):
     employer_review = models.FileField(
         "Рецензии работодателя (pdf)", 
         upload_to=irpo_directory_path,
-        max_length=500,
+        max_length=1500,
         null=True, blank=True
     )
 

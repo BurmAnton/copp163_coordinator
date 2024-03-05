@@ -7,12 +7,12 @@ from federal_empl_program.validators import validate_pdf_extension, validate_wor
 
 
 class ImportDataForm(forms.Form):
-    import_file = forms.FileField(label="Счёт на оплату", max_length=100,
+    import_file = forms.FileField(label="Счёт на оплату", max_length=1500,
     widget=forms.ClearableFileInput)
 
 
 class ImportTicketDataForm(forms.Form):
-    import_file = forms.FileField(label="Скан заявки", max_length=100,
+    import_file = forms.FileField(label="Скан заявки", max_length=1500,
     widget=forms.ClearableFileInput)
 
     def __init__(self, *args, **kwargs):
@@ -22,7 +22,7 @@ class ImportTicketDataForm(forms.Form):
 
 
 class ImportTicketContractForm(forms.Form):
-    import_file = forms.FileField(label="Скан договора", max_length=100,
+    import_file = forms.FileField(label="Скан договора", max_length=1500,
     widget=forms.ClearableFileInput)
 
     def __init__(self, *args, **kwargs):
@@ -32,7 +32,7 @@ class ImportTicketContractForm(forms.Form):
 
 
 class ImportSchoolOrderDataForm(forms.Form):
-    import_file = forms.FileField(label="Скан приказа", max_length=100,
+    import_file = forms.FileField(label="Скан приказа", max_length=1500,
     widget=forms.ClearableFileInput)
 
 
