@@ -141,6 +141,9 @@ class EducationProgram(models.Model):
     )
 
     def irpo_directory_path(instance, filename):
+        folder = f'{instance.program_name} {instance.get_program_type_display()} {instance.duration}'
+        if len(instance.program_name) > 100:
+                folder = f'{instance.program_name[:97]} {instance.get_program_type_display()} {instance.duration}'
         return 'media/programs/irpo/{0}/{1}/{2}'.format(
             instance.ed_center.short_name, 
             f'{instance.program_name} {instance.get_program_type_display()} {instance.duration}',
