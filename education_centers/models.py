@@ -149,19 +149,19 @@ class EducationProgram(models.Model):
     program_word = models.FileField(
         "Программа по шаблону ИРПО (word)", 
         upload_to=irpo_directory_path,
-        max_length=500,
+        max_length=1500,
         null=True, blank=True
     )
     program_pdf = models.FileField(
         "Программа, подписанная работодателем (pdf)", 
         upload_to=irpo_directory_path,
-        max_length=500,
+        max_length=1500,
         null=True, blank=True
     )
     teacher_review = models.FileField(
         "Рецензии преподавателя (pdf)", 
         upload_to=irpo_directory_path,
-        max_length=500,
+        max_length=1500,
         null=True, blank=True
     )
     employer_review = models.FileField(
