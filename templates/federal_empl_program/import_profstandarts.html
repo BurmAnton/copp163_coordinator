@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load fed_extras %}
+
+{% block title %}Импорт данных | ФП «Содействие занятости»{% endblock %}
+{% block style %}
+    <link href="{% static 'future_ticket/css/import_programs.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'federal_empl_program/js/citizens.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="modal-body">
+        <div class="import-form">
+            <h2>Импорт профстандартов</h2>
+            {% if message != None %}
+                {% if message.1 == 'MissingFieldsError' %}
+                    <div class="alert alert-danger" role="alert">
+                        Выгрузка невозможна. В таблице отсутсвуют следующие поля:
+                        <ul>
+                            {% for field in message.2 %}
+                                <li>{{field}}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% elif message.1 == 'EmptySheet' %}
+                    <div class="alert alert-danger" role="alert">
+                        Выгрузка невозможна. Пустая таблица!
+                    </div>
+                {% elif message.1 == 'IndexError' %}
+                    <div class="alert alert-danger" role="alert">
+                        IndexError
+                    </div>
+                {% else %}
+                    <div class="alert alert-success" role="alert">
+                        <p>Импорт выполнен успешно!</p>
+                    </div> 
+                {% endif %}
+            {% endif %}
+            <form enctype="multipart/form-data" action="{% url 'import_profstandarts' %}" method="post">
+                <div class="mb-3">
+                    {{ form }}
+                </div>
+                <button style="margin-bottom: 15px;" type="submit" class="btn btn-primary" name="import-participants">Импортировать</button>
+            </form>
+
+        </div>
+    </div>
+{% endblock %}

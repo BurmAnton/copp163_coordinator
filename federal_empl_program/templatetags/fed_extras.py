@@ -15,9 +15,36 @@ check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоу�
 
 
 @register.filter
+def check_stage(stage, status):
+    return int(stage) > int(status)
+
+@register.filter
 def filter_docs(docs, doc_type):
     return docs.filter(doc_type=doc_type)
 
+@register.filter
+def count_rows_activity(activity, equipment=False):
+    rows = activity.competencies.all().count() + 2
+    if equipment:
+        for competency in activity.competencies.all():
+            equipments = competency.equipment.all().count()
+            if equipments != 0:
+                rows += equipments
+    else:
+        for competency in activity.competencies.all():
+            indicators = competency.indicators.all().count()
+            if indicators != 0:
+                rows += indicators + 1
+    return rows
+
+@register.filter
+def count_rows_competence(competence):
+    rows = competence.indicators.all().count()
+    if rows == 0:
+        return 1
+    else:
+        return rows + 2
+ 
 
 @register.filter
 def get_groups(invoice):

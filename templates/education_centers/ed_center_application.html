@@ -1835,6 +1835,9 @@
                             </form>
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddProgramsNetModal">Добавить программы</button>
                         {% endif %}
+                        <a class="btn btn-primary" href="{% url 'irpo_programs' ed_center.id %}" target="_blank">
+                            Конструктор программ
+                        </a>
                     </div>
                 </div>
                 <p style="margin-left: 10px">Договор №{{net_agreement.agreement_number}}/СЗ{{net_agreement.suffix}} от «12» февраля 2024 г.</p>

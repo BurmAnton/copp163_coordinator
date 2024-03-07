@@ -6,7 +6,7 @@ from django.db.models.deletion import CASCADE, SET_NULL
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from field_history.tracker import FieldHistoryTracker
-from django.db.models import Max
+from django.db.models import Max, Sum
 
 from citizens.models import Citizen
 from education_centers.models import (Competence, EducationCenter,
@@ -735,6 +735,8 @@ class CitizenApplication(models.Model):
         return f'{self.last_name} {self.first_name}'
     
 
+
+
 class RegulatoryDocument(models.Model):
     name = models.CharField("Наименование программы", max_length=350, null=False, blank=False)
     ed_center = models.ForeignKey(
@@ -754,16 +756,37 @@ class RegulatoryDocument(models.Model):
         return self.name
 
 
-class Profstandart(models.Model):
-    code = models.CharField("Код ПС", max_length=20, null=False, blank=False, unique=True)
-    name = models.CharField("Наименование стандарта",  max_length=350, null=False, blank=False)
+class ProfField(models.Model):
+    code = models.CharField("Код", max_length=5, null=False, blank=False, unique=True)
+    name = models.CharField("Наименование области профессиональной деятельности",  max_length=250, null=False, blank=False)
     
     class Meta:
-        verbose_name = "Нормативно-правовой документ"
-        verbose_name_plural = "Нормативно-правовые документы"
+        verbose_name = "область проф. деятельности"
+        verbose_name_plural = "Области проф. деятельности"
 
     def __str__(self):
         return f'{self.code} {self.name}'
+
+
+class Profstandart(models.Model):
+    prof_field = models.ForeignKey(
+        ProfField,
+        verbose_name="Область профессиональной деятельности",
+        related_name="irpo_programs",
+        on_delete=CASCADE,
+        blank=True,
+        null=True
+    )
+    code = models.CharField("Код ПС", max_length=20, null=False, blank=False)
+    name = models.CharField("Наименование стандарта",  max_length=500, null=False, blank=False)
+    prof_activity_type = models.CharField("Вид профессиональной деятельности", null=True, blank=True, max_length=600)
+
+    class Meta:
+        verbose_name = "Профстандарт"
+        verbose_name_plural = "Профстандарты"
+
+    def __str__(self):
+        return f'{self.prof_field.code}.{self.code} {self.name}'
 
 
 STANDARTS_TYPES = (
@@ -772,14 +795,11 @@ STANDARTS_TYPES = (
 )
 
 class FgosStandart(models.Model):
-    code = models.CharField("Код ПС", max_length=20, null=False, blank=False, unique=True)
+    code = models.CharField("Код ПС", max_length=20, null=False, blank=False)
     name = models.CharField("Наименование стандарта", max_length=350, null=False, blank=False)
     standart_type = models.CharField(
         max_length=4, choices=STANDARTS_TYPES, 
         verbose_name='Тип стандарта', blank=True, null=True
-    )
-    prof_field = models.CharField(
-        "Область профессиональной деятельности", max_length=350, null=False, blank=False
     )
 
     class Meta:
@@ -790,7 +810,198 @@ class FgosStandart(models.Model):
         return f'{self.code} {self.name}'
 
 
+class Author(models.Model):
+    ed_center = models.ForeignKey(
+        EducationCenter, 
+        verbose_name="Центр обучения", 
+        related_name='authors',
+        on_delete=CASCADE, 
+        null=True,
+        blank=True
+    )
+    name = models.CharField("ФИО", max_length=600, null=False, blank=False)
+    degree = models.CharField("Учёная степень", max_length=250, null=True, blank=True)
+    position = models.CharField("Должность", max_length=250, null=False, blank=False)
+    place_of_work = models.CharField("Место работы", max_length=600, null=False, blank=False)
+
+    class Meta:
+        verbose_name = "Разработчик программы"
+        verbose_name_plural = "Разработчики программы"
+
+    def __str__(self):
+        return f'{self.name}'
+
+
+PROGRAM_TYPES = (
+    ('DPOPK', 'ДПО ПК'),
+    ('DPOPP', 'ДПО ПП'),
+    ('POP', 'ПО П'),
+    ('POPP', 'ПО ПП'),
+    ('POPK', 'ПО ПК'),
+)
+EDUCATION_FORMS = (
+    ('FLL', 'Очная'),
+    ('PRT', 'Очно-заочная'),
+    ('PRTF', 'Заочная'),
+    ('PRTLN', 'Очно-заочная'),
+    ('FLLLN', 'Очная'),
+)
+PROGRAM_STATUSES = (
+    ("1", 'Шаг 1. Общие сведения о программе'),
+    ("2", 'Шаг 2. Планируемые результаты обучения'),
+    ("3", 'Шаг 3. Разработчики (составители)'),
+    ("4", 'Шаг 4. Учебно-тематический план'),
+    ("5", 'Шаг 5. Календарный учебный график'),
+    ("6", 'Шаг 6. Материально-техническое обеспечение'),
+    ("7", 'Шаг 7. Информационное и учебно-методическое обеспечение'),
+)
+
+
+class IrpoProgram(models.Model):
+    name = models.CharField("Наименование программы", null=False, blank=False, max_length=250)
+    assigned_qualif = models.CharField("Присваиваемая квалификация", null=True, blank=True, max_length=250)
+    category_name = models.CharField("Категория слушателей", null=True, blank=False, max_length=250)
+    duration = models.IntegerField("Длительность (ак. часов)", blank=True)
+    duration_days = models.IntegerField("Период освоения", null=True, blank=True)
+
+    program_type = models.CharField(
+        max_length=5, choices=PROGRAM_TYPES, 
+        verbose_name='Тип программы', 
+        blank=True, null=True
+    )
+    education_form = models.CharField(
+        max_length=5, choices=EDUCATION_FORMS, 
+        verbose_name='Форма обучения', 
+        blank=True, null=True
+    )
+    status = models.CharField(
+        max_length=5, choices=PROGRAM_STATUSES, 
+        verbose_name='Статус', 
+        blank=True, null=True, default="1"
+    )
+    gen_functions = models.TextField('Обобщенные (конкретные) трудовые функции', null=True, blank=True)
+    
+    current_control = models.TextField('Описание требований к проведению текущей аттестации', null=True, blank=True)
+    middle_control = models.TextField('Описание требований к выполнению заданий промежуточной аттестации', null=True, blank=True)
+    final_control = models.TextField('Описание процедуры проведения итоговой аттестации', null=True, blank=True)
+    final_control_matereils = models.TextField('Характеристика материалов итоговой аттестации', null=True, blank=True)
+    final_control_criteria = models.TextField('Критерии оценивания', null=True, blank=True)
+    min_score = models.CharField("Минимальный балл", null=True, blank=True, max_length=50)
+
+    qual_level = models.CharField(
+        "Уровень квалификации в соответствии с профессиональным стандартом", 
+        null=True, blank=True, max_length=20
+    )
+
+    ed_center = models.ForeignKey(
+        EducationCenter, 
+        verbose_name="Центр обучения", 
+        related_name='irpo_programs',
+        on_delete=CASCADE, 
+        null=True,
+        blank=True
+    )
+    profstandart = models.ForeignKey(
+        Profstandart,
+        verbose_name="Профстандарт",
+        related_name="irpo_programs",
+        on_delete=CASCADE,
+        blank=True,
+        null=True
+    )
+    standart = models.ForeignKey(
+        FgosStandart,
+        verbose_name="Стандарт (СПО/ВО)",
+        related_name="irpo_programs",
+        on_delete=CASCADE,
+        blank=True,
+        null=True
+    )
+    ed_program = models.ForeignKey(
+        EducationProgram,
+        verbose_name="Программа",
+        related_name="irpo_programs",
+        on_delete=CASCADE,
+        blank=True,
+        null=True
+    )
+
+    authors = models.ManyToManyField(
+        Author,
+        verbose_name="Разработчики",
+        related_name="irpo_programs",
+        blank=True
+    )
+
+    training_schedule = models.JSONField("Календарный учебный график", null=True, blank=True)
+
+    exam_lections_duration = models.IntegerField("Лекции (ИА)", default=0)
+    exam_practice_duration = models.IntegerField("Практика (ИА)", default=0)
+    exam_consultations_duration = models.IntegerField("Консультации (ИА)", default=0)
+    exam_independent_duration = models.IntegerField("Самостоятельная работа (ИА)", default=0)
+    exam_attest_form = models.CharField("Форма итоговой аттестации", null=True, blank=True, max_length=100)
+    
+
+    class Meta:
+        verbose_name = "Программа (ИРПО)"
+        verbose_name_plural = "Программы (ИРПО)"
+
+    def get_full_ex_duration(self):
+        return self.exam_lections_duration + self.exam_practice_duration + self.exam_consultations_duration + self.exam_independent_duration
+    
+    def get_lections_duration(self):
+        sum_duration = self.exam_lections_duration
+        for module in self.modules.all():
+            if module.get_lection_duration() is not None:
+                sum_duration += module.get_lection_duration()
+            sum_duration += module.lections_duration
+        return sum_duration
+    
+    def get_practice_duration(self):
+        sum_duration = self.exam_practice_duration
+        for module in self.modules.all():
+            if module.get_practice_duration() is not None:
+                sum_duration += module.get_practice_duration()
+        sum_duration += module.practice_duration
+        return sum_duration
+    
+    def get_consultations_duration(self):
+        sum_duration = self.exam_consultations_duration
+        for module in self.modules.all():
+            if module.get_consultations_duration() is not None:
+                sum_duration += module.get_consultations_duration()
+            sum_duration += module.consultations_duration
+        return sum_duration
+    
+    def get_independent_duration(self):
+        sum_duration = self.exam_independent_duration
+        for module in self.modules.all():
+            if module.get_independent_duration() is not None:
+                sum_duration += module.get_independent_duration()
+            sum_duration += module.independent_duration
+        return sum_duration
+    
+    def get_full_duration(self):
+        sum_duration = self.get_full_ex_duration()
+        for module in self.modules.all():
+            if module.get_full_duration() is not None:
+                sum_duration += module.get_full_duration()
+            sum_duration += module.get_ex_duration()
+        return sum_duration
+
+    def __str__(self):
+        return self.name
+
+
 class ActivityType(models.Model):
+    program = models.ForeignKey(
+        IrpoProgram,
+        verbose_name="Программа",
+        related_name="activities",
+        on_delete=CASCADE,
+        blank=False,
+        null=False
+    )
     index = models.IntegerField("Номер", null=False, blank=False)
     name = models.CharField("вид деятельности", max_length=350, null=False, blank=False)
 
@@ -813,13 +1024,15 @@ class ActivityCompetence(models.Model):
         blank=False,
         null=False
     )
+    function_code = models.CharField("Код", max_length=20, null=False, blank=False)
+    function_name = models.CharField("Наименование", null=False, blank=False, max_length=350)
 
     class Meta:
         verbose_name = "Компетенция (Вид деятельности)"
         verbose_name_plural = "Компетенции (Виды деятельности)"
 
     def __str__(self):
-        return f'ПК {self.code} {self.name}'
+        return f'ПК {self.activity.index}.{self.code} {self.name}'
 
 
 class ActivityCompetenceIndicators(models.Model):
@@ -844,29 +1057,6 @@ class ActivityCompetenceIndicators(models.Model):
         return f'{self.index} {self.name}'
 
 
-PROGRAM_TYPES = (
-    ('DPOPK', 'ДПО ПК'),
-    ('DPOPP', 'ДПО ПП'),
-    ('POP', 'ПО П'),
-    ('POPP', 'ПО ПП'),
-    ('POPK', 'ПО ПК'),
-)
-EDUCATION_FORMS = (
-    ('FLL', 'Очная'),
-    ('PRTLN', 'Очно-заочная'),
-    ('PRT', 'Заочная'),
-)
-PROGRAM_STATUSES = (
-    (0, 'Создана'),
-    (1, '1. Общие сведения о программе'),
-    (2, '2. Планируемые результаты обучения'),
-    (3, '3. Учебно-тематический план'),
-    (4, '4. Календарный учебный график'),
-    (5, '6. Материально-техническое обеспечение'),
-    (6, '6. Информационное и учебно-методическое обеспечение'),
-)
-
-
 class ActivityCompetenceEquipment(models.Model):
     name = models.CharField("Наименование", null=False, blank=False, max_length=350)
     competence = models.ForeignKey(
@@ -886,66 +1076,6 @@ class ActivityCompetenceEquipment(models.Model):
         return f'{self.name} ({self.competence})'
 
 
-class IrpoProgram(models.Model):
-    name = models.CharField("Наименование программы", null=False, blank=False, max_length=250)
-    assigned_qualif = models.CharField("Присваиваемая квалификация", null=True, blank=True, max_length=250)
-    prof_field = models.CharField("Вид профессиональной деятельности", null=True, blank=True, max_length=250)
-    category_name = models.CharField("Категория слушателей", null=False, blank=False, max_length=250)
-    program_type = models.CharField(
-        max_length=5, choices=PROGRAM_TYPES, 
-        verbose_name='Тип программы', 
-        blank=True, null=True
-    )
-    education_form = models.CharField(
-        max_length=5, choices=EDUCATION_FORMS, 
-        verbose_name='Форма обучения', 
-        blank=True, null=True
-    )
-    status = models.CharField(
-        max_length=5, choices=PROGRAM_STATUSES, 
-        verbose_name='Статус', 
-        blank=False, null=False, default=0
-    )
-    gen_functions = models.TextField('Обобщенные (конкретные) трудовые функции', null=False, blank=False)
-    qual_level = models.CharField(
-        "Уровень квалификации в соответствии с профессиональным стандартом", 
-        null=True, blank=True, max_length=20
-    )
-
-    profstandarts = models.ForeignKey(
-        Profstandart,
-        verbose_name="Профстандарты",
-        related_name="irpo_programs",
-        on_delete=CASCADE,
-        blank=False,
-        null=False
-    )
-    standart = models.ForeignKey(
-        FgosStandart,
-        verbose_name="Стандарт (СПО/ВО)",
-        related_name="irpo_programs",
-        on_delete=CASCADE,
-        blank=False,
-        null=False
-    )
-
-    teachers = models.ManyToManyField(
-        Teacher,
-        verbose_name="Разработчики",
-        related_name="irpo_programs",
-        blank=True
-    )
-    training_schedule = models.JSONField("Календарный учебный график", null=True, blank=True)
-    
-
-    class Meta:
-        verbose_name = "Программа (ИРПО)"
-        verbose_name_plural = "Программы (ИРПО)"
-
-    def __str__(self):
-        return self.name
-    
-
 class ProgramModule(models.Model):
     index = models.IntegerField("Номер", null=False, blank=False)
     name = models.CharField("Наименование", null=False, blank=False, max_length=350)
@@ -957,13 +1087,45 @@ class ProgramModule(models.Model):
         blank=False,
         null=False
     )
+    lections_duration = models.IntegerField("Лекции (ак. часы)", default=0)
+    practice_duration = models.IntegerField("Практика (ак. часы)", default=0)
+    consultations_duration = models.IntegerField("Консультации (ак. часы)", default=0)
+    independent_duration = models.IntegerField("Самостоятельная работа (ак. часы)", default=0)
+    attest_form = models.CharField("Форма аттестации", null=True, blank=True, max_length=100)
 
     class Meta:
         verbose_name = "Учебный модуль"
         verbose_name_plural = "Учебные модули"
 
+    def get_ex_duration(self):
+        return self.lections_duration + self.practice_duration + self.consultations_duration + self.independent_duration
+
+    def get_lection_duration(self):
+        return self.subjects.all().aggregate(sum_duration=Sum('lections_duration'))['sum_duration']
+    
+    def get_practice_duration(self):
+        return self.subjects.all().aggregate(sum_duration=Sum('practice_duration'))['sum_duration']
+    
+    def get_consultations_duration(self):
+        return self.subjects.all().aggregate(sum_duration=Sum('consultations_duration'))['sum_duration']
+    
+    def get_independent_duration(self):
+        return self.subjects.all().aggregate(sum_duration=Sum('independent_duration'))['sum_duration']
+    
+    def get_full_duration(self):
+        durations = self.subjects.all().aggregate(
+            lections_duration=Sum('lections_duration'),
+            practice_duration=Sum('practice_duration'),
+            consultations_duration=Sum('consultations_duration'),
+            independent_duration=Sum('independent_duration')
+        )
+        try:
+            return sum(durations.values())
+        except TypeError:
+            return 0
+    
     def __str__(self):
-        return f'Модуль (Раздел) {self.index}. {self.name}'
+        return f'Модуль (Раздел) {self.index} {self.name}'
     
 class Subject(models.Model):
     index = models.IntegerField("Номер", null=False, blank=False)
@@ -971,7 +1133,7 @@ class Subject(models.Model):
     module = models.ForeignKey(
         ProgramModule,
         verbose_name="Программа",
-        related_name="modules",
+        related_name="subjects",
         on_delete=CASCADE,
         blank=False,
         null=False
@@ -980,22 +1142,25 @@ class Subject(models.Model):
     practice_duration = models.IntegerField("Практика (ак. часы)", default=0)
     consultations_duration = models.IntegerField("Консультации (ак. часы)", default=0)
     independent_duration = models.IntegerField("Самостоятельная работа (ак. часы)", default=0)
-    lections = models.CharField(
-        "Лекции (содержание)", null=True, blank=True, max_length=500)
-    practice= models.CharField(
-        "Практика (содержание)", default=0, null=True, blank=True, max_length=500)
-    consultations = models.CharField(
-        "Консультации (содержание)", default=0, null=True, blank=True, max_length=500)
-    independent = models.CharField(
-        "Самостоятельная работа (содержание)", default=0, null=True, blank=True, max_length=500)
+    lections = models.TextField(
+        "Лекции (содержание)", null=True, blank=True)
+    practice = models.TextField(
+        "Практика (содержание)", default=0, null=True, blank=True)
+    consultations = models.TextField(
+        "Консультации (содержание)", default=0, null=True, blank=True)
+    independent = models.TextField(
+        "Самостоятельная работа (содержание)", default=0, null=True, blank=True)
     attest_form = models.CharField("Форма аттестации", null=True, blank=True, max_length=100)
 
     class Meta:
-        verbose_name = "Учебный модуль"
-        verbose_name_plural = "Учебные модули"
+        verbose_name = "Тема"
+        verbose_name_plural = "Темы"
+
+    def get_full_duration(self):
+        return self.lections_duration + self.practice_duration + self.consultations_duration + self.independent_duration
 
     def __str__(self):
-        return f'Модуль (Раздел) {self.index}. {self.name}'
+        return f'Тема {self.module.index}.{self.index} {self.name}'
     
 
 DOCUMENTATION_TYPES = (

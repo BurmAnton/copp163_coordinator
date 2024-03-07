@@ -22,7 +22,7 @@ from users.models import Group, User
 
 from .models import (Application, CitizenApplication, CitizenCategory, ClosingDocument, Contract,
                      EdCenterEmployeePosition, EdCenterQuotaRequest,
-                     EducationCenterProjectYear, EmploymentInvoice, FlowStatus, Grant, Indicator, NetworkAgreement,
+                     EducationCenterProjectYear, EmploymentInvoice, FlowStatus, Grant, Indicator, NetworkAgreement, ProfField,
                      ProgramQuotaRequest, ProjectPosition, ProjectYear,
                      QuotaRequest)
 
@@ -96,6 +96,12 @@ class ProjectPositionAdmin(admin.ModelAdmin):
 @admin.register(FlowStatus)
 class FlowStatusAdmin(admin.ModelAdmin):
     list_display = ['off_name', 'is_rejected']
+
+
+@admin.register(ProfField)
+class ProfFieldAdmin(admin.ModelAdmin):
+    list_display = ['code', 'name']
+
 
 
 @admin.register(ProjectYear)

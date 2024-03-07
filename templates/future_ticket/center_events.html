@@ -573,7 +573,7 @@
                 {% for event in cycle.events.all|filter_events:center_year %}
                     <div class="event-card" data-event_date={{event.event_date|date:"d/m/Y" }} data-limit="{{event.participants_limit }}" data-event_id="{{event.id }}">
                         <div class="event-card-hdr">
-                            <div class="profession-hdr">
+                            <div class="profession-hdr w-100">
                                 {{event.profession}} 
                                 <span class="tooltiptext">{{event.profession}}</span>
                             </div>

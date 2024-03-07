@@ -22,23 +22,251 @@ from pysendpulse.pysendpulse import PySendPulse
 from citizens.models import Citizen
 from education_centers.models import (AbilimpicsWinner, Competence,
                                       EducationCenter, EducationProgram, Group)
-from federal_empl_program.imports import import_applications
-from federal_empl_program.models import (Application, CitizenApplication,
+from federal_empl_program import imports
+from federal_empl_program.models import (PROGRAM_STATUSES, ActivityCompetence, ActivityCompetenceEquipment, ActivityCompetenceIndicators, ActivityType, Application, Author, CitizenApplication,
                                          ClosingDocument, Contract, EdCenterQuotaRequest,
-                                         EducationCenterProjectYear, EmploymentInvoice,
-                                         FlowStatus, Grant,
+                                         EducationCenterProjectYear, EmploymentInvoice, FgosStandart,
+                                         FlowStatus, Grant, IrpoProgram, NetworkAgreement, ProfField, Profstandart, ProgramDocumentation, ProgramModule,
                                          ProgramQuotaRequest, ProjectYear,
-                                         QuotaRequest)
+                                         QuotaRequest, Subject)
 from users.models import User
 
 from . import exports
 from .forms import ActChangeDataForm, ActDataForm, BillDataForm, ImportDataForm
-from .utils import get_applications_plot, get_flow_applications_plot
+from .utils import get_applications_plot, get_flow_applications_plot, save_program_stage
 
 
 @login_required
 def index(request):
     return HttpResponseRedirect(reverse('login'))
+
+@csrf_exempt
+def irpo_programs(request, ed_center_id):
+    ed_center = get_object_or_404(EducationCenter, id=ed_center_id)
+    project_year = get_object_or_404(ProjectYear, year=2023)
+    ed_center_year = EducationCenterProjectYear.objects.get(
+        project_year=project_year, ed_center=ed_center
+    )
+    if 'add-irpo-program' in request.POST:
+        program_id = request.POST["program_id"]
+        program = EducationProgram.objects.get(id=program_id)
+        irpo_program = IrpoProgram.objects.create(
+            ed_program=program,
+            ed_center=program.ed_center,
+            name=program.program_name,
+            program_type=program.program_type,
+            duration=program.duration,
+            education_form=program.education_form
+        )
+
+    elif 'delete-program' in request.POST:
+        program_id = request.POST["program_id"]
+        program = IrpoProgram.objects.get(id=program_id)
+        program.delete()
+
+    programs = NetworkAgreement.objects.get(ed_center_year=ed_center_year).programs.all()
+    irpo_programs = IrpoProgram.objects.filter(ed_center=ed_center)
+
+    return render(request, 'federal_empl_program/irpo_programs.html', {
+        'ed_center': ed_center,
+        'programs': programs,
+        'irpo_programs': irpo_programs
+    })
+
+
+PROGRAM_STAGES = (
+    (1, 'Общие сведения'),
+    (2, 'Трудовые функции'),
+    (3, 'Разработчики'),
+    (4, 'Учебный план'),
+    (5, 'Учебный график'),
+    (6, 'МТО'),
+    (7, 'Литература'),
+)
+
+@csrf_exempt
+def program_constractor(request, program_id):
+    program = IrpoProgram.objects.prefetch_related('activities', 'modules').get(id=program_id)
+    current_stage = int(program.status)
+    if 'save-stage' in request.POST:
+        current_stage = save_program_stage(request.POST, program) 
+    elif 'add-standart-program' in request.POST:
+        standart, _ = FgosStandart.objects.get_or_create(
+            standart_type=request.POST["standart_type"],
+            code=request.POST["code"],
+            name=request.POST["name"]
+        )
+        program.standart = standart
+        program.save()
+        current_stage = 1
+    elif 'add-activity' in request.POST:
+        ActivityType.objects.create(
+            program=program,
+            index=program.activities.all().count() + 1,
+            name=request.POST["name"]
+        )
+        current_stage = 2
+    elif 'change-activity' in request.POST:
+        activity = ActivityType.objects.get(id=request.POST["activity_id"])
+        activity.name = request.POST["name"]
+        activity.save()
+        current_stage = 2
+    elif 'delete-activity' in request.POST:
+        activity = ActivityType.objects.get(id=request.POST["activity_id"])
+        activity.delete()
+        for index, activity in enumerate(program.activities.all()):
+            activity.index = index + 1
+            activity.save()
+        current_stage = 2
+    elif 'add-competence' in request.POST:
+        activity = ActivityType.objects.get(id=request.POST["activity_id"])
+        ActivityCompetence.objects.create(
+            activity=activity,
+            code=activity.competencies.all().count() + 1,
+            name=request.POST["name"],
+            function_code=request.POST["function_code"],
+            function_name=request.POST["function_name"]
+        )
+        current_stage = 2
+    elif 'change-competence' in request.POST:
+        competence = ActivityCompetence.objects.get(id=request.POST["competence_id"])
+        competence.name = request.POST["name"]
+        competence.function_code = request.POST["function_code"]
+        competence.function_name = request.POST["function_name"]
+        competence.save()
+        current_stage = 2
+    elif 'delete-competence' in request.POST:
+        competence = ActivityCompetence.objects.get(id=request.POST["competence_id"])
+        activity = competence.activity
+        competence.delete()
+        for index, competence in enumerate(activity.competencies.all()):
+            competence.code = index + 1
+            competence.save()
+        current_stage = 2
+    elif 'add-indicator' in request.POST:
+        competence = ActivityCompetence.objects.get(id=request.POST["competence_id"])
+        ActivityCompetenceIndicators.objects.create(
+            competence=competence,
+            index=competence.indicators.all().count() + 1,
+            knowledge=request.POST["knowledge"],
+            skill=request.POST["skill"],
+            practice=request.POST["practice"]
+        )
+        current_stage = 2
+    elif 'change-indicator' in request.POST:
+        indicator = ActivityCompetenceIndicators.objects.get(id=request.POST["indicator_id"])
+        indicator.knowledge = request.POST["knowledge"]
+        indicator.skill = request.POST["skill"]
+        indicator.practice = request.POST["practice"]
+        indicator.save()
+    elif 'delete-indicator' in request.POST:
+        indicator = ActivityCompetenceIndicators.objects.get(id=request.POST["indicator_id"])
+        competence = indicator.competence
+        indicator.delete()
+        for index, indicator in enumerate(competence.indicators.all()):
+            indicator.index = index + 1
+            indicator.save()
+        current_stage = 2
+    elif 'create-author' in request.POST:
+        author = Author.objects.create(
+            ed_center=program.ed_center,
+            name=request.POST["name"],
+            degree=request.POST["degree"],
+            position=request.POST["position"],
+            place_of_work=request.POST["place_of_work"]
+        )
+        program.authors.add(author)
+        program.save()
+        current_stage = 3
+    elif 'add-author' in request.POST:
+        author = Author.objects.get(id=request.POST["author_id"])
+        program.authors.add(author)
+        program.save()
+        current_stage = 3
+    elif 'remove-author' in request.POST:
+        author = Author.objects.get(id=request.POST["author_id"])
+        program.authors.remove(author)
+        program.save()
+        current_stage = 3
+    elif 'add-module' in request.POST:
+        ProgramModule.objects.create(
+            program=program,
+            index=program.modules.all().count() + 1,
+            name=request.POST["name"]
+        )
+        current_stage = 4
+    elif 'add-subject' in request.POST:
+        module=ProgramModule.objects.get(id=request.POST["module_id"])
+        Subject.objects.create(
+            module=module,
+            index=module.subjects.all().count() + 1,
+            name=request.POST["name"],
+            attest_form=request.POST["attest_form"],
+            lections_duration=request.POST["lections_duration"],
+            practice_duration=request.POST["practice_duration"],
+            consultations_duration=request.POST["consultations_duration"],
+            independent_duration=request.POST["independent_duration"],
+            lections=request.POST["lections"],
+            practice=request.POST["practice"],
+            consultations=request.POST["consultations"],
+            independent=request.POST["independent"],
+        )
+        current_stage = 4
+    elif 'add-module-ex' in request.POST:
+        module = ProgramModule.objects.get(id=request.POST["module_id"])
+        module.attest_form=request.POST["attest_form"]
+        module.lections_duration=request.POST["lections_duration"]
+        module.practice_duration=request.POST["practice_duration"]
+        module.consultations_duration=request.POST["consultations_duration"]
+        module.independent_duration=request.POST["independent_duration"]
+        module.save()
+        current_stage = 4
+    elif 'add-ex' in request.POST:
+        program.exam_attest_form=request.POST["attest_form"]
+        program.exam_lections_duration=request.POST["lections_duration"]
+        program.exam_practice_duration=request.POST["practice_duration"]
+        program.exam_consultations_duration=request.POST["consultations_duration"]
+        program.exam_independent_duration=request.POST["independent_duration"]
+        program.save()
+        current_stage = 4
+    elif 'add-equipment' in request.POST:
+        competence = ActivityCompetence.objects.get(id=request.POST["competence_id"])
+        ActivityCompetenceEquipment.objects.create(
+            competence=competence,
+            name=request.POST["name"],
+        )
+        current_stage = 5
+    elif 'add-doc' in request.POST:
+        ProgramDocumentation.objects.create(
+            program=program,
+            name=request.POST["name"],
+            doc_type=request.POST["doc_type"]
+        )
+        current_stage = 6
+    
+    if request.method == 'POST':
+        return HttpResponseRedirect(f"%s?s={current_stage}" % reverse(
+                'program_constractor', kwargs={'program_id': program_id}
+            ))
+    stage_par = request.GET.get('s', '')
+    if stage_par.isnumeric():
+        current_stage = int(stage_par)
+
+    profstandarts = Profstandart.objects.all()
+    standarts = FgosStandart.objects.all()
+    authors = Author.objects.filter(ed_center=program.ed_center).exclude(irpo_programs=program).prefetch_related(
+        
+    )
+    
+    return render(request, 'federal_empl_program/program_constractor.html', {
+        'program': program,
+        'current_stage': current_stage,
+        'stages': PROGRAM_STAGES,
+        'profstandarts': profstandarts,
+        'standarts': standarts,
+        'authors': authors
+    })
+
 
 @login_required
 @csrf_exempt
@@ -48,12 +276,30 @@ def import_flow(request):
     if request.method == "POST":
         form = ImportDataForm(request.POST, request.FILES)
         if form.is_valid():
-            message = import_applications(form, 2023)
+            message = imports.import_applications(form, 2023)
             cache.clear()
         else:
             data = form.errors
 
     return render(request, "federal_empl_program/import_flow.html",{
+        'form': form,
+        'message': message
+    })
+
+
+@login_required
+@csrf_exempt
+def import_profstandarts(request):
+    form = ImportDataForm()
+    message = None
+    if request.method == "POST":
+        form = ImportDataForm(request.POST, request.FILES)
+        if form.is_valid():
+            message = imports.profstandarts(form)
+        else:
+            data = form.errors
+
+    return render(request, "federal_empl_program/import_profstandarts.html",{
         'form': form,
         'message': message
     })
@@ -816,3 +1062,4 @@ def citizen_application(request):
     return render(request, 'federal_empl_program/citizen_application.html', {
         'is_register': is_register
     })
+

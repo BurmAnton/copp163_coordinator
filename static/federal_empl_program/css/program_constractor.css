@@ -1,0 +1,173 @@
+body {
+  background-color: rgba(242, 242, 242, 0.5411764706);
+}
+body h2 {
+  font-size: 24px;
+}
+body h3 {
+  font-size: 20px;
+  padding-left: 10px;
+  margin: 0;
+}
+body .add-subject-modal textarea {
+  margin-bottom: 10px;
+}
+
+.page-hdr {
+  text-align: center;
+  padding-top: 25px;
+  margin-bottom: 30px;
+}
+
+.stages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 15px;
+  padding-bottom: 50px;
+  width: 85%;
+  margin: auto;
+}
+.stages .tabs-panel {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  lex-wrap: wrap;
+}
+.stages .tabs-panel .tabs {
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+}
+.stages .tabs-panel .stage-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 170px;
+  height: 45px;
+  font-size: 18px;
+}
+.stages .tabs-panel .disabled {
+  background-color: rgba(0, 0, 0, 0.1215686275);
+}
+.stages .tabs-panel .btn-primary {
+  font-weight: 500;
+}
+.stages .tabs-panel .btn-outline-primary {
+  border: 0;
+  background-color: white;
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
+}
+.stages .tabs-panel .btn-outline-primary:hover {
+  background-color: #394959 !important;
+  color: white !important;
+}
+.stages .stage {
+  width: 100%;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
+  padding: 25px 50px 25px 50px;
+}
+.stages .stage input.disabled {
+  background-color: rgba(242, 242, 242, 0.5411764706);
+}
+.stages .stage .stage-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+.stages .stage .stage-hdr .check-img {
+  width: 35px;
+  margin-bottom: 4px;
+}
+.stages .stage-1 .form-floating .dropdown-toggle, .stages .stage-3 .form-floating .dropdown-toggle {
+  height: 55px !important;
+  border: 1px solid #ced4da !important;
+  background-color: white !important;
+}
+.stages .stage-1 .form-floating .dropdown-toggle .filter-option, .stages .stage-3 .form-floating .dropdown-toggle .filter-option {
+  padding-top: 15px;
+}
+.stages .stage-1 .form-floating label, .stages .stage-3 .form-floating label {
+  font-size: 14px;
+  opacity: 0.9;
+  transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+.stages .stage-1 .dropdown-menu, .stages .stage-3 .dropdown-menu {
+  width: 80%;
+}
+.stages .stage-1 .select-add, .stages .stage-3 .select-add {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.stages .stage-1 .select-add .filter-selectpicker, .stages .stage-3 .select-add .filter-selectpicker {
+  width: calc(100% - 60px);
+}
+.stages .stage-1 .select-add .add-btn, .stages .stage-3 .select-add .add-btn {
+  font-size: 27px;
+  width: 55px;
+  font-weight: 600;
+  border: 1px solid #ced4da !important;
+}
+.stages .stage-3 .select-add {
+  justify-content: flex-start;
+  gap: 10px;
+}
+.stages .stage-3 .select-add .bootstrap-select {
+  width: 100%;
+}
+.stages .stage-3 .select-add .filter-selectpicker {
+  width: 350px !important;
+}
+.stages .stage-3 .select-add button {
+  height: 55px;
+  min-width: 200px;
+  border: 1px solid #ced4da !important;
+}
+.stages .stage-4 .module-tr td {
+  font-weight: 400 !important;
+}
+.stages .stage-4 .plan-summary td {
+  font-weight: 500 !important;
+}
+.stages .add-activity-form, .stages .add-module-form {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+}
+.stages table th {
+  color: #394959;
+  font-weight: 400 !important;
+  font-size: 16px;
+  line-height: 20px;
+  border-top: 0;
+  border-bottom: 2px solid #394959;
+  vertical-align: middle;
+}
+.stages table td {
+  color: #394959;
+  font-weight: 300 !important;
+  max-width: 250px;
+  word-wrap: break-word;
+  vertical-align: middle;
+}
+.stages table .col-center {
+  text-align: center;
+  justify-content: center;
+}
+.stages table .none-alert {
+  text-align: center;
+  font-weight: 300;
+  font-size: 20px;
+}
+.stages .note {
+  font-size: 12px;
+  margin-top: 5px;
+}
+.stages .note span {
+  color: #ff0000;
+}/*# sourceMappingURL=program_constractor.css.map */

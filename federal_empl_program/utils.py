@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from openpyxl import Workbook, load_workbook
 
+from federal_empl_program.models import FgosStandart, Profstandart
+
 
 def get_graph():
     buffer = BytesIO()
@@ -128,3 +130,54 @@ def count_levels(directory_path):
         for col_number, value in enumerate(sheet, start=1):
             ws.cell(row=row_number, column=col_number, value=value)
     wb.save('Сводная уровней школ.xlsx')
+
+
+def save_program_stage(form, program):
+    stage = form['save-stage']
+    if stage == "1":
+
+        program.standart = FgosStandart.objects.get(id=form['standart'])
+        program.profstandart = Profstandart.objects.get(id=form['profstandart'])
+        program.assigned_qualif = form['assigned_qualif']
+        program.gen_functions = form['gen_functions']
+        program.duration_days = form['duration_days']
+        program.current_control = form['current_control']
+        program.middle_control = form['middle_control']
+        program.final_control = form['final_control']
+        program.final_control_matereils = form['final_control_matereils']
+        program.final_control_criteria = form['final_control_criteria']
+        program.min_score = form['min_score']
+
+        if program.status == "0" or program.status == "1":
+            program.status = "2"
+            stage = 2
+        else:
+            stage = 1
+    elif stage == "2":
+        if program.status == "2":
+            program.status = "3"
+            stage = 3
+        else:
+            stage = 2
+    elif stage == "3":
+        if program.status == "3":
+            program.status = "4"
+            stage = 4
+        else:
+            stage = 3
+    elif stage == "4" or stage == "5":
+        if program.status == "4" or program.status == "5":
+            program.status = "6"
+            stage = 6
+        else:
+            stage = 4
+    elif stage == "6":
+        if program.status == "6":
+            program.status = "7"
+            stage = 7
+        else:
+            stage = 6
+    program.save()
+    return int(stage)
+        
+        

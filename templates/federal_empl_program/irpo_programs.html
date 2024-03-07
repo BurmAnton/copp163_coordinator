@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load fed_extras %}
+{% block title %}Программы ИРПО{% endblock %}
+{% block style %}
+        <link href="{% static 'federal_empl_program/css/irpo_programs.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+        <script src="{% static 'federal_empl_program/js/irpo_programs.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="modal fade irpo-program-import-modal" id="AddIrpoProgramModal" tabindex="-1" aria-labelledby="AddIrpoProgramModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddIrpoProgramModalLabel">Генерация программы</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'irpo_programs' ed_center.id %}" method="post">
+                    <div class="modal-body">
+                        <div class="form mb-3 filter-selectpicker">
+                            <select class="selectpicker w-100" id="ProgramInput" title="Программа" data-live-search="true" name="program_id" required>
+                                {% for program in programs %}
+                                    <option value="{{program.id}}">{{program}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div> 
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <input type="submit" class="btn btn-primary" name="add-irpo-program" value="Сгенерировать">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-hdr">
+        <h1>Конструктор программ</h1>
+        <h2>по шаблону ИРПО</h2>
+    </div>
+   
+    <div class="programs-list">
+        <div class="programs-list-hdr">
+            <h2>Список программ</h2>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddIrpoProgramModal">Создать программу</button>
+        </div>
+        <table class="table">
+            <tr style="background-color: white;" class="sticky-top">
+                <th scope="col">№</th>
+                <th scope="col">Программа</th>
+                <th scope="col">Тип программы</th>
+                <th scope="col">Длительность</th>
+                <th scope="col">Статус</th>
+                <th scope="col" style="text-align: center;">Действие</th>
+            </tr>
+            {% for program in irpo_programs %}
+                <tr>
+                    <td scope="row">{{ forloop.counter }}</td>
+                    <td scope="row">
+                       <a href="{% url 'program_constractor' program.id %}" target="_blank" rel="noopener noreferrer">{{ program.name }}</a>
+                    </td>
+                    <td scope="row">{{ program.get_program_type_display }}</td>
+                    <td scope="row">{{ program.duration }}</td>
+                    <td scope="row">{{ program.get_status_display }}</td>
+                    <td scope="row" class="action-row">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                              Действие
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <form action="{% url 'irpo_programs' ed_center.id %}" method="post">
+                                        <input style="display: none;" type="text" value="{{program.id}}" name='program_id'>
+                                        <button class="dropdown-item" name="delete-program">Удалить</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td scope="row" class="none-alert" colspan="100%">Не добавлено ни одной программы</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+{% endblock %}

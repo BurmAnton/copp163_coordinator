@@ -1,0 +1,898 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load fed_extras %}
+
+{% block title %}Конструктор программы{% endblock %}
+{% block style %}
+    <link href="{% static 'federal_empl_program/css/program_constractor.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+     <script src="{% static 'federal_empl_program/js/program_constractor.js' %}" rel="stylesheet"></script> 
+{% endblock %}
+
+{% block body %}
+    <!-- Models -->
+    <div class="modal fade add-standart-modal" id="AddAuthorModal" tabindex="-1" aria-labelledby="AddAuthorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddAuthorModalLabel">Добавить разработчика</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'program_constractor' program.id %}" method="post">
+                    <div class="modal-body">
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" id="AuthorNameInput" name="name" placeholder="" maxlength="600" required>
+                            <label for="AuthorNameInput">ФИО</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" id="AuthordDegreeInput" name="degree" placeholder=""  maxlength="250">
+                            <label for="AuthordDegreeInput">Учёная степень</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" id="AuthorPositionInput" name="position" placeholder=""  maxlength="600" required>
+                            <label for="AuthorPositionInput">Должность</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" id="AuthorWorkInput" name="place_of_work" placeholder=""  maxlength="600" required>
+                            <label for="AuthorWorkInput">Место работы</label>
+                        </div>
+                    </div> 
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <input type="submit" class="btn btn-primary" name="create-author" value="Добавить">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade add-standart-modal" id="AddStandartModal" tabindex="-1" aria-labelledby="AddStandartModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddStandartModalLabel">Добавить ФГОС</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'program_constractor' program.id %}" method="post">
+                    <div class="modal-body">
+                        <div class="form mb-3 filter-selectpicker">
+                            <select class="selectpicker w-100" id="StandartTypeInput" title="Тип ФГОС" data-live-search="true" name="standart_type" required>
+                                <option value="SPO" selected>ФГОС СПО</option>
+                                <option value="VO">ФГОС ВО</option>
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" id="StandartCodeInput" name="code" maxlength="20" required>
+                            <label for="StandartCodeInput">Код ПС</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" id="StandartNameInput" name="name" maxlength="350" required>
+                            <label for="StandartNameInput">Название ФГОС</label>
+                        </div>
+                    </div> 
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <input type="submit" class="btn btn-primary" name="add-standart-program" value="Добавить ФГОС">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% for activity in program.activities.all %}
+        <div class="modal fade change-activity-modal" id="ChangeActivityModal{{activity.id}}" tabindex="-1" aria-labelledby="ChangeActivityModal{{activity.id}}Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ChangeActivityModal{{activity.id}}Label">Изменить Вид деятельности</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{% url 'program_constractor' program.id %}" method="post">
+                        <div class="modal-body">
+                            <input type="input" class="form-control" name="activity_id" value="{{ activity.id }}" style="display: none;" required>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" id="Activity{{activity.id}}ChangeInput" placeholder="" name="name" value="{{ activity.name }}" maxlength="350" required>
+                                <label for="Activity{{activity.id}}ChangeInput">Вид деятельности</label>
+                            </div>
+                        </div> 
+                        <div class="modal-footer" style="display: flex; flex-direction: row-reverse; justify-content: space-between;">
+                            <input type="submit" class="btn btn-primary" name="change-activity" value="Сохранить">
+                            </form>
+                            <form action="{% url 'program_constractor' program.id %}" method="post"> 
+                                <input type="input" class="form-control" name="activity_id" value="{{ activity.id }}" style="display: none;" required>
+                                <input type="submit" class="btn btn-danger" name="delete-activity" value="Удалить">
+                            </form>
+                        </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade add-competence-modal" id="AddCompetenceModal{{activity.id}}" tabindex="-1" aria-labelledby="AddCompetenceModal{{activity.id}}Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="AddCompetenceModal{{activity.id}}Label">Добавить компетенцию</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{% url 'program_constractor' program.id %}" method="post">
+                        <div class="modal-body">
+                            <input type="input" class="form-control" name="activity_id" value="{{ activity.id }}" style="display: none;" required>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" id="Competence{{activity.id}}Input" placeholder="" name="name" maxlength="350" required>
+                                <label for="Competence{{activity.id}}Input">Название компетенции</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" id="Competence{{activity.id}}Input" placeholder="" name="function_code" maxlength="20" required>
+                                <label for="Competence{{activity.id}}Input">Код трудовой функции</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" id="Competence{{activity.id}}Input" placeholder="" name="function_name" maxlength="350" required>
+                                <label for="Competence{{activity.id}}Input">Название трудовой функции</label>
+                            </div>
+                        </div> 
+                        <div class="modal-footer">
+                            <div class="d-grid gap-2">
+                                <input type="submit" class="btn btn-primary" name="add-competence" value="Добавить компетенцию">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% for competence in activity.competencies.all %} 
+            <div class="modal fade change-competence-modal" id="ChangeCompetenceModal{{competence.id}}" tabindex="-1" aria-labelledby="ChangeCompetenceModal{{competence.id}}Label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ChangeCompetenceModal{{competence.id}}Label">Изменить компетенцию</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{% url 'program_constractor' program.id %}" method="post">
+                            <div class="modal-body">
+                                <input type="input" class="form-control" name="competence_id" value="{{ competence.id }}" style="display: none;" required>
+                                <div class="form-floating mb-3">
+                                    <input type="input" class="form-control" id="Competence{{competence.id}}ChangeInput" placeholder="" name="name" value="{{ competence.name }}" maxlength="350" required>
+                                    <label for="Competence{{competence.id}}ChangeInput">Название компетенции</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="input" class="form-control" id="Competence{{competence.id}}ChangeInput" placeholder="" name="function_code" value="{{ competence.function_code }}" maxlength="20" required>
+                                    <label for="Competence{{competence.id}}ChangeInput">Код трудовой функции</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="input" class="form-control" id="Competence{{competence.id}}ChangeInput" placeholder="" name="function_name" value="{{ competence.function_name }}" maxlength="350" required>
+                                    <label for="Competence{{competence.id}}ChangeInput">Название трудовой функции</label>
+                                </div>
+                            </div> 
+                            <div class="modal-footer" style="display: flex; flex-direction: row-reverse; justify-content: space-between;">
+                                <input type="submit" class="btn btn-primary" name="change-competence" value="Изменить компетенцию">
+                                </form>
+                                <form action="{% url 'program_constractor' program.id %}" method="post"> 
+                                    <input type="input" class="form-control" name="competence_id" value="{{ competence.id }}" style="display: none;" required>
+                                    <input type="submit" class="btn btn-danger" name="delete-competence" value="Удалить">
+                                </form>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade add-competence-indicators-modal" id="AddIndicatorsModal{{competence.id}}" tabindex="-1" aria-labelledby="AddIndicatorsModal{{competence.id}}Label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="AddIndicatorsModal{{competence.id}}Label">Добавить знания и умения компетенции</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{% url 'program_constractor' program.id %}" method="post">
+                            <div class="modal-body">
+                                <input type="input" class="form-control" name="competence_id" value="{{ competence.id }}" style="display: none;" required>
+                                <div class="form-floating mb-3">
+                                    <input type="input" class="form-control" id="knowledge{{competence.id}}Input" placeholder="" name="knowledge" maxlength="350" required>
+                                    <label for="knowledge{{competence.id}}Input">Знание</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="input" class="form-control" id="skill{{competence.id}}Input" placeholder="" name="skill" maxlength="350" required>
+                                    <label for="skill{{competence.id}}Input">Умение</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="input" class="form-control" id="practice{{competence.id}}Input" placeholder="" name="practice" maxlength="350">
+                                    <label for="practice{{competence.id}}Input">Практический опыт (при наличии)</label>
+                                </div>
+                            </div> 
+                            <div class="modal-footer">
+                                <div class="d-grid gap-2">
+                                    <input type="submit" class="btn btn-primary" name="add-indicator" value="Добавить компетенцию">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade add-competence-equipment-modal" id="AddEquipmentModal{{competence.id}}" tabindex="-1" aria-labelledby="AddEquipmentModal{{competence.id}}Label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="AddEquipmentModal{{competence.id}}Label">Добавить МТО</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{% url 'program_constractor' program.id %}" method="post">
+                            <div class="modal-body">
+                                <input type="input" class="form-control" name="competence_id" value="{{ competence.id }}" style="display: none;" required>
+                                <div class="form-floating mb-3">
+                                    <input type="input" class="form-control" id="eq{{competence.id}}Input" placeholder="" name="name" maxlength="350" required>
+                                    <label for="eq{{competence.id}}Input">МТО</label>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="d-grid gap-2">
+                                    <input type="submit" class="btn btn-primary" name="add-equipment" value="Добавить">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% for indicator in competence.indicators.all %}
+                <div class="modal fade change-competence-modal" id="ChangeIndicatorsModal{{indicator.id}}" tabindex="-1" aria-labelledby="ChangeIndicatorsModal{{indicator.id}}Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="ChangeIndicatorsModal{{indicator.id}}Label">Изменить компетенцию</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form action="{% url 'program_constractor' program.id %}" method="post">
+                                <div class="modal-body">
+                                    <input type="input" class="form-control" name="indicator_id" value="{{ indicator.id }}" style="display: none;" required>
+                                        <div class="form-floating mb-3">
+                                        <input type="input" class="form-control" id="knowledge{{indicator.id}}Input" placeholder="" name="knowledge" value="{{ indicator.knowledge }}" maxlength="350" required>
+                                        <label for="knowledge{{indicator.id}}ChangeInput">Знание</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input type="input" class="form-control" id="skill{{indicator.id}}Input" placeholder="" name="skill" value="{{ indicator.skill }}" maxlength="350" required>
+                                        <label for="skill{{indicator.id}}ChangeInput">Умение</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input type="input" class="form-control" id="practice{{indicator.id}}Input" placeholder="" name="practice" value="{{ indicator.practice }}" maxlength="350">
+                                        <label for="practice{{indicator.id}}ChangeInput">Практический опыт (при наличии)</label>
+                                    </div>
+                                </div> 
+                                <div class="modal-footer" style="display: flex; flex-direction: row-reverse; justify-content: space-between;">
+                                    <input type="submit" class="btn btn-primary" name="change-indicator" value="Сохранить">
+                                    </form>
+                                    <form action="{% url 'program_constractor' program.id %}" method="post"> 
+                                        <input type="input" class="form-control" name="indicator_id" value="{{ indicator.id }}" style="display: none;" required>
+                                        <input type="submit" class="btn btn-danger" name="delete-indicator" value="Удалить">
+                                    </form>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+    {% for module in program.modules.all %}
+        <div class="modal fade add-subject-modal" id="AddSubjectModal{{module.id}}" tabindex="-1" aria-labelledby="AddSubjectModal{{module.id}}Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="AddSubjectModal{{module.id}}Label">Добавить тему</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{% url 'program_constractor' program.id %}" method="post">
+                        <div class="modal-body">
+                            <input style="display: none;" type="input" class="form-control" name="module_id" value="{{module.id}}" equired>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" id="subjectName{{module.id}}Input" name="name" maxlength="350" placeholder="" required>
+                                <label for="subjectName{{module.id}}Input">Название темы</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" id="subjectName{{module.id}}Input" name="attest_form" maxlength="100" placeholder="">
+                                <label for="subjectName{{module.id}}Input">Форма аттестации</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="subjectLectionDuration{{module.id}}Input" name="lections_duration" value=0 required>
+                                <label for="subjectLectionDuration{{module.id}}Input">Лекции (ак. часы)</label>
+                            </div>
+                            <div class="form-floating">
+                                <textarea class="form-control" name="lections" style="height: 80px" id="subjectLection{{module.id}}Input"></textarea>
+                                <label for="subjectLection{{module.id}}Input">Лекции (содержание)</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="subjectPracticeDuration{{module.id}}Input" name="practice_duration" value=0  required>
+                                <label for="subjectPracticeDuration{{module.id}}Input">Практика (ак. часы)</label>
+                            </div>
+                            <div class="form-floating">
+                                <textarea class="form-control" name="practice" style="height: 80px" id="subjectPractice{{module.id}}Input"></textarea>
+                                <label for="subjectPractice{{module.id}}Input">Практика (содержание)</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="subjectConsultationsDuration{{module.id}}Input" name="consultations_duration" value=0  required>
+                                <label for="subjectConsultationsDuration{{module.id}}Input">Консультации (ак. часы)</label>
+                            </div>
+                            <div class="form-floating">
+                                <textarea class="form-control" name="consultations" style="height: 80px" id="subjectConsultations{{module.id}}Input"></textarea>
+                                <label for="subjectConsultations{{module.id}}Input">Консультации (содержание)</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="subjectIndependentDuration{{module.id}}Input" name="independent_duration" value=0  required>
+                                <label for="subjectIndependentDuration{{module.id}}Input">Самостоятельная работа (ак. часы)</label>
+                            </div>
+                            <div class="form-floating">
+                                <textarea class="form-control" name="independent" style="height: 80px" id="subjectIndependent{{module.id}}Input"></textarea>
+                                <label for="subjectIndependent{{module.id}}Input">Самостоятельная работа (содержание)</label>
+                            </div>
+                        </div> 
+                        
+                        <div class="modal-footer">
+                            <div class="d-grid gap-2">
+                                <input type="submit" class="btn btn-primary" name="add-subject" value="Добавить">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal fade add-subject-modal" id="AddNoduleExModal{{module.id}}" tabindex="-1" aria-labelledby="AddNoduleExModal{{module.id}}Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="AddNoduleExModal{{module.id}}Label">Промежуточная аттестацию</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{% url 'program_constractor' program.id %}" method="post">
+                        <div class="modal-body">
+                            <input style="display: none;" type="input" class="form-control" name="module_id" value="{{module.id}}" role=""equired>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" id="subjectName{{module.id}}Input" name="attest_form" maxlength="100" placeholder="" required>
+                                <label for="subjectName{{module.id}}Input">Форма промежуточной аттестации</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="subjectLectionDuration{{module.id}}Input" name="lections_duration" value=0 required>
+                                <label for="subjectLectionDuration{{module.id}}Input">Лекции (ак. часы)</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="subjectPracticeDuration{{module.id}}Input" name="practice_duration" value=0  required>
+                                <label for="subjectPracticeDuration{{module.id}}Input">Практика (ак. часы)</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="subjectConsultationsDuration{{module.id}}Input" name="consultations_duration" value=0  required>
+                                <label for="subjectConsultationsDuration{{module.id}}Input">Консультации (ак. часы)</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="subjectIndependentDuration{{module.id}}Input" name="independent_duration" value=0  required>
+                                <label for="subjectIndependentDuration{{module.id}}Input">Самостоятельная работа (ак. часы)</label>
+                            </div>
+                        </div> 
+                        
+                        <div class="modal-footer">
+                            <div class="d-grid gap-2">
+                                <input type="submit" class="btn btn-primary" name="add-module-ex" value="Добавить">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <div class="modal fade add-subject-modal" id="AddExModal{{module.id}}" tabindex="-1" aria-labelledby="AddExModal{{module.id}}Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddExModal{{module.id}}Label">Итоговая аттестацию</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'program_constractor' program.id %}" method="post">
+                    <div class="modal-body">
+                        <input style="display: none;" type="input" class="form-control" name="module_id" value="{{module.id}}" role=""equired>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" id="subjectName{{module.id}}Input" name="attest_form" maxlength="100" placeholder="" required>
+                            <label for="subjectName{{module.id}}Input">Форма итоговой аттестации</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="number" class="form-control" id="subjectLectionDuration{{module.id}}Input" name="lections_duration" value=0 required>
+                            <label for="subjectLectionDuration{{module.id}}Input">Лекции (ак. часы)</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="number" class="form-control" id="subjectPracticeDuration{{module.id}}Input" name="practice_duration" value=0  required>
+                            <label for="subjectPracticeDuration{{module.id}}Input">Практика (ак. часы)</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="number" class="form-control" id="subjectConsultationsDuration{{module.id}}Input" name="consultations_duration" value=0  required>
+                            <label for="subjectConsultationsDuration{{module.id}}Input">Консультации (ак. часы)</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="number" class="form-control" id="subjectIndependentDuration{{module.id}}Input" name="independent_duration" value=0  required>
+                            <label for="subjectIndependentDuration{{module.id}}Input">Самостоятельная работа (ак. часы)</label>
+                        </div>
+                    </div> 
+                    
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <input type="submit" class="btn btn-primary" name="add-ex" value="Добавить">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- !Models -->
+
+    <div class="page-hdr">
+        <h1>Конструктор программы</h1>
+        <h3 class="stage-h3">{{program.get_program_type_display}} {{program}} ({{program.duration}})</h3>
+    </div>
+    <div class="stages">
+        <div class="tabs-panel">
+            <div class="tabs">
+                {% for stage in stages %}
+                    {% if stage.0 != 5 %}
+                        <a data-stage="{{ stage.0 }}" class="stage-btn btn {%if current_stage == stage.0 %}btn-primary{%elif  stage.0|check_stage:program.status %} disabled{%else%}btn-outline-primary{%endif%}">{{ stage.1 }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="stage stage-1" data-stage="1" {% if current_stage == 1 %}style="display:block;"{%else%}style="display:none;"{%endif%}>
+            <form action="{% url 'program_constractor' program.id %}" method="post">
+                <div class="stage-hdr">
+                    <h2>
+                        {% if current_stage != 1 %}
+                            <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon">
+                        {% else %}
+                            1. 
+                        {% endif %}
+                        Общие сведения о программе
+                    </h2>
+                    {% if program.status == "0" or program.status == "1" %}
+                        <button class="btn btn-primary" name="save-stage" value="1">Сохранить</button>
+                    {% else %}
+                        <button class="btn btn-outline-primary" name="save-stage" value="1">Сохранить изменения</button>
+                    {% endif %}
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="input" class="form-control disabled" id="ProgramNameInput" name="name" maxlength="250" value="{{program.name}}" disabled>
+                    <label for="ProgramNameInput">Название программы</label>
+                </div>
+                <div style="display: flex; gap: 5px;">
+                    <div class="form-floating mb-3" style="width: 100%;">
+                        <input type="input" class="form-control disabled" id="ProgramTypeInput" name="program_type" maxlength="5" value="{{program.get_program_type_display}}" disabled>
+                        <label for="ProgramTypeInput">Тип программы</label>
+                    </div>
+                    <div class="form-floating mb-3" style="width: 100%;">
+                        <input type="input" class="form-control disabled" id="EducationFormInput" name="education_form" maxlength="5" value="{{program.get_education_form_display}}" disabled>
+                        <label for="EducationFormInput">Форма обучения</label>
+                    </div>
+                    <div class="form-floating mb-3" style="width: 100%;">
+                        <input type="input" class="form-control disabled" id="ProgramDurationInput" name="duration" maxlength="5" value="{{program.duration}}" disabled>
+                        <label for="ProgramDurationInput">Длительность (ак. часов)</label>
+                    </div>
+                </div>
+                <div class="select-add">
+                    <div class="form-floating mb-3 filter-selectpicker">
+                        <select class="selectpicker w-100" title="ФГОС Стандарт" id="StandartInput" data-live-search="true" name="standart" required>
+                            {% if program.standart != None %}
+                                <option value="{{program.standart.id}}" class="field" selected>{{program.standart}} ({{program.standart.get_standart_type_display}})</option>
+                            {% endif %}
+                            {%for standart in standarts %}  
+                                <option value="{{standart.id}}" class="field">{{standart}}  ({{standart.get_standart_type_display}})</option>
+                            {% endfor %}
+                        </select>
+                        <label for="StandartInput">ФГОС</label>
+                    </div>
+                    <div class="btn btn-outline-primary add-btn" data-bs-toggle="modal" data-bs-target="#AddStandartModal">+</div>
+                </div>
+                <div class="form-floating mb-3" style="width: 100%;">
+                    <input type="number" class="form-control" id="ProgramDurationDaysInput" name="duration_days" value="{{program.duration_days}}">
+                    <label for="ProgramDurationDaysInput">Период освоения (календарных дней)</label>
+                </div>
+                <div class="form-floating mb-3 filter-selectpicker">
+                    <select class="selectpicker w-100" title="Профстандарт" data-live-search="true" id="ProfstandartInput" name="profstandart" required>
+                        {% if program.profstandart != None %}
+                            <option value="{{program.profstandart.id}}" class="field" selected>{{program.profstandart}}</option>
+                        {% endif %}
+                        {%for profstandart in profstandarts %}  
+                            <option value="{{profstandart.id}}" class="field">{{profstandart.code}} {{profstandart.name}}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="ProfstandartInput">Профстандарт</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="input" class="form-control" id="AssignedQualifInput" name="assigned_qualif" maxlength="250" value="{{ program.assigned_qualif|default_if_none:'' }}" required>
+                    <label for="AssignedQualifInput">Наименование присваиваемой квалификации</label>
+                </div>
+                <div class="form-floating" style="margin-bottom: 15px;">
+                    <textarea class="form-control" name="gen_functions" style="height: 120px" id="GenFunctionsInput" required>{{program.gen_functions|default_if_none:''}}</textarea>
+                    <label for="GenFunctionsInput">Обобщенные трудовые функции (из раздела II выбранного профстандарта)</label>
+                </div>
+                <h3 style="margin-bottom: 15px;">Оценочные материалы</h3>
+                <div class="form-floating" style="margin-bottom: 15px;">
+                    <textarea class="form-control" name="current_control" style="height: 120px" id="GenFunctionsInput" required>{{program.current_control|default_if_none:''}}</textarea>
+                    <label for="GenFunctionsInput">Описание требований к проведению текущей аттестации, критерии оценивания</label>
+                </div>
+                <div class="form-floating" style="margin-bottom: 15px;">
+                    <textarea class="form-control" name="middle_control" style="height: 120px" id="GenFunctionsInput" required>{{program.middle_control|default_if_none:''}}</textarea>
+                    <label for="GenFunctionsInput">Описание требований к выполнению заданий промежуточной аттестации, критерии оценивания</label>
+                </div>
+                <div class="form-floating" style="margin-bottom: 15px;">
+                    <textarea class="form-control" name="final_control" style="height: 120px" id="GenFunctionsInput" required>{{program.final_control|default_if_none:''}}</textarea>
+                    <label for="GenFunctionsInput">Описание процедуры проведения итоговой аттестации</label>
+                </div>
+                <div class="form-floating" style="margin-bottom: 15px;">
+                    <textarea class="form-control" name="final_control_matereils" style="height: 120px" id="GenFunctionsInput" required>{{program.final_control_matereils|default_if_none:''}}</textarea>
+                    <label for="GenFunctionsInput">Характеристика материалов итоговой аттестации (с включением требований к оформлению и представлению материалов слушателями)</label>
+                </div>
+                <div class="form-floating mb-3" style="width: 100%;">
+                    <input type="input" class="form-control" id="ProgramscoreDaysInput" name="min_score" maxlength="50" value="{{program.min_score|default_if_none:''}}" placeholder="">
+                    <label for="ProgramscoreDaysInput">Минимально необходимое количество баллов или оценка</label>
+                </div>   
+                <div class="form-floating" style="margin-bottom: 15px;">
+                    <textarea class="form-control" name="final_control_criteria" style="height: 120px" id="GenFunctionsInput" required placeholder="">{{program.final_control_criteria|default_if_none:''}}</textarea>
+                    <label for="GenFunctionsInput">Критерии оценивания (описать условия, при которых слушатель считается аттестованным)</label>
+                </div>
+             </form>           
+        </div>
+        <div class="stage stage-2" data-stage="2" {% if current_stage == 2 %}style="display:block;"{%else%}style="display:none;"{%endif%}>
+            <div class="stage-hdr">
+                <h2>
+                    {% if current_stage != 2 %}
+                        <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon">
+                    {% else %}
+                        2. 
+                    {% endif %}
+                    Получаемая(-ые) компетенция (-ии) и/или трудовые функции
+                </h2>
+                <form action="{% url 'program_constractor' program.id %}" method="post">
+                    {% if current_stage == 2 %}
+                        <button class="btn btn-primary" name="save-stage" value="2">Завершить этап</button>
+                    {% endif %}
+                </form>
+            </div>
+            <div class="competencies-list">
+                <form class='add-activity-form' action="{% url 'program_constractor' program.id %}" method="post">
+                    <div class="form mb-3 w-25">
+                        <input type="input" class="form-control" id="AssignedQualifInput" name="name" placeholder="Вид деятельности" maxlength="350" required>
+                    </div>
+                    <button class="btn btn-outline-primary" name="add-activity">Добавить вид деятельности</button>
+                </form>
+                <table class="table">
+                    <tr class=""> 
+                        <th scope="col">Виды деятельности</th>
+                        <th scope="col">Компетенция</th>
+                        <th scope="col">Знания</th>
+                        <th scope="col">Умения</th>
+                        <th scope="col">Практический опыт</th>
+                    </tr>
+                    {% for activity in program.activities.all %}
+                        <tr>
+                            <td scope="row" rowspan="{{ activity|count_rows_activity}}">
+                                <a href="" data-bs-toggle="modal" data-bs-target="#ChangeActivityModal{{activity.id}}">
+                                    {{ activity }}
+                                </a>
+                            </td>
+                            {% for competence in activity.competencies.all %}    
+                                <tr>                
+                                    <td  rowspan="{{ competence|count_rows_competence}}">
+                                        <a href="" data-bs-toggle="modal" data-bs-target="#ChangeCompetenceModal{{competence.id}}">
+                                            {{ competence }}
+                                        </a>
+                                    </td>
+                                    {% for indicator in competence.indicators.all %}
+                                        <tr>
+                                            <td><a href="" data-bs-toggle="modal" data-bs-target="#ChangeIndicatorsModal{{indicator.id}}">{{activity.index}}.{{competence.code}}.{{indicator.index}} {{ indicator.knowledge }}</a></td>
+                                            <td>{{activity.index}}.{{competence.code}}.{{indicator.index}} {{ indicator.skill }}</td>
+                                            <td> {% if indicator.practice != "" %}{{activity.index}}.{{competence.code}}.{{indicator.index}} {{ indicator.practice }}{% else %}-{% endif %}</td>
+                                        </tr>
+                                        {% if forloop.last %}
+                                            <tr>
+                                                <td  colspan="3">
+                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#AddIndicatorsModal{{competence.id}}">Добавить знание и умение</button>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% empty %}
+                                        <td colspan="3">
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#AddIndicatorsModal{{competence.id}}">Добавить знание и умение</button>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                {% if forloop.last %}
+                                    <tr>
+                                        <td scope="row" colspan="4">
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#AddCompetenceModal{{activity.id}}">Добавить компетенцию</button>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% empty %}
+                                <td scope="row" colspan="4">
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#AddCompetenceModal{{activity.id}}">Добавить компетенцию</button>
+                                </td>
+                            {% endfor %}
+                            
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <div class="stage stage-3" data-stage="3" {% if current_stage == 3 %}style="display:block;"{%else%}style="display:none;"{%endif%}>
+            <div class="stage-hdr">
+                <h2>
+                    {% if current_stage != 3 %}
+                        <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon">
+                    {% else %}
+                        3. 
+                    {% endif %}
+                    Разработчики (составители) программы
+                </h2>
+                <form action="{% url 'program_constractor' program.id %}" method="post">
+                    {% if current_stage == 3 %}
+                        <button class="btn btn-primary" name="save-stage" value="3">Завершить этап</button>
+                    {% endif %}
+                </form>
+            </div>
+            <div class="authors-list">
+                <form class='add-activity-form' action="{% url 'program_constractor' program.id %}" method="post">
+                    <div class="select-add">
+                        <div class="form-floating mb-3 filter-selectpicker" style="gap: 10px; justify-content: flex-start;">
+                            <select class="selectpicker" title="Разработчик программы" id="AuthorInput" data-live-search="true" name="author_id" required>
+                                {%for author in authors %}  
+                                    <option value="{{author.id}}" class="field">{{author}}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="AuthorInput">Разработчик программы</label>
+                        </div>
+                        <button class="btn btn-outline-primary" name="add-author">Добавить</button>
+                        <div class="btn btn-outline-primary add-btn" data-bs-toggle="modal" data-bs-target="#AddAuthorModal">+</div>
+                    </div>
+                </form>
+                <table class="table">
+                    <tr class=""> 
+                        <th scope="col">ФИО</th>
+                        <th scope="col">Должность</th>
+                        <th scope="col">Степень</th>
+                        <th scope="col">Место работы</th>
+                        <th scope="col">Убрать?</th>
+                    </tr>
+                    {% for author in program.authors.all %}
+                        <tr>
+                            <td scope="row">{{ author.name }}</td>
+                            <td scope="row">{{ author.position }}</td>
+                            <td scope="row">{{ author.degree }}</td>
+                            <td scope="row">{{ author.place_of_work }}</td>
+                            <td>
+                                <form action="{% url 'program_constractor' program.id %}" method="post">
+                                    <input type="text" name="author_id" value="{{ author.id }}" style="display: none;">
+                                    <input type="submit" class="btn btn-outline-danger" name="remove-author" value="Убрать">
+                                </form>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td class="none-alert" colspan="4">Не добавлено ни одного разработчика</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <div class="stage stage-4" data-stage="4" {% if current_stage == 4 %}style="display:block;"{%else%}style="display:none;"{%endif%}>
+            <div class="stage-hdr">
+                <h2>
+                    {% if current_stage != 4 %}
+                        <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon">
+                    {% else %}
+                        4. 
+                    {% endif %}
+                    Учебно-тематический план
+                </h2>
+                <form action="{% url 'program_constractor' program.id %}" method="post">
+                    {% if current_stage == 4  %}
+                        <button class="btn btn-primary {% if program.duration != program.get_full_duration %}disabled{% endif %}" name="save-stage" value="4">Завершить этап</button>
+                    {% endif %}
+                </form>
+            </div>
+            <div class="ed-theme-plan">
+                <div class=action-panel>
+                    <form class='add-module-form' action="{% url 'program_constractor' program.id %}" method="post">
+                        <div class="form mb-3 w-25">
+                            <input type="input" class="form-control" id="moduleNameInput" name="name" placeholder="Название модуля" maxlength="350" required>
+                        </div>
+                        <button class="btn btn-outline-primary" name="add-module">Добавить модуль</button>
+                    </form>                   
+                </div>
+                <table class="table">
+                    <tr class=""> 
+                        <th scope="col">Модуль/Тема</th>
+                        <th scope="col" class="col-center">Форма<br>аттестации</th>
+                        <th scope="col" class="col-center">Лекции</th>
+                        <th scope="col" class="col-center">Практика/Лаборат.</th>
+                        <th scope="col" class="col-center">Консультации</th>
+                        <th scope="col" class="col-center">Самостоятельная<br>работа</th>
+                        <th scope="col" class="col-center">Итого</th>
+                    </tr>
+                    {% for module in program.modules.all %}
+                        <tr class="module-tr">
+                            <td>{{ module }}</td>
+                            <td class="col-center"></td>
+                            <td class="col-center">{{ module.get_lection_duration|default_if_none:'0' }} ак.ч.</td>
+                            <td class="col-center">{{ module.get_practice_duration|default_if_none:'0' }} ак.ч.</td>
+                            <td class="col-center">{{ module.get_consultations_duration|default_if_none:'0' }} ак.ч.</td>
+                            <td class="col-center">{{ module.get_independent_duration|default_if_none:'0' }} ак.ч.</td>
+                            <td class="col-center">{{ module.get_full_duration }} ак.ч.</td>
+                        </tr>
+                            {% for subject in module.subjects.all %}
+                                <tr>
+                                    <td>{{ subject }}</td>
+                                    <td class="col-center">{{ subject.attest_form }}</td>
+                                    <td class="col-center">{{ subject.lections_duration }} ак.ч.</td>
+                                    <td class="col-center">{{ subject.practice_duration }} ак.ч.</td>
+                                    <td class="col-center">{{ subject.consultations_duration }} ак.ч.</td>
+                                    <td class="col-center">{{ subject.independent_duration }} ак.ч.</td>
+                                    <td class="col-center">{{ subject.get_full_duration }} ак.ч.</td>
+                                </tr>
+                            {% endfor %}
+                            <tr>
+                                <td style="padding: 10px 25px;" colspan="7">
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#AddSubjectModal{{module.id}}">
+                                        Добавить тему
+                                    </button>
+                                    {% if module.attest_form is None %}
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#AddNoduleExModal{{module.id}}">
+                                            Добавить промежуточную аттестацию
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% if module.attest_form is not None %}
+                            <tr class="module-tr">
+                                <td>Промежуточная аттестация</td>
+                                <td class="col-center">{{ module.attest_form }}</td>
+                                <td class="col-center">{{ module.lections_duration }} ак.ч.</td>
+                                <td class="col-center">{{ module.practice_duration }} ак.ч.</td>
+                                <td class="col-center">{{ module.consultations_duration }} ак.ч.</td>
+                                <td class="col-center">{{ module.independent_duration }} ак.ч.</td>
+                                <td class="col-center">{{ module.get_ex_duration }} ак.ч.</td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    <tr class="plan-summary">
+                        {% if program.exam_attest_form is None %}
+                            <td>
+                                <button class="btn btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddExModal{{module.id}}">
+                                    Добавить Итоговую аттестацию
+                                </button>
+                            </td>
+                        {% else %}
+                            <td>Итоговая аттестация</td>
+                            <td class="col-center">{{ program.exam_attest_form }}</td>
+                            <td class="col-center">{{ program.exam_lections_duration }} ак.ч.</td>
+                            <td class="col-center">{{ program.exam_practice_duration }} ак.ч.</td>
+                            <td class="col-center">{{ program.exam_consultations_duration }} ак.ч.</td>
+                            <td class="col-center">{{ program.exam_independent_duration }} ак.ч.</td>
+                            <td class="col-center">{{ program.get_full_ex_duration }} ак.ч.</td>
+                        {% endif %}
+                    </tr>
+                    <tr class="plan-summary">
+                        <td colspan="2">Всего ак. часов</td>
+                        <td class="col-center">{{ program.get_lections_duration }} ак.ч.</td>
+                        <td class="col-center">{{ program.get_practice_duration }} ак.ч.</td>
+                        <td class="col-center">{{ program.get_consultations_duration }} ак.ч.</td>
+                        <td class="col-center">{{ program.get_independent_duration }} ак.ч.</td>
+                        <td class="col-center">{{ program.get_full_duration }} ак.ч.</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="stage stage-5" data-stage="5" {% if current_stage == 5 %}style="display:block;"{%else%}style="display:none;"{%endif%}>
+            <div class="stage-hdr">
+                <h2>
+                    {% if current_stage != 5 %}
+                        <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon">
+                    {% else %}
+                        5. 
+                    {% endif %}
+                    Учебно-тематический план
+                </h2>
+                <form action="{% url 'program_constractor' program.id %}" method="post">
+                    {% if current_stage == 5 %}
+                        <button class="btn btn-primary" name="save-stage" value="5">Завершить этап</button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+        <div class="stage stage-6" data-stage="6" {% if current_stage == 6 %}style="display:block;"{%else%}style="display:none;"{%endif%}>
+            <div class="stage-hdr">
+                <h2>
+                    {% if current_stage != 6 %}
+                        <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon">
+                    {% else %}
+                        5. 
+                    {% endif %}
+                    Требования к материально-техническому обеспечению
+                </h2>
+                <form action="{% url 'program_constractor' program.id %}" method="post">
+                    {% if current_stage == 6 %}
+                        <button class="btn btn-primary" name="save-stage" value="6">Завершить этап</button>
+                    {% endif %}
+                </form>
+            </div>
+            <div>
+                <table class="table">
+                    <tr class=""> 
+                        <th scope="col">Виды деятельности</th>
+                        <th scope="col">Компетенция</th>
+                        <th scope="col">Материально-техническое обеспечение,<br>необходимое для освоения ПК</th>
+                    </tr>
+                    {% for activity in program.activities.all %}
+                        <tr>
+                            <td scope="row" rowspan="{{ activity|count_rows_activity:True}}">
+                                {{ activity }}
+                            </td>
+                            {% for competence in activity.competencies.all %}    
+                                <tr>                
+                                    <td rowspan="{{ competence.equipment.all.count|add:2}}">
+                                        {{ competence }}
+                                    </td>
+                                </tr>
+                                {% for equipment in competence.equipment.all %}
+                                    <tr>
+                                        <td>{{equipment.name}}</td>
+                                    </tr>
+                                {% endfor %}
+                                <tr><td><button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#AddEquipmentModal{{competence.id}}">Добавить МТО</button></td></tr>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <div class="stage stage-7" data-stage="7" {% if current_stage == 7 %}style="display:block;"{%else%}style="display:none;"{%endif%}>
+            <div class="stage-hdr">
+                <h2>
+                    {% if current_stage != 7 %}
+                        <img class="check-img" src="{% static 'education_centers/img/check.png' %}" alt="check-icon">
+                    {% else %}
+                        7. 
+                    {% endif %}
+                    Требования к информационному и учебно-методическому обеспечению
+                </h2>
+                <form action="{% url 'program_constractor' program.id %}" method="post">
+                    {% comment %} {% if current_stage == 7 %}
+                        <button class="btn btn-primary" name="save-stage" value="7">Завершить этап</button>
+                    {% endif %} {% endcomment %}
+                </form>
+            </div>
+            <div>
+                <div class=action-panel>
+                    <form class='add-module-form' action="{% url 'program_constractor' program.id %}" method="post">
+                        <div class="form mb-3 w-25">
+                            <input type="input" class="form-control" id="moduleNameInput" name="name" placeholder="Название" maxlength="350" required>
+                        </div>
+                        <div class="form-floating mb-3 filter-selectpicker" style="gap: 10px; justify-content: flex-start;">
+                            <select class="selectpicker" title="Тип документа" id="AuthorInput" data-live-search="true" name="doc_type" required>
+                                <option value="LAW" class="field">Нормативные правовые акты, иная документация</option>
+                                <option value="MAIN" class="field">Основная литература</option>
+                                <option value="ADD" class="field">Дополнительная литература</option>
+                                <option value="INT" class="field">Интернет-ресурсы</option>
+                                <option value="LIB" class="field">Электронно-библиотечная система</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-outline-primary" name="add-doc">Добавить документ</button>
+                    </form>                   
+                </div>
+                <table class="table">
+                    <tr class=""> 
+                        <th scope="col">Документ</th>
+                        <th scope="col">Типология</th>
+                    </tr>
+                    {% for doc in program.documentation.all %}
+                        <tr>
+                            <td>{{ doc.name }}</td>
+                            <td>{{ doc.get_doc_type_display }}</td>
+                        </tr>
+                    {% empty %}
+                    <tr>
+                        <td class="none-alert" colspan="2">Не добавлено ни одного разработчика</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
