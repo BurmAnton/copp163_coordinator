@@ -1,0 +1,141 @@
+body
+    background-color: #f2f2f28a
+    h2
+        font-size: 24px
+    h3
+        font-size: 20px
+        padding-left: 10px
+        margin: 0
+    .add-subject-modal
+        textarea
+            margin-bottom: 10px
+.page-hdr
+    text-align: center
+    padding-top: 25px   
+    margin-bottom: 30px   
+    
+.stages
+    display: flex
+    flex-direction: column
+    align-items: center
+    row-gap: 15px
+    padding-bottom: 50px
+    width: 85%
+    margin: auto
+    .tabs-panel
+        width: 100%
+        display: flex
+        justify-content: space-between
+        lex-wrap: wrap
+        .tabs
+            display: flex
+            justify-content: flex-start
+            gap: 12px
+        .stage-btn
+            display: flex
+            justify-content: center
+            align-items: center
+            min-width: 170px
+            height: 45px
+            font-size: 18px
+        .disabled
+            background-color: #0000001f
+        .btn-primary
+            font-weight: 500
+        .btn-outline-primary
+            border: 0
+            background-color: white
+            box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078)
+            &:hover
+                background-color: #394959 !important
+                color: white !important
+    .stage
+        width: 100%
+        border-radius: 12px
+        background-color: white
+        box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078)
+        padding: 25px 50px 25px 50px
+        input.disabled
+            background-color: #f2f2f28a
+        .stage-hdr
+            display: flex
+            justify-content: space-between
+            align-items: flex-start
+            margin-bottom: 15px
+            .check-img
+                width: 35px
+                margin-bottom: 4px
+    .stage-1, .stage-3
+        .form-floating
+            .dropdown-toggle
+                height: 55px !important
+                border: 1px solid #ced4da !important
+                background-color: white !important
+                .filter-option
+                    padding-top: 15px
+            label
+                font-size: 14px
+                opacity: 0.9
+                transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem)
+        .dropdown-menu
+            width: 80%
+        .select-add
+            display: flex
+            align-items: flex-start
+            justify-content: space-between
+            .filter-selectpicker
+                width: Calc(100% - 60px)
+            .add-btn
+                font-size: 27px
+                width: 55px
+                font-weight: 600
+                border: 1px solid #ced4da !important
+    .stage-3
+        .select-add
+            justify-content: flex-start
+            gap: 10px
+            .bootstrap-select
+                width: 100%
+            .filter-selectpicker
+                width: 350px !important
+            button
+                height: 55px
+                min-width: 200px
+                border: 1px solid #ced4da !important
+    .stage-4
+        .module-tr td
+            font-weight: 400 !important
+        .plan-summary td
+            font-weight: 500 !important
+    .add-activity-form, .add-module-form
+        display: flex
+        justify-content: flex-start
+        align-items: flex-start
+        gap: 10px
+    table
+        th
+            color: #394959
+            font-weight: 400 !important
+            font-size: 16px
+            line-height: 20px
+            border-top: 0
+            border-bottom: 2px solid #394959
+            vertical-align: middle
+        td
+            color: #394959
+            font-weight: 300 !important
+            max-width: 250px
+            word-wrap: break-word
+            vertical-align: middle
+        .col-center
+            text-align: center
+            justify-content: center
+        .none-alert
+            text-align: center
+            font-weight: 300
+            font-size: 20px
+    .note
+        font-size: 12px
+        margin-top: 5px
+        span
+            color: #ff0000

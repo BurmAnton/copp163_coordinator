@@ -6,6 +6,7 @@ urlpatterns = [
     path('',views.index, name='index'),
     #Import
     path('import/flow/', views.import_flow, name='import_flow'),
+    path('import/profstandarts/', views.import_profstandarts, name='import_profstandarts'),
     #Auth
     path('login/', views.login, name="login"),
     path('logout/', views.logout, name="logout"),
@@ -36,4 +37,7 @@ urlpatterns = [
         views.flow_appls_dashboard, 
         name="flow_appls_dashboard"
     ),
+    #IRPO
+    path('irpo/programs/<int:ed_center_id>', views.irpo_programs, name="irpo_programs"),
+    path('irpo/programs/constractor/<int:program_id>', views.program_constractor, name="program_constractor")
 ]

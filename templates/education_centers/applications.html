@@ -146,6 +146,7 @@
                     {% endif %}
                 {% else %}
                     <th scope="col">Программы: {{programs_count}}</th>
+                    <th scope="col">Конструктор</th>
                 {% endif %}
             </tr>
             {%for center in centers_project_year %}
@@ -229,6 +230,11 @@
                     {% endif %}
                 {%else %}
                 <td>{{center|count_programs}}</td>
+                <td>
+                    <a href="{% url 'irpo_programs' center.ed_center.id %}" target="_blank">
+                        ссылка
+                    </a>
+                </td>
                 {% endif %}
                 </tr>
             {% endfor %}

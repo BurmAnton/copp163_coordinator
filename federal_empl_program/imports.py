@@ -12,7 +12,7 @@ from education_centers.models import (Competence, EducationCenter,
 from users.models import User
 
 from .models import (Application, CitizenCategory, Contract, EducationCenterProjectYear,
-                     FlowStatus, Group, ProjectYear)
+                     FlowStatus, Group, ProfField, Profstandart, ProjectYear)
 
 CONTR_TYPE_CHOICES = {
      "Трёхсторонний с работодателем": 'THR',
@@ -67,6 +67,36 @@ def load_worksheet_dict(sheet, fields_names_set):
                 except (ValueError, TypeError): pass
                 sheet_dict[fields_names_set[col]].append(cell_value)
     return sheet_dict
+
+def profstandarts(form):
+    try: sheet = get_sheet(form)
+    except IndexError: return ['Error', 'IndexError']
+
+    #Требуемые поля таблицы
+    fields_names = {
+        "Код профессионального стандарта",
+        "Область профессиональной деятельности",
+        "Вид профессиональной деятельности",
+        "Наименование профессионального стандарта"
+    }
+    cheak_col_names = cheak_col_match(sheet, fields_names)
+    if cheak_col_names[0] != True:
+        return cheak_col_names
+
+    sheet = load_worksheet_dict(sheet, cheak_col_names[1])
+    for row in range(len(sheet['Код профессионального стандарта'])):
+        code = sheet["Код профессионального стандарта"][row]
+        code_field, code_standart = code.split('.')
+        #ProfField
+        prof_field, _ = ProfField.objects.get_or_create(code=code_field)
+        prof_field.name = sheet["Область профессиональной деятельности"][row]
+        prof_field.save()
+        #Profstandart
+        standart, _ = Profstandart.objects.get_or_create(prof_field=prof_field, code=code_standart)
+        standart.name = sheet["Наименование профессионального стандарта"][row]
+        standart.prof_activity_type = sheet["Вид профессиональной деятельности"][row]
+        standart.save()
+    return ['OK',]
 
 
 def import_applications(form, year):
