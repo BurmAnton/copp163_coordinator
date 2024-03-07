@@ -962,7 +962,7 @@ class IrpoProgram(models.Model):
         for module in self.modules.all():
             if module.get_practice_duration() is not None:
                 sum_duration += module.get_practice_duration()
-        sum_duration += module.practice_duration
+            sum_duration += module.practice_duration
         return sum_duration
     
     def get_consultations_duration(self):
