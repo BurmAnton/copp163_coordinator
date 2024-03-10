@@ -23,18 +23,14 @@ def filter_docs(docs, doc_type):
     return docs.filter(doc_type=doc_type)
 
 @register.filter
-def count_rows_activity(activity, equipment=False):
+def count_rows_activity(activity):
     rows = activity.competencies.all().count() + 2
-    if equipment:
-        for competency in activity.competencies.all():
-            equipments = competency.equipment.all().count()
-            if equipments != 0:
-                rows += equipments
-    else:
-        for competency in activity.competencies.all():
-            indicators = competency.indicators.all().count()
-            if indicators != 0:
-                rows += indicators + 1
+    if activity.competencies.all().count() == 0:
+        rows = 1
+    for competency in activity.competencies.all():
+        indicators = competency.indicators.all().count()
+        if indicators != 0:
+            rows += indicators + 1
     return rows
 
 @register.filter

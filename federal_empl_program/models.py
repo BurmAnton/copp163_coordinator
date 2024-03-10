@@ -1058,14 +1058,12 @@ class ActivityCompetenceIndicators(models.Model):
 
 
 class ActivityCompetenceEquipment(models.Model):
-    name = models.CharField("Наименование", null=False, blank=False, max_length=350)
-    competence = models.ForeignKey(
+    name = models.TextField("Наименование", null=False, blank=False)
+    competencies = models.ManyToManyField(
         ActivityCompetence,
         verbose_name="Профстандарты",
-        related_name="equipment",
-        on_delete=CASCADE,
-        blank=False,
-        null=False
+        related_name="equipments",
+        blank=False
     )
 
     class Meta:
@@ -1073,7 +1071,7 @@ class ActivityCompetenceEquipment(models.Model):
         verbose_name_plural = "МТБ"
 
     def __str__(self):
-        return f'{self.name} ({self.competence})'
+        return f'{self.name}'
 
 
 class ProgramModule(models.Model):
@@ -1125,7 +1123,7 @@ class ProgramModule(models.Model):
             return 0
     
     def __str__(self):
-        return f'Модуль (Раздел) {self.index} {self.name}'
+        return f'Модуль {self.index}. {self.name}'
     
 class Subject(models.Model):
     index = models.IntegerField("Номер", null=False, blank=False)

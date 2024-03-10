@@ -64,8 +64,12 @@ def irpo_programs(request, ed_center_id):
         program = IrpoProgram.objects.get(id=program_id)
         program.delete()
 
-    programs = NetworkAgreement.objects.get(ed_center_year=ed_center_year).programs.all()
+    if request.method == 'POST':
+        return HttpResponseRedirect(reverse('irpo_programs', kwargs={'ed_center_id': ed_center_id}))
+
     irpo_programs = IrpoProgram.objects.filter(ed_center=ed_center)
+    programs = NetworkAgreement.objects.get(ed_center_year=ed_center_year).programs.filter(irpo_programs=None)
+    
 
     return render(request, 'federal_empl_program/irpo_programs.html', {
         'ed_center': ed_center,
@@ -80,8 +84,7 @@ PROGRAM_STAGES = (
     (3, 'Разработчики'),
     (4, 'Учебный план'),
     (5, 'Учебный график'),
-    (6, 'МТО'),
-    (7, 'Литература'),
+    (6, 'Литература'),
 )
 
 @csrf_exempt
@@ -112,10 +115,11 @@ def program_constractor(request, program_id):
         activity.save()
         current_stage = 2
     elif 'delete-activity' in request.POST:
-        activity = ActivityType.objects.get(id=request.POST["activity_id"])
-        activity.delete()
-        for index, activity in enumerate(program.activities.all()):
-            activity.index = index + 1
+        d_activity = ActivityType.objects.get(id=request.POST["activity_id"])
+        d_index = d_activity.index
+        d_activity.delete()
+        for activity in program.activities.filter(index__gt=d_index):
+            activity.index -1
             activity.save()
         current_stage = 2
     elif 'add-competence' in request.POST:
@@ -142,6 +146,20 @@ def program_constractor(request, program_id):
         for index, competence in enumerate(activity.competencies.all()):
             competence.code = index + 1
             competence.save()
+        current_stage = 2
+    elif 'add-equipment' in request.POST:
+        equipment = ActivityCompetenceEquipment.objects.create(
+            name=request.POST["name"],
+        )
+        equipment.competencies.add(*request.POST.getlist('competencies'))
+        equipment.save()
+        current_stage = 2
+    elif 'remove-equipment'in request.POST:
+        equipment = ActivityCompetenceEquipment.objects.get(id=request.POST["equipment_id"])
+        competence = ActivityCompetence.objects.get(id=request.POST["competence_id"])
+        equipment.competencies.remove(competence)
+        if equipment.competencies.all().count == 0:
+            equipment.delete()
         current_stage = 2
     elif 'add-indicator' in request.POST:
         competence = ActivityCompetence.objects.get(id=request.POST["competence_id"])
@@ -195,8 +213,22 @@ def program_constractor(request, program_id):
             name=request.POST["name"]
         )
         current_stage = 4
+    elif 'change-module' in request.POST:
+        module = ProgramModule.objects.get(id=request.POST["module_id"])
+        module.name = request.POST["name"]
+        module.save()
+        current_stage = 4
+    elif 'delete-module' in request.POST:
+        module = ProgramModule.objects.get(id=request.POST["module_id"])
+        start_index = module.index
+        module.delete()
+        modules = program.modules.filter(index__gt=start_index).order_by('index')
+        for index, module in enumerate(modules):
+            module.index -= 1
+            module.save()
+        current_stage = 4
     elif 'add-subject' in request.POST:
-        module=ProgramModule.objects.get(id=request.POST["module_id"])
+        module = ProgramModule.objects.get(id=request.POST["module_id"])
         Subject.objects.create(
             module=module,
             index=module.subjects.all().count() + 1,
@@ -212,13 +244,45 @@ def program_constractor(request, program_id):
             independent=request.POST["independent"],
         )
         current_stage = 4
-    elif 'add-module-ex' in request.POST:
+    elif 'change-subject' in request.POST:
+        module = Subject.objects.get(id=request.POST["subject_id"])
+        module.name=request.POST["name"]
+        module.attest_form=request.POST["attest_form"]
+        module.lections_duration=request.POST["lections_duration"]
+        module.practice_duration=request.POST["practice_duration"]
+        module.consultations_duration=request.POST["consultations_duration"]
+        module.independent_duration=request.POST["independent_duration"]
+        module.lections=request.POST["lections"]
+        module.practice=request.POST["practice"]
+        module.consultations=request.POST["consultations"]
+        module.independent=request.POST["independent"]
+        module.save()
+        current_stage = 4
+    elif 'delete-subject' in request.POST:
+        subject = Subject.objects.get(id=request.POST["subject_id"])
+        start_index = subject.index
+        subject.delete()
+        subjects = subject.module.subjects.filter(index__gt=start_index).order_by('index')
+        for index, subject in enumerate(subjects):
+            subject.index -= 1
+            subject.save()
+        current_stage = 4
+    elif 'add-interim-ex' in request.POST:
         module = ProgramModule.objects.get(id=request.POST["module_id"])
         module.attest_form=request.POST["attest_form"]
         module.lections_duration=request.POST["lections_duration"]
         module.practice_duration=request.POST["practice_duration"]
         module.consultations_duration=request.POST["consultations_duration"]
         module.independent_duration=request.POST["independent_duration"]
+        module.save()
+        current_stage = 4
+    elif 'delete-interim-ex' in request.POST:
+        module = ProgramModule.objects.get(id=request.POST["module_id"])
+        module.attest_form=None
+        module.lections_duration=0
+        module.practice_duration=0
+        module.consultations_duration=0
+        module.independent_duration=0
         module.save()
         current_stage = 4
     elif 'add-ex' in request.POST:
@@ -229,13 +293,6 @@ def program_constractor(request, program_id):
         program.exam_independent_duration=request.POST["independent_duration"]
         program.save()
         current_stage = 4
-    elif 'add-equipment' in request.POST:
-        competence = ActivityCompetence.objects.get(id=request.POST["competence_id"])
-        ActivityCompetenceEquipment.objects.create(
-            competence=competence,
-            name=request.POST["name"],
-        )
-        current_stage = 5
     elif 'add-doc' in request.POST:
         ProgramDocumentation.objects.create(
             program=program,
@@ -248,15 +305,15 @@ def program_constractor(request, program_id):
         return HttpResponseRedirect(f"%s?s={current_stage}" % reverse(
                 'program_constractor', kwargs={'program_id': program_id}
             ))
+   
     stage_par = request.GET.get('s', '')
     if stage_par.isnumeric():
         current_stage = int(stage_par)
 
     profstandarts = Profstandart.objects.all()
     standarts = FgosStandart.objects.all()
-    authors = Author.objects.filter(ed_center=program.ed_center).exclude(irpo_programs=program).prefetch_related(
-        
-    )
+    authors = Author.objects.filter(ed_center=program.ed_center).exclude(irpo_programs=program)
+    competencies = ActivityCompetence.objects.filter(activity__in=program.activities.all())
     
     return render(request, 'federal_empl_program/program_constractor.html', {
         'program': program,
@@ -264,7 +321,8 @@ def program_constractor(request, program_id):
         'stages': PROGRAM_STAGES,
         'profstandarts': profstandarts,
         'standarts': standarts,
-        'authors': authors
+        'authors': authors,
+        'competencies': competencies
     })
 
 
