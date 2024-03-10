@@ -5,12 +5,78 @@ body h2 {
   font-size: 24px;
 }
 body h3 {
-  font-size: 20px;
-  padding-left: 10px;
+  font-size: 22px;
+  font-weight: 400;
   margin: 0;
 }
-body .add-subject-modal textarea {
+body label {
+  color: #394959;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+}
+body textarea {
   margin-bottom: 10px;
+}
+body .form-floating .dropdown-toggle {
+  height: 55px !important;
+  border: 1px solid #ced4da !important;
+  background-color: white !important;
+}
+body .form-floating .dropdown-toggle .filter-option {
+  padding-top: 15px;
+}
+body .form-floating .dropdown-menu {
+  z-index: 100;
+}
+body .form-floating label {
+  font-size: 14px;
+  opacity: 0.9;
+  transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+body .edit-btn {
+  border-radius: 30px;
+  width: 27px;
+  height: 27px;
+  display: flex;
+  padding: 5px;
+  background-color: rgba(242, 242, 242, 0.5411764706);
+}
+body .edit-btn img {
+  padding-bottom: 1px;
+  padding-left: 1px;
+}
+body .edit-btn:hover {
+  background-color: #394959;
+}
+body .edit-btn:hover img {
+  filter: brightness(0) invert(1);
+}
+body .edit-btn.active {
+  background-color: #394959 !important;
+}
+body .edit-btn.active img {
+  filter: brightness(0) invert(1);
+}
+body .delete-btn {
+  border: 0;
+  border-radius: 30px;
+  width: 27px;
+  height: 27px;
+  padding: 0;
+  margin-left: 5px;
+  background-color: rgba(255, 255, 255, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body .delete-btn img {
+  width: 19px;
+}
+body .delete-btn:hover {
+  background-color: #FA5252;
+}
+body .delete-btn:hover img {
+  filter: brightness(0) invert(1);
 }
 
 .page-hdr {
@@ -82,19 +148,6 @@ body .add-subject-modal textarea {
   width: 35px;
   margin-bottom: 4px;
 }
-.stages .stage-1 .form-floating .dropdown-toggle, .stages .stage-3 .form-floating .dropdown-toggle {
-  height: 55px !important;
-  border: 1px solid #ced4da !important;
-  background-color: white !important;
-}
-.stages .stage-1 .form-floating .dropdown-toggle .filter-option, .stages .stage-3 .form-floating .dropdown-toggle .filter-option {
-  padding-top: 15px;
-}
-.stages .stage-1 .form-floating label, .stages .stage-3 .form-floating label {
-  font-size: 14px;
-  opacity: 0.9;
-  transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
-}
 .stages .stage-1 .dropdown-menu, .stages .stage-3 .dropdown-menu {
   width: 80%;
 }
@@ -111,6 +164,18 @@ body .add-subject-modal textarea {
   width: 55px;
   font-weight: 600;
   border: 1px solid #ced4da !important;
+}
+.stages .stage-2 .equipment-list {
+  margin-top: 25px;
+}
+.stages .stage-2 .equipment-list .table-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.stages .stage-2 .equipment-list h3 {
+  margin: 0;
 }
 .stages .stage-3 .select-add {
   justify-content: flex-start;
@@ -129,6 +194,11 @@ body .add-subject-modal textarea {
 }
 .stages .stage-4 .module-tr td {
   font-weight: 400 !important;
+  height: 64px;
+}
+.stages .stage-4 .row-options {
+  display: flex;
+  width: 59px;
 }
 .stages .stage-4 .plan-summary td {
   font-weight: 500 !important;
@@ -138,6 +208,24 @@ body .add-subject-modal textarea {
   justify-content: flex-start;
   align-items: flex-start;
   gap: 10px;
+}
+.stages table {
+  border-bottom: 1px solid #dee2e6;
+}
+.stages table .sticky-top {
+  z-index: 10;
+  background-color: white !important;
+}
+.stages table .sticky-top td {
+  border: 0;
+}
+.stages table .sticky-bottom {
+  position: sticky;
+  inset-block-end: 0;
+  background-color: white;
+}
+.stages table .sticky-bottom td {
+  border-top: 2px solid #394959;
 }
 .stages table th {
   color: #394959;
@@ -149,6 +237,7 @@ body .add-subject-modal textarea {
   vertical-align: middle;
 }
 .stages table td {
+  border-top: 0;
   color: #394959;
   font-weight: 300 !important;
   max-width: 250px;

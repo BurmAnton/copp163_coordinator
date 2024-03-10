@@ -28,6 +28,7 @@ body .programs-list .programs-list-hdr {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 5px;
 }
 body .programs-list .programs-list-hdr h2 {
   margin: 0;

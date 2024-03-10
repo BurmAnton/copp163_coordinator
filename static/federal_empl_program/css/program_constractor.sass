@@ -3,12 +3,64 @@ body
     h2
         font-size: 24px
     h3
-        font-size: 20px
-        padding-left: 10px
+        font-size: 22px
+        font-weight: 400
         margin: 0
-    .add-subject-modal
-        textarea
-            margin-bottom: 10px
+    label
+        color: #394959
+        font-family: 'Roboto', sans-serif
+        font-weight: 400
+    textarea
+        margin-bottom: 10px
+    .form-floating
+        .dropdown-toggle
+            height: 55px !important
+            border: 1px solid #ced4da !important
+            background-color: white !important
+            .filter-option
+                padding-top: 15px
+        .dropdown-menu
+            z-index: 100
+        label
+            font-size: 14px
+            opacity: 0.9
+            transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem)
+    .edit-btn
+        border-radius: 30px
+        width: 27px
+        height: 27px
+        display: flex
+        padding: 5px
+        background-color: #f2f2f28a
+        img
+            padding-bottom: 1px
+            padding-left: 1px
+        
+        &:hover
+            background-color: #394959
+            img
+                filter: brightness(0) invert(1)
+    .edit-btn.active
+        background-color: #394959 !important
+        img
+            filter: brightness(0) invert(1)
+    .delete-btn
+        border: 0
+        border-radius: 30px
+        width: 27px
+        height: 27px
+        padding: 0
+        margin-left: 5px
+        background-color: #ffffff00
+        display: flex
+        align-items: center
+        justify-content: center
+        img
+            width: 19px
+        &:hover
+            background-color: #FA5252
+            img
+                filter: brightness(0) invert(1)
 .page-hdr
     text-align: center
     padding-top: 25px   
@@ -66,17 +118,6 @@ body
                 width: 35px
                 margin-bottom: 4px
     .stage-1, .stage-3
-        .form-floating
-            .dropdown-toggle
-                height: 55px !important
-                border: 1px solid #ced4da !important
-                background-color: white !important
-                .filter-option
-                    padding-top: 15px
-            label
-                font-size: 14px
-                opacity: 0.9
-                transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem)
         .dropdown-menu
             width: 80%
         .select-add
@@ -90,6 +131,16 @@ body
                 width: 55px
                 font-weight: 600
                 border: 1px solid #ced4da !important
+    .stage-2
+        .equipment-list
+            margin-top: 25px
+            .table-hdr
+                display: flex
+                justify-content: space-between
+                align-items: center
+                margin-bottom: 5px
+            h3
+                margin: 0
     .stage-3
         .select-add
             justify-content: flex-start
@@ -105,6 +156,10 @@ body
     .stage-4
         .module-tr td
             font-weight: 400 !important
+            height: 64px
+        .row-options
+            display: flex
+            width: 59px
         .plan-summary td
             font-weight: 500 !important
     .add-activity-form, .add-module-form
@@ -113,6 +168,19 @@ body
         align-items: flex-start
         gap: 10px
     table
+        border-bottom: 1px solid #dee2e6
+          
+        .sticky-top
+            z-index: 10
+            background-color: white !important
+            td
+                border: 0
+        .sticky-bottom
+            position: sticky
+            inset-block-end: 0
+            background-color: white
+            td
+                border-top: 2px solid #394959
         th
             color: #394959
             font-weight: 400 !important
@@ -122,6 +190,7 @@ body
             border-bottom: 2px solid #394959
             vertical-align: middle
         td
+            border-top: 0
             color: #394959
             font-weight: 300 !important
             max-width: 250px

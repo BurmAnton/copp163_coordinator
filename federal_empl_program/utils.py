@@ -166,17 +166,9 @@ def save_program_stage(form, program):
         else:
             stage = 3
     elif stage == "4" or stage == "5":
-        if program.status == "4" or program.status == "5":
-            program.status = "6"
-            stage = 6
-        else:
-            stage = 4
-    elif stage == "6":
-        if program.status == "6":
-            program.status = "7"
-            stage = 7
-        else:
-            stage = 6
+        program.status = "6"
+        stage = 6
+
     program.save()
     return int(stage)
         
