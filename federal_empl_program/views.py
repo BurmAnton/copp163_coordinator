@@ -19,6 +19,7 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.encoding import escape_uri_path
 from pysendpulse.pysendpulse import PySendPulse
+import unidecode
 
 from citizens.models import Citizen
 from education_centers.models import (AbilimpicsWinner, Competence,
@@ -304,10 +305,12 @@ def program_constractor(request, program_id):
             doc_type=request.POST["doc_type"]
         )
         current_stage = 6
+    elif 'delete-doc' in request.POST:
+        ProgramDocumentation.objects.get(id=request.POST["doc_id"]).delete()
     elif 'generate-program' in request.POST:
         document, fname = create_irpo_program(program)
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8')
-        response['Content-Disposition'] = f"attachment; filename={fname}.docx"
+        response['Content-Disposition'] = f"attachment; filename={unidecode.unidecode(fname)}.docx"
         document.save(response)
         return response
 
