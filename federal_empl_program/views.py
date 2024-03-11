@@ -306,7 +306,8 @@ def program_constractor(request, program_id):
         )
         current_stage = 6
     elif 'delete-doc' in request.POST:
-        ProgramDocumentation.objects.get(id=request.POST["doc_id"]).delete()
+        doc = ProgramDocumentation.objects.get(id=request.POST["doc_id"])
+        doc.delete()
     elif 'generate-program' in request.POST:
         document, fname = create_irpo_program(program)
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8')
