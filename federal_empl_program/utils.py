@@ -1,12 +1,17 @@
 import base64
 import os
 from io import BytesIO
+from django.shortcuts import get_object_or_404
 
 import matplotlib.pyplot as plt
 import numpy as np
 from openpyxl import Workbook, load_workbook
+from docx import Document as Document_compose
+from docxcompose.composer import Composer
+from docxtpl import DocxTemplate
 
-from federal_empl_program.models import FgosStandart, Profstandart
+from education_centers.models import DocumentType
+from federal_empl_program.models import EducationCenterProjectYear, FgosStandart, NetworkAgreement, Profstandart, ProjectYear
 
 
 def get_graph():
@@ -138,6 +143,7 @@ def save_program_stage(form, program):
 
         program.standart = FgosStandart.objects.get(id=form['standart'])
         program.profstandart = Profstandart.objects.get(id=form['profstandart'])
+        program.qual_level = form['qual_level']
         program.assigned_qualif = form['assigned_qualif']
         program.gen_functions = form['gen_functions']
         program.duration_days = form['duration_days']
@@ -172,4 +178,45 @@ def save_program_stage(form, program):
     program.save()
     return int(stage)
         
-        
+
+def create_irpo_program(program):
+    ed_center = program.ed_center
+    project_year = get_object_or_404(ProjectYear, year=2023)
+    center_project_year = EducationCenterProjectYear.objects.get_or_create(
+                project_year=project_year, ed_center=ed_center)[0]
+    agreement = NetworkAgreement.objects.get(
+        ed_center_year=center_project_year
+    )
+    if agreement.suffix is None or agreement.suffix == "":
+        net_number = agreement.agreement_number
+    else:
+        net_number = f'{agreement.agreement_number}{agreement.suffix}'
+
+    context = {
+        "program": program,
+        "net_number": net_number
+
+    }
+    if program.program_type == "DPOPK":
+        doc_type = get_object_or_404(DocumentType, name="Программа ДПО ПК (ИРПО)")
+    elif program.program_type == "DPOPP":   
+        doc_type = get_object_or_404(DocumentType, name="Программа ДПО ПП (ИРПО)")
+    else:
+        doc_type = get_object_or_404(DocumentType, name="Программа ПО (ИРПО)")
+
+    document = DocxTemplate(doc_type.template)
+    document.render(context)
+
+    path = f'media/programs/gen_irpo/{ed_center.id}'
+    isExist = os.path.exists(path)
+    if not isExist:
+        os.makedirs(path)
+
+    if len(program.name) > 200:
+        document_name = f'6320046206 {program.get_program_type_display()} «{program.name[:197]}...» {program.duration}ч'
+    else:
+        document_name = f'6320046206 {program.get_program_type_display()} «{program.name}» {program.duration}ч'
+    path_to_contract = f'{path}/{document_name}.docx'
+    document.save(path_to_contract)
+
+    return document, document_name

@@ -77,7 +77,11 @@ def profstandarts(form):
         "Код профессионального стандарта",
         "Область профессиональной деятельности",
         "Вид профессиональной деятельности",
-        "Наименование профессионального стандарта"
+        "Наименование профессионального стандарта",
+        "Приказ Минтруда (номер)",
+        "Приказ Минтруда (дата)",
+        "Регистрационный номер Минюста",	
+        "Дата регистрации в Минюсте"
     }
     cheak_col_names = cheak_col_match(sheet, fields_names)
     if cheak_col_names[0] != True:
@@ -95,6 +99,10 @@ def profstandarts(form):
         standart, _ = Profstandart.objects.get_or_create(prof_field=prof_field, code=code_standart)
         standart.name = sheet["Наименование профессионального стандарта"][row]
         standart.prof_activity_type = sheet["Вид профессиональной деятельности"][row]
+        standart.mintrud_order_number = sheet["Приказ Минтруда (номер)"][row]
+        standart.mintrud_order_date = sheet["Приказ Минтруда (дата)"][row]
+        standart.minust_order_date = sheet["Регистрационный номер Минюста"][row]
+        standart.minust_order_number = sheet["Дата регистрации в Минюсте"][row]
         standart.save()
     return ['OK',]
 

@@ -781,6 +781,11 @@ class Profstandart(models.Model):
     name = models.CharField("Наименование стандарта",  max_length=500, null=False, blank=False)
     prof_activity_type = models.CharField("Вид профессиональной деятельности", null=True, blank=True, max_length=600)
 
+    mintrud_order_date = models.CharField("Приказ Минтруда России (дата)",  max_length=10, null=True, blank=True)
+    mintrud_order_number = models.CharField("Приказ Минтруда России	(номер)",  max_length=5, null=True, blank=True)
+    minust_order_date = models.CharField("Приказ Минюста России (дата)",  max_length=10, null=True, blank=True)
+    minust_order_number = models.CharField("Приказ Минюста России	(номер)",  max_length=6, null=True, blank=True)
+
     class Meta:
         verbose_name = "Профстандарт"
         verbose_name_plural = "Профстандарты"
@@ -840,11 +845,11 @@ PROGRAM_TYPES = (
     ('POPK', 'ПО ПК'),
 )
 EDUCATION_FORMS = (
-    ('FLL', 'Очная'),
-    ('PRT', 'Очно-заочная'),
+    ('FLL', 'очная'),
+    ('PRT', 'очно-заочная'),
     ('PRTF', 'Заочная'),
-    ('PRTLN', 'Очно-заочная'),
-    ('FLLLN', 'Очная'),
+    ('PRTLN', 'очно-заочная'),
+    ('FLLLN', 'очная'),
 )
 PROGRAM_STATUSES = (
     ("1", 'Шаг 1. Общие сведения о программе'),
@@ -852,8 +857,7 @@ PROGRAM_STATUSES = (
     ("3", 'Шаг 3. Разработчики (составители)'),
     ("4", 'Шаг 4. Учебно-тематический план'),
     ("5", 'Шаг 5. Календарный учебный график'),
-    ("6", 'Шаг 6. Материально-техническое обеспечение'),
-    ("7", 'Шаг 7. Информационное и учебно-методическое обеспечение'),
+    ("6", 'Шаг 7. Информационное и учебно-методическое обеспечение'),
 )
 
 
@@ -954,7 +958,6 @@ class IrpoProgram(models.Model):
         for module in self.modules.all():
             if module.get_lection_duration() is not None:
                 sum_duration += module.get_lection_duration()
-            sum_duration += module.lections_duration
         return sum_duration
     
     def get_practice_duration(self):
@@ -962,7 +965,6 @@ class IrpoProgram(models.Model):
         for module in self.modules.all():
             if module.get_practice_duration() is not None:
                 sum_duration += module.get_practice_duration()
-            sum_duration += module.practice_duration
         return sum_duration
     
     def get_consultations_duration(self):
@@ -970,7 +972,6 @@ class IrpoProgram(models.Model):
         for module in self.modules.all():
             if module.get_consultations_duration() is not None:
                 sum_duration += module.get_consultations_duration()
-            sum_duration += module.consultations_duration
         return sum_duration
     
     def get_independent_duration(self):
@@ -978,7 +979,6 @@ class IrpoProgram(models.Model):
         for module in self.modules.all():
             if module.get_independent_duration() is not None:
                 sum_duration += module.get_independent_duration()
-            sum_duration += module.independent_duration
         return sum_duration
     
     def get_full_duration(self):
@@ -986,7 +986,6 @@ class IrpoProgram(models.Model):
         for module in self.modules.all():
             if module.get_full_duration() is not None:
                 sum_duration += module.get_full_duration()
-            sum_duration += module.get_ex_duration()
         return sum_duration
 
     def __str__(self):
@@ -1094,22 +1093,38 @@ class ProgramModule(models.Model):
     class Meta:
         verbose_name = "Учебный модуль"
         verbose_name_plural = "Учебные модули"
+    
+    def get_int_ex_duration(self):
+        return self.lections_duration + self.practice_duration + self.consultations_duration + self.independent_duration
 
     def get_ex_duration(self):
         return self.lections_duration + self.practice_duration + self.consultations_duration + self.independent_duration
 
     def get_lection_duration(self):
-        return self.subjects.all().aggregate(sum_duration=Sum('lections_duration'))['sum_duration']
+        duration = self.subjects.all().aggregate(sum_duration=Sum('lections_duration'))['sum_duration']
+        if duration == None:
+            return self.lections_duration
+        return duration + self.lections_duration
     
     def get_practice_duration(self):
-        return self.subjects.all().aggregate(sum_duration=Sum('practice_duration'))['sum_duration']
+        duration = self.subjects.all().aggregate(sum_duration=Sum('practice_duration'))['sum_duration']
+        if duration == None:
+            return self.practice_duration
+        return duration + self.practice_duration
     
     def get_consultations_duration(self):
-        return self.subjects.all().aggregate(sum_duration=Sum('consultations_duration'))['sum_duration']
-    
+        duration = self.subjects.all().aggregate(sum_duration=Sum('consultations_duration'))['sum_duration']
+        if duration == None:
+            return self.consultations_duration
+        return duration + self.consultations_duration
+
     def get_independent_duration(self):
-        return self.subjects.all().aggregate(sum_duration=Sum('independent_duration'))['sum_duration']
-    
+        duration = self.subjects.all().aggregate(sum_duration=Sum('independent_duration'))['sum_duration']
+        if duration == None:
+            return self.independent_duration
+        return duration + self.independent_duration
+
+
     def get_full_duration(self):
         durations = self.subjects.all().aggregate(
             lections_duration=Sum('lections_duration'),
@@ -1118,12 +1133,13 @@ class ProgramModule(models.Model):
             independent_duration=Sum('independent_duration')
         )
         try:
-            return sum(durations.values())
+            durations = sum(durations.values())
+            return durations + self.get_int_ex_duration()
         except TypeError:
             return 0
     
     def __str__(self):
-        return f'Модуль {self.index}. {self.name}'
+        return f'Модуль (Раздел) {self.index}. {self.name}'
     
 class Subject(models.Model):
     index = models.IntegerField("Номер", null=False, blank=False)
