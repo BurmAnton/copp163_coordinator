@@ -502,6 +502,13 @@
                     {% endif %}
                 {% endfor %}
             </div>
+            {% if program.status == "6"%}
+                <div>
+                    <form action="{% url 'program_constractor' program.id %}" method="post">
+                        <button class="btn btn-primary" name="generate-program">Сгенерировать программу</button>
+                    </form>
+                </div>
+            {% endif %}
         </div>
         <div class="stage stage-1" data-stage="1" {% if current_stage == 1 %}style="display:block;"{%else%}style="display:none;"{%endif%}>
             <form action="{% url 'program_constractor' program.id %}" method="post">
@@ -559,20 +566,24 @@
                 <div class="form-floating mb-3 filter-selectpicker">
                     <select class="selectpicker w-100" title="Профстандарт" data-live-search="true" id="ProfstandartInput" name="profstandart" required>
                         {% if program.profstandart != None %}
-                            <option value="{{program.profstandart.id}}" class="field" selected>{{program.profstandart}}</option>
+                            <option value="{{program.profstandart.id}}" class="field" selected>{{program.profstandart.prof_field.code}}.{{program.profstandart.code}} {{program.profstandart.name}}</option>
                         {% endif %}
                         {%for profstandart in profstandarts %}  
-                            <option value="{{profstandart.id}}" class="field">{{profstandart.code}} {{profstandart.name}}</option>
+                            <option value="{{profstandart.id}}" class="field">{{profstandart.prof_field.code}}.{{profstandart.code}} {{profstandart.name}}</option>
                         {% endfor %}
                     </select>
                     <label for="ProfstandartInput">Профстандарт</label>
                 </div>
+                <div class="form-floating mb-3" style="width: 100%; {%if program.program_type == "DPOPK" %}display: none;{% endif %}">
+                    <input type="input" class="form-control" id="QualLevelInput" name="qual_level" maxlength="20" value="{{program.qual_level|default_if_none:''}}" placeholder="" {%if program.program_type != "DPOPK" %}required{% endif %}>
+                    <label for="QualLevelInput">Уровень квалификации в соответствии с профессиональным стандартом</label>
+                </div>   
                 <div class="form-floating mb-3" {%if program.program_type == "DPOPK" %} style="display: none;"{% endif %}>
                     <input type="input" class="form-control" id="AssignedQualifInput" name="assigned_qualif" maxlength="250" value="{{ program.assigned_qualif|default_if_none:'' }}" {%if program.program_type != "DPOPK" %}required{% endif %}>
                     <label for="AssignedQualifInput">Наименование присваиваемой квалификации</label>
                 </div>
-                <div class="form-floating" style="margin-bottom: 15px;">
-                    <textarea class="form-control" name="gen_functions" style="height: 120px" id="GenFunctionsInput" required>{{program.gen_functions|default_if_none:''}}</textarea>
+                <div class="form-floating" style="margin-bottom: 15px; {%if program.program_type == "DPOPK" %}display: none;{% endif %}">
+                    <textarea class="form-control" name="gen_functions" style="height: 120px" id="GenFunctionsInput"  {%if program.program_type != "DPOPK" %}required{% endif %}>{{program.gen_functions|default_if_none:''}}</textarea>
                     <label for="GenFunctionsInput">Обобщенные трудовые функции (из раздела II выбранного профстандарта)</label>
                 </div>
                 <h3 style="margin-bottom: 15px;">Оценочные материалы</h3>
@@ -619,15 +630,19 @@
                 </form>
             </div>
             <div class="competencies-list">
-                <form class='add-activity-form' action="{% url 'program_constractor' program.id %}" method="post">
-                    <div class="form mb-3 w-25">
-                        <input type="input" class="form-control" id="AssignedQualifInput" name="name" placeholder="Вид деятельности" maxlength="350" required>
-                    </div>
-                    <button class="btn btn-outline-primary" name="add-activity">Добавить вид деятельности</button>
-                </form>
+                {%if program.program_type != "DPOPK" %}
+                    <form class='add-activity-form' action="{% url 'program_constractor' program.id %}" method="post">
+                        <div class="form mb-3 w-25">
+                            <input type="input" class="form-control" id="AssignedQualifInput" name="name" placeholder="Вид деятельности" maxlength="350" required>
+                        </div>
+                        <button class="btn btn-outline-primary" name="add-activity">Добавить вид деятельности</button>
+                    </form>
+                {% endif %}
                 <table class="table">
                     <tr class="sticky-top"> 
-                        <th scope="col">Виды деятельности</th>
+                        {%if program.program_type != "DPOPK" %}
+                            <th scope="col">Виды деятельности</th>
+                        {% endif %}
                         <th scope="col">Компетенция</th>
                         <th scope="col">Знания</th>
                         <th scope="col">Умения</th>
@@ -635,11 +650,13 @@
                     </tr>
                     {% for activity in program.activities.all %}
                         <tr>
-                            <td scope="row" rowspan="{{ activity|count_rows_activity}}">
-                                <a href="" data-bs-toggle="modal" data-bs-target="#ChangeActivityModal{{activity.id}}">
-                                    {{ activity }}
-                                </a>
-                            </td>
+                            {%if program.program_type != "DPOPK" %}
+                                <td scope="row" rowspan="{{ activity|count_rows_activity}}">
+                                    <a href="" data-bs-toggle="modal" data-bs-target="#ChangeActivityModal{{activity.id}}">
+                                        {{ activity }}
+                                    </a>
+                                </td>
+                            {% endif %}
                             {% for competence in activity.competencies.all %}    
                                 <tr>                
                                     <td  rowspan="{{ competence|count_rows_competence}}" style="border-top: 0;">

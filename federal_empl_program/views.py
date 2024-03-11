@@ -17,6 +17,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.encoding import escape_uri_path
 from pysendpulse.pysendpulse import PySendPulse
 
 from citizens.models import Citizen
@@ -33,7 +34,7 @@ from users.models import User
 
 from . import exports
 from .forms import ActChangeDataForm, ActDataForm, BillDataForm, ImportDataForm
-from .utils import get_applications_plot, get_flow_applications_plot, save_program_stage
+from .utils import create_irpo_program, get_applications_plot, get_flow_applications_plot, save_program_stage
 
 
 @login_required
@@ -89,8 +90,11 @@ PROGRAM_STAGES = (
 
 @csrf_exempt
 def program_constractor(request, program_id):
-    program = IrpoProgram.objects.prefetch_related('activities', 'modules').get(id=program_id)
+    program = IrpoProgram.objects.prefetch_related('modules').get(id=program_id)
     current_stage = int(program.status)
+    if program.program_type == "DPOPK":
+        activity, _ = ActivityType.objects.get_or_create(index=1, name='—', program=program)
+
     if 'save-stage' in request.POST:
         current_stage = save_program_stage(request.POST, program) 
     elif 'add-standart-program' in request.POST:
@@ -300,7 +304,13 @@ def program_constractor(request, program_id):
             doc_type=request.POST["doc_type"]
         )
         current_stage = 6
-    
+    elif 'generate-program' in request.POST:
+        document, fname = create_irpo_program(program)
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8')
+        response['Content-Disposition'] = f"attachment; filename={fname}.docx"
+        document.save(response)
+        return response
+
     if request.method == 'POST':
         return HttpResponseRedirect(f"%s?s={current_stage}" % reverse(
                 'program_constractor', kwargs={'program_id': program_id}
@@ -310,7 +320,7 @@ def program_constractor(request, program_id):
     if stage_par.isnumeric():
         current_stage = int(stage_par)
 
-    profstandarts = Profstandart.objects.all()
+    profstandarts = Profstandart.objects.all().select_related('prof_field')
     standarts = FgosStandart.objects.all()
     authors = Author.objects.filter(ed_center=program.ed_center).exclude(irpo_programs=program)
     competencies = ActivityCompetence.objects.filter(activity__in=program.activities.all())
