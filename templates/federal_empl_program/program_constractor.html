@@ -1016,15 +1016,24 @@
                     <tr class="sticky-top"> 
                         <th scope="col">Документ</th>
                         <th scope="col">Типология</th>
+                        <th>Удалить?</th>
                     </tr>
                     {% for doc in program.documentation.all %}
                         <tr>
                             <td>{{ doc.name }}</td>
                             <td>{{ doc.get_doc_type_display }}</td>
+                            <td style="justify-content: center;">
+                                <form action="{% url 'program_constractor' program.id %}" method="post">
+                                    <input style="display: none;" type="text" name="doc_id" value="{{ doc.id }}">
+                                    <button class=delete-btn name="delete-doc">
+                                        <img src="{% static 'federal_empl_program/img/trash-icon.png' %}" alt="delete-icon">
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     {% empty %}
                     <tr>
-                        <td class="none-alert" colspan="2">Не добавлено ни одного разработчика</td>
+                        <td class="none-alert" colspan="3">Не добавлено ни одного разработчика</td>
                     </tr>
                     {% endfor %}
                 </table>
