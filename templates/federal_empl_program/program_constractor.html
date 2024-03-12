@@ -605,38 +605,39 @@
                     <label for="QualLevelInput">Уровень квалификации в соответствии с профессиональным стандартом</label>
                 </div>   
                 <div class="form-floating mb-3" {%if program.program_type == "DPOPK" %} style="display: none;"{% endif %}>
-                    <input type="input" class="form-control" id="AssignedQualifInput" name="assigned_qualif" maxlength="250" value="{{ program.assigned_qualif|default_if_none:'' }}" {%if program.program_type != "DPOPK" %}required{% endif %}>
+                    <input type="input" class="form-control" id="AssignedQualifInput" placeholder="" value="{{ program.assigned_qualif|default_if_none:'' }}" name="assigned_qualif" maxlength="250"  {%if program.program_type != "DPOPK" %}required{% endif %}>
                     <label for="AssignedQualifInput">Наименование присваиваемой квалификации</label>
                 </div>
-                <div class="form-floating" style="margin-bottom: 15px; {%if program.program_type == "DPOPK" %}display: none;{% endif %}">
-                    <textarea class="form-control" name="gen_functions" style="height: 120px" id="GenFunctionsInput"  {%if program.program_type != "DPOPK" %}required{% endif %}>{{program.gen_functions|default_if_none:''}}</textarea>
+                <div class="form" style="margin-bottom: 15px; {%if program.program_type == "DPOPK" %}display: none;{% endif %}">
                     <label for="GenFunctionsInput">Обобщенные трудовые функции (из раздела II выбранного профстандарта)</label>
+                    <textarea class="form-control" name="gen_functions" style="height: 120px" id="GenFunctionsInput"  {%if program.program_type != "DPOPK" %}required{% endif %}>{{program.gen_functions|default_if_none:''}}</textarea>
                 </div>
+                
                 <h3 style="margin-bottom: 15px;">Оценочные материалы</h3>
-                <div class="form-floating" style="margin-bottom: 15px;">
+                <div class="form" style="margin-bottom: 15px;">
+                    <label for="GenFunctionsInput">Описание требований к проведению Текущей Аттестации, критерии оценивания</label>
                     <textarea class="form-control" name="current_control" style="height: 120px" id="GenFunctionsInput" required>{{program.current_control|default_if_none:''}}</textarea>
-                    <label for="GenFunctionsInput">Описание требований к проведению текущей аттестации, критерии оценивания</label>
                 </div>
-                <div class="form-floating" style="margin-bottom: 15px;">
+                <div class="form" style="margin-bottom: 15px;">
+                    <label for="GenFunctionsInput">Описание требований к выполнению заданий Промежуточной Аттестации, критерии оценивания</label>
                     <textarea class="form-control" name="middle_control" style="height: 120px" id="GenFunctionsInput" required>{{program.middle_control|default_if_none:''}}</textarea>
-                    <label for="GenFunctionsInput">Описание требований к выполнению заданий промежуточной аттестации, критерии оценивания</label>
                 </div>
-                <div class="form-floating" style="margin-bottom: 15px;">
+                <div class="form" style="margin-bottom: 15px;">
+                    <label for="GenFunctionsInput">Описание процедуры проведения Итоговой Аттестации</label>
                     <textarea class="form-control" name="final_control" style="height: 120px" id="GenFunctionsInput" required>{{program.final_control|default_if_none:''}}</textarea>
-                    <label for="GenFunctionsInput">Описание процедуры проведения итоговой аттестации</label>
                 </div>
-                <div class="form-floating" style="margin-bottom: 15px;">
+                <div class="form" style="margin-bottom: 15px;">
+                    <label for="GenFunctionsInput">Характеристика материалов Итоговой Аттестации (с включением требований к оформлению и представлению материалов слушателями)</label>
                     <textarea class="form-control" name="final_control_matereils" style="height: 120px" id="GenFunctionsInput" required>{{program.final_control_matereils|default_if_none:''}}</textarea>
-                    <label for="GenFunctionsInput">Характеристика материалов итоговой аттестации (с включением требований к оформлению и представлению материалов слушателями)</label>
                 </div>
-                <div class="form-floating mb-3" style="width: 100%;">
+                <div class="form" style="margin-bottom: 15px;">
+                    <label for="GenFunctionsInput">Критерии оценивания для Итоговой Аттестации (описать условия, при которых слушатель считается аттестованным)</label>
+                    <textarea class="form-control" name="final_control_criteria" style="height: 120px" id="GenFunctionsInput" required placeholder="">{{program.final_control_criteria|default_if_none:''}}</textarea>
+                </div>
+                <div class="form-floating  mb-3" style="width: 100%;">
                     <input type="input" class="form-control" id="ProgramscoreDaysInput" name="min_score" maxlength="50" value="{{program.min_score|default_if_none:''}}" placeholder="">
                     <label for="ProgramscoreDaysInput">Минимально необходимое количество баллов или оценка</label>
-                </div>   
-                <div class="form-floating" style="margin-bottom: 15px;">
-                    <textarea class="form-control" name="final_control_criteria" style="height: 120px" id="GenFunctionsInput" required placeholder="">{{program.final_control_criteria|default_if_none:''}}</textarea>
-                    <label for="GenFunctionsInput">Критерии оценивания (описать условия, при которых слушатель считается аттестованным)</label>
-                </div>
+                </div> 
              </form>           
         </div>
         <div class="stage stage-2" data-stage="2" {% if current_stage == 2 %}style="display:block;"{%else%}style="display:none;"{%endif%}>

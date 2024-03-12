@@ -28,7 +28,7 @@ body .form-floating .dropdown-toggle .filter-option {
 body .form-floating .dropdown-menu {
   z-index: 100;
 }
-body .form-floating label {
+body .filter-selectpicker label {
   font-size: 14px;
   opacity: 0.9;
   transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
