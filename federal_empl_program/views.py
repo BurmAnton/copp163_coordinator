@@ -314,7 +314,13 @@ def program_constractor(request, program_id):
         response['Content-Disposition'] = f"attachment; filename={unidecode.unidecode(fname)}.docx"
         document.save(response)
         return response
-
+    elif 'import-competencies' in request.POST:
+        form = ImportDataForm(request.POST, request.FILES)
+        if form.is_valid():
+            program.modules.all().delete()
+            imports.competencies(program, form)
+        current_stage = 4
+        
     if request.method == 'POST':
         return HttpResponseRedirect(f"%s?s={current_stage}" % reverse(
                 'program_constractor', kwargs={'program_id': program_id}
@@ -336,7 +342,8 @@ def program_constractor(request, program_id):
         'profstandarts': profstandarts,
         'standarts': standarts,
         'authors': authors,
-        'competencies': competencies
+        'competencies': competencies,
+        'form': ImportDataForm
     })
 
 

@@ -192,6 +192,14 @@ body .delete-btn:hover img {
   min-width: 200px;
   border: 1px solid #ced4da !important;
 }
+.stages .stage-4 .action-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.stages .stage-4 .action-panel .add-module-form .module-name {
+  width: 400px;
+}
 .stages .stage-4 .module-tr td {
   font-weight: 400 !important;
   height: 64px;
