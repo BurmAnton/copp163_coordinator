@@ -486,7 +486,37 @@
                 </form>
             </div>
         </div>
-    </div>    
+    </div>
+    <div class="modal fade import-modal" id="ImportModal" tabindex="-1" aria-labelledby="ImportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ImportModalLabel">Импорт учебного плана плана</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'program_constractor' program.id %}" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="alert alert-danger w-90" role="alert">
+                           В случаи импорта учебного плана текущие данные (при их наличии) на вкладке Учебный план будут удалены!
+                        </div>
+                        <div class="mb-3">
+                            {% csrf_token %}
+                            {{ form.non_field_errors }}
+                            {{ form.import_file.help_text }}
+                            {{ form.import_file.errors }}
+                            {{ form.import_file }}
+                        </div>
+                        <a href="https://docs.google.com/spreadsheets/d/1bLAVjb62rZFQ869Byx_2ACzdLg2MpgcW6J19Y6l5nMk/edit#gid=0" target="_blank" rel="noopener noreferrer">шаблон для импорта</a>
+                    </div> 
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <input type="submit" class="btn btn-primary" name="import-competencies" value="Импортировать">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <!-- !Models -->
 
     <div class="page-hdr">
@@ -810,6 +840,8 @@
                     {% endif %}
                     Учебно-тематический план
                 </h2>
+                
+                
                 <form action="{% url 'program_constractor' program.id %}" method="post">
                     {% if program.status == "4"  %}
                         <button class="btn btn-primary {% if program.duration != program.get_full_duration %}disabled{% endif %}" name="save-stage" value="4">Завершить этап</button>
@@ -817,13 +849,14 @@
                 </form>
             </div>
             <div class="ed-theme-plan">
-                <div class=action-panel>
+                <div class="action-panel">
                     <form class='add-module-form' action="{% url 'program_constractor' program.id %}" method="post">
-                        <div class="form mb-3 w-25">
+                        <div class="form mb-3 module-name">
                             <input type="input" class="form-control" id="moduleNameInput" name="name" placeholder="Название модуля" maxlength="350" required>
                         </div>
-                        <button class="btn btn-outline-primary" name="add-module">Добавить модуль</button>
-                    </form>                   
+                        <button class="btn btn-primary" name="add-module">Добавить модуль</button>
+                    </form>     
+                    <button class="btn btn-outline-primary " data-bs-toggle="modal" data-bs-target="#ImportModal">Импортировать</button>              
                 </div>
                 <table class="table" style=" border-collapse: separate; border-spacing: 0;">
                     <tr class="sticky-top"> 

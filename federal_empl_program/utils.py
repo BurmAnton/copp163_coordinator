@@ -212,8 +212,8 @@ def create_irpo_program(program):
     if not isExist:
         os.makedirs(path)
 
-    if len(program.name) > 200:
-        document_name = f'6320046206 {program.get_program_type_display()} «{program.name[:197]}...» {program.duration}ч'
+    if len(program.name) > 100:
+        document_name = f'6320046206 {program.get_program_type_display()} «{program.name[:97]}...» {program.duration}ч'
     else:
         document_name = f'6320046206 {program.get_program_type_display()} «{program.name}» {program.duration}ч'
     path_to_contract = f'{path}/{document_name}.docx'

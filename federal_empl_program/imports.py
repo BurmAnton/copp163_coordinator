@@ -12,7 +12,7 @@ from education_centers.models import (Competence, EducationCenter,
 from users.models import User
 
 from .models import (Application, CitizenCategory, Contract, EducationCenterProjectYear,
-                     FlowStatus, Group, ProfField, Profstandart, ProjectYear)
+                     FlowStatus, Group, ProfField, Profstandart, ProgramModule, ProjectYear, Subject)
 
 CONTR_TYPE_CHOICES = {
      "Трёхсторонний с работодателем": 'THR',
@@ -65,8 +65,112 @@ def load_worksheet_dict(sheet, fields_names_set):
                 cell_value = sheet.cell(row=row,column=col).value
                 try: cell_value = str(math.floor(cell_value))
                 except (ValueError, TypeError): pass
+                if cell_value is None:
+                    cell_value = ""
                 sheet_dict[fields_names_set[col]].append(cell_value)
     return sheet_dict
+
+
+def competencies(program: ProgramModule, form) -> dict:
+    try: sheet = get_sheet(form)
+    except IndexError: return ['Error', 'IndexError']
+
+    #Требуемые поля таблицы
+    fields_names = {
+        "Тема/аттестация",
+        "Модуль",
+        "Тип поля",
+        "Форма аттестации",
+        "Лекции (ак. часов)",
+        "Лекции (содержание)",
+        "Практика (ак. часов)",	
+        "Практика (содержание)",
+        "Консультации (ак. часов)",
+        "Консультации (содержание)",
+        "Сам. работа (ак. часов)",
+        "Сам. работа (содержание)"
+    }
+
+    cheak_col_names = cheak_col_match(sheet, fields_names)
+    if cheak_col_names[0] != True:
+        return cheak_col_names
+
+    sheet = load_worksheet_dict(sheet, cheak_col_names[1])
+    modules_list = create_modules(sheet, program)
+    modules_dict = { key: 0 for key in modules_list }
+    subjects = []
+
+    for row in range(len(sheet['Тип поля'])):
+        field_type = sheet["Тип поля"][row]
+        if sheet["Модуль"][row] != "":
+            module = program.modules.get(name=sheet["Модуль"][row])
+        lections_duration, practice_duration, consultations_duration, independent_duration = get_duration(sheet, row)
+        if field_type == "Тема":
+            modules_dict[module.name] += 1
+            subjects.append(
+                Subject(
+                    module=module,
+                    index=modules_dict[module.name],
+                    name=sheet["Тема/аттестация"][row],
+                    attest_form=sheet["Форма аттестации"][row],
+                    lections_duration=lections_duration,
+                    practice_duration=practice_duration,
+                    consultations_duration=consultations_duration,
+                    independent_duration=independent_duration,
+                    lections=sheet["Лекции (содержание)"][row],
+                    practice=sheet["Практика (содержание)"][row],
+                    consultations=sheet["Консультации (содержание)"][row],
+                    independent=sheet["Сам. работа (содержание)"][row],
+                )
+            )
+        elif field_type == "Промежуточная аттестация":
+            module.attest_form=sheet["Форма аттестации"][row]
+            module.lections_duration=lections_duration
+            module.practice_duration=practice_duration
+            module.consultations_duration=consultations_duration
+            module.independent_duration=independent_duration
+            module.save()
+        elif field_type == "Итоговая аттестация":
+            program.exam_attest_form=sheet["Форма аттестации"][row]
+            program.exam_lections_duration=lections_duration
+            program.exam_practice_duration=practice_duration
+            program.exam_consultations_duration=consultations_duration
+            program.exam_independent_duration=independent_duration
+            program.save()
+    
+    subjects = Subject.objects.bulk_create(subjects)
+    return ['OK',]
+
+
+def get_duration(sheet: list, row: int) -> list:
+    if sheet["Лекции (ак. часов)"][row].isnumeric():
+        lections_duration = int(sheet["Лекции (ак. часов)"][row])
+    else: lections_duration = 0
+    if sheet["Практика (ак. часов)"][row].isnumeric():
+        practice_duration = int(sheet["Практика (ак. часов)"][row])
+    else: practice_duration = 0
+    if sheet["Консультации (ак. часов)"][row].isnumeric():
+        consultations_duration = int(sheet["Консультации (ак. часов)"][row])
+    else: consultations_duration = 0
+    if sheet["Сам. работа (ак. часов)"][row].isnumeric():
+        independent_duration = int(sheet["Сам. работа (ак. часов)"][row])
+    else: independent_duration = 0
+
+    return [lections_duration, practice_duration, consultations_duration, independent_duration]
+
+
+def create_modules(sheet: list, program: ProgramModule) -> list:
+    modules = []
+    modules_names = []
+    index = 1
+    for name in sheet['Модуль']:
+        if name != "" and name not in modules_names:
+            modules_names.append(name)
+            modules.append(ProgramModule(program=program, name=name, index=index))
+            index += 1
+    modules = ProgramModule.objects.bulk_create(modules)
+    return list(modules_names)
+
 
 def profstandarts(form):
     try: sheet = get_sheet(form)
