@@ -497,7 +497,7 @@
                 <form action="{% url 'program_constractor' program.id %}" method="post" enctype="multipart/form-data">
                     <div class="modal-body">
                         <div class="alert alert-danger w-90" role="alert">
-                           В случаи импорта учебного плана текущие данные (при их наличии) на вкладке Учебный план будут удалены!
+                            После нажатия кнопки "Импортировать" текущие данные на вкладке "Учебный план" будут удалены и заменены на данные из импортируемого файла.
                         </div>
                         <div class="mb-3">
                             {% csrf_token %}
@@ -588,10 +588,6 @@
                         <label for="StandartInput">ФГОС</label>
                     </div>
                     <div class="btn btn-outline-primary add-btn" data-bs-toggle="modal" data-bs-target="#AddStandartModal">+</div>
-                </div>
-                <div class="form-floating mb-3" style="width: 100%;">
-                    <input type="number" class="form-control" id="ProgramDurationDaysInput" name="duration_days" value="{{program.duration_days}}">
-                    <label for="ProgramDurationDaysInput">Период освоения (календарных дней)</label>
                 </div>
                 <div class="form-floating mb-3 filter-selectpicker">
                     <select class="selectpicker w-100" title="Профстандарт" data-live-search="true" id="ProfstandartInput" name="profstandart" required>
