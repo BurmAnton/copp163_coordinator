@@ -141,12 +141,18 @@ def save_program_stage(form, program):
     stage = form['save-stage']
     if stage == "1":
 
+        if program.duration <= 72:
+            duration_days = 9
+        elif 72 < program.duration < 256:
+            duration_days = 18
+        else: duration_days = 32
+
         program.standart = FgosStandart.objects.get(id=form['standart'])
         program.profstandart = Profstandart.objects.get(id=form['profstandart'])
         program.qual_level = form['qual_level']
         program.assigned_qualif = form['assigned_qualif']
         program.gen_functions = form['gen_functions']
-        program.duration_days = form['duration_days']
+        program.duration_days = duration_days
         program.current_control = form['current_control']
         program.middle_control = form['middle_control']
         program.final_control = form['final_control']
