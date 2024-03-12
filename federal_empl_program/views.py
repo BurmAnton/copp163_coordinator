@@ -311,7 +311,7 @@ def program_constractor(request, program_id):
     elif 'generate-program' in request.POST:
         document, fname = create_irpo_program(program)
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document;')
-        response['Content-Disposition'] = f"attachment; filename={fname}.docx"
+        response['Content-Disposition'] = f"attachment; filename={unidecode.unidecode(fname)}.docx"
         document.save(response)
 
         return response
