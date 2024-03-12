@@ -213,10 +213,11 @@ def create_irpo_program(program):
         os.makedirs(path)
 
     if len(program.name) > 100:
-        document_name = f'6320046206 {program.get_program_type_display()} «{program.name[:97]}...» {program.duration}ч'
+        document_name = f'6320046206 {program.get_program_type_display()} {program.name[:97]}... {program.duration}'
     else:
-        document_name = f'6320046206 {program.get_program_type_display()} «{program.name}» {program.duration}ч'
+        document_name = f'6320046206 {program.get_program_type_display()} {program.name} {program.duration}'
+    document_name = document_name.replace(',', '')
     path_to_contract = f'{path}/{document_name}.docx'
     document.save(path_to_contract)
-
+    
     return document, document_name

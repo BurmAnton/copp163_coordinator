@@ -310,9 +310,10 @@ def program_constractor(request, program_id):
         doc.delete()
     elif 'generate-program' in request.POST:
         document, fname = create_irpo_program(program)
-        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8')
-        response['Content-Disposition'] = f"attachment; filename={unidecode.unidecode(fname)}.docx"
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document;')
+        response['Content-Disposition'] = f"attachment; filename={fname}.docx"
         document.save(response)
+
         return response
     elif 'import-competencies' in request.POST:
         form = ImportDataForm(request.POST, request.FILES)
