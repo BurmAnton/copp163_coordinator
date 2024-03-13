@@ -240,11 +240,10 @@ def generate_calendar_schedule(duration, program):
     day_totals = [0] * days
     schedule_dict = {}
     day = 0
+    schedule_dict['subjects'] = {}
     for module in program.modules.all():
         schedule_dict[module.id] = {'module':[0] * days}
-        schedule_dict['subjects'] = {}
         for subject in module.subjects.all():
-            breakpoint()
             schedule_dict['subjects'][subject.id] = [0] * days
             subj_duration = subject.get_full_duration()
             if day_totals[day] + subj_duration < 8:
@@ -257,18 +256,17 @@ def generate_calendar_schedule(duration, program):
                 schedule_dict['subjects'][subject.id][day] += subj_duration
                 day += 1
             else: 
-                full_subj_duration = subj_duration
-                for _ in range(math.ceil(full_subj_duration / 8)):
-                    if subj_duration > 8:
-                        day_subj = 8
-                    else:
-                        day_subj = subj_duration
-                    schedule_dict[module.id]['module'][day] += (day_subj - day_totals[day])
-                    schedule_dict['subjects'][subject.id][day] += (day_subj - day_totals[day])
-                
-                    subj_duration = subj_duration - (day_subj - day_totals[day])
-                    day_totals[day] += (day_subj - day_totals[day])
+                while subj_duration != 0:
+                    if subj_duration + day_totals[day] > 8:
+                        day_subj = 8 - day_totals[day]
+                    else: day_subj = subj_duration
+
+                    day_totals[day] += day_subj
+                    schedule_dict[module.id]['module'][day] += day_subj
+                    schedule_dict['subjects'][subject.id][day] += day_subj
+                    subj_duration -= day_subj
                     if day_totals[day] == 8: day += 1
+
         if module.attest_form is not None:
             schedule_dict[module.id]['attest'] = [0] * days
             test_duration = module.get_int_ex_duration()
@@ -282,16 +280,17 @@ def generate_calendar_schedule(duration, program):
                 schedule_dict[module.id]['attest'][day] += test_duration
                 day += 1
             else: 
-                full_test_duration = test_duration
-                for subject_day in range(math.ceil(full_test_duration / 8)):
-                    day += subject_day
-                    if test_duration > 8:
-                        day_test = 8
+                while test_duration != 0:
+                    if test_duration + day_totals[day] > 8:
+                        day_test = 8 - day_totals[day]
                     else: day_test = test_duration
-                    day_totals[day] += (day_test - day_totals[day])
-                    schedule_dict[module.id]['module'][day] += (day_test - day_totals[day])
-                    schedule_dict[module.id]['attest'][day] += (day_test - day_totals[day])
-                    test_duration -= (day_test - day_totals[day])
+
+                    day_totals[day] += day_test
+                    schedule_dict[module.id]['module'][day] += day_test
+                    schedule_dict[module.id]['attest'][day] += day_test
+                    test_duration -= day_test
+                    
+                    if day_totals[day] == 8: day += 1
     schedule_dict['attest'] = [0] * days
     f_test_duration = program.get_full_ex_duration()
     if day_totals[day] + f_test_duration < 8:
@@ -301,15 +300,16 @@ def generate_calendar_schedule(duration, program):
         day_totals[day] += f_test_duration
         schedule_dict['attest'][day] += f_test_duration
     else: 
-        full_f_test_duration = f_test_duration
-        for subject_day in range(math.ceil(full_f_test_duration / 8)):
-            day += subject_day
-            if f_test_duration > 8:
-                day_test = 8
-            else: day_test = f_test_duration
-            day_totals[day] += (day_test - day_totals[day])
-            schedule_dict['attest'][day] += (day_test - day_totals[day])
-            f_test_duration -= (day_test - day_totals[day])
+        while f_test_duration != 0:
+                if f_test_duration + day_totals[day] > 8:
+                    day_test = 8 - day_totals[day]
+                else: day_test = f_test_duration
+
+                day_totals[day] += day_test
+                schedule_dict['attest'][day] += day_test
+                f_test_duration -= day_test
+                if day_totals[day] == 8: day += 1
+
     schedule_dict['total'] = day_totals
     return schedule_dict
 
