@@ -600,13 +600,29 @@
                     </select>
                     <label for="ProfstandartInput">Профстандарт</label>
                 </div>
-                <div class="form-floating mb-3" style="width: 100%; {%if program.program_type == "DPOPK" %}display: none;{% endif %}">
-                    <input type="input" class="form-control" id="QualLevelInput" name="qual_level" maxlength="20" value="{{program.qual_level|default_if_none:''}}" placeholder="" {%if program.program_type != "DPOPK" %}required{% endif %}>
+                
+                <div class="form mb-3" style="width: 100%; {%if program.program_type == "DPOPK" %}display: none;{% endif %}">
                     <label for="QualLevelInput">Уровень квалификации в соответствии с профессиональным стандартом</label>
+                    <input type="input" class="form-control" id="QualLevelInput" name="qual_level" maxlength="20" value="{{program.qual_level|default_if_none:''}}" placeholder="" {%if program.program_type != "DPOPK" %}required{% endif %}>
+                    {% if program.program_type == "DPOPP" %}
+                        <div class="alert alert-info w-90" role="alert" style="margin-top: 5px;">
+                            Указывается в соответствии с уровнями квалификаций в целях разработки проектов профессиональных стандартов (приказ Минтруда России от 12 апреля 2013 г. № 148н).
+                        </div>
+                    {% endif %}
                 </div>   
-                <div class="form-floating mb-3" {%if program.program_type == "DPOPK" %} style="display: none;"{% endif %}>
-                    <input type="input" class="form-control" id="AssignedQualifInput" placeholder="" value="{{ program.assigned_qualif|default_if_none:'' }}" name="assigned_qualif" maxlength="250"  {%if program.program_type != "DPOPK" %}required{% endif %}>
+                
+                <div class="form mb-3" {%if program.program_type == "DPOPK" %} style="display: none;"{% endif %}>
                     <label for="AssignedQualifInput">Наименование присваиваемой квалификации</label>
+                    <input type="input" class="form-control" id="AssignedQualifInput" placeholder="" value="{{ program.assigned_qualif|default_if_none:'' }}" name="assigned_qualif" maxlength="250"  {%if program.program_type != "DPOPK" %}required{% endif %}>
+                    {% if program.program_type == "DPOPP" %}
+                        <div class="alert alert-info w-90" role="alert" style="margin-top: 5px;">
+                            При разработке программы ПП на основе профессионального стандарта наименование новой квалификации определяется наименованием соответствующего профессионального стандарта.
+                        </div>
+                    {% elif program.program_type != "DPOPK" %}
+                        <div class="alert alert-info w-90" role="alert" style="margin-top: 5px;">
+                            При разработке программы профессионального обучения на основе профессионального стандарта наименование новой квалификации определяется наименованием соответствующего профессионального стандарта (при наличии).
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="form" style="margin-bottom: 15px; {%if program.program_type == "DPOPK" %}display: none;{% endif %}">
                     <label for="GenFunctionsInput">Обобщенные трудовые функции (из раздела II выбранного профстандарта)</label>
@@ -855,6 +871,9 @@
                     </form>     
                     <button class="btn btn-outline-primary " data-bs-toggle="modal" data-bs-target="#ImportModal">Импортировать</button>              
                 </div>
+                <div class="alert alert-info w-90" role="alert">
+                    В случае прохождения промежуточной или итоговой аттестации в форме тестирования – часы заносятся в столбец "Сам. работа"; в случае прохождения промежуточной или итоговой аттестации в форме защиты проектной работы – часы заносятся в столбец "Практика".
+                </div>
                 <table class="table" style=" border-collapse: separate; border-spacing: 0;">
                     <tr class="sticky-top"> 
                         <th scope="col">Модуль/Тема</th>
@@ -1041,6 +1060,10 @@
                         </div>
                         <button class="btn btn-outline-primary" name="add-doc">Добавить документ</button>
                     </form>                   
+                </div>
+                <div class="alert alert-info w-90" role="alert">
+                    Оформление раздела должно соответствовать требованиям ГОСТ Р 7.0.100-2018. Национальный стандарт Российской Федерации. Система стандартов по информации, библиотечному и издательскому делу. Библиографическая запись. Библиографическое описание. Общие требования и правила составления.
+                    Можете воспользоваться <a href="https://moluch.ru/snoska/" target="_blank">сервисом для оформления ссылок</a>.
                 </div>
                 <table class="table">
                     <tr class="sticky-top"> 
