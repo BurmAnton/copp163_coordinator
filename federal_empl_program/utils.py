@@ -311,7 +311,7 @@ def generate_calendar_schedule(duration, program):
 def copy_program_content(program_to, program_from):
     program_to.assigned_qualif = program_from.assigned_qualif
     program_to.duration_days = math.ceil(program_to.duration / 8)
-    program_to.status = "6"
+    program_to.status = "1"
     program_to.gen_functions = program_from.gen_functions
     program_to.current_control = program_from.middle_control
     program_to.final_control = program_from.final_control
