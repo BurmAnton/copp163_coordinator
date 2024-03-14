@@ -784,7 +784,7 @@ class Profstandart(models.Model):
     mintrud_order_date = models.CharField("Приказ Минтруда России (дата)",  max_length=10, null=True, blank=True)
     mintrud_order_number = models.CharField("Приказ Минтруда России	(номер)",  max_length=5, null=True, blank=True)
     minust_order_date = models.CharField("Приказ Минюста России (дата)",  max_length=10, null=True, blank=True)
-    minust_order_number = models.CharField("Приказ Минюста России	(номер)",  max_length=6, null=True, blank=True)
+    minust_order_number = models.CharField("Приказ Минюста России	(номер)",  max_length=10, null=True, blank=True)
 
     class Meta:
         verbose_name = "Профстандарт"
@@ -1050,7 +1050,7 @@ class ActivityCompetenceIndicators(models.Model):
         verbose_name_plural = "Показатели (компетенции)"
 
     def __str__(self):
-        return f'{self.index} {self.name}'
+        return f'{self.index}'
 
 
 class ActivityCompetenceEquipment(models.Model):

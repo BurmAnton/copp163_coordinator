@@ -33,6 +33,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='profstandart',
             name='minust_order_number',
-            field=models.CharField(blank=True, max_length=6, null=True, verbose_name='Приказ Минюста России\t(номер)'),
+            field=models.CharField(blank=True, max_length=10, null=True, verbose_name='Приказ Минюста России\t(номер)'),
         ),
     ]
