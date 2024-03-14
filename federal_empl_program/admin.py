@@ -22,7 +22,7 @@ from users.models import Group, User
 
 from .models import (Application, CitizenApplication, CitizenCategory, ClosingDocument, Contract,
                      EdCenterEmployeePosition, EdCenterQuotaRequest,
-                     EducationCenterProjectYear, EmploymentInvoice, FlowStatus, Grant, Indicator, NetworkAgreement, ProfField,
+                     EducationCenterProjectYear, EmploymentInvoice, FlowStatus, Grant, Indicator, NetworkAgreement, ProfField, Profstandart,
                      ProgramQuotaRequest, ProjectPosition, ProjectYear,
                      QuotaRequest)
 
@@ -36,6 +36,18 @@ class ClosingDocumentAdmin(admin.ModelAdmin):
         'doc_type',
         'is_paid'
     ]
+
+@admin.register(Profstandart)
+class ClosingDocumentAdmin(admin.ModelAdmin):
+    list_display = [
+        'code',
+        'name',
+        'mintrud_order_date',
+        'mintrud_order_number',
+        'minust_order_date',
+        'minust_order_number'
+    ]
+
 
 @admin.register(Contract)
 class ContractAdmin(admin.ModelAdmin):
