@@ -201,6 +201,7 @@ def create_irpo_program(program):
 
     context = {
         "program": program,
+        "duration_days": program.duration_days,
         "net_number": net_number,
         "schedule_dict": generate_calendar_schedule(program.duration, program)
 
@@ -233,9 +234,7 @@ def create_irpo_program(program):
 
 
 def generate_calendar_schedule(duration, program):
-    if duration >= 256: days = 32
-    elif duration <= 72: days = 9
-    else: days = 18
+    days = math.ceil(duration / 8)
 
     day_totals = [0] * days
     schedule_dict = {}
