@@ -1,5 +1,6 @@
 import calendar
 import json
+import math
 import random
 import string
 from datetime import date, datetime, timedelta
@@ -35,7 +36,7 @@ from users.models import User
 
 from . import exports
 from .forms import ActChangeDataForm, ActDataForm, BillDataForm, ImportDataForm
-from .utils import create_irpo_program, get_applications_plot, get_flow_applications_plot, save_program_stage
+from .utils import copy_program_content, create_irpo_program, get_applications_plot, get_flow_applications_plot, save_program_stage
 
 
 @login_required
@@ -52,19 +53,24 @@ def irpo_programs(request, ed_center_id):
     if 'add-irpo-program' in request.POST:
         program_id = request.POST["program_id"]
         program = EducationProgram.objects.get(id=program_id)
+        duration_days = math.ceil(program.duration / 8)
         irpo_program = IrpoProgram.objects.create(
             ed_program=program,
             ed_center=program.ed_center,
             name=program.program_name,
             program_type=program.program_type,
             duration=program.duration,
+            duration_days=duration_days,
             education_form=program.education_form
         )
-
     elif 'delete-program' in request.POST:
         program_id = request.POST["program_id"]
         program = IrpoProgram.objects.get(id=program_id)
         program.delete()
+    elif 'copy-program' in request.POST:
+        program_to = IrpoProgram.objects.get(id=request.POST["program_to_id"])
+        program_from = IrpoProgram.objects.get(id=request.POST["program_from_id"])
+        copy_program_content(program_to, program_from)
 
     if request.method == 'POST':
         return HttpResponseRedirect(reverse('irpo_programs', kwargs={'ed_center_id': ed_center_id}))

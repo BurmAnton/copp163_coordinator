@@ -864,7 +864,6 @@ PROGRAM_STATUSES = (
 class IrpoProgram(models.Model):
     name = models.CharField("Наименование программы", null=False, blank=False, max_length=250)
     assigned_qualif = models.CharField("Присваиваемая квалификация", null=True, blank=True, max_length=250)
-    category_name = models.CharField("Категория слушателей", null=True, blank=False, max_length=250)
     duration = models.IntegerField("Длительность (ак. часов)", blank=True)
     duration_days = models.IntegerField("Период освоения", null=True, blank=True)
 
@@ -936,8 +935,6 @@ class IrpoProgram(models.Model):
         related_name="irpo_programs",
         blank=True
     )
-
-    training_schedule = models.JSONField("Календарный учебный график", null=True, blank=True)
 
     exam_lections_duration = models.IntegerField("Лекции (ИА)", default=0)
     exam_practice_duration = models.IntegerField("Практика (ИА)", default=0)

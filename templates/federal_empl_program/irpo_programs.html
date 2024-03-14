@@ -10,6 +10,42 @@
 {% endblock %}
 
 {% block body %}
+
+    {% for program in irpo_programs %}
+        <div class="modal fade copy-program-modal" id="CopyProgramModal{{program.id}}" tabindex="-1" aria-labelledby="CopyProgramModal{{program.id}}Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="CopyProgramModal{{program.id}}Label">Копировать содержимое программы</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{% url 'irpo_programs' ed_center.id %}" method="post">
+                        <div class="modal-body">
+                            <input type="text" name="program_to_id" value="{{program.id}}" style="display: none;">
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control disabled" id="ProgramNameInput"value="{{program}} ({{ program.get_program_type_display }}, {{ program.duration }})" disabled>
+                                <label for="ProgramNameInput">Программа</label>
+                            </div>
+                            <div class="form mb-3 filter-selectpicker">
+                                <select class="selectpicker w-100" id="ProgramInput" title="Программа донор" data-live-search="true" name="program_from_id" required>
+                                    {% for program_o in irpo_programs %}
+                                        {% if program_o != program %}
+                                            <option value="{{program_o.id}}">{{program_o}} ({{ program_o.get_program_type_display }}, {{ program_o.duration }})</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div> 
+                        <div class="modal-footer">
+                            <div class="d-grid gap-2">
+                                <input type="submit" class="btn btn-primary" name="copy-program" value="Перенести данные">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
     <div class="modal fade irpo-program-import-modal" id="AddIrpoProgramModal" tabindex="-1" aria-labelledby="AddIrpoProgramModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -76,6 +112,9 @@
                                         <input style="display: none;" type="text" value="{{program.id}}" name='program_id'>
                                         <button class="dropdown-item" name="delete-program">Удалить</button>
                                     </form>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#CopyProgramModal{{program.id}}">Скопировать данные</button>
                                 </li>
                             </ul>
                         </div>
