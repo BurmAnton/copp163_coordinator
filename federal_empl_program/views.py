@@ -143,6 +143,17 @@ def program_constractor(request, program_id):
         competence.function_code = request.POST["function_code"]
         competence.function_name = request.POST["function_name"]
         competence.save()
+        new_activity = ActivityType.objects.get(id=request.POST["activity_id"])
+        if new_activity != competence.activity:
+            old_activity = competence.activity
+            new_activity.competencies.add(competence)
+            new_activity.save()
+            competencies = []
+            for activity in [new_activity, old_activity]:
+                for index, competence in enumerate(activity.competencies.all()):
+                    competence.code = index + 1
+                    competencies.append(competence)
+            ActivityCompetence.objects.bulk_update(competencies, ["code"])
         current_stage = 2
     elif 'delete-competence' in request.POST:
         competence = ActivityCompetence.objects.get(id=request.POST["competence_id"])

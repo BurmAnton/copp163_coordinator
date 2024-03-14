@@ -183,6 +183,18 @@
                         <form action="{% url 'program_constractor' program.id %}" method="post">
                             <div class="modal-body">
                                 <input type="input" class="form-control" name="competence_id" value="{{ competence.id }}" style="display: none;" required>
+                                <div class="form-floating mb-3 filter-selectpicker" {% if program.activities.all.count < 2 or program.program_type == "DPOPK" %}style="display: none;"{% endif %}>
+                                    <select class="selectpicker w-100" title="Профстандарт" data-live-search="true" id="CompetenceActivityInput" name="activity_id" required>
+                                        {%for activity in program.activities.all %}  
+                                            {% if competence.activity == activity %}
+                                                <option value="{{activity.id}}" class="field" selected>{{ activity }}</option>
+                                            {% else %}
+                                                <option value="{{activity.id}}" class="field">{{ activity }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                    <label for="CompetenceActivityInput">Вид деятельности</label>
+                                </div>
                                 <div class="form-floating mb-3">
                                     <input type="input" class="form-control" id="Competence{{competence.id}}ChangeInput" placeholder="" name="name" value="{{ competence.name }}" maxlength="350" required>
                                     <label for="Competence{{competence.id}}ChangeInput">Название компетенции</label>
