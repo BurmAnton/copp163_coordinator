@@ -12,7 +12,7 @@ from docxcompose.composer import Composer
 from docxtpl import DocxTemplate
 
 from education_centers.models import DocumentType
-from federal_empl_program.models import EducationCenterProjectYear, FgosStandart, NetworkAgreement, Profstandart, ProjectYear
+from federal_empl_program.models import ActivityCompetence, ActivityCompetenceIndicators, ActivityType, EducationCenterProjectYear, FgosStandart, NetworkAgreement, Profstandart, ProgramDocumentation, ProgramModule, ProjectYear, Subject
 
 
 def get_graph():
@@ -142,18 +142,13 @@ def save_program_stage(form, program):
     stage = form['save-stage']
     if stage == "1":
 
-        if program.duration <= 72:
-            duration_days = 9
-        elif 72 < program.duration < 256:
-            duration_days = 18
-        else: duration_days = 32
+        program.duration_days = math.ceil(program.duration / 8)
 
         program.standart = FgosStandart.objects.get(id=form['standart'])
         program.profstandart = Profstandart.objects.get(id=form['profstandart'])
         program.qual_level = form['qual_level']
         program.assigned_qualif = form['assigned_qualif']
         program.gen_functions = form['gen_functions']
-        program.duration_days = duration_days
         program.current_control = form['current_control']
         program.middle_control = form['middle_control']
         program.final_control = form['final_control']
@@ -313,8 +308,66 @@ def generate_calendar_schedule(duration, program):
     return schedule_dict
 
                     
+def copy_program_content(program_to, program_from):
+    program_to.assigned_qualif = program_from.assigned_qualif
+    program_to.duration_days = math.ceil(program_to.duration / 8)
+    program_to.status = "6"
+    program_to.gen_functions = program_from.gen_functions
+    program_to.current_control = program_from.middle_control
+    program_to.final_control = program_from.final_control
+    program_to.final_control_matereils = program_from.final_control_matereils
+    program_to.final_control_criteria = program_from.final_control_criteria
+    program_to.qual_level = program_from.qual_level
+    program_to.profstandart = program_from.profstandart
+    program_to.standart = program_from.standart
+    program_to.authors.add(*program_from.authors.all())
+    program_to.exam_lections_duration = program_from.exam_lections_duration
+    program_to.exam_practice_duration = program_from.exam_practice_duration
+    program_to.exam_consultations_duration = program_from.exam_consultations_duration
+    program_to.exam_independent_duration = program_from.exam_independent_duration
+    program_to.exam_attest_form = program_from.exam_attest_form
+    program_to.min_score = program_from.min_score
+    program_to.activities.all().delete()
+    program_to.documentation.all().delete()
+    program_to.modules.all().delete()
+    program_to.save()
 
-
-
+    indicators = []
     
+    for activity in program_from.activities.all():
+        n_activity = ActivityType.objects.get(id=activity.id)
+        n_activity.program = program_to
+        n_activity.pk = None
+        n_activity.save()
+        for competence in activity.competencies.all():
+            n_competence = ActivityCompetence.objects.get(id=competence.id)
+            n_competence.activity = n_activity
+            n_competence.pk = None
+            n_competence.save()
+            n_competence.equipments.add(*competence.equipments.all())
+            n_competence.save()
+            for indicator in competence.indicators.all():
+                n_indicator = indicator
+                n_indicator.competence = n_competence
+                n_indicator.pk = None
+                indicators.append(n_indicator)
+    ActivityCompetenceIndicators.objects.bulk_create(indicators)
 
+    docs = []
+    for doc in program_from.documentation.all():
+        n_doc = doc
+        n_doc.program = program_to
+        n_doc.pk = None
+        docs.append(n_doc)
+    ProgramDocumentation.objects.bulk_create(docs)
+
+    for module in program_from.modules.all():
+        n_module = ProgramModule.objects.get(id=module.id)
+        n_module.pk = None
+        n_module.program = program_to
+        n_module.save()
+        for subject in module.subjects.all():
+            n_subject = subject
+            n_subject.pk = None
+            n_subject.module = n_module
+            n_subject.save()
