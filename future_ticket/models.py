@@ -720,13 +720,11 @@ class PartnerEvent(models.Model):
         blank=True,
         null=True
     )
-    city = models.ForeignKey(
+    cities = models.ManyToManyField(
         City,
-        verbose_name="Населённый пункт",
-        related_name="events",
-        on_delete=CASCADE,
-        blank=True,
-        null=True
+        verbose_name="Территории проведения",
+        related_name="partner_events",
+        blank=True
     )
     contact = models.CharField("Контактное лицо", max_length=250, blank=True, null=True)
     contact_phone = models.CharField("Телефон", max_length=30, blank=True, null=True)

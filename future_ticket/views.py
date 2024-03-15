@@ -481,16 +481,11 @@ def partners_events(request):
             name=request.POST["partner"].strip()
         )
         status = "PRV" if request.user.is_superuser else "CRT"
-        if request.POST["city"] != "":
-            сity = get_object_or_404(City, id=request.POST["city"])
-        else:
-            сity = None
             
         event, is_new = PartnerEvent.objects.get_or_create(
             name=request.POST["name"].strip(),
             partner=partner,
             status=status,
-            city=сity,
             period=request.POST["period"].strip(),
             signup_link=request.POST["signup_link"].strip(),
             contact=request.POST["contact"].strip(),
@@ -499,18 +494,20 @@ def partners_events(request):
             description=request.POST["description"],
             instruction=request.POST["instruction"]
         )
+        event.cities.add(*request.POST.getlist('cities'))
+        event.save()
         if is_new == False:
             return HttpResponseRedirect(reverse("partners_events"))
         message = "EventAddedSuccessfully"
     events = PartnerEvent.objects.filter(status='PRV')
     cities = City.objects.all()
-    filter_cities = cities.exclude(events=None)
+    filter_cities = cities.exclude(partner_events=None)
 
     chosen_cities = None
     if 'filter-events' in request.POST:
         chosen_cities = request.POST.getlist('cities')
         if len(chosen_cities) != 0:
-            events = events.filter(city__name__in=chosen_cities)
+            events = events.filter(cities__name__in=chosen_cities).distinct()
         else:
             chosen_cities = None
 
