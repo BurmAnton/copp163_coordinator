@@ -74,3 +74,18 @@ function check_file_extention(file, valid_extentions){
     }
     return valid_extentions.some(ext => file.value.includes(ext))
 }
+
+
+
+function validateFile(fileInput) {
+    var files = fileInput.files;
+    if (files.length === 0) {
+        return;
+    }
+
+    var fileName = files[0].name;
+    if (fileName.length > 200) {
+        alert('Имя файла превышает максимально допустимую длинну!');
+        fileInput.value = null;
+    }
+}
