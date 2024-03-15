@@ -194,7 +194,6 @@ class PartnerEventAdmin(admin.ModelAdmin):
     list_display = [
         'name', 
         'get_partner',
-        'city',
         'contact', 
         'contact_phone', 
         'contact_email',
