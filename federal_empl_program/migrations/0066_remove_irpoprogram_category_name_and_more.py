@@ -10,5 +10,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-
+        migrations.RemoveField(
+            model_name='irpoprogram',
+            name='category_name',
+        ),
+        migrations.RemoveField(
+            model_name='irpoprogram',
+            name='training_schedule',
+        ),
     ]
