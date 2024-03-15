@@ -85,7 +85,7 @@ function validateFile(fileInput) {
 
     var fileName = files[0].name;
     if (fileName.length > 200) {
-        alert('Имя файла превышает максимально допустимую длинну!');
+        alert('Имя файла превышает максимально допустимую длинну (200 символов)!');
         fileInput.value = null;
     }
 }
