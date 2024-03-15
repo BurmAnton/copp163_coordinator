@@ -3,7 +3,7 @@
 {% load ticket_extras %}
 {% load ed_centers_extras %}
 
-{% block title %}Управление мероприятиями{% endblock %}
+{% block title %}Партнёрские проекты/программы (профминимума){% endblock %}
 {% block style %}
     <link href="{% static 'future_ticket/css/partners_events.css' %}" rel="stylesheet">
 {% endblock %}
@@ -18,14 +18,14 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="#AddEventModalLabel">Добавить мероприятие</h5>
+                        <h5 class="modal-title" id="#AddEventModalLabel">Добавить проект/программу</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form action="{% url 'partners_events' %}" method="post" enctype="multipart/form-data">
                         <div class="modal-body">
                             <div class="form-floating mb-3">
                                 <input type="input" class="form-control" id="EventName" name="name" placeholder="Название" maxlength="250" required>
-                                <label for="EventName" class="form-label required-field">Название мероприятия<span>*</span></label>
+                                <label for="EventName" class="form-label required-field">Название проекта/программы<span>*</span></label>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="input" class="form-control" id="EventPartner" name="partner" placeholder="Организация" maxlength="250" required>
@@ -57,12 +57,12 @@
                                 <label for="ContactPhone" class="form-label required-field">Контактный телефон<span>*</span></label>
                             </div>
                             <div class="">
-                                <label for="EventDescription" class="form-label required-field">Описание мероприятия<span>*</span></label>
-                                <textarea class="form-control" placeholder="Описание мероприятия, адрес, какие ограничения по колву участников и тп" id="EventDescription" name="description" style="height: 100px; margin-bottom: 15px;" required></textarea>
+                                <label for="EventDescription" class="form-label required-field">Описание проекта/программы<span>*</span></label>
+                                <textarea class="form-control" placeholder="Описание проекта/программы, адрес, какие ограничения по колву участников и тп" id="EventDescription" name="description" style="height: 100px; margin-bottom: 15px;" required></textarea>
                             </div>
                             <div class="">
                                 <label for="EventInstruction" class="required-field">Инструкция для записи<span>*</span></label>
-                                <textarea class="form-control" placeholder="Как записаться на мероприятие" id="EventInstruction" name="instruction" style="height: 100px;margin-bottom: 15px;" required></textarea>
+                                <textarea class="form-control" placeholder="Как поучаствовать в проекте/программе" id="EventInstruction" name="instruction" style="height: 100px;margin-bottom: 15px;" required></textarea>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="SignupLink" name="signup_link" placeholder="Ссылка на запись" required>
@@ -94,13 +94,13 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="#AddEvent{{event.id}}ModalLabel">Описание партнёрского мероприятия</h5>
+                            <h5 class="modal-title" id="#AddEvent{{event.id}}ModalLabel">Описание партнёрского проекта/программы</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <div class="form-floating mb-3 w-100">
                                 <input type="input" class="form-control" placeholder="Название" value="{{event.name}}" readonly style="background-color: white;">
-                                <label for="EventName">Название мероприятия</label>
+                                <label for="EventName">Название проекта/программы</label>
                             </div>
                             <div class="form-floating mb-3 w-100">
                                 <input type="input" class="form-control" placeholder="Организация" value="{{event.partner}}" readonly style="background-color: white;">
@@ -132,8 +132,8 @@
                                 </div>
                             {% endif %}
                             <div class="textarea">
-                                <label for="EventDescription">Описание мероприятия</label>
-                                <textarea class="form-control" placeholder="Описание мероприятия" style="background-color: white; height: 150px; margin-bottom: 10px;" readonly>{{event.description}}</textarea>
+                                <label for="EventDescription">Описание проекта/программы</label>
+                                <textarea class="form-control" placeholder="Описание проекта/программы" style="background-color: white; height: 150px; margin-bottom: 10px;" readonly>{{event.description}}</textarea>
                             </div>
                             <div class="textarea">
                                 <label for="EventInstruction">Инструкция для записи</label>
@@ -162,10 +162,11 @@
     <!--  !Modals  -->
     
     <div class="page-hdr">
-        <h1>Каталог мероприятий профминимума</h1>
+        <h1>Каталог проектов и программ для реализации Профминимума в Самарской области 
+        </h1>
         <div>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddEventModal">
-                Добавить мероприятия
+                Добавить проект
             </button>
             {% if user.is_superuser %}
             <a class="btn btn-outline-primary" href="{% url 'admin:future_ticket_partnerevent_changelist' %}" target="_blank">
@@ -178,7 +179,7 @@
     <div id="message-bar" style="margin: auto;width: 75%;margin-bottom: 15px;margin-top: 10px;">
         {% if message == "EventAddedSuccessfully" %}
             <div class="alert alert-success w-90" role="alert">
-                Мероприятие успешно создано! {% if user.is_superuser == False %}Оно появится на странице после проверки сотрудниками АНО «ЦОПП СО».{% endif %}
+                Проект/программа успешно создано! {% if user.is_superuser == False %}Оно появится на странице после проверки сотрудниками АНО «ЦОПП СО».{% endif %}
             </div>
         {% endif %}
     </div>
@@ -239,7 +240,7 @@
                     </div>
             {% empty %}
                 <div id="none-events-msg">
-                    Партнёрских мероприятий  не найдено!
+                    Партнёрских проект/программа  не найдено!
                 </div>
             {% endfor %}
         </div>
