@@ -10,13 +10,6 @@ urlpatterns = [
     #Auth
     path('login/', views.login, name="login"),
     path('logout/', views.logout, name="logout"),
-    #Quotes
-    path(
-        'quota/<int:ed_center_id>/request', 
-        views.quota_center_request, 
-        name="quota_center_request"
-    ),
-    path('quota/request', views.quota_request, name="quota_request"),
     #Applications
     path(
         'application/citizen/', 

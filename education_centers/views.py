@@ -1124,30 +1124,6 @@ def ed_center_groups(request, ed_center):
     })
 
 @csrf_exempt
-def documents_fed(request):
-    doc_filter = None
-    if request.method == "POST":
-        doc_filter = dict()
-        doc_filter['ed_centers'] = request.POST.getlist("ed_centers")
-        doc_filter['ed_centers'] = EducationCenter.objects.filter(
-            id__in=doc_filter['ed_centers']
-        )
-        doc_filter['programs'] = request.POST.getlist("programs")
-        doc_filter['programs'] = EducationProgram.objects.filter(
-            id__in=doc_filter['programs']
-        )
-        doc_filter['start_date'] = request.POST['start_date']
-        doc_filter['end_date'] = request.POST['end_date']
-    ed_centers = EducationCenter.objects.exclude(ed_center_documents=None)
-    programs = EducationProgram.objects.all()
-
-    return render(request, "education_centers/fed-empl.html", {
-        "ed_centers": ed_centers,
-        "programs": programs,
-        "doc_filter": doc_filter
-    })
-
-@csrf_exempt
 def import_programs(request):
     form = ImportDataForm()
     message = None
