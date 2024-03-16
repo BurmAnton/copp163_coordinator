@@ -404,42 +404,47 @@ def import_profstandarts(request):
 @csrf_exempt
 def login(request):
     message = None
+    redirect = request.GET.get('next', '')
+
+
     if request.method == "POST":
         email = request.POST["email"]
         password = request.POST["password"]
+        redirect = request.POST["redirect"]
         user = auth.authenticate(email=email, password=password)
         if user is not None:
             auth.login(request, user)
         if user is None:
             message = "Неверный логин и/или пароль."
 
+    user = request.user
     if request.user.is_authenticated:
-        winner = AbilimpicsWinner.objects.filter(email=request.user.email)
-        if len(winner) > 0:
-            return HttpResponseRedirect(reverse("abilimpics"))
-        if request.user.role == 'CNT':
-            return HttpResponseRedirect(reverse(
-                "groups_list", 
-                kwargs={'year': 2023})
-            )
-        if request.user.role == 'CO':
-            ed_center_id = request.user.education_centers.first().id
-            return HttpResponseRedirect(reverse(
-                "ed_center_application", 
-                kwargs={'ed_center_id': ed_center_id})
-            )
-        return HttpResponseRedirect(reverse("admin:index"))
+        if redirect == '':
+            if len(AbilimpicsWinner.objects.filter(email=user.email)) > 0:
+                redirect = reverse("abilimpics")
+            elif user.role == 'CNT':
+                redirect = reverse("groups_list", kwargs={'year': 2023})
+            elif user.role == 'CO':
+                ed_id = user.education_centers.first().id
+                redirect = reverse("ed_center_application", kwargs={'ed_center_id': ed_id})
+            else: redirect = reverse("admin:index")
+
+        return HttpResponseRedirect(redirect)
+    
 
     return render(request, "federal_empl_program/login.html", {
         "message": message,
+        "redirect": redirect,
         "page_name": "ЦОПП СО | Авторизация"
     })
 
 @login_required
 def logout(request):
+    redirect_url = request.GET.get('redirect_url', '')
     if request.user.is_authenticated:
         auth.logout(request)
-    return HttpResponseRedirect(reverse("login"))
+    if redirect_url == '': redirect_url = reverse("login")
+    return HttpResponseRedirect(redirect_url)
 
 
 def applications_dashboard(request, year=2023):
