@@ -17,7 +17,6 @@ docxcompose==1.4.0
 django-debug-toolbar==4.1.0
 transliterate==1.10.2
 coverage==7.2.7
-djangorestframework==3.14.0
 django-admin-autocomplete-list-filter==1.0.1
 django-mathfilters==1.0.0
 mysqlclient==2.0.3

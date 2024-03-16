@@ -30,7 +30,6 @@ CELERY_TIMEZONE = 'Europe/Samara'
 INSTALLED_APPS = [
     'coverage',
     'debug_toolbar',
-    'rest_framework',
     'field_history',
     'django_admin_listfilter_dropdown',
     'users',
