@@ -93,7 +93,7 @@
                                         </a>
                                     {% endif %}
                                     <div>
-                                        <a class="logout" href="{% url 'logout' %}">
+                                        <a class="logout" href="{% url 'logout' %}?redirect_url={{request.get_full_path}}">
                                             <div class="logout-img">
                                                 <img src="{% static 'layout/img/logout-icon.png' %}" alt="logout-icon">
                                             </div>
@@ -113,7 +113,7 @@
                                         <img src="{% static 'layout/img/logo_compact.svg' %}" alt="Logo_compact" class="d-inline-block align-text-top">
                                     </div>
                                 </div>
-                                <a href="{% url 'login' %}" class="login-btn">
+                                <a href="{% url 'login' %}?next={{ request.get_full_path }}" class="login-btn">
                                     <button type="submit" class="btn btn-dark admin-button">Войти</button> 
                                 </a>
                             </div>

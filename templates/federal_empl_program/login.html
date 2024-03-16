@@ -44,7 +44,7 @@
         <!--Авторизация-->
             <div class="sign-form">
                 <form action="{% url 'login' %}" method="post">
-                    <input style="display: none;" type="input" class="form-control input-c" name="c">
+                    <input style="display: none;" type="input" class="form-control" name="redirect" value="{{redirect}}">
                     <div class="input-group mb-3">
                         <input type="email" class="form-control email-login" name="email" placeholder="Email" aria-label="Email" aria-describedby="at">
                         <span class="input-group-text" id="at">@</span>
@@ -54,8 +54,7 @@
                     </div>
                     <button style="width: 100%;" class="btn btn-primary sign-button" type="submit">Войти</button>
                     {% if message %}
-                        <div class="alert alert-danger d-flex align-items-center" role="alert">
-                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                        <div class="alert alert-danger d-flex align-items-center" role="alert" style="margin-top: 10px;">
                             <div>
                                 {{message}}
                             </div>
