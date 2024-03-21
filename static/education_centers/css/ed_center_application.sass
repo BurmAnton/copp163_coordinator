@@ -217,13 +217,45 @@ body
                     display: flex
                     justify-content: flex-end
     .quota-step
-        .profession-quota
-            display: flex
-            justify-content: flex-start
-            align-items: flex-start
-            column-gap: 15px
-            .form .dropdown
-                width: 500px !important
+        .table
+            input
+                width: 85px
+                margin-left: 15px
+                border: 0
+                text-align: center
+            border-bottom: 1px solid #dee2e6
+            .sticky-top
+                z-index: 10
+                background-color: white !important
+                td
+                    border: 0
+            .sticky-bottom
+                position: sticky
+                inset-block-end: 0
+                background-color: white
+                td
+                    font-weight: 400 !important
+                    border-top: 2px solid #3e5061
+            th
+                color: #394959
+                font-weight: 400 !important
+                font-size: 16px
+                line-height: 20px
+                border-top: 0
+                border-bottom: 2px solid #394959
+                vertical-align: middle
+            td, td input
+                border-top: 0
+                color: #394959
+                font-weight: 300 !important
+                max-width: 250px
+                word-wrap: break-word
+                vertical-align: middle
+            .month-cell
+                width: 100px
+            .col-center
+                text-align: center
+                justify-content: center
     .scan-step
         .btn-outline-primary
             margin-bottom: 15px
