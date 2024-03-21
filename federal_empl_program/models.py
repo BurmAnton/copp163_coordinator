@@ -1204,3 +1204,63 @@ class ProgramDocumentation(models.Model):
 
     def __str__(self):
         return f'{self.name} ({self.program})'
+
+
+AVAILABLE_MONTHS = (
+    ('5', 'Май'),
+    ('6', 'Июнь'),
+    ('7', 'Июль'),
+    ('8', 'Август'),
+    ('9', 'Сентябрь'),
+    ('10', 'Октябрь'),
+    ('11', 'Ноябрь'),
+)
+
+
+class ProgramPlan(models.Model):
+    program = models.OneToOneField(
+        EducationProgram,
+        verbose_name="Программа",
+        related_name="plan",
+        on_delete=CASCADE,
+        blank=False,
+        null=False
+    )
+    students_count = models.IntegerField("Планируется обучить", default=0)
+
+    class Meta:
+        verbose_name = "План обучения по программе"
+        verbose_name_plural = "Планы обучения по программам"
+
+    @property
+    def months_sum(self):
+        queryset = self.monthly_plans.all().aggregate(
+            months_sum=models.Sum('students_count'))
+        return queryset["months_sum"]
+
+    def __str__(self):
+        return f'План по {self.program}'
+    
+
+class MonthProgramPlan(models.Model):
+    plan = models.ForeignKey(
+        ProgramPlan,
+        verbose_name="Программа",
+        related_name="monthly_plans",
+        on_delete=CASCADE,
+        blank=False,
+        null=False
+    )
+    month = models.CharField(
+        max_length=5, choices=AVAILABLE_MONTHS, 
+        verbose_name='Месяц', 
+        blank=False, null=False
+    )
+    students_count = models.IntegerField("Планируется обучить", default=0)
+
+    class Meta:
+        verbose_name = "План обучения на месяц"
+        verbose_name_plural = "Планы обучения на месяц"
+
+    def __str__(self):
+        return f'План по {self.plan} ({self.month})'

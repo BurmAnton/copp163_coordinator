@@ -12,9 +12,9 @@ from django.utils.formats import date_format
 from django.views.decorators.csrf import csrf_exempt
 
 from citizens.models import School
-from federal_empl_program.models import (EdCenterEmployeePosition,
+from federal_empl_program.models import (AVAILABLE_MONTHS, EdCenterEmployeePosition,
                                          EdCenterIndicator,
-                                         EducationCenterProjectYear, Indicator, NetworkAgreement,
+                                         EducationCenterProjectYear, Indicator, MonthProgramPlan, NetworkAgreement, ProgramPlan,
                                          ProjectPosition, ProjectYear)
 from future_ticket.models import (AgeGroup, ContractorsDocumentTicket,
                                   DocumentTypeTicket, EdCenterTicketIndicator,
@@ -182,6 +182,11 @@ def get_qualified_programs(programs):
                 qualified_programs.append(program)
     return qualified_programs
 
+
+def programs_plan(request):
+    pass
+    
+
 @csrf_exempt
 def ed_center_application(request, ed_center_id):
     project = request.GET.get('p', '')
@@ -216,8 +221,7 @@ def ed_center_application(request, ed_center_id):
                 contract = contract[0]
             else: 
                 contract = generate_document_ticket(
-                    center_project_year, contract_type)
-        
+                    center_project_year, contract_type)        
     else:
         project_year = get_object_or_404(ProjectYear, year=project_year)
         center_project_year = EducationCenterProjectYear.objects.get_or_create(
@@ -872,6 +876,7 @@ def ed_center_application(request, ed_center_id):
     schools = None
     ticket_programs = None
     professions = None
+
     
     workshops = Workshop.objects.filter(education_center=ed_center
         ).exclude(name=None)
@@ -993,7 +998,33 @@ def ed_center_application(request, ed_center_id):
         net_agreement.programs.add(*request.POST.getlist('qualified_programs'))
         net_agreement.save()
         stage = 6
+    elif 'change-plan' in request.POST:
+        plans=[]
+        stage = 7
+        for program in net_agreement.programs.all():
+            for monthly_plan in program.plan.monthly_plans.all():
+                new_monthly_plan = int(request.POST[f'plan{ monthly_plan.id }'])
+                if monthly_plan.students_count != new_monthly_plan:
+                    monthly_plan.students_count = new_monthly_plan
+                    plans.append(monthly_plan)
+        MonthProgramPlan.objects.bulk_update(plans, ['students_count'])
 
+    #quotas
+    for program in net_agreement.programs.all():
+        program_plan, _ = ProgramPlan.objects.get_or_create(program=program)
+        if program_plan.monthly_plans.all().count() != 7:
+            for month in AVAILABLE_MONTHS:
+                MonthProgramPlan.objects.get_or_create(plan=program_plan, month=month[0])
+    
+    plans = ProgramPlan.objects.filter(program__in=programs)
+    monthly_plans = []
+    for month in AVAILABLE_MONTHS:
+        monthly_plans.append(
+            MonthProgramPlan.objects.filter(
+                plan__in=plans, month=month[0]
+            ).aggregate(month_sum=Sum('students_count'))['month_sum']
+        )
+    monthly_plans.append(sum(monthly_plans))
 
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
@@ -1023,7 +1054,10 @@ def ed_center_application(request, ed_center_id):
         'contract': contract,
         'net_agreement': net_agreement,
         'qualified_programs': qualified_programs,
-        'irpo_program_form': IRPOProgramForm
+        'irpo_program_form': IRPOProgramForm,
+        'plans': plans,
+        'monthly_plans': monthly_plans,
+        'months': AVAILABLE_MONTHS
     })
 
 @csrf_exempt

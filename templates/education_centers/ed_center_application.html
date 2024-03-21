@@ -1126,6 +1126,7 @@
                 <a data-step="4" class="step-btn btn {%if stage == 4%}btn-primary{%else%}btn-outline-primary{%endif%}">Кадры</a>
                 <a data-step="5" class="step-btn btn {%if stage == 5%}btn-primary{%else%}btn-outline-primary{%endif%}">МТБ</a>
                 <a data-step="6" class="step-btn btn {%if stage == 6%}btn-primary{%else%}btn-outline-primary{%endif%}">Договор</a>
+                <a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Квота</a>
                 {% if project == 'bilet' %}<a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Квоты</a>{% endif %}
                 {% if project == 'bilet' %}
                     {% if center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'DWNLD' or center_project_year.stage == 'FNSHD'%}
@@ -1895,79 +1896,46 @@
                     {% endfor %}
                 </table>
             </div>
-        <div class="quota-step step" data-step="7" {%if stage == 7%}style="display:block;"{%else%}style="display:none;"{%endif%}>
-            <div class="step-hdr" style="display: flex;flex-direction: column;">
-                {% if project == 'bilet' %}
-                    <h2>Квота</h2>
-                    
-                {% else %}
-                    <h2>Квота на июнь</h2>
-                    <p>Укажите кол-во граждан, которые соответствуют двум условиям: 
-                        <ol>
-                            <li>Готовы приступить к обучению в указанный месяц по указанной длительности программ (72, 144, 256)</li>
-                            <li>Предварительно по вашим данным подходят под категории ФП "Содействие занятости"</li>
-                        </ol>
-                    </p>
-                {% endif %}
-            </div>
+        </div>
+        <div class="quota-step step" data-step="7" {%if stage == 7%} style="display:block;"{%else%}style="display:none;"{%endif%}>
             <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
-                {% if project == 'bilet' %}
-                    {% for profession in chosen_professions %}
-                        <h3 style="padding: 0;margin-bottom: 10px;margin-top: 10px;">{{profession.name}} ({{profession.prof_enviroment__name}})</h3>
-                        <table class="table">
-                            <tr>
-                                <th scope="row">№</th>
-                                <th scope="row">Школа</th>
-                                <th scope="row">Квота</th>
-                            </tr>
-                                {% for profession in center_quota|get_profession_quota:profession %}
-                                <tr>
-                                    <td scope="row">{{ forloop.counter }}</td>
-                                    <td scope="row">{{profession.school}}</td>
-                                    <td scope="row">{{profession.value}}</td>
-                                </tr>
-                                {% empty %}
-                                <tr><td scope="row" class="none-alert" colspan="3">Не добавлено ни одной квоты</td></tr>
-                                {% endfor %}
-                            </tr>
-                        </table>
-                        <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
-                            <input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>
-                            <input type="input" style="display: none;" class="form-control" name="profession" value="{{profession.id}}" required>
-                            <div class="profession-quota">
-                                <div class="form mb-3 selectpicker school">
-                                    <select class="selectpicker school-selectpicker" title="Школа" data-live-search="true" name="school_id" required>
-                                        {% for school in schools %}
-                                            <option value="{{school.id}}">{{school.name}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="w-45 mb-3">
-                                    <input type="number" class="form-control" name="quota" placeholder="квота" required>
-                                </div>
-                                <button class="btn btn-outline-primary" name="add-school">Добавить школу</button>
-                            </div>
-                        </form>
+            <div class="step-hdr" style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <h2>Запрос квоты</h2>
+                <input class="btn btn-outline-primary" type="submit" name="change-plan" value="Сохранить квоту">
+            </div>
+                <table class="table">
+                    <thead class="sticky-top">
+                        <tr> 
+                            <th scope="col" rowspan="2">Программа</th>
+                            <th scope="col" class="col-center" colspan="{{ months|length|add:1 }}" style="border: 0;">Квота</th>
+                        </tr>
+                        <tr>
+                            {% for month in months %}
+                                <th scope="col" class="col-center">{{ month.1 }}</th>
+                            {% endfor %}
+                            <th class="col-center">Всего</th>
+                        </tr>
+                    </thead>
+                    {% for plan in plans %}
+                        <tr>
+                            <td>{{ plan.program }}</td>
+                            {% for monthly_plan in plan.monthly_plans.all %}
+                                <td class="month-cell">
+                                    <input class="col-center" type="number" name="plan{{ monthly_plan.id }}" value="{{ monthly_plan.students_count }}">
+                                </td>
+                            {% endfor %}
+                            <td class="col-center">{{ plan.months_sum }}</td>
+                        </tr>
                     {% endfor %}
-                {% else %}
-                    <div class="form-floating ed-name mb-3">
-                        <input type="number" class="form-control" id="Quota72" name="quota_72" value="{{center_quota.quota_72}}" required>
-                        <label for="Quota72">Квота 72ч</label>
-                    </div>
-                    <div class="form-floating w-45 mb-3">
-                        <input type="number" class="form-control" id="Quota144" name="quota_144" value="{{center_quota.quota_144}}" required>
-                        <label for="Quota144">Квота 144ч</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="number" class="form-control" id="Quota256" name="quota_256" value="{{center_quota.quota_256}}" required>
-                        <label for="Quota256">Квота 256ч</label>
-                    </div>
-                    {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
-                        <div class="submit">
-                            <input type="submit" class="btn btn-primary" name="set-quota" value="Сохранить">
-                        </div>
-                    {% endif %}
-                {% endif %}
+                        <tr class='sticky-bottom'>
+                            <td>Всего</td>
+                            {% for month_sum in monthly_plans %}
+                                <td class="col-center">
+                                    {{month_sum}}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                </table>
             </form>
         </div>
         {% if project == 'bilet' and center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'DWNLD'  or center_project_year.stage == 'FNSHD' %}
@@ -2043,6 +2011,5 @@
                 {% endif %}
             </div>
         {% endif %}
-    </div>
     </div>
 {% endblock %}

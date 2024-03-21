@@ -280,15 +280,54 @@ body table td {
   display: flex;
   justify-content: flex-end;
 }
-.steps .quota-step .profession-quota {
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  -moz-column-gap: 15px;
-       column-gap: 15px;
+.steps .quota-step .table {
+  border-bottom: 1px solid #dee2e6;
 }
-.steps .quota-step .profession-quota .form .dropdown {
-  width: 500px !important;
+.steps .quota-step .table input {
+  width: 85px;
+  margin-left: 15px;
+  border: 0;
+  text-align: center;
+}
+.steps .quota-step .table .sticky-top {
+  z-index: 10;
+  background-color: white !important;
+}
+.steps .quota-step .table .sticky-top td {
+  border: 0;
+}
+.steps .quota-step .table .sticky-bottom {
+  position: sticky;
+  inset-block-end: 0;
+  background-color: white;
+}
+.steps .quota-step .table .sticky-bottom td {
+  font-weight: 400 !important;
+  border-top: 2px solid #3e5061;
+}
+.steps .quota-step .table th {
+  color: #394959;
+  font-weight: 400 !important;
+  font-size: 16px;
+  line-height: 20px;
+  border-top: 0;
+  border-bottom: 2px solid #394959;
+  vertical-align: middle;
+}
+.steps .quota-step .table td, .steps .quota-step .table td input {
+  border-top: 0;
+  color: #394959;
+  font-weight: 300 !important;
+  max-width: 250px;
+  word-wrap: break-word;
+  vertical-align: middle;
+}
+.steps .quota-step .table .month-cell {
+  width: 100px;
+}
+.steps .quota-step .table .col-center {
+  text-align: center;
+  justify-content: center;
 }
 .steps .scan-step .btn-outline-primary {
   margin-bottom: 15px;
