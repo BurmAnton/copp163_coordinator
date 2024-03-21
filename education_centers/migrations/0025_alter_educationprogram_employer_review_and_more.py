@@ -14,21 +14,21 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='educationprogram',
             name='employer_review',
-            field=models.FileField(blank=True, max_length=200, null=True, upload_to=education_centers.models.EducationProgram.irpo_directory_path, verbose_name='Рецензии работодателя (pdf)'),
+            field=models.FileField(blank=True, max_length=500, null=True, upload_to=education_centers.models.EducationProgram.irpo_directory_path, verbose_name='Рецензии работодателя (pdf)'),
         ),
         migrations.AlterField(
             model_name='educationprogram',
             name='program_pdf',
-            field=models.FileField(blank=True, max_length=200, null=True, upload_to=education_centers.models.EducationProgram.irpo_directory_path, verbose_name='Программа, подписанная работодателем (pdf)'),
+            field=models.FileField(blank=True, max_length=500, null=True, upload_to=education_centers.models.EducationProgram.irpo_directory_path, verbose_name='Программа, подписанная работодателем (pdf)'),
         ),
         migrations.AlterField(
             model_name='educationprogram',
             name='program_word',
-            field=models.FileField(blank=True, max_length=200, null=True, upload_to=education_centers.models.EducationProgram.irpo_directory_path, verbose_name='Программа по шаблону ИРПО (word)'),
+            field=models.FileField(blank=True, max_length=500, null=True, upload_to=education_centers.models.EducationProgram.irpo_directory_path, verbose_name='Программа по шаблону ИРПО (word)'),
         ),
         migrations.AlterField(
             model_name='educationprogram',
             name='teacher_review',
-            field=models.FileField(blank=True, max_length=200, null=True, upload_to=education_centers.models.EducationProgram.irpo_directory_path, verbose_name='Рецензии преподавателя (pdf)'),
+            field=models.FileField(blank=True, max_length=500, null=True, upload_to=education_centers.models.EducationProgram.irpo_directory_path, verbose_name='Рецензии преподавателя (pdf)'),
         ),
     ]
