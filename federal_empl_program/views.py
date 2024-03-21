@@ -313,10 +313,7 @@ def program_constractor(request, program_id):
         current_stage = 4
     elif 'add-ex' in request.POST:
         program.exam_attest_form=request.POST["attest_form"]
-        program.exam_lections_duration=request.POST["lections_duration"]
-        program.exam_practice_duration=request.POST["practice_duration"]
-        program.exam_consultations_duration=request.POST["consultations_duration"]
-        program.exam_independent_duration=request.POST["independent_duration"]
+        program.exam_duration=request.POST["exam_duration"]
         program.save()
         current_stage = 4
     elif 'add-doc' in request.POST:

@@ -489,21 +489,10 @@
                             <label for="subjectName{{module.id}}Input">Форма итоговой аттестации</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control" id="subjectLectionDuration{{module.id}}Input" name="lections_duration" value="{{ program.exam_lections_duration }}" required>
-                            <label for="subjectLectionDuration{{module.id}}Input">Лекции (ак. часы)</label>
+                            <input type="number" class="form-control" id="subjectLectionDuration{{module.id}}Input" name="exam_duration" value="{{ program.exam_duration }}" required>
+                            <label for="subjectLectionDuration{{module.id}}Input">Длительность (ак. часы)</label>
                         </div>
-                        <div class="form-floating mb-3">
-                            <input type="number" class="form-control" id="subjectPracticeDuration{{module.id}}Input" name="practice_duration" value="{{ program.exam_practice_duration }}"  required>
-                            <label for="subjectPracticeDuration{{module.id}}Input">Практика (ак. часы)</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="number" class="form-control" id="subjectConsultationsDuration{{module.id}}Input" name="consultations_duration" value="{{ program.exam_consultations_duration }}"  required>
-                            <label for="subjectConsultationsDuration{{module.id}}Input">Консультации (ак. часы)</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="number" class="form-control" id="subjectIndependentDuration{{module.id}}Input" name="independent_duration" value="{{ program.exam_independent_duration }}"  required>
-                            <label for="subjectIndependentDuration{{module.id}}Input">Самостоятельная работа (ак. часы)</label>
-                        </div>
+
                     </div> 
                     
                     <div class="modal-footer">
@@ -1018,11 +1007,11 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="col-center">{{ program.exam_lections_duration }} ак.ч.</td>
-                                <td class="col-center">{{ program.exam_practice_duration }} ак.ч.</td>
-                                <td class="col-center">{{ program.exam_consultations_duration }} ак.ч.</td>
-                                <td class="col-center">{{ program.exam_independent_duration }} ак.ч.</td>
-                                <td class="col-center">{{ program.get_full_ex_duration }} ак.ч.</td>
+                                <td class="col-center">—</td>
+                                <td class="col-center">—</td>
+                                <td class="col-center">—</td>
+                                <td class="col-center">—</td>
+                                <td class="col-center">{{ program.exam_duration }} ак.ч.</td>
                             {% endif %}
                         </tr>
                         <tr class="sticky-bottom">

@@ -935,11 +935,8 @@ class IrpoProgram(models.Model):
         related_name="irpo_programs",
         blank=True
     )
-
-    exam_lections_duration = models.IntegerField("Лекции (ИА)", default=0)
-    exam_practice_duration = models.IntegerField("Практика (ИА)", default=0)
-    exam_consultations_duration = models.IntegerField("Консультации (ИА)", default=0)
-    exam_independent_duration = models.IntegerField("Самостоятельная работа (ИА)", default=0)
+    
+    exam_duration = models.IntegerField("длительность ИА", default=0)
     exam_attest_form = models.CharField("Форма итоговой аттестации", null=True, blank=True, max_length=100)
     
 
@@ -947,39 +944,36 @@ class IrpoProgram(models.Model):
         verbose_name = "Программа (ИРПО)"
         verbose_name_plural = "Программы (ИРПО)"
 
-    def get_full_ex_duration(self):
-        return self.exam_lections_duration + self.exam_practice_duration + self.exam_consultations_duration + self.exam_independent_duration
-    
     def get_lections_duration(self):
-        sum_duration = self.exam_lections_duration
+        sum_duration = 0
         for module in self.modules.all():
             if module.get_lection_duration() is not None:
                 sum_duration += module.get_lection_duration()
         return sum_duration
     
     def get_practice_duration(self):
-        sum_duration = self.exam_practice_duration
+        sum_duration = 0
         for module in self.modules.all():
             if module.get_practice_duration() is not None:
                 sum_duration += module.get_practice_duration()
         return sum_duration
     
     def get_consultations_duration(self):
-        sum_duration = self.exam_consultations_duration
+        sum_duration = 0
         for module in self.modules.all():
             if module.get_consultations_duration() is not None:
                 sum_duration += module.get_consultations_duration()
         return sum_duration
     
     def get_independent_duration(self):
-        sum_duration = self.exam_independent_duration
+        sum_duration = 0
         for module in self.modules.all():
             if module.get_independent_duration() is not None:
                 sum_duration += module.get_independent_duration()
         return sum_duration
     
     def get_full_duration(self):
-        sum_duration = self.get_full_ex_duration()
+        sum_duration = self.exam_duration
         for module in self.modules.all():
             if module.get_full_duration() is not None:
                 sum_duration += module.get_full_duration()
@@ -1085,7 +1079,7 @@ class ProgramModule(models.Model):
     practice_duration = models.IntegerField("Практика (ак. часы)", default=0)
     consultations_duration = models.IntegerField("Консультации (ак. часы)", default=0)
     independent_duration = models.IntegerField("Самостоятельная работа (ак. часы)", default=0)
-    
+
     attest_form = models.CharField("Форма аттестации", null=True, blank=True, max_length=100)
     exam_lections = models.TextField("Лекции (ПА)", null=True, blank=True)
     exam_practice = models.TextField("Практика (ПА)", null=True, blank=True)
@@ -1138,7 +1132,7 @@ class ProgramModule(models.Model):
             durations = sum(durations.values())
             return durations + self.get_int_ex_duration()
         except TypeError:
-            return 0
+            return 0 + self.get_int_ex_duration()
     
     def __str__(self):
         return f'Модуль (Раздел) {self.index}. {self.name}'

@@ -1024,7 +1024,10 @@ def ed_center_application(request, ed_center_id):
                 plan__in=plans, month=month[0]
             ).aggregate(month_sum=Sum('students_count'))['month_sum']
         )
-    monthly_plans.append(sum(monthly_plans))
+    try:    
+        monthly_plans.append(sum(monthly_plans))
+    except TypeError:
+        pass
 
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
