@@ -296,6 +296,10 @@ def program_constractor(request, program_id):
         module.practice_duration=request.POST["practice_duration"]
         module.consultations_duration=request.POST["consultations_duration"]
         module.independent_duration=request.POST["independent_duration"]
+        module.exam_lections=request.POST["exam_lections"]
+        module.exam_practice=request.POST["exam_practice"]
+        module.exam_consultations=request.POST["exam_consultations"]
+        module.exam_independent=request.POST["exam_independent"]
         module.save()
         current_stage = 4
     elif 'delete-interim-ex' in request.POST:

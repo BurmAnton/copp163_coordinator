@@ -1085,7 +1085,12 @@ class ProgramModule(models.Model):
     practice_duration = models.IntegerField("Практика (ак. часы)", default=0)
     consultations_duration = models.IntegerField("Консультации (ак. часы)", default=0)
     independent_duration = models.IntegerField("Самостоятельная работа (ак. часы)", default=0)
+    
     attest_form = models.CharField("Форма аттестации", null=True, blank=True, max_length=100)
+    exam_lections = models.TextField("Лекции (ПА)", null=True, blank=True)
+    exam_practice = models.TextField("Практика (ПА)", null=True, blank=True)
+    exam_consultations = models.TextField("Консультации (ПА)", null=True, blank=True)
+    exam_independent = models.TextField("Самостоятельная работа (ПА)", null=True, blank=True)
 
     class Meta:
         verbose_name = "Учебный модуль"

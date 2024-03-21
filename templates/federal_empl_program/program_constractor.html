@@ -369,17 +369,33 @@
                             <input type="number" class="form-control" id="subjectLectionDuration{{module.id}}Input" name="lections_duration" value="{{module.lections_duration}}" required>
                             <label for="subjectLectionDuration{{module.id}}Input">Лекции (ак. часы)</label>
                         </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" name="exam_lections" style="height: 80px" id="subjectLection{{module.id}}Input">{{module.exam_lections|default_if_none:''}}</textarea>
+                            <label for="subjectLection{{module.id}}Input">Лекции (содержание)</label>
+                        </div>
                         <div class="form-floating mb-3">
                             <input type="number" class="form-control" id="subjectPracticeDuration{{module.id}}Input" name="practice_duration" value="{{module.practice_duration}}" required>
                             <label for="subjectPracticeDuration{{module.id}}Input">Практика (ак. часы)</label>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" name="exam_practice" style="height: 80px" id="subjectPractice{{module.id}}Input">{{module.exam_practice|default_if_none:''}}</textarea>
+                            <label for="subjectPractice{{module.id}}Input">Практика (содержание)</label>
                         </div>
                         <div class="form-floating mb-3">
                             <input type="number" class="form-control" id="subjectConsultationsDuration{{module.id}}Input" name="consultations_duration" value="{{module.consultations_duration}}" required>
                             <label for="subjectConsultationsDuration{{module.id}}Input">Консультации (ак. часы)</label>
                         </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" name="exam_consultations" style="height: 80px" id="subjectConsultations{{module.id}}Input">{{module.exam_consultations|default_if_none:''}}</textarea>
+                            <label for="subjectConsultations{{module.id}}Input">Консультации (содержание)</label>
+                        </div>
                         <div class="form-floating mb-3">
                             <input type="number" class="form-control" id="subjectIndependentDuration{{module.id}}Input" name="independent_duration" value="{{module.independent_duration}}" required>
                             <label for="subjectIndependentDuration{{module.id}}Input">Самостоятельная работа (ак. часы)</label>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" name="exam_independent" style="height: 80px" id="subjectIndependent{{module.id}}Input">{{module.exam_independent|default_if_none:''}}</textarea>
+                            <label for="subjectIndependent{{module.id}}Input">Самостоятельная работа (содержание)</label>
                         </div>
                     </div> 
                     <div class="modal-footer" style="display: flex; flex-direction: row-reverse; justify-content: space-between;">
