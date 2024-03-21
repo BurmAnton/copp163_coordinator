@@ -1018,13 +1018,13 @@ def ed_center_application(request, ed_center_id):
     
     plans = ProgramPlan.objects.filter(program__in=programs)
     monthly_plans = []
-    try: 
-        for month in AVAILABLE_MONTHS:
-            monthly_plans.append(
-                MonthProgramPlan.objects.filter(
-                    plan__in=plans, month=month[0]
-                ).aggregate(month_sum=Sum('students_count'))['month_sum']
-            )
+    for month in AVAILABLE_MONTHS:
+        monthly_plans.append(
+            MonthProgramPlan.objects.filter(
+                plan__in=plans, month=month[0]
+            ).aggregate(month_sum=Sum('students_count'))['month_sum']
+        )
+    try:    
         monthly_plans.append(sum(monthly_plans))
     except TypeError:
         pass

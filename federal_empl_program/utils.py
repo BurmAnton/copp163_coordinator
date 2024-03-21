@@ -286,7 +286,7 @@ def generate_calendar_schedule(duration, program):
                     
                     if day_totals[day] == 8: day += 1
     schedule_dict['attest'] = [0] * days
-    f_test_duration = program.get_full_ex_duration()
+    f_test_duration = program.exam_duration
     if day_totals[day] + f_test_duration < 8:
         day_totals[day] += f_test_duration
         schedule_dict['attest'][day] += f_test_duration
