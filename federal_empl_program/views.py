@@ -371,9 +371,9 @@ def program_constractor(request, program_id):
 def quota_dashboard(request):
     net_agreements = NetworkAgreement.objects.all()
     programs = EducationProgram.objects.filter(new_agreements__in=net_agreements)
+    programs = [program for program in programs if program.plan.months_sum != 0]
     ed_centers = EducationCenter.objects.filter(programs__in=programs).distinct()
     plans = ProgramPlan.objects.filter(program__in=programs).select_related('program')
-    plans = [plan for plan in plans if plan.months_sum != 0]
     plans = sorted(plans, key=lambda plan: plan.months_sum, reverse=True)
 
     monthly_plans = []

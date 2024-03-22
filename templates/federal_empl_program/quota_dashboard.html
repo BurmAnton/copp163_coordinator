@@ -17,12 +17,14 @@
     <div class="programs-plan">
         <form action="{% url 'quota_dashboard' %}" method="post">
             <div class="filter">
-                <div class="form mb-3">
+                <h2>Запрос квоты ЦО</h2>
+                <div class="form-floating mb-3" style="margin-bottom: 0 !important">
                     <select class="selectpicker" title="Выберите ЦО" multiple data-width="100%" onchange="FilterFunction(0, 'EdCenter')" data-live-search="true" name="center" id="EdCenter">
                         {% for ed_center in ed_centers %}
                             <option class="ter_admin" value="{{ ed_center.short_name }}">{{ ed_center.short_name }}</option>
                         {% endfor %}
                     </select>
+                    <label for="EdCenter">Выберите ЦО</label>
                 </div>
             </div>
             <table class="table">
