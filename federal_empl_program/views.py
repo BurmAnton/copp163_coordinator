@@ -370,14 +370,8 @@ def program_constractor(request, program_id):
 @csrf_exempt
 def quota_dashboard(request):
     net_agreements = NetworkAgreement.objects.all()
-    # for net_agreement in net_agreements:
-    #     for program in net_agreement.programs.all():
-    #         program_plan, _ = ProgramPlan.objects.get_or_create(program=program)
-    #         if program_plan.monthly_plans.all().count() != 7:
-    #             for month in AVAILABLE_MONTHS:
-    #                 MonthProgramPlan.objects.get_or_create(plan=program_plan, month=month[0])
-    
     programs = EducationProgram.objects.filter(new_agreements__in=net_agreements)
+    ed_centers = EducationCenter.objects.filter(programs__in=programs).distinct()
     plans = ProgramPlan.objects.filter(program__in=programs).select_related('program')
     plans = [plan for plan in plans if plan.months_sum != 0]
     plans = sorted(plans, key=lambda plan: plan.months_sum, reverse=True)
@@ -397,7 +391,8 @@ def quota_dashboard(request):
     return render(request, 'federal_empl_program/quota_dashboard.html', {
         'plans': plans,
         'monthly_plans': monthly_plans,
-        'months': AVAILABLE_MONTHS
+        'months': AVAILABLE_MONTHS,
+        'ed_centers': ed_centers
     })
 
 
