@@ -37,7 +37,7 @@
                 </thead>
                 {% for plan in plans %}
                     <tr>
-                        <td>{{ plan.program.ed_center }}</td>
+                        <td>{{ plan.program.ed_center.short_name }}</td>
                         <td>{{ plan.program }}</td>
                         {% for monthly_plan in plan.monthly_plans.all %}
                             <td class="month-cell">
