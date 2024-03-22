@@ -369,7 +369,7 @@ def program_constractor(request, program_id):
 @login_required
 @csrf_exempt
 def quota_dashboard(request):
-    net_agreements = NetworkAgreement.objects.all()
+    net_agreements = NetworkAgreement.objects.all().prefetch_related('programs')
     for net_agreement in net_agreements:
         for program in net_agreement.programs.all():
             program_plan, _ = ProgramPlan.objects.get_or_create(program=program)
@@ -378,7 +378,7 @@ def quota_dashboard(request):
                     MonthProgramPlan.objects.get_or_create(plan=program_plan, month=month[0])
     
     programs = EducationProgram.objects.filter(new_agreements__in=net_agreements)
-    plans = ProgramPlan.objects.filter(program__in=programs)
+    plans = ProgramPlan.objects.filter(program__in=programs).select_related('program')
     plans = [plan for plan in plans if plan.months_sum != 0]
 
     monthly_plans = []
@@ -392,7 +392,7 @@ def quota_dashboard(request):
         monthly_plans.append(sum(monthly_plans))
     except TypeError:
         pass
-    
+
     return render(request, 'federal_empl_program/quota_dashboard.html', {
         'plans': plans,
         'monthly_plans': monthly_plans,
