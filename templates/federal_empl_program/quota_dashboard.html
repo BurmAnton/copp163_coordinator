@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load ed_centers_extras %}
+
+{% block title %}Личный кабинет ЦО{% endblock %}
+{% block style %}
+        <link href="{% static 'education_centers/css/program_plan.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    {% comment %} 
+        <script src="{% static 'education_centers/js/program_plan.js' %}" rel="stylesheet"></script>
+    {% endcomment %}
+ {% endblock %}
+
+{% block body %}
+    <div class="page-hdr">
+        <h1>Запрос квоты (дашборд)</h1>
+    </div>
+    <div class="programs-plan">
+        <form action="{% url 'quota_dashboard' %}" method="post">
+            <div style="width: 100%; display: flex; justify-content: flex-end;">
+                {% comment %} <input class="btn btn-outline-primary" type="submit" name="change-plan" value="Сохранить квоту"> {% endcomment %}
+            </div>
+            <table class="table">
+                <thead class="sticky-top">
+                    <tr> 
+                        <th scope="col" rowspan="2">ЦО</th>
+                        <th scope="col" rowspan="2">Программа</th>
+                        <th scope="col" class="col-center" colspan="{{ months|length|add:1 }}" style="border: 0;">Квота</th>
+                    </tr>
+                    <tr>
+                        {% for month in months %}
+                            <th scope="col" class="col-center">{{ month.1 }}</th>
+                        {% endfor %}
+                        <th class="col-center">Всего</th>
+                    </tr>
+                </thead>
+                {% for plan in plans %}
+                    <tr>
+                        <td>{{ plan.program.ed_center }}</td>
+                        <td>{{ plan.program }}</td>
+                        {% for monthly_plan in plan.monthly_plans.all %}
+                            <td class="month-cell">
+                                <input class="col-center" type="number" name="plan{{ monthly_plan.id }}" value="{{ monthly_plan.students_count }}">
+                            </td>
+                        {% endfor %}
+                        <td class="col-center">{{ plan.months_sum }}</td>
+                    </tr>
+                {% endfor %}
+                    <tr class='sticky-bottom'>
+                        <td colspan="2">Всего</td>
+                        {% for month_sum in monthly_plans %}
+                            <td class="col-center">
+                                {{month_sum}}
+                            </td>
+                        {% endfor %}
+                    </tr>
+            </table>
+        </form>
+    </div>
+
+{% endblock %}

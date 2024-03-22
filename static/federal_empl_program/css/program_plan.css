@@ -1,0 +1,66 @@
+body {
+  background-color: rgba(242, 242, 242, 0.5411764706);
+}
+body .page-hdr {
+  text-align: center;
+  padding-top: 25px;
+  margin-bottom: 30px;
+}
+body .programs-plan {
+  width: 90%;
+  margin: auto;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.1490196078);
+  margin-bottom: 50px;
+  padding: 25px 50px 25px 50px;
+}
+body .programs-plan .table {
+  border-bottom: 1px solid #dee2e6;
+}
+body .programs-plan .table input {
+  width: 85px;
+  margin-left: 15px;
+  border: 0;
+  text-align: center;
+}
+body .programs-plan .table .sticky-top {
+  z-index: 10;
+  background-color: white !important;
+}
+body .programs-plan .table .sticky-top td {
+  border: 0;
+}
+body .programs-plan .table .sticky-bottom {
+  position: sticky;
+  inset-block-end: 0;
+  background-color: white;
+}
+body .programs-plan .table .sticky-bottom td {
+  font-weight: 400 !important;
+  border-top: 2px solid #3e5061;
+}
+body .programs-plan .table th {
+  color: #394959;
+  font-weight: 400 !important;
+  font-size: 16px;
+  line-height: 20px;
+  border-top: 0;
+  border-bottom: 2px solid #394959;
+  vertical-align: middle;
+}
+body .programs-plan .table td, body .programs-plan .table td input {
+  border-top: 0;
+  color: #394959;
+  font-weight: 300 !important;
+  max-width: 250px;
+  word-wrap: break-word;
+  vertical-align: middle;
+}
+body .programs-plan .table .month-cell {
+  width: 100px;
+}
+body .programs-plan .table .col-center {
+  text-align: center;
+  justify-content: center;
+}/*# sourceMappingURL=program_plan.css.map */

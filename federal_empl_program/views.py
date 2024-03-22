@@ -26,10 +26,10 @@ from citizens.models import Citizen
 from education_centers.models import (AbilimpicsWinner, Competence,
                                       EducationCenter, EducationProgram, Group)
 from federal_empl_program import imports
-from federal_empl_program.models import (PROGRAM_STATUSES, ActivityCompetence, ActivityCompetenceEquipment, ActivityCompetenceIndicators, ActivityType, Application, Author, CitizenApplication,
+from federal_empl_program.models import (AVAILABLE_MONTHS, PROGRAM_STATUSES, ActivityCompetence, ActivityCompetenceEquipment, ActivityCompetenceIndicators, ActivityType, Application, Author, CitizenApplication,
                                          ClosingDocument, Contract, EdCenterQuotaRequest,
                                          EducationCenterProjectYear, EmploymentInvoice, FgosStandart,
-                                         FlowStatus, Grant, IrpoProgram, NetworkAgreement, ProfField, Profstandart, ProgramDocumentation, ProgramModule,
+                                         FlowStatus, Grant, IrpoProgram, MonthProgramPlan, NetworkAgreement, ProfField, Profstandart, ProgramDocumentation, ProgramModule, ProgramPlan,
                                          ProgramQuotaRequest, ProjectYear,
                                          QuotaRequest, Subject)
 from users.models import User
@@ -364,6 +364,41 @@ def program_constractor(request, program_id):
         'competencies': competencies,
         'form': ImportDataForm
     })
+
+
+@login_required
+@csrf_exempt
+def quota_dashboard(request):
+    net_agreements = NetworkAgreement.objects.all()
+    for net_agreement in net_agreements:
+        for program in net_agreement.programs.all():
+            program_plan, _ = ProgramPlan.objects.get_or_create(program=program)
+            if program_plan.monthly_plans.all().count() != 7:
+                for month in AVAILABLE_MONTHS:
+                    MonthProgramPlan.objects.get_or_create(plan=program_plan, month=month[0])
+    
+    programs = EducationProgram.objects.filter(new_agreements__in=net_agreements)
+    plans = ProgramPlan.objects.filter(program__in=programs)
+    plans = [plan for plan in plans if plan.months_sum != 0]
+
+    monthly_plans = []
+    for month in AVAILABLE_MONTHS:
+        monthly_plans.append(
+            MonthProgramPlan.objects.filter(
+                plan__in=plans, month=month[0]
+            ).aggregate(month_sum=Sum('students_count'))['month_sum']
+        )
+    try:    
+        monthly_plans.append(sum(monthly_plans))
+    except TypeError:
+        pass
+    
+    return render(request, 'federal_empl_program/quota_dashboard.html', {
+        'plans': plans,
+        'monthly_plans': monthly_plans,
+        'months': AVAILABLE_MONTHS
+    })
+
 
 
 @login_required
