@@ -380,6 +380,7 @@ def quota_dashboard(request):
     programs = EducationProgram.objects.filter(new_agreements__in=net_agreements)
     plans = ProgramPlan.objects.filter(program__in=programs).select_related('program')
     plans = [plan for plan in plans if plan.months_sum != 0]
+    plans = sorted(plans, key=lambda plan: plan.months_sum, reverse=True)
 
     monthly_plans = []
     for month in AVAILABLE_MONTHS:
