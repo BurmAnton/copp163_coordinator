@@ -369,13 +369,13 @@ def program_constractor(request, program_id):
 @login_required
 @csrf_exempt
 def quota_dashboard(request):
-    net_agreements = NetworkAgreement.objects.all().prefetch_related('programs')
-    for net_agreement in net_agreements:
-        for program in net_agreement.programs.all():
-            program_plan, _ = ProgramPlan.objects.get_or_create(program=program)
-            if program_plan.monthly_plans.all().count() != 7:
-                for month in AVAILABLE_MONTHS:
-                    MonthProgramPlan.objects.get_or_create(plan=program_plan, month=month[0])
+    net_agreements = NetworkAgreement.objects.all()
+    # for net_agreement in net_agreements:
+    #     for program in net_agreement.programs.all():
+    #         program_plan, _ = ProgramPlan.objects.get_or_create(program=program)
+    #         if program_plan.monthly_plans.all().count() != 7:
+    #             for month in AVAILABLE_MONTHS:
+    #                 MonthProgramPlan.objects.get_or_create(plan=program_plan, month=month[0])
     
     programs = EducationProgram.objects.filter(new_agreements__in=net_agreements)
     plans = ProgramPlan.objects.filter(program__in=programs).select_related('program')
