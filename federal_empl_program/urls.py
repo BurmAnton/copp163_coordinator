@@ -20,6 +20,7 @@ urlpatterns = [
     path('groups/<int:group_id>', views.group_view, name="group_view"),
     path('invoices/list/<int:year>', views.invoices_list, name="invoices_list"),
     path('invoices/<int:invoice_id>', views.invoice_view, name="invoice_view"),
+    path('quota/dashboard/', views.quota_dashboard, name="quota_dashboard"),
     path(
         'dashboard/applications/<int:year>', 
         views.applications_dashboard, 
