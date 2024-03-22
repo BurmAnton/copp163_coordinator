@@ -27,7 +27,7 @@ function FilterFunction(col, filter_id) {
                             console.log(group_tr)
                         })
                     }else{
-                        document.querySelectorAll('.group'+ed_center_id).forEach(group_tr => {
+                        document.querySelectorAll('.plan'+ed_center_id).forEach(group_tr => {
                             group_tr.classList.add('disapear');
                         })
                     }
