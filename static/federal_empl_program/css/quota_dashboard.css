@@ -1,6 +1,29 @@
 body {
   background-color: rgba(242, 242, 242, 0.5411764706);
 }
+body h2 {
+  font-size: 22px;
+  color: #394959;
+}
+body .form-floating .dropdown-toggle {
+  height: 55px !important;
+  border: 1px solid #ced4da !important;
+  background-color: white !important;
+}
+body .form-floating .dropdown-toggle .filter-option {
+  padding-top: 15px;
+}
+body .form-floating .dropdown-menu {
+  z-index: 100;
+}
+body label {
+  font-size: 14px;
+  opacity: 0.9;
+  transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+body .disapear {
+  display: none;
+}
 body .page-hdr {
   text-align: center;
   padding-top: 25px;
