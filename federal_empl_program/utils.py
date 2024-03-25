@@ -198,9 +198,7 @@ def create_irpo_program(program):
         "program": program,
         "duration_days": program.duration_days,
         "net_number": net_number,
-        "schedule_dict": generate_calendar_schedule(program.duration, program)
-
-    
+        "schedule_dict": generate_calendar_schedule(program.get_full_duration(), program)
     }
     if program.program_type == "DPOPK":
         doc_type = get_object_or_404(DocumentType, name="Программа ДПО ПК (ИРПО)")
@@ -287,22 +285,23 @@ def generate_calendar_schedule(duration, program):
                     if day_totals[day] == 8: day += 1
     schedule_dict['attest'] = [0] * days
     f_test_duration = program.exam_duration
-    if day_totals[day] + f_test_duration < 8:
-        day_totals[day] += f_test_duration
-        schedule_dict['attest'][day] += f_test_duration
-    elif day_totals[day] + f_test_duration == 8:
-        day_totals[day] += f_test_duration
-        schedule_dict['attest'][day] += f_test_duration
-    else: 
-        while f_test_duration != 0:
-                if f_test_duration + day_totals[day] > 8:
-                    day_test = 8 - day_totals[day]
-                else: day_test = f_test_duration
+    if day < days:
+        if day_totals[day] + f_test_duration < 8:
+            day_totals[day] += f_test_duration
+            schedule_dict['attest'][day] += f_test_duration
+        elif day_totals[day] + f_test_duration == 8:
+            day_totals[day] += f_test_duration
+            schedule_dict['attest'][day] += f_test_duration
+        else: 
+            while f_test_duration != 0:
+                    if f_test_duration + day_totals[day] > 8:
+                        day_test = 8 - day_totals[day]
+                    else: day_test = f_test_duration
 
-                day_totals[day] += day_test
-                schedule_dict['attest'][day] += day_test
-                f_test_duration -= day_test
-                if day_totals[day] == 8: day += 1
+                    day_totals[day] += day_test
+                    schedule_dict['attest'][day] += day_test
+                    f_test_duration -= day_test
+                    if day_totals[day] == 8: day += 1
 
     schedule_dict['total'] = day_totals
     return schedule_dict
