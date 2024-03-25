@@ -10,9 +10,6 @@ from federal_empl_program.models import ProjectYear, FlowStatus, Application
 
 register = template.Library()
 
-find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
-check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоустройства')
-
 
 @register.filter
 def check_stage(stage, status):
@@ -241,6 +238,9 @@ def filter_strt_center_256(applications, ed_center):
 
 @register.filter
 def filter_end_center_72(applications, ed_center):
+    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+    check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоустройства')
+
     quota = ed_center['quota_72']
     applications_count = applications.filter(
             education_center__id=ed_center['ed_center__id'],
@@ -255,6 +255,8 @@ def filter_end_center_72(applications, ed_center):
 
 @register.filter
 def filter_end_center_144(applications, ed_center):
+    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+    check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоустройства')
     quota = ed_center['quota_144']
     applications_count = applications.filter(
             education_center__id=ed_center['ed_center__id'],
@@ -270,6 +272,8 @@ def filter_end_center_144(applications, ed_center):
 
 @register.filter
 def filter_end_center_256(applications, ed_center):
+    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+    check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоустройства')
     quota = ed_center['quota_256']
     applications_count = applications.filter(
             education_center__id=ed_center['ed_center__id'],
@@ -413,6 +417,8 @@ def filter_strt_center_all_256(applications, ed_centers):
 
 @register.filter
 def filter_end_center_all_72(applications, ed_centers):
+    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+    check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоустройства')
     quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_72'))['quota_sum']
     applications_count = applications.filter(
                 education_program__duration__lte=72,
@@ -423,6 +429,8 @@ def filter_end_center_all_72(applications, ed_centers):
 
 @register.filter
 def filter_end_center_all_144(applications, ed_centers):
+    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+    check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоустройства')
     quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_144'))['quota_sum']
     applications_count = applications.filter(
                 education_program__duration__gt=72,
@@ -434,6 +442,8 @@ def filter_end_center_all_144(applications, ed_centers):
 
 @register.filter
 def filter_end_center_all_256(applications, ed_centers):
+    find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
+    check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоустройства')
     quota_sum = ed_centers.aggregate(quota_sum=Sum('quota_256'))['quota_sum']
     applications_count = applications.filter(
                 education_program__duration__gte=256,
