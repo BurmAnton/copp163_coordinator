@@ -28,8 +28,6 @@ EDUCATION_CHOICES = {
     "Основное общее образование - 9 классов": 'SCHL',
 }
 
-project_year = ProjectYear.objects.get(year=2023)
-
 def get_sheet(form):
     workbook = load_workbook(form.cleaned_data['import_file'])
     return workbook.active
@@ -377,6 +375,7 @@ def create_group(sheet, row, application):
     return {"status": True, "value": group, "is_new": is_new}
 
 def create_contract(number: str, ed_center: EducationCenter):
+    project_year = ProjectYear.objects.get(year=2023)
     ed_center = EducationCenterProjectYear.objects.get(
         project_year=project_year,
         ed_center=ed_center
