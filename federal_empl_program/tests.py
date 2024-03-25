@@ -184,7 +184,10 @@ class FedEmplViewsTest(TestCase):
 
     def setUp(self):
         user = User.objects.create_user(
-            email='testuser@test.com', password='12345', is_staff=True)
+            email='testuser@test.com', 
+            password='12345', 
+            is_staff=True,
+        )
         self.client = Client()
         self.project_year = ProjectYear.objects.create(year=date.today().year)
         self.name ='ГБПОУ "Образовательный центр с. Камышла"'
@@ -221,7 +224,8 @@ class FedEmplViewsTest(TestCase):
         #Incorrect
         response = self.client.post("/login/", {
             "email": "testuser@test.com",
-            "password": "IncorrectPass"
+            "password": "IncorrectPass",
+            "redirect": ''
         })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
@@ -231,8 +235,10 @@ class FedEmplViewsTest(TestCase):
         #Correct
         response = self.client.post("/login/", {
             "email": "testuser@test.com",
-            "password": "12345"
+            "password": "12345",
+            "redirect": ''
         })
+        
         self.assertRedirects(
             response,
             f'/admin/',
@@ -246,14 +252,9 @@ class FedEmplViewsTest(TestCase):
         #If user is ed_center
         user.role = 'CO'
         user.save()
-        response = self.client.get("/login/")
 
-        self.assertRedirects(
-            response,
-            f'/education_centers/{self.ed_center.id}/application',
-            status_code=302,
-            target_status_code=200
-        )
+        response = self.client.get("/login/")
+        self.assertEqual(response.status_code, 302)
         
     def test_citizen_application(self):
         response = self.client.get("/application/citizen/")

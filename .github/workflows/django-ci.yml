@@ -25,6 +25,7 @@ jobs:
         ports: ['3306:3306', '8000:8000']
       redis:
         image: redis
+        ports: ['6379:6379', '8000:8000']
   
     steps:
     - uses: actions/checkout@v2
