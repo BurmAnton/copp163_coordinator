@@ -23,6 +23,8 @@ jobs:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: mysql
         ports: ['3306:3306', '8000:8000']
+      redis:
+        image: redis
   
     steps:
     - uses: actions/checkout@v2
