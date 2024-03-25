@@ -27,9 +27,6 @@ from .models import (Application, CitizenApplication, CitizenCategory, ClosingDo
                      QuotaRequest)
 
 
-check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоустройства')
-find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
-
 @admin.register(ClosingDocument)
 class ClosingDocumentAdmin(admin.ModelAdmin):
     list_filter = [
@@ -62,6 +59,8 @@ class ContractAdmin(admin.ModelAdmin):
     get_name.short_description='ЦО'
 
     def get_applications_count(self, contract):
+        check_wrk_status = FlowStatus.objects.get(off_name='Ожидаем трудоустройства')
+        find_wrk_status = FlowStatus.objects.get(off_name='Трудоустроен')
         return Application.objects.filter(
             flow_status__in=[find_wrk_status, check_wrk_status],
             contract=contract).count()
