@@ -660,6 +660,8 @@ class ClosingDocument(models.Model):
 
 
 class CitizenApplication(models.Model):
+    created_at = models.DateField(auto_now_add=True)
+
     first_name = models.CharField("Имя", max_length=30, null=True)
     last_name = models.CharField("Фамилия", max_length=50, null=True)
     middle_name = models.CharField("Отчество", max_length=60, blank=True, null=True)

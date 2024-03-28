@@ -1,30 +1,25 @@
-from datetime import datetime, timedelta
-import math
-from pickle import TRUE
-
 from django.contrib import admin
-from django.contrib.admin.filters import SimpleListFilter
-from django.db import models
-from django.db.models import Avg, Sum
-from django.db.models.functions import Coalesce
-from django.forms import TextInput
+
+from django.db.models import Sum
+
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from django_admin_listfilter_dropdown.filters import (
-    ChoiceDropdownFilter, DropdownFilter, RelatedDropdownFilter,
-    RelatedOnlyDropdownFilter)
+from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter
 from easy_select2 import select2_modelform
-from field_history.models import FieldHistory
+from rangefilter.filters import DateRangeFilterBuilder
 
 from education_centers.models import EducationCenter, EducationProgram
 from federal_empl_program import exports
 from users.models import Group, User
 
-from .models import (Application, CitizenApplication, CitizenCategory, ClosingDocument, Contract,
-                     EdCenterEmployeePosition, EdCenterQuotaRequest,
-                     EducationCenterProjectYear, EmploymentInvoice, FlowStatus, Grant, Indicator, NetworkAgreement, ProfField, Profstandart,
-                     ProgramQuotaRequest, ProjectPosition, ProjectYear,
-                     QuotaRequest)
+from .models import (
+    Application, CitizenApplication, 
+    CitizenCategory, ClosingDocument, Contract,
+    EducationCenterProjectYear, 
+    EmploymentInvoice, FlowStatus, 
+    NetworkAgreement,  ProfField, 
+    Profstandart, ProjectYear
+)
 
 
 @admin.register(ClosingDocument)
@@ -74,6 +69,7 @@ class ProgramQuotaRequestAdmin(admin.ModelAdmin):
 @admin.register(CitizenApplication)
 class CitizenApplicationAdmin(admin.ModelAdmin):
     list_display = [
+        'created_at',
         'last_name', 
         'first_name',
         'middle_name',
@@ -94,6 +90,10 @@ class CitizenApplicationAdmin(admin.ModelAdmin):
         'phone_number',
         'competence',
     ]
+    list_filter = (
+
+        ("created_at", DateRangeFilterBuilder()),
+    )
 
 #@admin.register(EdCenterEmployeePosition)
 class EdCenterEmployeePositionnAdmin(admin.ModelAdmin):

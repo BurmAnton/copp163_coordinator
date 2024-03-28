@@ -28,16 +28,17 @@ CELERY_TIMEZONE = 'Europe/Samara'
 
 
 INSTALLED_APPS = [
-    'coverage',
-    'debug_toolbar',
-    'field_history',
-    'django_admin_listfilter_dropdown',
     'users',
     'regions',
     'citizens',
     'education_centers',
     'federal_empl_program',
     'future_ticket',
+    'coverage',
+    'debug_toolbar',
+    'field_history',
+    'django_admin_listfilter_dropdown',
+    'rangefilter',
     'easy_select2',
     'copp163_coordinator.apps.MyAdminConfig',
     'django.contrib.auth',
