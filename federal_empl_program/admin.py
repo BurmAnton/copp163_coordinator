@@ -326,5 +326,5 @@ class ApplicationAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         project_year = ProjectYear.objects.get(year=2024)
-        queryset = super().get_queryset(request)
+        queryset = super().get_queryset(request).filter(project_year=project_year)
         return queryset
