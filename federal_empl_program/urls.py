@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     path('',views.index, name='index'),
     #Import
+    path('import/atlas/', views.import_atlas_app, name='import_atlas_app'),
     path('import/flow/', views.import_flow, name='import_flow'),
     path('import/profstandarts/', views.import_profstandarts, name='import_profstandarts'),
     #Auth

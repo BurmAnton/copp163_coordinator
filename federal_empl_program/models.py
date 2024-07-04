@@ -591,7 +591,9 @@ class Application(models.Model):
         ('CRIP', 'Предоставил справку ИП')
     ]
     find_work = models.CharField("Трудоустройство", max_length=4, choices=WORK_SEARCH_STAGES, blank=True, null=True)
-    
+
+    atlas_status = models.CharField("Статус в Атлас", max_length=100, blank=True, null=True)
+    rvr_status = models.CharField("Статус в РвР", max_length=100, blank=True, null=True)    
         
     class Meta:
         verbose_name = "Заявка (Содействие занятости)"

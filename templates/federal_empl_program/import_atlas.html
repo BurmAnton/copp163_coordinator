@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load fed_extras %}
+
+{% block title %}Импорт данных | ФП «Содействие занятости»{% endblock %}
+{% block style %}
+    <link href="{% static 'future_ticket/css/import_programs.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'federal_empl_program/js/citizens.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="modal-body">
+        <div class="import-form">
+            <h2>Импорт заявок из Atlas</h2>
+            {% if message != None %}
+                <div class="alert alert-success" style="text-align: center;" role="alert">
+                    Граждан добавлено: <b>{{message|get_item:"citizens"|get_item:'added'|length}}</b><br>
+                    Граждан обновлено: <b>{{message|get_item:"citizens"|get_item:'updated'|length}}</b><br>
+                    Заявок добавлено: <b>{{message|get_item:"applications"|get_item:'added'|length}}</b><br>
+                    Заявок обновлено: <b>{{message|get_item:"applications"|get_item:'updated'|length}}</b>
+                </div> 
+            {% endif %}
+            <form enctype="multipart/form-data" action="{% url 'import_atlas_app' %}" method="post">
+                <div class="mb-3">
+                    {{ form }}
+                </div>
+                <button type="submit" class="btn btn-primary" name="">Импортировать</button>
+            </form>
+            {% if message|get_item:'status' == 'Error' %}
+                {% if message|get_item:'error_type' == 'MissingFieldsError' %}
+                    <div class="alert alert-danger" role="alert">
+                        <b>Выгрузка невозможна! В таблице отсутсвуют следующие поля:</b>
+                        <ul>
+                            {% for field in message|get_item:'missing_fields' %}
+                                <li>{{field}}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% elif message|get_item:'error_type' == 'EmptySheet' %}
+                    <div class="alert alert-danger" role="alert">
+                        Выгрузка невозможна. Пустая таблица!
+                    </div>
+                {% elif message|get_item:'error_type' == 'IndexError' %}
+                    <div class="alert alert-danger" role="alert">
+                        IndexError
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

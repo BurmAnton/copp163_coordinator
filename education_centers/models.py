@@ -122,6 +122,7 @@ class EducationProgram(models.Model):
     notes = models.TextField("Примечания", null=True, blank=True)
 
     is_abilimpics = models.BooleanField("Абилимпикс?", default=False)
+    is_atlas = models.BooleanField("Атлас?", default=False)
     period = models.CharField("Период обучения", max_length=500, blank=True, null=True)
     disability_types = models.ManyToManyField(
         DisabilityType, 
@@ -387,10 +388,12 @@ class Workshop(models.Model):
     def __str__(self):
         return f"{self.education_center} ({self.address})"
 
+
 class Group(models.Model):   
-    name = models.CharField("Номер группы", max_length=50)
+    name = models.CharField("Программа", max_length=750)
     flow_id = models.IntegerField('Идентификатор flow', null=True, blank=True) 
     workshop = models.ForeignKey(Workshop, verbose_name="мастерская", on_delete=CASCADE, related_name='groups', blank=True, null=True)
+    education_center = models.ForeignKey(EducationCenter, verbose_name="Центр обучения", on_delete=CASCADE, related_name='groups', blank=True, null=True)
     education_program = models.ForeignKey(EducationProgram, verbose_name="Программа обучения", on_delete=CASCADE, related_name='groups', blank=True, null=True)
     start_date = models.DateField("Дата начала обучения", blank=True, null=True)
     end_date = models.DateField("Дата окончания обучения", blank=True, null=True)
@@ -415,6 +418,7 @@ class Group(models.Model):
         "Комментарий", null=True, blank=True, default=""
     )
     is_new_price = models.BooleanField("Новая цена", default=False)
+    is_atlas = models.BooleanField("Атлас?", default=False)
 
     class Meta:
         verbose_name = "Группа"
@@ -427,7 +431,7 @@ class Group(models.Model):
         return group_price
 
     def __str__(self):
-        return  f"{self.flow_id}"
+        return  f"{self.name}"
 
 
 class DocumentType(models.Model):
