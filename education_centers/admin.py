@@ -216,7 +216,8 @@ class GroupAdmin(admin.ModelAdmin):
     
     search_fields = ['name', 'start_date', 'end_date']
     list_display = ('education_program', 'ed_center', 'start_date', 'end_date')
-    
+    fieldsets = ('education_program', 'ed_center', 'start_date', 'end_date')
+
     def ed_center(self, group):
         if group.education_center == None:
             return "-"
@@ -236,7 +237,7 @@ class CitizensInline(admin.TabularInline):
     model = Citizen
     form = CitizenForm
     fields = ('last_name', 'first_name', 'middle_name', 'phone_number', 'email')
-
+    
     def get_readonly_fields(self, request, obj=None):
         cl_group = users.models.Group.objects.filter(name='Представитель ЦО')
 
