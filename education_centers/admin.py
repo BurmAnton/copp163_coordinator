@@ -207,9 +207,9 @@ class AbilimpicsWinnerAdmin(UserAdmin):
 @admin.register(Group)
 class GroupAdmin(admin.ModelAdmin):
     form = GroupForm
-    inlines = [
-        StudentsInline, 
-    ]
+    #inlines = [
+       # StudentsInline, 
+    #]
     list_filter = (
         ('name', DropdownFilter),
     )
