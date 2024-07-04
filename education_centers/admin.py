@@ -24,7 +24,7 @@ from .models import (AbilimpicsWinner, BankDetails, Competence,
                      EducationProgram, Group, Teacher, Workshop)
 
 
-@admin.register(Teacher)
+#@admin.register(Teacher)
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ['last_name', 'first_name', 'middle_name', 'organization', 'is_consent_file_upload']
     search_fields = [
@@ -47,15 +47,15 @@ class TeacherAdmin(admin.ModelAdmin):
         return exports.consent_teachers(queryset)
     download_archive.short_description='Скачать архив согласий'
 
-@admin.register(BankDetails)
+#@admin.register(BankDetails)
 class BankDetailsAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(DocumentType)
+#@admin.register(DocumentType)
 class DocumentTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'stage']
 
-@admin.register(ContractorsDocument)
+#@admin.register(ContractorsDocument)
 class ContractorsDocumentAdmin(admin.ModelAdmin):
     search_fields = ['contractor__name',]
     list_display = [
@@ -74,7 +74,7 @@ class ContractorsDocumentAdmin(admin.ModelAdmin):
 
     filter_horizontal = ('groups',)
 
-@admin.register(Workshop)
+#@admin.register(Workshop)
 class WorkshopAdmin(admin.ModelAdmin):
     pass
 
@@ -147,6 +147,7 @@ class EducationProgramAdmin(admin.ModelAdmin):
         ('program_type'),
         ('duration'),
         ('competence', RelatedOnlyDropdownFilter),
+        ('is_atlas')
     )
     search_fields = ['program_name', 'ed_center__short_name', 'ed_center__name', 'ed_center__flow_name']
 
@@ -161,7 +162,7 @@ class EducationProgramAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        return queryset.exclude(ed_center=None)
+        return queryset
 
 ApplicationForm = select2_modelform(Application, attrs={'width': '400px'})
 
@@ -176,7 +177,7 @@ GroupForm = select2_modelform(Group, attrs={'width': '400px'})
 
 AbilimpicsWinnerForm = select2_modelform(AbilimpicsWinner, attrs={'width': '400px'})
 
-@admin.register(AbilimpicsWinner)
+#@admin.register(AbilimpicsWinner)
 class AbilimpicsWinnerAdmin(UserAdmin):
     add_form = AbilimpicsWinnerCreationForm
     form = AbilimpicsWinnerChangeForm
@@ -210,28 +211,24 @@ class GroupAdmin(admin.ModelAdmin):
         StudentsInline, 
     ]
     list_filter = (
-        ('education_program__competence', RelatedOnlyDropdownFilter),
-        ('education_program', RelatedOnlyDropdownFilter),
-        ('workshop__education_center', RelatedOnlyDropdownFilter),
-        ('workshop', RelatedOnlyDropdownFilter),
+        ('name', DropdownFilter),
     )
-    search_fields = ['flow_id', 'start_date', 'end_date']
-    list_display = ('flow_id', 'education_period', 'pay_status')
+    
+    search_fields = ['name', 'start_date', 'end_date']
+    list_display = ('education_program', 'ed_center', 'start_date', 'end_date')
+    
+    def ed_center(self, group):
+        if group.education_center == None:
+            return "-"
+        if group.education_center.short_name == "":
+            return group.education_center.name
+        return group.education_center.short_name
+    ed_center.short_description = 'ЦО'
+    ed_center.admin_order_field = 'education_center__id'
 
-    def education_period(self, group):
-        start_date = group.start_date.strftime('%d/%m/%y')
-        end_date = group.end_date.strftime('%d/%m/%y')
-        period = f"{start_date}\xa0–\xa0{end_date}"
-        return period
-    education_period.short_description = 'Период обучения'
-    education_period.admin_order_field = 'start_date'
-
-    actions = ['change_to_pay_statys', ]
-
-    def change_to_pay_statys(self, request, queryset):
-        queryset.update(pay_status='PDB')
-    change_to_pay_statys.short_description='Изменить статус на оплачен'
-
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request).filter(is_atlas=True)
+        return queryset
 
 CitizenForm = select2_modelform(Application, attrs={'width': '400px'})
 

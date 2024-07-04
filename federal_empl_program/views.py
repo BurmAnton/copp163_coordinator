@@ -25,7 +25,7 @@ import unidecode
 from citizens.models import Citizen
 from education_centers.models import (AbilimpicsWinner, Competence,
                                       EducationCenter, EducationProgram, Group)
-from federal_empl_program import imports
+from federal_empl_program import imports, import_atlas
 from federal_empl_program.models import (AVAILABLE_MONTHS, PROGRAM_STATUSES, ActivityCompetence, ActivityCompetenceEquipment, ActivityCompetenceIndicators, ActivityType, Application, Author, CitizenApplication,
                                          ClosingDocument, Contract, EdCenterQuotaRequest,
                                          EducationCenterProjectYear, EmploymentInvoice, FgosStandart,
@@ -393,6 +393,24 @@ def quota_dashboard(request):
         'monthly_plans': monthly_plans,
         'months': AVAILABLE_MONTHS,
         'ed_centers': ed_centers
+    })
+
+
+@login_required
+@csrf_exempt
+def import_atlas_app(request):
+    form = ImportDataForm()
+    message = None
+    if request.method == "POST":
+        form = ImportDataForm(request.POST, request.FILES)
+        if form.is_valid():
+            message = import_atlas.import_atlas(form)
+        else:
+            data = form.errors
+ 
+    return render(request, "federal_empl_program/import_atlas.html",{
+        'form': form,
+        'message': message
     })
 
 
