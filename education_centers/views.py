@@ -12,7 +12,7 @@ from django.utils.formats import date_format
 from django.views.decorators.csrf import csrf_exempt
 
 from citizens.models import School
-from federal_empl_program.models import (AVAILABLE_MONTHS, EdCenterEmployeePosition,
+from federal_empl_program.models import (AVAILABLE_MONTHS, Application, EdCenterEmployeePosition,
                                          EdCenterIndicator,
                                          EducationCenterProjectYear, Indicator, MonthProgramPlan, NetworkAgreement, ProgramPlan,
                                          ProjectPosition, ProjectYear)
@@ -196,7 +196,7 @@ def ed_center_application(request, ed_center_id):
     else: project_year = 2023
     stage = request.GET.get('s', '')
     if stage != '': stage = int(stage)
-    else: stage = 6
+    else: stage = 7
     ed_center = get_object_or_404(EducationCenter, id=ed_center_id)
     full_quota = None
     contract = None
@@ -1010,24 +1010,34 @@ def ed_center_application(request, ed_center_id):
         MonthProgramPlan.objects.bulk_update(plans, ['students_count'])
 
     #quotas
-    for program in net_agreement.programs.all():
-        program_plan, _ = ProgramPlan.objects.get_or_create(program=program)
-        if program_plan.monthly_plans.all().count() != 7:
-            for month in AVAILABLE_MONTHS:
-                MonthProgramPlan.objects.get_or_create(plan=program_plan, month=month[0])
+    # for program in net_agreement.programs.all():
+    #     program_plan, _ = ProgramPlan.objects.get_or_create(program=program)
+    #     if program_plan.monthly_plans.all().count() != 7:
+    #         for month in AVAILABLE_MONTHS:
+    #             MonthProgramPlan.objects.get_or_create(plan=program_plan, month=month[0])
     
-    plans = ProgramPlan.objects.filter(program__in=programs)
-    monthly_plans = []
-    for month in AVAILABLE_MONTHS:
-        monthly_plans.append(
-            MonthProgramPlan.objects.filter(
-                plan__in=plans, month=month[0]
-            ).aggregate(month_sum=Sum('students_count'))['month_sum']
-        )
-    try:    
-        monthly_plans.append(sum(monthly_plans))
-    except TypeError:
-        pass
+    # plans = ProgramPlan.objects.filter(program__in=programs)
+    # monthly_plans = []
+    # for month in AVAILABLE_MONTHS:
+    #     monthly_plans.append(
+    #         MonthProgramPlan.objects.filter(
+    #             plan__in=plans, month=month[0]
+    #         ).aggregate(month_sum=Sum('students_count'))['month_sum']
+    #     )
+    # try:    
+    #     monthly_plans.append(sum(monthly_plans))
+    # except TypeError:
+    #     pass
+    
+    #applications
+    project_year = get_object_or_404(ProjectYear, year=2024)
+    applications = Application.objects.filter(
+        project_year=project_year, education_center=ed_center
+    ).order_by(
+        'education_program',
+        'rvr_status',
+        'atlas_status'
+    )
 
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
@@ -1058,9 +1068,10 @@ def ed_center_application(request, ed_center_id):
         'net_agreement': net_agreement,
         'qualified_programs': qualified_programs,
         'irpo_program_form': IRPOProgramForm,
-        'plans': plans,
-        'monthly_plans': monthly_plans,
-        'months': AVAILABLE_MONTHS
+        # 'plans': plans,
+        # 'monthly_plans': monthly_plans,
+        # 'months': AVAILABLE_MONTHS
+        'applications': applications
     })
 
 @csrf_exempt

@@ -1126,7 +1126,7 @@
                 <a data-step="4" class="step-btn btn {%if stage == 4%}btn-primary{%else%}btn-outline-primary{%endif%}">Кадры</a>
                 <a data-step="5" class="step-btn btn {%if stage == 5%}btn-primary{%else%}btn-outline-primary{%endif%}">МТБ</a>
                 <a data-step="6" class="step-btn btn {%if stage == 6%}btn-primary{%else%}btn-outline-primary{%endif%}">Договор</a>
-                <a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Квота</a>
+                <a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Заявки</a>
                 {% if project == 'bilet' %}<a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Квоты</a>{% endif %}
                 {% if project == 'bilet' %}
                     {% if center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'DWNLD' or center_project_year.stage == 'FNSHD'%}
@@ -1900,41 +1900,39 @@
         <div class="quota-step step" data-step="7" {%if stage == 7%} style="display:block;"{%else%}style="display:none;"{%endif%}>
             <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
             <div class="step-hdr" style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 5px;">
-                <h2>Запрос квоты</h2>
-                <input class="btn btn-outline-primary" type="submit" name="change-plan" value="Сохранить квоту">
+                <h2>Заявки (Атлас)</h2>
             </div>
                 <table class="table">
                     <thead class="sticky-top">
                         <tr> 
-                            <th scope="col" rowspan="2">Программа</th>
-                            <th scope="col" class="col-center" colspan="{{ months|length|add:1 }}" style="border: 0;">Квота</th>
-                        </tr>
-                        <tr>
-                            {% for month in months %}
-                                <th scope="col" class="col-center">{{ month.1 }}</th>
-                            {% endfor %}
-                            <th class="col-center">Всего</th>
+                            <th scope="col">ФИО</th>
+                            <th scope="col">Статус</th>
+                            <th scope="col">Контакты</th>
+                            <th scope="col">Программа</th>
+                            <th scope="col" class="col-center">Периода обучения</th>
                         </tr>
                     </thead>
-                    {% for plan in plans %}
+                    {% for application in applications %}
                         <tr>
-                            <td>{{ plan.program }}</td>
-                            {% for monthly_plan in plan.monthly_plans.all %}
-                                <td class="month-cell">
-                                    <input class="col-center" type="number" name="plan{{ monthly_plan.id }}" value="{{ monthly_plan.students_count }}">
-                                </td>
-                            {% endfor %}
-                            <td class="col-center">{{ plan.months_sum }}</td>
+                            <td>{{ application.applicant }}</td>
+                            <td>
+                                <b>Статус РвР:</b> {{ application.rvr_status }} <br>
+                               <b>Статус Атлас:</b> {{ application.atlas_status }}
+                            </td>
+                            <td style="text-wrap: nowrap;">
+                                {{ application.applicant.email }} <br>
+                                {{ application.applicant.phone_number }}
+                            </td>
+                            <td>{{ application.education_program.program_name }}</td>
+                            <td class="col-center">
+                                с {{ application.group.start_date }} <br>
+                                по {{ application.group.end_date }}
+                            </td>
                         </tr>
                     {% endfor %}
-                        <tr class='sticky-bottom'>
+                        {% comment %} <tr class='sticky-bottom'>
                             <td>Всего</td>
-                            {% for month_sum in monthly_plans %}
-                                <td class="col-center">
-                                    {{month_sum}}
-                                </td>
-                            {% endfor %}
-                        </tr>
+                        </tr> {% endcomment %}
                 </table>
             </form>
         </div>
