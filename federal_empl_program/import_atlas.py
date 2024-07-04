@@ -161,7 +161,7 @@ def get_citizen(sheet, row):
     citizen.last_name = sheet["Фамилия"][row].title()
     citizen.middle_name = sheet["Отчество"][row].title()
     citizen.sex=sex
-    citizen.email = sheet["Email"][row]
+    citizen.email = sheet["Email"][row].lower()
     citizen.phone_number = sheet["Контактная информация (телефон)"][row]
     citizen.res_region =  sheet["Регион"][row]
     citizen.save()
