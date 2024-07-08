@@ -67,6 +67,10 @@ def get_item(dictionary, key):
     return dictionary.get(key)
 
 @register.filter
+def items(dictionary):
+    return dictionary.items()
+
+@register.filter
 def float_format(number):
     return "{:.2f}".format(float(number))
 
