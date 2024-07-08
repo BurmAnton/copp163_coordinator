@@ -493,8 +493,19 @@ class EmploymentInvoice(models.Model):
         verbose_name_plural = "Счёта (30%)"
     
     def __str__(self):
-        return  f"№{self.invoice_number} ({self.contract.number})"    
+        return f"№{self.invoice_number} ({self.contract.number})"    
 
+
+class ApplStatus(models.Model):
+    short_name = models.CharField(max_length=50, null=False, blank=False)
+    name = models.CharField("Название", max_length=250, null=False, blank=False)
+
+    class Meta:
+        verbose_name = "Статус заявки"
+        verbose_name_plural = "Статусы заявки"
+
+    def __str__(self):
+        return self.name 
 
 
 class Application(models.Model):
@@ -594,7 +605,9 @@ class Application(models.Model):
     find_work = models.CharField("Трудоустройство", max_length=4, choices=WORK_SEARCH_STAGES, blank=True, null=True)
 
     atlas_status = models.CharField("Статус в Атлас", max_length=100, blank=True, null=True)
-    rvr_status = models.CharField("Статус в РвР", max_length=100, blank=True, null=True)    
+    rvr_status = models.CharField("Статус в РвР", max_length=100, blank=True, null=True)
+    status = models.ForeignKey(ApplStatus, verbose_name="Статус", related_name="application", on_delete=CASCADE, blank=True, null=True)
+    
         
     class Meta:
         verbose_name = "Заявка (Содействие занятости)"
@@ -623,7 +636,7 @@ class Application(models.Model):
         return math.ceil(full_price * 0.7)
     
     def __str__(self):
-        return  f"{self.applicant} ({self.get_appl_status_display()})"
+        return  f"{self.applicant} ({self.status})"
 
 
 class ClosingDocument(models.Model):

@@ -599,6 +599,16 @@ def applications_dashboard(request, year=2023):
             education_program__duration=256, appl_status='COMP'),
     })
 
+
+def atlas_appls_dashboard(request):
+    project_year = get_object_or_404(ProjectYear, year=2024)
+    application = Application.objects.filter(project_year=project_year).exclude(
+        atlas_status="Отклонена",
+        rvr_status="Услуга прекращена"
+    )
+
+
+
 @cache_page(None, key_prefix="flow")
 @csrf_exempt
 def flow_appls_dashboard(request, year=2023):

@@ -14,20 +14,14 @@ from users.models import Group, User
 
 from .models import (
     Application, CitizenApplication, 
-    CitizenCategory, ClosingDocument, Contract,
-    EducationCenterProjectYear, 
-    EmploymentInvoice, FlowStatus, 
-    NetworkAgreement,  ProfField, 
-    Profstandart, ProjectYear
+    CitizenCategory, ClosingDocument, 
+    EmploymentInvoice, FlowStatus, ProjectYear, ApplStatus
 )
 
 
-#@admin.register(ClosingDocument)
-class ClosingDocumentAdmin(admin.ModelAdmin):
-    list_filter = [
-        'doc_type',
-        'is_paid'
-    ]
+@admin.register(ApplStatus)
+class ApplStatusAdmin(admin.ModelAdmin):
+    pass
 
 #@admin.register(Profstandart)
 class ClosingDocumentAdmin(admin.ModelAdmin):
@@ -266,7 +260,7 @@ class ApplicationAdmin(admin.ModelAdmin):
         }),
         ('Работа с заявкой', {
             'fields': ('citizen_category','education_program', 
-                       'education_center', 'group'
+                       'education_center', 'group', 'status', 'atlas_status', 'rvr_status'
                     ),
         }),
     )
@@ -301,8 +295,7 @@ class ApplicationAdmin(admin.ModelAdmin):
 
     list_display = [
         'applicant',
-        'atlas_status',
-        'rvr_status',
+        'status',
         'group',       
     ]
     list_totals = ['payment_amount',]
@@ -318,6 +311,7 @@ class ApplicationAdmin(admin.ModelAdmin):
         return form
     #autocomplete_list_filter = ('education_center', 'education_program', 'group', 'competence')
     list_filter = (
+        ('status', RelatedOnlyDropdownFilter),
         ('atlas_status', DropdownFilter),
         ('rvr_status', DropdownFilter),
         ('education_program', RelatedOnlyDropdownFilter),

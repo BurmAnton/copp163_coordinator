@@ -4,7 +4,7 @@ from openpyxl import load_workbook
 
 from citizens.models import Citizen
 from education_centers.models import EducationProgram, Group
-from federal_empl_program.models import Application, CitizenCategory, ProjectYear
+from federal_empl_program.models import ApplStatus, Application, CitizenCategory, ProjectYear
 
 
 def get_sheet(form):
@@ -109,18 +109,21 @@ def import_atlas(form):
         'applications': applications
     }
 
-def update_application(application, sheet, row):
-    application.atlas_id = sheet["Номер заявления на РР"][row]
-    application.rvr_status = sheet["Статус заявки в РР"][row]
-    application.atlas_status = sheet["Статус заявки в Атлас"][row]
-    
-    application.education_program = get_program(sheet["Программа обучения"][row])
-    application.group = get_group(sheet, row, application.education_program)
-    application.education_center = application.group.education_center
-    application.citizen_category = get_category(sheet["Категория гражданина"][row])
-    application.save()
 
-    return application
+def update_application(appl, sheet, row):
+    appl.atlas_id = sheet["Номер заявления на РР"][row]
+    appl.rvr_status = sheet["Статус заявки в РР"][row]
+    appl.atlas_status = sheet["Статус заявки в Атлас"][row]
+    appl.status = get_appl_status(appl.rvr_status, appl.atlas_status)
+    
+    appl.education_program = get_program(sheet["Программа обучения"][row])
+    appl.group = get_group(sheet, row, appl.education_program)
+    appl.education_center = appl.group.education_center
+    appl.citizen_category = get_category(sheet["Категория гражданина"][row])
+    appl.save()
+
+    return appl
+
 
 def extract_date(date):
     return datetime.strptime(date, "%d.%m.%Y")
@@ -161,11 +164,35 @@ def get_citizen(sheet, row):
     citizen.first_name = sheet["Имя"][row].title()
     citizen.last_name = sheet["Фамилия"][row].title()
     citizen.middle_name = sheet["Отчество"][row].title()
-    citizen.sex=sex
+    citizen.sex = sex
     citizen.email = sheet["Email"][row].lower()
     citizen.phone_number = sheet["Контактная информация (телефон)"][row]
     citizen.res_region =  sheet["Регион"][row]
     citizen.save()
     return [citizen, is_new]
     
+
+new_s = ["Требуется личная явка", "Принято в работу", "Требуется проведение видеоконференцсвязи"]
+apprv_s = ["Договор ожидает подписания", "Договор на подписании", "Одобрено центром занятости населения"]
+empl_contract_s = ["Заключён договор", ]
+ed_contract_s = ["Ожидает начала обучения", "Ожидает приказ на зачисление"]
+study_s = ["Обучается", "Проходит обучение"]
+cancel_s = ["Услуга прекращена", "Отклонена"]
+
     
+def get_appl_status(rvr_status, atlas_status):
+    short_name = "undefined"
+    if rvr_status in cancel_s or atlas_status in cancel_s:
+        short_name = "canceled"
+    elif rvr_status in study_s or atlas_status in study_s:
+        short_name = "studying"
+    elif atlas_status in ed_contract_s:
+        short_name = "ed_contract"
+    elif rvr_status in empl_contract_s:
+        short_name = "empl_contract"
+    elif rvr_status in apprv_s:
+        short_name = "approved"
+    elif rvr_status in new_s:
+        short_name = "new"
+
+    return ApplStatus.objects.get(short_name=short_name)
