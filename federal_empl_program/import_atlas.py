@@ -94,11 +94,12 @@ def import_atlas(form):
             update_application(application, sheet, row)
             applications['added'].add(citizen)
         elif (sheet['Статус заявки в Атлас'][row] != 'Отклонена'
-           or sheet["Статус заявки в РР"][row] != 'Услуга прекращена'):
+        or sheet["Статус заявки в РР"][row] != 'Услуга прекращена'):
             update_application(application, sheet, row)
             applications['updated'].add(citizen)
         elif (application.rvr_status == 'Услуга прекращена' 
-           or application.atlas_status == 'Отклонена'): 
+        or application.atlas_status == 'Отклонена') \
+        or application.atlas_id == sheet["Номер заявления на РР"][row]: 
             update_application(application, sheet, row)
             applications['updated'].add(citizen)
         
@@ -109,7 +110,7 @@ def import_atlas(form):
     }
 
 def update_application(application, sheet, row):
-    #application.flow_id = sheet["Номер заявления на РР"][row]
+    application.atlas_id = sheet["Номер заявления на РР"][row]
     application.rvr_status = sheet["Статус заявки в РР"][row]
     application.atlas_status = sheet["Статус заявки в Атлас"][row]
     
