@@ -507,6 +507,7 @@ class Application(models.Model):
         on_delete=models.CASCADE
     )
     flow_id = models.IntegerField('Номер заявки', null=True, blank=True)
+    atlas_id = models.CharField('Номер заявления на РР', max_length=100, blank=True, null=True)
     flow_status = models.ForeignKey(
         FlowStatus,
         verbose_name="Статус (2023)",

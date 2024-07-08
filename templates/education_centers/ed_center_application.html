@@ -1901,6 +1901,7 @@
             <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
             <div class="step-hdr" style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 5px;">
                 <h2>Заявки (Атлас)</h2>
+                <h3>Последний импорт: {{ project_year.appls_last_update }}</h3>
             </div>
                 <table class="table">
                     <thead class="sticky-top">

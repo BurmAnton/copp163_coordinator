@@ -262,7 +262,7 @@ class ApplicationAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {
-            'fields': ('get_applicant', 'project_year', 'get_phone', 'get_email')
+            'fields': ('get_applicant', 'atlas_id', 'project_year', 'get_phone', 'get_email')
         }),
         ('Работа с заявкой', {
             'fields': ('citizen_category','education_program', 
