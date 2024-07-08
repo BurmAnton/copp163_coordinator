@@ -499,6 +499,8 @@ class EmploymentInvoice(models.Model):
 class ApplStatus(models.Model):
     short_name = models.CharField(max_length=50, null=False, blank=False)
     name = models.CharField("Название", max_length=250, null=False, blank=False)
+    order = models.IntegerField('Очередь', null=True, blank=True)
+    color = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:
         verbose_name = "Статус заявки"

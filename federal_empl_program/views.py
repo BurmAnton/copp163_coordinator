@@ -26,7 +26,7 @@ from citizens.models import Citizen
 from education_centers.models import (AbilimpicsWinner, Competence,
                                       EducationCenter, EducationProgram, Group)
 from federal_empl_program import imports, import_atlas
-from federal_empl_program.models import (AVAILABLE_MONTHS, PROGRAM_STATUSES, ActivityCompetence, ActivityCompetenceEquipment, ActivityCompetenceIndicators, ActivityType, Application, Author, CitizenApplication,
+from federal_empl_program.models import (AVAILABLE_MONTHS, PROGRAM_STATUSES, ActivityCompetence, ActivityCompetenceEquipment, ActivityCompetenceIndicators, ActivityType, ApplStatus, Application, Author, CitizenApplication,
                                          ClosingDocument, Contract, EdCenterQuotaRequest,
                                          EducationCenterProjectYear, EmploymentInvoice, FgosStandart,
                                          FlowStatus, Grant, IrpoProgram, MonthProgramPlan, NetworkAgreement, ProfField, Profstandart, ProgramDocumentation, ProgramModule, ProgramPlan,
@@ -602,12 +602,37 @@ def applications_dashboard(request, year=2023):
 
 def atlas_appls_dashboard(request):
     project_year = get_object_or_404(ProjectYear, year=2024)
-    application = Application.objects.filter(project_year=project_year).exclude(
-        atlas_status="Отклонена",
-        rvr_status="Услуга прекращена"
-    )
-
-
+    statuses = ApplStatus.objects.exclude(short_name__in=['canceled', 'undefined']).order_by('order')
+    applications = Application.objects.filter(project_year=project_year)
+    groups = Group.objects.filter(students__in=applications).distinct().order_by(
+        'start_date', 'education_center', 'education_program')
+    statuses_d = {}
+    appl_count = 0
+    for status in statuses:
+        appl = applications.filter(status=status)
+        statuses_d[status.name] = {}
+        statuses_d[status.name]['count'] = appl
+        statuses_d[status.name]['color'] = status.color
+        appl_count += appl.count()
+    groups_d = {}
+    for group in groups:
+        groups_d[group.id] = {}
+        groups_d[group.id]['education_program'] = group.education_program
+        groups_d[group.id]['education_center'] = group.education_center
+        groups_d[group.id]['start_date'] = group.start_date.strftime('%d/%m')
+        groups_d[group.id]['end_date'] = group.end_date.strftime('%d/%m')
+        groups_d[group.id]['statuses'] = {}
+        for status_n, status_c  in statuses_d.items():
+            groups_d[group.id]['statuses'][status_n] = status_c['count'].filter(group=group)
+    
+    return render(request, 'federal_empl_program/atlas_appls_dashboard.html', {
+        'project_year': project_year,
+        'statuses_list': statuses,
+        'statuses': statuses_d,
+        'groups': groups_d,
+        'appl_count': appl_count
+    })
+    
 
 @cache_page(None, key_prefix="flow")
 @csrf_exempt

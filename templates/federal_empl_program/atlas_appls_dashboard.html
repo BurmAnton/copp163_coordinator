@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load fed_extras %}
+
+{% block title %}Статистика по ЦО{% endblock %}
+{% block style %}
+    <link href="{% static 'federal_empl_program/css/atlas_appls_dashboard.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src=""></script>
+{% endblock %}
+
+{% block body %}
+    <h1>Статистика по заявкам (Атлас)</h1>
+    <h3>Последнее обновление: {{project_year.appls_last_update|date:"H:i d/m/y"}}</h3>
+    <div class="status-stats">
+        <div class="status-stat" style="background-color: #4d74f5;">
+            <span class="stage">Всего заявок:</span>
+            <span class="count">{{ appl_count }}</span>
+        </div>
+        {% for status_n, status_c in statuses.items %}
+            <div class="status-stat" style="background-color: {{ status_c|get_item:'color' }};">
+                <span class="stage">{{ status_n }}: </span>
+                <span class="count">{{ status_c|get_item:'count'|length }}</span>
+            </div>
+        {% endfor %}
+    </div>
+    <h2>Заявки по потокам</h2>
+    <table class="table table-striped">
+        <tr class="sticky-top">
+            <th>Программа</th>
+            <th>ЦО</th>
+            <th>Период</th>
+            {% for status in statuses_list %}
+                <th>{{ status.name }}</th>
+            {% endfor %}
+        </tr>
+        {% for group in groups.values %}
+            <tr>
+                <td>{{ group|get_item:'education_program' }}</td>
+                <td>
+                    {% if group|get_item:'education_center' is None %}
+                        —
+                    {% else %}
+                        {{ group|get_item:'education_center' }}
+                    {% endif %}
+                </td>
+                <td style="text-wrap: nowrap;">
+                    {{ group|get_item:'start_date' }}-{{ group|get_item:'end_date' }}
+                </td>
+                
+                {% for status, appl in group|get_item:'statuses'|items  %}
+                    <td> {{ appl|length }} </td>
+                {% endfor %}
+                    
+            </tr>
+        {% endfor %}
+    </table>
+    
+        
+{% endblock %}
