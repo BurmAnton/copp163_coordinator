@@ -1898,44 +1898,54 @@
             </div>
         </div>
         <div class="quota-step step" data-step="7" {%if stage == 7%} style="display:block;"{%else%}style="display:none;"{%endif%}>
-            <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
             <div class="step-hdr" style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 5px;">
                 <h2>Заявки (Атлас)</h2>
                 <h3>Последний импорт: {{ project_year.appls_last_update }}</h3>
             </div>
-                <table class="table">
-                    <thead class="sticky-top">
-                        <tr> 
-                            <th scope="col">ФИО</th>
-                            <th scope="col">Статус</th>
-                            <th scope="col">Контакты</th>
-                            <th scope="col">Программа</th>
-                            <th scope="col" class="col-center">Периода обучения</th>
-                        </tr>
-                    </thead>
-                    {% for application in applications %}
-                        <tr>
-                            <td>{{ application.applicant }}</td>
-                            <td>
-                                <b>Статус РвР:</b> {{ application.rvr_status }} <br>
-                               <b>Статус Атлас:</b> {{ application.atlas_status }}
-                            </td>
-                            <td style="text-wrap: nowrap;">
-                                {{ application.applicant.email }} <br>
-                                {{ application.applicant.phone_number }}
-                            </td>
-                            <td>{{ application.education_program.program_name }}</td>
-                            <td class="col-center">
-                                с {{ application.group.start_date }} <br>
-                                по {{ application.group.end_date }}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                        {% comment %} <tr class='sticky-bottom'>
-                            <td>Всего</td>
-                        </tr> {% endcomment %}
-                </table>
-            </form>
+            
+                <form action="{% url 'ed_center_application' ed_center.id %}" style="display: flex; align-items: flex-start;gap: 15px;" method="post">
+                    <div class="form mb-3" style="width: 400px!important;">
+                        <select class="selectpicker" title="Потоки" multiple data-width="100%" data-live-search="true" name="groups" id="AtlasFilter">
+                            {% for group in groups %}
+                                <option class="school" value="{{ group.id }}">{{ group }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" name="filter-groups">Фильтровать</button>
+                </form>
+            
+            <table class="table atlas-applications">
+                <thead class="sticky-top">
+                    <tr> 
+                        <th scope="col">ФИО</th>
+                        <th scope="col">Статус</th>
+                        <th scope="col">Контакты</th>
+                        <th scope="col">Программа</th>
+                        <th scope="col" class="col-center">Периода обучения</th>
+                    </tr>
+                </thead>
+                {% for application in applications %}
+                    <tr>
+                        <td>{{ application.applicant }}</td>
+                        <td>
+                            <b>Статус РвР:</b> {{ application.rvr_status }} <br>
+                            <b>Статус Атлас:</b> {{ application.atlas_status }}
+                        </td>
+                        <td style="text-wrap: nowrap;">
+                            {{ application.applicant.email }} <br>
+                            {{ application.applicant.phone_number }}
+                        </td>
+                        <td>{{ application.education_program.program_name }}</td>
+                        <td class="col-center">
+                            с {{ application.group.start_date }} <br>
+                            по {{ application.group.end_date }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                    {% comment %} <tr class='sticky-bottom'>
+                        <td>Всего</td>
+                    </tr> {% endcomment %}
+            </table>
         </div>
         {% if project == 'bilet' and center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'DWNLD'  or center_project_year.stage == 'FNSHD' %}
             <div class="scan-step step" data-step="8" {%if stage == 8%}style="display:block;"{%else%}style="display:none;"{%endif%}>
