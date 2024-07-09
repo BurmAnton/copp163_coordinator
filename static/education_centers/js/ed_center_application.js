@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 })
 
+
 function check_file_extention(file, valid_extentions){
     if (file.value === ''){
         return true
@@ -89,3 +90,4 @@ function validateFile(fileInput) {
         fileInput.value = null;
     }
 }
+

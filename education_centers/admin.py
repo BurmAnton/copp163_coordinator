@@ -216,7 +216,11 @@ class GroupAdmin(admin.ModelAdmin):
     
     search_fields = ['name', 'start_date', 'end_date']
     list_display = ('education_program', 'ed_center', 'start_date', 'end_date')
-    #fieldsets = ('education_program', 'ed_center', 'start_date', 'end_date')
+    fieldsets = (
+        (None, {'fields': (
+                'education_program', 'education_center', 'start_date', 'end_date'
+            )}),
+    )
 
     def ed_center(self, group):
         if group.education_center == None:

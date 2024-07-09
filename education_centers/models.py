@@ -74,7 +74,7 @@ class EducationCenter(models.Model):
         verbose_name_plural = "Центры обучения"
 
     def __str__(self):
-        return self.short_name
+        return f'{self.short_name}'
     
 
 class EducationProgram(models.Model):

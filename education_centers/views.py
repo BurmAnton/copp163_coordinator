@@ -1039,6 +1039,13 @@ def ed_center_application(request, ed_center_id):
         'atlas_status'
     )
 
+    
+    appl_programs = EducationProgram.objects.filter(programm_applicants__in=applications).distinct()
+    groups = Group.objects.filter(students__in=applications).distinct()
+    if 'filter-groups' in request.POST:
+        stage = 7
+        applications = applications.filter(group__in=request.POST.getlist('groups'))
+
     return render(request, "education_centers/ed_center_application.html", {
         'ed_center': ed_center,
         'employees': employees,
@@ -1071,7 +1078,8 @@ def ed_center_application(request, ed_center_id):
         # 'plans': plans,
         # 'monthly_plans': monthly_plans,
         # 'months': AVAILABLE_MONTHS
-        'applications': applications
+        'applications': applications,
+        'groups': groups
     })
 
 @csrf_exempt
