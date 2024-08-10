@@ -6,7 +6,7 @@ from django.db.models import Sum, Q
 from education_centers.models import ContractorsDocument, DocumentType, EducationCenter
 from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndicator, NetworkAgreement
 from future_ticket.models import ContractorsDocumentTicket,\
-        DocumentTypeTicket, EducationCenterTicketProjectYear, TicketQuota
+        DocumentTypeTicket, EducationCenterTicketProjectYear, TicketProjectYear, TicketQuota
 
 register = template.Library()
 
@@ -27,7 +27,9 @@ def count_programs(center):
 
 @register.filter
 def count_people(ndc_type, pay_status):
-    centers = EducationCenterTicketProjectYear.objects.all()
+    project_year = 2024
+    project_year = get_object_or_404(TicketProjectYear, year=int(project_year))
+    centers = EducationCenterTicketProjectYear.objects.filter(project_year=project_year)
     if ndc_type == "NDC":
         centers = centers.filter(is_ndc=True)
     elif ndc_type == "NNDC":

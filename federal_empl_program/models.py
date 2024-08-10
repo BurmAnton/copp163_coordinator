@@ -101,7 +101,7 @@ class EducationCenterProjectYear(models.Model):
    
     def save(self, *args, **kwargs):
         super(EducationCenterProjectYear, self).save(*args, **kwargs)
-        cache.clear()
+        #cache.clear()
 
     class Meta:
         verbose_name = "Данные колледжа на год"
