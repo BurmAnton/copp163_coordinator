@@ -1111,8 +1111,8 @@
     
     <div class="page-hdr">
         <h1>Формирование заявки на ПКО<br>(сетевой договор)</h1>
-        <div class="project-choice" style="display: none;">
-            <a data-project="bilet" style="display: none;" href="{% url 'ed_center_application' ed_center.id %}?p=bilet" class="project-btn btn {%if project == 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Билет в будущее</a>
+        <div class="project-choice">
+            <a data-project="bilet" href="{% url 'ed_center_application' ed_center.id %}?p=bilet" class="project-btn btn {%if project == 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Билет в будущее</a>
             <a data-project="zan"  href="{% url 'ed_center_application' ed_center.id %}?p=zan" class="project-btn btn {%if project != 'bilet' %}btn-primary{%else%}btn-outline-primary{%endif%}">Содействие занятости</a>
         </div>
     </div>
@@ -1125,8 +1125,8 @@
                 <a data-step="3" class="step-btn btn {%if stage == 3%}btn-primary{%else%}btn-outline-primary{%endif%}">Программы</a>
                 <a data-step="4" class="step-btn btn {%if stage == 4%}btn-primary{%else%}btn-outline-primary{%endif%}">Кадры</a>
                 <a data-step="5" class="step-btn btn {%if stage == 5%}btn-primary{%else%}btn-outline-primary{%endif%}">МТБ</a>
-                <a data-step="6" class="step-btn btn {%if stage == 6%}btn-primary{%else%}btn-outline-primary{%endif%}">Договор</a>
-                <a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Заявки</a>
+                {% if project != 'bilet' %}<a data-step="6" class="step-btn btn {%if stage == 6%}btn-primary{%else%}btn-outline-primary{%endif%}">Договор</a>
+                <a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Заявки</a>{% endif %}
                 {% if project == 'bilet' %}<a data-step="7" class="step-btn btn {%if stage == 7%}btn-primary{%else%}btn-outline-primary{%endif%}">Квоты</a>{% endif %}
                 {% if project == 'bilet' %}
                     {% if center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'DWNLD' or center_project_year.stage == 'FNSHD'%}
@@ -1510,7 +1510,7 @@
                         {%else%}
                             {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
                                 <button class="btn btn-outline-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramsModal">Добавить из банка программы</button>
-                                <!--<button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить новую</button>-->
+                                <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить новую</button>
                             {%endif%}
                         {%endif%}
                     </div>
@@ -1898,54 +1898,97 @@
             </div>
         </div>
         <div class="quota-step step" data-step="7" {%if stage == 7%} style="display:block;"{%else%}style="display:none;"{%endif%}>
-            <div class="step-hdr" style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 5px;">
-                <h2>Заявки (Атлас)</h2>
-                <h3>Последний импорт: {{ project_year.appls_last_update }}</h3>
-            </div>
             
-                <form action="{% url 'ed_center_application' ed_center.id %}" style="display: flex; align-items: flex-start;gap: 15px;" method="post">
-                    <div class="form mb-3" style="width: 400px!important;">
-                        <select class="selectpicker" title="Потоки" multiple data-width="100%" data-live-search="true" name="groups" id="AtlasFilter">
-                            {% for group in groups %}
-                                <option class="school" value="{{ group.id }}">{{ group }}</option>
-                            {% endfor %}
-                        </select>
+            {% if project == 'bilet' %}
+                <div class="step-hdr" style="display: flex;flex-direction: column;">
+                    <h2>Квота</h2>
+                </div>
+                    {% for profession in chosen_professions %}
+                        <h3 style="padding: 0;margin-bottom: 10px;margin-top: 10px;">{{profession.name}} ({{profession.prof_enviroment__name}})</h3>
+                        <table class="table">
+                            <tr>
+                                <th scope="row">№</th>
+                                <th scope="row">Школа</th>
+                                <th scope="row">Квота</th>
+                            </tr>
+                                {% for profession in center_quota|get_profession_quota:profession %}
+                                <tr>
+                                    <td scope="row">{{ forloop.counter }}</td>
+                                    <td scope="row">{{profession.school}}</td>
+                                    <td scope="row">{{profession.value}}</td>
+                                </tr>
+                                {% empty %}
+                                <tr><td scope="row" class="none-alert" colspan="3">Не добавлено ни одной квоты</td></tr>
+                                {% endfor %}
+                            </tr>
+                        </table>
+                        <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
+                            <input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>
+                            <input type="input" style="display: none;" class="form-control" name="profession" value="{{profession.id}}" required>
+                            <div class="profession-quota">
+                                <div class="form mb-3 selectpicker school">
+                                    <select class="selectpicker school-selectpicker" title="Школа" data-live-search="true" name="school_id" required>
+                                        {% for school in schools %}
+                                            <option value="{{school.id}}">{{school.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="w-45 mb-3">
+                                    <input type="number" class="form-control" name="quota" placeholder="квота" required>
+                                </div>
+                                <button class="btn btn-outline-primary" name="add-school">Добавить школу</button>
+                            </div>
+                        </form>
+                    {% endfor %}
+                {% else %}
+                    <div class="step-hdr" style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <h2>Заявки (Атлас)</h2>
+                        <h3>Последний импорт: {{ project_year.appls_last_update }}</h3>
                     </div>
-                    <button class="btn btn-primary" name="filter-groups">Фильтровать</button>
-                </form>
-            
-            <table class="table atlas-applications">
-                <thead class="sticky-top">
-                    <tr> 
-                        <th scope="col">ФИО</th>
-                        <th scope="col">Статус</th>
-                        <th scope="col">Контакты</th>
-                        <th scope="col">Программа</th>
-                        <th scope="col" class="col-center">Периода обучения</th>
-                    </tr>
-                </thead>
-                {% for application in applications %}
-                    <tr>
-                        <td>{{ application.applicant }}</td>
-                        <td>
-                            <b>Статус РвР:</b> {{ application.rvr_status }} <br>
-                            <b>Статус Атлас:</b> {{ application.atlas_status }}
-                        </td>
-                        <td style="text-wrap: nowrap;">
-                            {{ application.applicant.email }} <br>
-                            {{ application.applicant.phone_number }}
-                        </td>
-                        <td>{{ application.education_program.program_name }}</td>
-                        <td class="col-center">
-                            с {{ application.group.start_date }} <br>
-                            по {{ application.group.end_date }}
-                        </td>
-                    </tr>
-                {% endfor %}
-                    {% comment %} <tr class='sticky-bottom'>
-                        <td>Всего</td>
-                    </tr> {% endcomment %}
-            </table>
+                    <form action="{% url 'ed_center_application' ed_center.id %}" style="display: flex; align-items: flex-start;gap: 15px;" method="post">
+                        <div class="form mb-3" style="width: 400px!important;">
+                            <select class="selectpicker" title="Потоки" multiple data-width="100%" data-live-search="true" name="groups" id="AtlasFilter">
+                                {% for group in groups %}
+                                    <option class="school" value="{{ group.id }}">{{ group }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" name="filter-groups">Фильтровать</button>
+                    </form>
+                
+                <table class="table atlas-applications">
+                    <thead class="sticky-top">
+                        <tr> 
+                            <th scope="col">ФИО</th>
+                            <th scope="col">Статус</th>
+                            <th scope="col">Контакты</th>
+                            <th scope="col">Программа</th>
+                            <th scope="col" class="col-center">Периода обучения</th>
+                        </tr>
+                    </thead>
+                    {% for application in applications %}
+                        <tr>
+                            <td>{{ application.applicant }}</td>
+                            <td>
+                                <b>Статус РвР:</b> {{ application.rvr_status }} <br>
+                                <b>Статус Атлас:</b> {{ application.atlas_status }}
+                            </td>
+                            <td style="text-wrap: nowrap;">
+                                {{ application.applicant.email }} <br>
+                                {{ application.applicant.phone_number }}
+                            </td>
+                            <td>{{ application.education_program.program_name }}</td>
+                            <td class="col-center">
+                                с {{ application.group.start_date }} <br>
+                                по {{ application.group.end_date }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                        {% comment %} <tr class='sticky-bottom'>
+                            <td>Всего</td>
+                        </tr> {% endcomment %}
+                </table>
+            {% endif %}
         </div>
         {% if project == 'bilet' and center_project_year.stage == 'FRMD' or center_project_year.stage == 'PRVD' or center_project_year.stage == 'DWNLD'  or center_project_year.stage == 'FNSHD' %}
             <div class="scan-step step" data-step="8" {%if stage == 8%}style="display:block;"{%else%}style="display:none;"{%endif%}>

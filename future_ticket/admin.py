@@ -20,7 +20,7 @@ class StudentBVBAdmin(admin.ModelAdmin):
         'bvb_id', 'full_name', 'is_double', 'is_attend', 'school', 'event'
     ]
 
-#@admin.register(TicketProjectYear)
+@admin.register(TicketProjectYear)
 class TicketProjectYearAdmin(admin.ModelAdmin):
     list_display = ['year']
 

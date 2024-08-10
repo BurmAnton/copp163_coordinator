@@ -66,7 +66,7 @@ def applications(request):
     programs_count = None
     if 'bilet' in request.POST: project = 'bilet'
     if project_year != '': project_year = int(project_year)
-    else: project_year = 2023
+    else: project_year = 2024
     if project == 'bilet':
         project_year = get_object_or_404(TicketProjectYear, year=project_year)
         centers_project_year = EducationCenterTicketProjectYear.objects.filter(
@@ -193,7 +193,7 @@ def ed_center_application(request, ed_center_id):
     if 'bilet' in request.POST: project = 'bilet'
     project_year = request.GET.get('y', '')
     if project_year != '': project_year = int(project_year)
-    else: project_year = 2023
+    else: project_year = 2024
     stage = request.GET.get('s', '')
     if stage != '': stage = int(stage)
     else: stage = 7
@@ -227,9 +227,11 @@ def ed_center_application(request, ed_center_id):
         center_project_year = EducationCenterProjectYear.objects.get_or_create(
                 project_year=project_year, ed_center=ed_center)[0]
         center_quota = None
-    net_agreement, is_new = NetworkAgreement.objects.get_or_create(
-        ed_center_year=center_project_year
-    )
+    net_agreement = None
+    if project != 'bilet':
+        net_agreement, is_new = NetworkAgreement.objects.get_or_create(
+            ed_center_year=center_project_year
+        )
 
     if request.method == "POST":
         if 'download-contract' in request.POST:
@@ -992,8 +994,9 @@ def ed_center_application(request, ed_center_id):
     disability_types = DisabilityType.objects.all().values('id', 'name')
     age_groups = AgeGroup.objects.all()
 
-    
-    qualified_programs = get_qualified_programs(programs)
+    qualified_programs = None
+    if project != 'bilet':
+        qualified_programs = get_qualified_programs(programs)
     if 'add-network' in request.POST:
         net_agreement.programs.add(*request.POST.getlist('qualified_programs'))
         net_agreement.save()
