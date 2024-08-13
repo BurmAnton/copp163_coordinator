@@ -280,6 +280,15 @@ body table td {
   display: flex;
   justify-content: flex-end;
 }
+.steps .quota-step .profession-quota {
+  display: flex;
+  align-items: flex-start;
+  -moz-column-gap: 10px;
+       column-gap: 10px;
+}
+.steps .quota-step .profession-quota .bootstrap-select {
+  width: 350px;
+}
 .steps .quota-step .table {
   border-bottom: 1px solid #dee2e6;
 }

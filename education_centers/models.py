@@ -211,6 +211,8 @@ class Teacher(models.Model):
                                  null=False)
     position = models.CharField("Ученая степень/должность", max_length=150, 
                                 blank=True, null=True)
+    phone = models.CharField("Телефон(-ы)", max_length=120, blank=True, null=True)
+    email = models.EmailField(_('email address'), blank=True, null=True)
     EMPLOYMENT_TYPES = (
         ('STFF', 'Штатный педагогический сотрудник'),
         ('TTRC', 'Привлеченный педагогический работник')
@@ -236,6 +238,9 @@ class Teacher(models.Model):
         "Наличие доп. проф. образования по профилю программы за последние 3 года", 
         null=True, blank=True
     )
+    is_experienced = models.BooleanField("Обладает опытом по тематике мероприятия?", default=False)
+    is_certified = models.BooleanField("Имеет профессиональные сертификации по компетенции?", default=False)
+
     def doc_directory_path(instance, filename):
         return 'media/consents/{0}/{1}/{2}'.format(
             instance.organization.id, 

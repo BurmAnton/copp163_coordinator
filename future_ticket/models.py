@@ -207,6 +207,8 @@ class EducationCenterTicketProjectYear(models.Model):
         blank=False,
         on_delete=models.CASCADE
     )
+    quota = models.IntegerField('Квота ЦО', null=False, blank=False, default=0)
+    locked_quota = models.IntegerField('Израсходованная квота ЦО', null=False, blank=False, default=0)
     STAGES = [
         ('FLLNG', "заполнение"),
         ('FLLD', "на проверке"),
@@ -237,6 +239,13 @@ class EducationCenterTicketProjectYear(models.Model):
     none_ndc_reason = models.CharField(
         "Основание работы без НДС", max_length=500, null=True, blank=True, default=""
     )
+
+    exp_ticket_events = models.IntegerField('Колво мероприятий в рамках «Билет в будущее»', null=False, blank=False, default=0)
+    exp_predprof = models.IntegerField('Колво предпрофильных курсов/мастер-классов', null=False, blank=False, default=0)
+    exp_skillsguide = models.IntegerField('Колво проб в рамках «Мой выбор»', null=False, blank=False, default=0)
+    exp_other_events = models.IntegerField('Колво прочих мероприятий профориентационного характера', null=False, blank=False, default=0)
+    is_disability_friendly = models.BooleanField(" Может обеспечить участия ОВЗ?", default=False)
+    
     step_1_check = models.BooleanField("Шаг 1. Проверка", default=False)
     step_1_commentary = models.TextField(
         "Шаг 1. Комментарий", null=True, blank=True, default=""
@@ -260,6 +269,10 @@ class EducationCenterTicketProjectYear(models.Model):
     step_6_check = models.BooleanField("Шаг 6. Проверка", default=False)
     step_6_commentary = models.TextField(
         "Шаг 6. Комментарий", null=True, blank=True, default=""
+    )
+    step_7_check = models.BooleanField("Шаг 7. Проверка", default=False)
+    step_7_commentary = models.TextField(
+        "Шаг 7. Комментарий", null=True, blank=True, default=""
     )
     step_8_check = models.BooleanField("Шаг 8. Проверка", default=False)
     step_8_commentary = models.TextField(

@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load ed_centers_extras %}
+
+{% block title %}Импорт квот 2024{% endblock %}
+{% block style %}
+        <link href="{% static 'future_ticket/css/import_programs.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script src="{% static 'education_centers/js/fed-empl.js' %}" rel="stylesheet"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="modal-body">
+        <div class="import-form">
+            <h2>Импорт квот 2024 (БВБ)</h2>
+            {{message}}
+            <form enctype="multipart/form-data" action="{% url 'import_quotas_2024' %}" method="post">
+                <div class="mb-3">
+                    {{ form }}
+                </div>
+                <button type="submit" class="btn btn-primary" name="import-participants">Импортировать</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

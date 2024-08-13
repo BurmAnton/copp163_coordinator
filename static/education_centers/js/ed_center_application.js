@@ -22,7 +22,28 @@ document.addEventListener('DOMContentLoaded', function() {
             })
         })
     })
-    //document.querySelector('#IsNewProfession').addEventListener('click', (checkbox) => {
+    document.querySelectorAll('.program-disabilities').forEach(checkbox =>{
+        checkbox.addEventListener('change', (input) => {
+            
+            if(input.srcElement.parentElement.querySelector('button').title === 'ОВЗ'){
+                input.srcElement.parentElement.parentElement.parentElement.querySelector('.is_disability_checkbox').required = false
+                input.srcElement.parentElement.parentElement.parentElement.querySelector('.is_disability_checkbox').parentElement.style.display = 'none'
+            } else{ 
+                input.srcElement.parentElement.parentElement.parentElement.querySelector('.is_disability_checkbox').required = true
+                input.srcElement.parentElement.parentElement.parentElement.querySelector('.is_disability_checkbox').parentElement.style.display = 'block'
+            }
+        })
+    })
+    // document.querySelector('.program-disabilities').addEventListener('change', (input) => {
+    //     if(input.srcElement.parentElement.querySelector('button').title === 'ОВЗ'){
+    //         document.querySelector('#IsDisableReadyCheckbox').required = false
+    //         document.querySelector('#IsDisableReadyCheckbox').parentElement.style.display = 'none'
+    //     } else{ 
+    //         document.querySelector('#IsDisableReadyCheckbox').required = true
+    //         document.querySelector('#IsDisableReadyCheckbox').parentElement.style.display = 'block'
+    //     }
+    // })
+    // document.querySelector('#IsNewProfession').addEventListener('click', (checkbox) => {
     //    if (checkbox.srcElement.checked) {
     //         document.querySelector('#Profession').parentElement.parentElement.style.display = 'none';
     //         document.querySelector('#Profession').required = false;
