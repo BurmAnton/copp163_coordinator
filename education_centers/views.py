@@ -66,6 +66,7 @@ def applications(request):
     programs_count = None
     if 'bilet' in request.POST: project = 'bilet'
     if project_year != '': project_year = int(project_year)
+    elif project != 'zan': project_year = 2023
     else: project_year = 2024
     if project == 'bilet':
         project_year = get_object_or_404(TicketProjectYear, year=project_year)
