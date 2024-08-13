@@ -193,6 +193,8 @@ def ed_center_application(request, ed_center_id):
     if 'bilet' in request.POST: project = 'bilet'
     project_year = request.GET.get('y', '')
     if project_year != '': project_year = int(project_year)
+    elif project != 'bilet': project_year = 2023
+    
     else: project_year = 2024
     stage = request.GET.get('s', '')
     if stage != '': stage = int(stage)
