@@ -6,8 +6,8 @@ from openpyxl import load_workbook
 
 from citizens.models import School
 from education_centers.models import EducationCenter, Teacher
-from future_ticket.models import (AgeGroup, ProfEnviroment, ProgramAuthor,
-                                  StudentBVB, TicketProfession, TicketProgram,
+from future_ticket.models import (AgeGroup, EducationCenterTicketProjectYear, ProfEnviroment, ProgramAuthor,
+                                  StudentBVB, TicketProfession, TicketProgram, TicketProjectYear,
                                   TicketQuota)
 
 
@@ -298,6 +298,32 @@ def programs(form):
         'Import', 'OK', added_programs_count, 
         change_programs_count,  missing_fields, errors
     ]
+
+def quotas(form):
+    try:
+        sheet = get_sheet(form)
+    except IndexError:
+        return ['Import', 'IndexError']
+
+    #Требуемые поля таблицы
+    fields_names = {
+        'ЦО', 'Квота 2024',
+    }
+
+    cheak_col_names = cheak_col_match(sheet, fields_names)
+    if cheak_col_names[0] != True:
+        return cheak_col_names
+
+    sheet = load_worksheet_dict(sheet, cheak_col_names[1])
+    project_year = TicketProjectYear.objects.get(year=2024)
+    for row in range(len(sheet['ЦО'])):
+        short_name = sheet["ЦО"][row]
+        ed_center = EducationCenter.objects.get(short_name=short_name)
+        ed_center_year, _ = EducationCenterTicketProjectYear.objects.get_or_create(ed_center=ed_center, project_year=project_year)
+        ed_center_year.quota = int(sheet["Квота 2024"][row])
+        ed_center_year.save()
+    return "Ok"
+
 
 def load_program(sheet, row):
     missing_fields = []

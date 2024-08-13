@@ -13,6 +13,12 @@ urlpatterns = [
         views.schools_applications, 
         name='schools_applications'
     ),
+    
+    path(
+        'quotas/import/2024', 
+        views.import_quotas_2024, 
+        name='import_quotas_2024'
+    ),
     path(
         'professions/import/', 
         views.import_ticket_professions, 

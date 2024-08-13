@@ -30,13 +30,13 @@ class EducationCenterTicketProjectYearAdmin(admin.ModelAdmin):
     list_display = ['ed_center', 'project_year']
 
 
-#@admin.register(TicketProjectPosition)
+@admin.register(TicketProjectPosition)
 class TicketProjectPositionAdmin(admin.ModelAdmin):
     search_fields = ['position',]
     list_display = ['position', 'is_basis_needed', 'project_year']
 
 
-#@admin.register(TicketEdCenterEmployeePosition)
+@admin.register(TicketEdCenterEmployeePosition)
 class TicketEdCenterEmployeePositionAdmin(admin.ModelAdmin):
     search_fields = [
         'position__position', 

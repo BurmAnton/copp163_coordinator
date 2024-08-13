@@ -196,6 +196,21 @@ def import_schools_address(request):
     })
 
 @csrf_exempt
+def import_quotas_2024(request):
+    form = ImportDataForm()
+    message = None
+    if request.method == 'POST':
+        form = ImportDataForm(request.POST, request.FILES)
+        if form.is_valid():
+            data = imports.quotas(form)
+            message = data
+    
+    return render(request, "future_ticket/import_quotas_2024.html", {
+        'message': message,
+        'form' : ImportDataForm(),
+    })
+
+@csrf_exempt
 def merge_ticket_professions(request):
     form = ImportDataForm()
     message = None
