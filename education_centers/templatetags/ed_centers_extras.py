@@ -6,7 +6,7 @@ from django.db.models import Sum, Q
 from education_centers.models import ContractorsDocument, DocumentType, EducationCenter
 from federal_empl_program.models import EdCenterEmployeePosition, EdCenterIndicator, NetworkAgreement
 from future_ticket.models import ContractorsDocumentTicket,\
-        DocumentTypeTicket, EducationCenterTicketProjectYear, TicketProjectYear, TicketQuota
+        DocumentTypeTicket, EducationCenterTicketProjectYear, TicketFullQuota, TicketProjectYear, TicketQuota
 
 register = template.Library()
 
@@ -30,6 +30,7 @@ def count_people(ndc_type, pay_status):
     project_year = 2024
     project_year = get_object_or_404(TicketProjectYear, year=int(project_year))
     centers = EducationCenterTicketProjectYear.objects.filter(project_year=project_year)
+    full_quota = TicketFullQuota.objects.get(project_year=project_year)
     if ndc_type == "NDC":
         centers = centers.filter(is_ndc=True)
     elif ndc_type == "NNDC":
@@ -44,7 +45,7 @@ def count_people(ndc_type, pay_status):
             ticket_project_years__in=centers,
         ).distinct()
     people_count = TicketQuota.objects.filter(
-        ed_center__in=centers).aggregate(
+        quota=full_quota, ed_center__in=centers).aggregate(
         quota_count=Sum('completed_quota'))['quota_count']
     if people_count == None:
         return 0
@@ -97,15 +98,21 @@ def count_full_price_w_ndc(ndc_type):
     full_amount_wo_ndc = people_count_wo_ndc * 1083.33
     ndc = round(((people_count_wo_ndc * 1300) / 1.2 - (people_count_wo_ndc * 1300)) * -1, 2)
     full_amount = full_amount_w_ndc + full_amount_wo_ndc + ndc
+
     return "{:,.2f} ₽".format(full_amount).replace(',', ' ')
         
 @register.filter
 def ndc_sum(center):
     ed_center = center.ed_center
-    quota = TicketQuota.objects.filter(ed_center=ed_center).aggregate(
+    project_year = 2024
+    project_year = get_object_or_404(TicketProjectYear, year=int(project_year))
+    centers = EducationCenterTicketProjectYear.objects.filter(project_year=project_year)
+    full_quota = TicketFullQuota.objects.get(project_year=project_year)
+    quota = TicketQuota.objects.filter(ed_center=ed_center, quota=full_quota).aggregate(
         quota_count=Sum('completed_quota'))['quota_count']
     full_amount = quota * 1300
     ndc = round((full_amount / 1.2 - full_amount) * -1, 2)
+    breakpoint()
     if quota is None or quota == 0:
         return "-"
     return "{:,.2f} ₽".format(ndc).replace(',', ' ')
@@ -113,7 +120,10 @@ def ndc_sum(center):
 @register.filter
 def act_sum(center):
     ed_center = center.ed_center
-    quota = TicketQuota.objects.filter(ed_center=ed_center).aggregate(
+    project_year = 2024
+    project_year = get_object_or_404(TicketProjectYear, year=int(project_year))
+    full_quota = TicketFullQuota.objects.get(project_year=project_year)
+    quota = TicketQuota.objects.filter(ed_center=ed_center, quota=full_quota).aggregate(
         quota_count=Sum('completed_quota'))['quota_count']
     if quota is None or quota == 0:
         return "-"

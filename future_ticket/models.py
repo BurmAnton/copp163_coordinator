@@ -23,7 +23,7 @@ from users.models import DisabilityType, Organization
 
 # Create your models here.
 class ProfEnviroment(models.Model):
-    name = models.CharField("Название среды", max_length=100)
+    name = models.CharField("Название среды", max_length=300)
 
     class Meta:
         verbose_name = "Профессиональная среда"
@@ -45,6 +45,7 @@ class TicketProfession(models.Model):
     )
     is_federal = models.BooleanField("Федеральная?", default=False)
     is_centers = models.BooleanField("Создана ЦО?", default=False)
+    is_2024 = models.BooleanField("2024?", default=False)
 
     class Meta:
         verbose_name = "Профессия"
@@ -134,7 +135,8 @@ class TicketProgram(models.Model):
         choices=EDUCATION_FORMS, 
         verbose_name='Формат обучения', 
         blank=False, 
-        null=False
+        null=False,
+        default='FLL'
     )
     description = models.TextField(
         "Краткое описание задания", null=True, blank=True

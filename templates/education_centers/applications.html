@@ -134,15 +134,16 @@
                 <th scope="col">ЦО</th>
                 <th scope="col">Статус</th>
                 {% if project == 'bilet' and user.is_superuser or request.user.role == 'CNT' %}
+                    <th scope="col" style="text-align: center;">Квота</th>
                     <th scope="col">Упр. квотой</th>
-                    <th scope="col">Акт</th>
+                    {% comment %} <th scope="col">Акт</th>
                     <th scope="col">Счёт</th>
                     <th scope="col">Счёт-фактура</th>
                     <th scope="col">Сумма без НДС</th>
                     <th scope="col">НДС</th>
-                    <th scope="col">Оплачен?</th>
+                    <th scope="col">Оплачен?</th> {% endcomment %}
                     {% if user.role != 'CNT' %}
-                        <th scope="col">Справка</th>
+                        {% comment %} <th scope="col">Справка</th> {% endcomment %}
                     {% endif %}
                 {% else %}
                     <th scope="col">Программы: {{programs_count}}</th>
@@ -173,69 +174,66 @@
                     </td>
                     <td scope="row">{{ center.get_stage_display }}</td>
                     {% if project == 'bilet' and user.is_superuser or request.user.role == 'CNT' %}
-                    <td scope="row">
-                        <a href="{% url 'ticket_center_events' center.ed_center.id %}" target="_blank">
-                            Ссылка
-                        </a>  
-                    </td>
-                    <td scope="row">
-                        {% if center.stage == 'ACT' or center.stage == 'ACTS' %}
-                            <a href="{{ center|get_act }}" target="_blank">Акт</a>
-                        {% elif center.act_file.url != None %}
-                            <a href="{{center.act_file.url}}" target="_blank">Акт (подписанный)</a>
-                        {% else %}
-                        -
-                        {% endif %}
-                    </td>
-                    <td scope="row">
-                        {% if center.bill_file.url != None %}
-                            <a href="{{center.bill_file.url}}" target="_blank">Счёт</a>
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td scope="row">
-                        {% if center.is_ndc and center.ndc_bill_file.url != None %}
-                            <a href="{{center.ndc_bill_file.url}}" target="_blank">Счёт-фактура</a>
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td>{{center|act_sum}}</td>
-                    <td>
-                        {% if center.is_ndc %}
-                            {{center|ndc_sum}}
-                        {% else %}
-                            {{center.none_ndc_reason}}
-                        {% endif %}
-                    </td>
-                    <td style="text-align:center">
-                        {% if center.stage == 'PNVC' or center.stage == "NVCP"  %}
-                            <div class="form-check" style="display: flex; justify-content:center;">
-                                <input class="form-check-input" type="checkbox" name="center_{{center.id}}" {% if center.stage == "NVCP" %}checked{% endif %}>
-                            </div>
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    {% if user.role != 'CNT' %}
-                    <td>
-                        {% if center.stage == 'ACT' or center.stage == 'ACTS' or center.stage == 'PNVC' or center.stage == "NVCP" or center.stage == "NVC" %}
-                        <form action="" method="post" enctype="multipart/form-data">
-                            <input type="text" style="display: none;" value="{{center.id}}" name="center_year">
-                            <button name="generate-certificate" class=" btn btn-sm btn-outline-primary">Скачать</button>
-                        </form>
-                        {% endif %}
-                    </td>
+                        <td scope="row" style="text-align: center;">{{center.locked_quota}}/{{center.quota}}</td>
+                        <td scope="row">
+                            <a href="{% url 'ticket_center_events' center.ed_center.id %}" target="_blank">
+                                Ссылка
+                            </a>  
+                        </td>
+                        {% comment %} <td scope="row">
+                            {% if center.stage == 'ACT' or center.stage == 'ACTS' %}
+                                <a href="{{ center|get_act }}" target="_blank">Акт</a>
+                            {% elif center.act_file.url != None %}
+                                <a href="{{center.act_file.url}}" target="_blank">Акт (подписанный)</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td scope="row">
+                            {% if center.bill_file.url != None %}
+                                <a href="{{center.bill_file.url}}" target="_blank">Счёт</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td scope="row">
+                            {% if center.is_ndc and center.ndc_bill_file.url != None %}
+                                <a href="{{center.ndc_bill_file.url}}" target="_blank">Счёт-фактура</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{center|act_sum}}</td>
+                        <td>
+                            {% if center.is_ndc %}
+                                {{center|ndc_sum}}
+                            {% else %}
+                                {{center.none_ndc_reason}}
+                            {% endif %}
+                        </td>
+                        <td style="text-align:center">
+                            {% if center.stage == 'PNVC' or center.stage == "NVCP"  %}
+                                <div class="form-check" style="display: flex; justify-content:center;">
+                                    <input class="form-check-input" type="checkbox" name="center_{{center.id}}" {% if center.stage == "NVCP" %}checked{% endif %}>
+                                </div>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        {% if user.role != 'CNT' %}
+                        <td>
+                            {% if center.stage == 'ACT' or center.stage == 'ACTS' or center.stage == 'PNVC' or center.stage == "NVCP" or center.stage == "NVC" %}
+                            <form action="" method="post" enctype="multipart/form-data">
+                                <input type="text" style="display: none;" value="{{center.id}}" name="center_year">
+                                <button name="generate-certificate" class=" btn btn-sm btn-outline-primary">Скачать</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                        {% endif %} {% endcomment %}
+                    {%else %}
+                        <td>{{center|count_programs}}</td>
+                        <td><a href="{% url 'irpo_programs' center.ed_center.id %}" target="_blank">ссылка</a></td>
                     {% endif %}
-                {%else %}
-                <td>{{center|count_programs}}</td>
-                <td>
-                    <a href="{% url 'irpo_programs' center.ed_center.id %}" target="_blank">
-                        ссылка
-                    </a>
-                </td>
-                {% endif %}
                 </tr>
             {% endfor %}
         </table>
