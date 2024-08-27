@@ -395,32 +395,32 @@ def ed_center_application(request, ed_center_id):
                         TicketProfession, 
                         id=profession_id
                     )
-                description = request.POST['description']
-                teacher_id =request.POST['teacher_id']
-                teacher = get_object_or_404(Teacher, id=teacher_id)
+                # description = request.POST['description']
+                # teacher_id =request.POST['teacher_id']
+                # teacher = get_object_or_404(Teacher, id=teacher_id)
                 # email = request.POST['email']
                 # phone = request.POST['phone']
-                author, is_new = ProgramAuthor.objects.get_or_create(
-                    teacher=teacher,
-                )
-                author.phone=teacher.phone
-                author.email=teacher.email
-                author.save()
+                # author, is_new = ProgramAuthor.objects.get_or_create(
+                #     teacher=teacher,
+                # )
+                # author.phone=teacher.phone
+                # author.email=teacher.email
+                # author.save()
                 teachers = request.POST.getlist('teachers')
-                age_groups = request.POST.getlist('age_groups')
+                # age_groups = request.POST.getlist('age_groups')
                 disability_types = request.POST.getlist('disability_types')
                 program = TicketProgram(
                     ed_center=ed_center,
                     profession=profession,
-                    description=description,
-                    author=author,
-                    program_link=request.POST['program_link'],
+                    # description=description,
+                    # author=author,
+                    # program_link=request.POST['program_link'],
                     education_form='FLL',
                 )
                 program.save()
                 program.disability_types.add(*disability_types)
                 program.teachers.add(*teachers)
-                program.age_groups.add(*age_groups)
+                # program.age_groups.add(*age_groups)
                 center_project_year.programs.add(program)
             else:
                 competence_id = request.POST['competence_id']
@@ -995,7 +995,7 @@ def ed_center_application(request, ed_center_id):
                             'author__teacher__middle_name')
         )
         ticket_programs = programs.values('id', 'profession__name',)
-        professions = TicketProfession.objects.all().values(
+        professions = TicketProfession.objects.filter(is_2024=True).values(
             'id', 'name', 'prof_enviroment__name')
         chosen_professions = TicketProfession.objects.filter(
             programs__in=programs).distinct().values(

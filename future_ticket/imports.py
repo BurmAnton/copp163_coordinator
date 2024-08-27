@@ -224,6 +224,7 @@ def professions(form):
     errors = []
     added_professions_count = 0
     for row in range(len(sheet_dict['Наименование'])):
+        
         profession = load_profession(sheet_dict, row)
         if profession[0] == 'OK':
             if profession[1]:
@@ -245,17 +246,16 @@ def load_profession(sheet, row):
         prof_enviroment_name = prof_enviroment_name.strip().lower()
     else: missing_fields.append("Среда")
     if len(missing_fields) == 0:
-        prof_enviroment = ProfEnviroment.objects.filter(
-                name=prof_enviroment_name
-            )
-        if len(prof_enviroment) == 0: 
-            return ['WrongEnviroment', prof_enviroment_name, row]
-        prof_enviroment = prof_enviroment.first()
+        prof_enviroment, _ = ProfEnviroment.objects.get_or_create(name=prof_enviroment_name)
+        # if len(prof_enviroment) == 0: 
+        #     return ['WrongEnviroment', prof_enviroment_name, row]
+        # prof_enviroment = prof_enviroment.first()
         profession, is_new = TicketProfession.objects.get_or_create(
             name=name,
             prof_enviroment=prof_enviroment,
-            is_federal=False
+            is_2024=True
         )
+        
         return ['OK', is_new, profession]
     return ['MissingField', missing_fields, row]
 
