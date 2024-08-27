@@ -286,13 +286,13 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <div class="form mb-3 filter-selectpicker">
+                                {% comment %} <div class="form mb-3 filter-selectpicker">
                                     <select class="selectpicker w-100" title="Возрастные категории" data-live-search="true" name="age_groups" multiple required>
                                         {% for age_group in age_groups %}
                                             <option value="{{age_group.id}}">{{age_group.name}}</option>
                                         {% endfor %}
                                     </select>
-                                </div>
+                                </div> {% endcomment %}
                                 <div class="form mb-3 filter-selectpicker program-disabilities">
                                     <select class="selectpicker w-100" title="ОВЗ" data-live-search="true" name="disability_types" multiple>
                                         {% for disability_type in disability_types %}
