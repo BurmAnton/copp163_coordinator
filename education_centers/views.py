@@ -470,8 +470,8 @@ def ed_center_application(request, ed_center_id):
                 # education_major = request.POST['education_major'],
                 # position = request.POST['position'],
                 # experience = request.POST['experience']
-                email = request.POST['email'], 
-                phone = request.POST['phone'], 
+                email = "test@test.ru", 
+                phone = "+999", 
                 is_experienced = "is_experienced" in experience_2024,
                 is_certified = "is_certified" in experience_2024,
             )
@@ -607,23 +607,23 @@ def ed_center_application(request, ed_center_id):
                     id=profession_id
                 )
                 program.profession = profession
-                program.description = request.POST['description']
-                program.program_link=request.POST['program_link']
-                teacher_id =request.POST['teacher_id']
-                teacher = get_object_or_404(Teacher, id=teacher_id)
+                # program.description = request.POST['description']
+                # program.program_link=request.POST['program_link']
+                # teacher_id =request.POST['teacher_id']
+                # teacher = get_object_or_404(Teacher, id=teacher_id)
                 # email = request.POST['email']
                 # phone = request.POST['phone']
-                author, is_new = ProgramAuthor.objects.get_or_create(
-                    teacher=teacher,
-                )
-                author.phone=teacher.phone
-                author.email=teacher.email
-                author.save()
-                program.author = author
-                program.education_form = request.POST['education_form']
+                # author, is_new = ProgramAuthor.objects.get_or_create(
+                #     teacher=teacher,
+                # )
+                # author.phone=teacher.phone
+                # author.email=teacher.email
+                # author.save()
+                # program.author = author
+                # program.education_form = request.POST['education_form']
                 age_groups = request.POST.getlist('age_groups')
-                program.age_groups.clear()
-                program.age_groups.add(*age_groups)
+                # program.age_groups.clear()
+                # program.age_groups.add(*age_groups)
                 teachers = request.POST.getlist('teachers')
                 program.teachers.clear()
                 program.teachers.add(*teachers)
@@ -655,8 +655,8 @@ def ed_center_application(request, ed_center_id):
             experience_2024 = request.POST.getlist('experience_2024')
             teacher.organization=ed_center
             teacher.employment_type = request.POST['employment_type']
-            teacher.email = request.POST['email']
-            teacher.phone = request.POST['phone']
+            # teacher.email = request.POST['email']
+            # teacher.phone = request.POST['phone']
             teacher.is_experienced = "is_experienced" in experience_2024
             teacher.is_certified = "is_certified" in experience_2024
             # teacher.education_level = request.POST['education_level']
@@ -706,7 +706,10 @@ def ed_center_application(request, ed_center_id):
                 program = get_object_or_404(TicketProgram, id=program_id)
                 profession = program.profession
                 TicketQuota.objects.filter(quota=full_quota, ed_center=ed_center, profession=profession).delete()
-                center_project_year.locked_quota = TicketQuota.objects.filter(quota=full_quota, ed_center=ed_center).aggregate(quota_sum=Sum('value'))['quota_sum']
+                locked_quota = TicketQuota.objects.filter(quota=full_quota, ed_center=ed_center).aggregate(quota_sum=Sum('value'))['quota_sum']
+                if locked_quota is  None:
+                    locked_quota = 0
+                center_project_year.locked_quota = locked_quota
                 center_project_year.save()
             else:
                 program = get_object_or_404(EducationProgram, id=program_id)
@@ -718,7 +721,10 @@ def ed_center_application(request, ed_center_id):
             center_project_year.programs.remove(program)
             profession = program.profession
             TicketQuota.objects.filter(quota=full_quota, ed_center=ed_center, profession=profession).delete()
-            center_project_year.locked_quota = TicketQuota.objects.filter(quota=full_quota, ed_center=ed_center).aggregate(quota_sum=Sum('value'))['quota_sum']
+            locked_quota = TicketQuota.objects.filter(quota=full_quota, ed_center=ed_center).aggregate(quota_sum=Sum('value'))['quota_sum']
+            if locked_quota is None:
+                locked_quota = 0
+            center_project_year.locked_quota = locked_quota
             center_project_year.save()
         elif 'delete-teacher' in request.POST:
             stage=4
@@ -824,13 +830,19 @@ def ed_center_application(request, ed_center_id):
             )
             quota.value = value
             quota.save()
-            center_project_year.locked_quota = TicketQuota.objects.filter(quota=full_quota, ed_center=ed_center).aggregate(quota_sum=Sum('value'))['quota_sum']
+            locked_quota = TicketQuota.objects.filter(quota=full_quota, ed_center=ed_center).aggregate(quota_sum=Sum('value'))['quota_sum']
+            if locked_quota is None:
+                locked_quota = 0
+            center_project_year.locked_quota = locked_quota
             center_project_year.save()
         elif 'delete-quota' in request.POST:
             stage=7
             quota = get_object_or_404(TicketQuota, id=request.POST['id'])
             quota.delete()
-            center_project_year.locked_quota = TicketQuota.objects.filter(quota=full_quota, ed_center=ed_center).aggregate(quota_sum=Sum('value'))['quota_sum']
+            locked_quota = TicketQuota.objects.filter(quota=full_quota, ed_center=ed_center).aggregate(quota_sum=Sum('value'))['quota_sum']
+            if locked_quota is None:
+                locked_quota = 0
+            center_project_year.locked_quota = locked_quota
             center_project_year.save()
         elif 'approve-step' in request.POST:
             step = request.POST['step']

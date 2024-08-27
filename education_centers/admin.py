@@ -24,7 +24,7 @@ from .models import (AbilimpicsWinner, BankDetails, Competence,
                      EducationProgram, Group, Teacher, Workshop)
 
 
-#@admin.register(Teacher)
+@admin.register(Teacher)
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ['last_name', 'first_name', 'middle_name', 'organization', 'is_consent_file_upload']
     search_fields = [
