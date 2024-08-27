@@ -339,15 +339,14 @@
                                     <input type="input" class="form-control" id="MiddleNameTeacherInput" maxlength="30" name="middle_name" placeholder="Отчество">
                                     <label for="MiddleNameTeacherInput">Отчество</label>
                                 </div>
-                                <div class="form mb-3">
+                                {% comment %} <div class="form mb-3">
                                     <label for="EmailInput">Email</label>
                                     <input type="email" class="form-control" id="EmailInput{" name="email" placeholder="example@example.ru" required>
                                 </div>
                                 <div class="form mb-3">
                                     <label for="PhoneInput">Телефон</label>
                                     <input type="phone" class="form-control" id="PhoneInput" name="phone" maxlength="120" placeholder="+79271234567" required>
-                                    
-                                </div>
+                                </div> {% endcomment %}
                                 <div class="form mb-3 filter-selectpicker">
                                     <select class="selectpicker w-100" title="Тип трудоустройства" data-live-search="true" name="employment_type" required>
                                         <option value="STFF">Штатный педагогический сотрудник</option>
@@ -570,28 +569,28 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <div class="form-floating mb-3">
+                                {% comment %} <div class="form-floating mb-3">
                                     <input type="input" class="form-control" id="ProgramLinkInput{{program.id}}" name="program_link" value="{{program.program_link}}" maxlength="500" placeholder="Ссылка на программу" required {% if program.status != 'NEW' %}disabled{% endif %}>
                                     <label for="ProgramLinkInput{{program.id}}">Ссылка на программу</label>
                                 </div>
                                 <div class="form-floating mb-3">
                                     <input type="input" class="form-control" id="DescriptionInput{{program.id}}" name="description" value="{{program.description}}" maxlength="300" placeholder="Краткое описание задания" required {% if program.status != 'NEW' %}disabled{% endif %}>
                                     <label for="DescriptionInput{{program.id}}">Краткое описание задания</label>
-                                </div>
+                                </div> {% endcomment %}
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="IsMtbCheckbox" name="is_mtb" required {% if program.status != 'NEW' %}disabled{% endif %} checked>
                                     <label class="form-check-label" for="IsMtbCheckbox">
                                         Подтверждаем наличие необходимых материально-технических ресурсов для проведения мероприятий 
                                     </label>
                                 </div>
-                                <div class="form mb-3 filter-selectpicker">
+                                {% comment %} <div class="form mb-3 filter-selectpicker">
                                     <select class="selectpicker w-100" title="Автор" data-live-search="true" name="teacher_id" required {% if program.status != 'NEW' %}disabled{% endif %}>
                                         <option selected value="{{program.author.teacher.id}}">{{program.author_name}}</option>
                                         {% for teacher in teachers %}
                                             <option value="{{teacher.id}}">{{teacher.full_name}}</option>
                                         {% endfor %}
                                     </select>
-                                </div>
+                                </div> {% endcomment %}
                                 <div class="form mb-3 filter-selectpicker">
                                     <select class="selectpicker w-100" title="Наставники" data-live-search="true" name="teachers" multiple required>
                                         {% for teacher in teachers %}
@@ -599,7 +598,7 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <div class="form mb-3 filter-selectpicker">
+                                {% comment %} <div class="form mb-3 filter-selectpicker">
                                     <select class="selectpicker w-100" title="Форма обучения" data-live-search="true" name="education_form" required {% if program.status != 'NEW' %}disabled{% endif %}>
                                         <option selected value="{{program.education_form}}">{{program.get_education_form_display}}</option>
                                         <option value="FLLLN">Очная с применением ДОТ</option>
@@ -612,7 +611,7 @@
                                             <option value="{{age_group.id}}" {% if age_group in program.age_groups.all %}selected{% endif %}>{{age_group.name}}</option>
                                         {% endfor %}
                                     </select>
-                                </div>
+                                </div> {% endcomment %}
                                 <div class="form mb-3 filter-selectpicker program-disabilities">
                                     <select class="selectpicker w-100" title="ОВЗ" data-live-search="true" name="disability_types" {% if program.status != 'NEW' %}disabled{% endif %} multiple>
                                         {% for disability_type in program.disability_types.all %}
@@ -663,14 +662,14 @@
                                     <input type="input" class="form-control" id="MiddleNameTeacherInput{{teacher.id}}" maxlength="30" name="middle_name" placeholder="Отчество" value="{{teacher.middle_name}}">
                                     <label for="MiddleNameTeacherInput{{teacher.id}}">Отчество</label>
                                 </div>
-                                <div class="form-floating mb-3">
+                                {% comment %} <div class="form-floating mb-3">
                                     <input type="email" class="form-control" id="EmailInput" name="email" placeholder="Email" value="{{teacher.email}}" required>
                                     <label for="EmailInput">Email</label>
                                 </div>
                                 <div class="form-floating mb-3">
                                     <input type="phone" class="form-control" id="PhoneInput" name="phone" maxlength="120" placeholder="Телефон" value="{{teacher.phone}}" required>
                                     <label for="PhoneInput">Телефон</label>
-                                </div>
+                                </div> {% endcomment %}
                                 <div class="form mb-3 filter-selectpicker">
                                     <select class="selectpicker w-100" title="Тип трудоустройства" data-live-search="true" name="employment_type" required>
                                         <option value="{{teacher.employment_type}}" selected>{{teacher.get_employment_type_display}}</option>
@@ -1586,7 +1585,7 @@
                         {%else%}
                             {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
                                 {% comment %} <button class="btn btn-outline-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramsModal">Добавить из банка программы</button> {% endcomment %}
-                                <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить новую</button>
+                                <button class="btn btn-primary add-employee-mdl" data-bs-toggle="modal" data-bs-target="#AddProgramModal">Добавить программу</button>
                             {%endif%}
                         {%endif%}
                     </div>
@@ -1722,8 +1721,8 @@
                         {% if project == 'bilet' %}
                             {% comment %} <th scope="col">Профессии</th>
                             <th scope="col">Наличие профессиональных сертификаций по компетенции или диплома победителей/призеров конкурсов профмастерства</th> {% endcomment %}
-                            <th scope="col">Email</th>
-                            <th scope="col">Телефон</th>
+                            {% comment %} <th scope="col">Email</th>
+                            <th scope="col">Телефон</th> {% endcomment %}
                             <th scope="col">Тип трудоустройства</th>
                             <th scope="col">Опыт</th>
                         {%else %}
@@ -1739,8 +1738,8 @@
                             <td scope="row">{{teacher.position}}</td>
                             <td scope="row">{{teacher.experience}}</td> {% endcomment %}
                             {% if project == 'bilet' %}
-                                <td scope="col">{{teacher.email}}</td> 
-                                <td scope="col">{{teacher.phone}}</td> 
+                                {% comment %} <td scope="col">{{teacher.email}}</td> 
+                                <td scope="col">{{teacher.phone}}</td>  {% endcomment %}
                                 <td scope="col">{{teacher.get_employment_type_display}}</td> 
                                 <td scope="col">
                                     {% if teacher.is_experienced %}- Обладает опытом работы по профилю, связанному с тематикой профориентационного мероприятия, не менее одного года <br>{% endif %}
@@ -2014,8 +2013,11 @@
                         {% endif %}
                     </form>
                 {% endif %}
+                    <div class="alert alert-warning w-90" role="alert">
+                        Внимание! Распределение квоты между школами, является предварительным и может быть изменено в дальшнейшем.
+                    </div>
                     {% for profession in chosen_professions %}
-                        <h3 style="padding: 0;margin-bottom: 10px;margin-top: 10px;">{{profession.name}} ({{profession.prof_enviroment__name}})</h3>
+                        <h3 style="padding: 0;margin-bottom: 10px;margin-top: 10px;">{{profession.name}}</h3>
                         <table class="table">
                             <tr>
                                 <th scope="row">№</th>
