@@ -36,24 +36,25 @@
             {% endfor %}
         </tr>
         {% for group in groups.values %}
-            <tr>
-                <td>{{ group|get_item:'education_program' }}</td>
-                <td>
-                    {% if group|get_item:'education_center' is None %}
-                        —
-                    {% else %}
-                        {{ group|get_item:'education_center' }}
-                    {% endif %}
-                </td>
-                <td style="text-wrap: nowrap;">
-                    {{ group|get_item:'start_date' }}-{{ group|get_item:'end_date' }}
-                </td>
-                
-                {% for status, appl in group|get_item:'statuses'|items  %}
-                    <td> {{ appl|length }} </td>
-                {% endfor %}
+            {% if group|get_item:'group'|check_group %}
+                <tr>
+                    <td>{{ group|get_item:'education_program' }}</td>
+                    <td>
+                        {% if group|get_item:'education_center' is None %}
+                            —
+                        {% else %}
+                            {{ group|get_item:'education_center' }}
+                        {% endif %}
+                    </td>
+                    <td style="text-wrap: nowrap;">
+                        {{ group|get_item:'start_date' }}-{{ group|get_item:'end_date' }}
+                    </td>
                     
-            </tr>
+                    {% for status, appl in group|get_item:'statuses'|items  %}
+                        <td> {{ appl|length }} </td>
+                    {% endfor %}
+                </tr>
+            {% endif %}
         {% endfor %}
     </table>
     

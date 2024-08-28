@@ -82,40 +82,45 @@ def import_atlas(form):
     project_year = ProjectYear.objects.get(year=2024)
     project_year.appls_last_update = datetime.now()
     project_year.save()
+    programs_404 = set()
     for row in range(len(sheet['Номер заявления на РР'])):
-        citizen, is_new = get_citizen(sheet, row)
-        if is_new: citizens['added'].add(citizen)
-        else: citizens['updated'].add(citizen)
-        application, is_new = Application.objects.get_or_create(
-            project_year=project_year,
-            applicant=citizen,
-        )
-        if is_new: 
-            update_application(application, sheet, row)
-            applications['added'].add(citizen)
-        elif (sheet['Статус заявки в Атлас'][row] != 'Отклонена'
-        or sheet["Статус заявки в РР"][row] != 'Услуга прекращена'):
-            update_application(application, sheet, row)
-            applications['updated'].add(citizen)
-        elif (application.rvr_status == 'Услуга прекращена' 
-        or application.atlas_status == 'Отклонена') \
-        or application.atlas_id == sheet["Номер заявления на РР"][row]: 
-            update_application(application, sheet, row)
-            applications['updated'].add(citizen)
+        program = get_program(sheet['Программа обучения'][row])
+        if program is None:
+            programs_404.add(sheet['Программа обучения'][row])
+        else:
+            citizen, is_new = get_citizen(sheet, row)
+            if is_new: citizens['added'].add(citizen)
+            else: citizens['updated'].add(citizen)
+            application, is_new = Application.objects.get_or_create(
+                project_year=project_year,
+                applicant=citizen,
+            )
+            if is_new: 
+                update_application(application, sheet, row)
+                applications['added'].add(citizen)
+            elif (sheet['Статус заявки в Атлас'][row] != 'Отклонена'
+            or sheet["Статус заявки в РР"][row] != 'Услуга прекращена'):
+                update_application(application, sheet, row)
+                applications['updated'].add(citizen)
+            elif (application.rvr_status == 'Услуга прекращена' 
+            or application.atlas_status == 'Отклонена') \
+            or application.atlas_id == sheet["Номер заявления на РР"][row]: 
+                update_application(application, sheet, row)
+                applications['updated'].add(citizen)
         
     return {
         'status': 'OK', 
         'citizens': citizens, 
-        'applications': applications
+        'applications': applications,
+        'programs_404': programs_404
     }
 
 
-def update_application(appl, sheet, row):
+def update_application(appl, sheet, row):   
     appl.atlas_id = sheet["Номер заявления на РР"][row]
     appl.rvr_status = sheet["Статус заявки в РР"][row]
     appl.atlas_status = sheet["Статус заявки в Атлас"][row]
     appl.status = get_appl_status(appl.rvr_status, appl.atlas_status)
-    
     appl.education_program = get_program(sheet["Программа обучения"][row])
     appl.group = get_group(sheet, row, appl.education_program)
     appl.education_center = appl.group.education_center
@@ -151,7 +156,10 @@ def get_category(category_name):
 
 
 def get_program(program_name):
-    return EducationProgram.objects.get(program_name=program_name, is_atlas=True)
+    try:
+        return EducationProgram.objects.get(program_name=program_name, is_atlas=True)
+    except:
+        return None
 
 
 def get_citizen(sheet, row):

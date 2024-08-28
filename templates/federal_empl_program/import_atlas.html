@@ -48,6 +48,16 @@
                     </div>
                 {% endif %}
             {% endif %}
+            {% if message|get_item:'programs_404' != "" %}
+                <div style="text-align: left; margin-top: 25px;" class="alert alert-warning" style="text-align: center;" role="alert">
+                    Следующие программы не найдены:
+                    <ul>
+                        {% for program in message|get_item:'programs_404' %}
+                            <li>{{program}}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

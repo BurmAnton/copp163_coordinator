@@ -617,6 +617,7 @@ def atlas_appls_dashboard(request):
     groups_d = {}
     for group in groups:
         groups_d[group.id] = {}
+        groups_d[group.id]['group'] = group
         groups_d[group.id]['education_program'] = group.education_program
         groups_d[group.id]['education_center'] = group.education_center
         groups_d[group.id]['start_date'] = group.start_date.strftime('%d/%m')

@@ -5,10 +5,21 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import stringfilter
 from django.db.models import Sum, F, Q
 
-from federal_empl_program.models import ProjectYear, FlowStatus, Application
+from education_centers.models import Group as GroupAtlas
+from federal_empl_program.models import ApplStatus, ProjectYear, FlowStatus, Application
 
 
 register = template.Library()
+
+
+@register.filter
+def check_group(group):
+    if group.start_date <= date.today():
+        project_year = get_object_or_404(ProjectYear, year=2024)
+        statuses = ApplStatus.objects.exclude(short_name__in=['canceled', 'undefined']).order_by('order')
+        not_canceld_appl = Application.objects.filter(project_year=project_year, status__in=statuses)
+        return group.students.filter(id__in=not_canceld_appl).count() != 0
+    return True
 
 
 @register.filter
