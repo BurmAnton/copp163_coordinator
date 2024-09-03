@@ -51,7 +51,7 @@ class TeacherAdmin(admin.ModelAdmin):
 class BankDetailsAdmin(admin.ModelAdmin):
     pass
 
-#@admin.register(DocumentType)
+@admin.register(DocumentType)
 class DocumentTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'stage']
 

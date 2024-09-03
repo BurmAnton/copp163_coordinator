@@ -228,8 +228,8 @@ def create_application(center_project_year, programs=None):
 
 def create_ticket_application(center_project_year):
     ed_center = center_project_year.ed_center
-    contact_position = TicketProjectPosition.objects.get(position="Контактное лицо и администратор ЦО")
-    sign_position = TicketProjectPosition.objects.get(position="Должностное лицо, подписывающее договор")
+    contact_position = TicketProjectPosition.objects.get(position="Контактное лицо и администратор ЦО", project_year=center_project_year.project_year)
+    sign_position = TicketProjectPosition.objects.get(position="Должностное лицо, подписывающее договор", project_year=center_project_year.project_year)
     programs = center_project_year.programs.all()
     professions = TicketProfession.objects.filter(
         programs__in=programs).distinct()
@@ -255,10 +255,10 @@ def create_ticket_application(center_project_year):
         'programs': programs,
         'professions': professions,
         'professions_dict': professions_dict,
-        'events': EdCenterTicketIndicator.objects.get(indicator__name="Мероприятия по профессиональной ориентации учащихся 6–11-х классов общеобразовательных организаций в рамках проекта «Билет в будущее»", ed_center=ed_center).value,
-        'training': EdCenterTicketIndicator.objects.get(indicator__name="Профессиональные пробы в рамках регионального проекта «Мой выбор»", ed_center=ed_center).value,
-        'courses': EdCenterTicketIndicator.objects.get(indicator__name="Предпрофильные курсы для учащихся 9-х классов, проведение дней открытых дверей с мастер-классами", ed_center=ed_center).value,
-        'nti': EdCenterTicketIndicator.objects.get(indicator__name="Прочие профориентационные мероприятия, включая Олимпиады НТИ (всероссийские многопрофильные командные инженерные соревнования для школьников 8-11 классов), фестивали и т.д.", ed_center=ed_center).value
+        # 'events': EdCenterTicketIndicator.objects.get(indicator__name="Мероприятия по профессиональной ориентации учащихся 6–11-х классов общеобразовательных организаций в рамках проекта «Билет в будущее»", ed_center=ed_center).value,
+        # 'training': EdCenterTicketIndicator.objects.get(indicator__name="Профессиональные пробы в рамках регионального проекта «Мой выбор»", ed_center=ed_center).value,
+        # 'courses': EdCenterTicketIndicator.objects.get(indicator__name="Предпрофильные курсы для учащихся 9-х классов, проведение дней открытых дверей с мастер-классами", ed_center=ed_center).value,
+        # 'nti': EdCenterTicketIndicator.objects.get(indicator__name="Прочие профориентационные мероприятия, включая Олимпиады НТИ (всероссийские многопрофильные командные инженерные соревнования для школьников 8-11 классов), фестивали и т.д.", ed_center=ed_center).value
     }
     doc_type = get_object_or_404(DocumentType, name="Заявка (БВБ)")
 
