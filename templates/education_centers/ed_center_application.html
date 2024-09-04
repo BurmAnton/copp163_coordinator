@@ -1212,7 +1212,7 @@
             <div class="generate-form">
                 <form action="{% url 'ed_center_application' ed_center.id %}" method="POST">
                     {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
-                    {% if user.is_superuser and project == 'bilet' %}
+                    {% if user.is_superuser and project == 'bilet' or  %}
                         <input style="height: 100%;" type="submit" class="btn btn-primary" name="generate-application" value="Сгенерировать заявку">
                     {% else %}
                         {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK'  %}
@@ -1220,7 +1220,7 @@
                                 <input style="height: 100%;" type="submit" class="btn btn-primary" name="send-application" value="Отправить на проверку">
                             {% endif %}
                         {% elif project == 'bilet' and center_project_year.stage != 'FLLNG' and center_project_year.stage != 'RWRK' and center_project_year.stage != 'FLLD' %}
-                            {% comment %} <input style="height: 100%;" type="submit" class="btn btn-primary" name="generate-application" value="Сгенерировать заявку"> {% endcomment %}
+                            <input style="height: 100%;" type="submit" class="btn btn-primary" name="generate-application" value="Сгенерировать заявку">
                         {% endif %}
                     {% endif %}
                 </form>
