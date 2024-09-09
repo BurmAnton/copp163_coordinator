@@ -1212,7 +1212,7 @@
             <div class="generate-form">
                 <form action="{% url 'ed_center_application' ed_center.id %}" method="POST">
                     {% if project == 'bilet'%}<input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>{%endif%}
-                    {% if user.is_superuser and project == 'bilet' or  %}
+                    {% if user.is_superuser and project == 'bilet'  %}
                         <input style="height: 100%;" type="submit" class="btn btn-primary" name="generate-application" value="Сгенерировать заявку">
                     {% else %}
                         {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK'  %}

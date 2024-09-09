@@ -180,13 +180,13 @@ def get_citizen(sheet, row):
     return [citizen, is_new]
     
 
-new_s = ["Требуется личная явка", "Принято в работу", "Требуется проведение видеоконференцсвязи"]
-apprv_s = ["Договор ожидает подписания", "Договор на подписании", "Одобрено центром занятости населения"]
-empl_contract_s = ["Заключён договор", ]
+new_s = ["Требуется личная явка", "Принято в работу", "Требуется проведение видеоконференцсвязи", "Приглашение отправлено", "Ожидание загрузки документов"]
+apprv_s = ["Договор ожидает подписания", "Договор на подписании", "Одобрено центром занятости населения", "Ожидает подписи соглашения", "Ожидание загрузки заявления", "Документы на иправлении"]
+empl_contract_s = ["Заключён договор", "Ожидание загрузки договора", "Заявление на иправлении", "Договор на иправлении"]
 ed_contract_s = ["Ожидает начала обучения", "Ожидает приказ на зачисление"]
 study_s = ["Обучается", "Проходит обучение"]
 cancel_s = ["Услуга прекращена", "Отклонена"]
-
+end_s = ['Услуга оказана',]
     
 def get_appl_status(rvr_status, atlas_status):
     short_name = "undefined"
@@ -194,13 +194,13 @@ def get_appl_status(rvr_status, atlas_status):
         short_name = "canceled"
     elif rvr_status in study_s or atlas_status in study_s:
         short_name = "studying"
-    elif atlas_status in ed_contract_s:
+    elif atlas_status in ed_contract_s or rvr_status in ed_contract_s:
         short_name = "ed_contract"
-    elif rvr_status in empl_contract_s:
+    elif rvr_status in empl_contract_s or atlas_status in empl_contract_s:
         short_name = "empl_contract"
-    elif rvr_status in apprv_s:
+    elif rvr_status in apprv_s or rvr_status in apprv_s:
         short_name = "approved"
-    elif rvr_status in new_s:
+    elif rvr_status in new_s or atlas_status in new_s:
         short_name = "new"
 
     return ApplStatus.objects.get(short_name=short_name)
