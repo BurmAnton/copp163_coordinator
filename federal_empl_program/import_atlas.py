@@ -68,7 +68,7 @@ def import_atlas(form):
         "Статус заявки в Атлас", "Статус заявки в РР",
         "Начало периода обучения", "Окончание периода обучения",
         "Программа обучения", "Категория гражданина", 
-        "Дата подачи заявки на РР", "Номер заявления на РР"
+        "Дата подачи заявки на РР", "Номер заявления на РР", "ID программы в заявке"
     }
 
     match_result = cheak_col_match(sheet, fields_names)
@@ -84,9 +84,9 @@ def import_atlas(form):
     project_year.save()
     programs_404 = set()
     for row in range(len(sheet['Номер заявления на РР'])):
-        program = get_program(sheet['Программа обучения'][row])
+        program = get_program(sheet['ID программы в заявке'][row])
         if program is None:
-            programs_404.add(sheet['Программа обучения'][row])
+            programs_404.add(f'{sheet['Программа обучения'][row]} ({sheet['ID программы в заявке'][row]})')
         else:
             citizen, is_new = get_citizen(sheet, row)
             if is_new: citizens['added'].add(citizen)
@@ -121,7 +121,7 @@ def update_application(appl, sheet, row):
     appl.rvr_status = sheet["Статус заявки в РР"][row]
     appl.atlas_status = sheet["Статус заявки в Атлас"][row]
     appl.status = get_appl_status(appl.rvr_status, appl.atlas_status)
-    appl.education_program = get_program(sheet["Программа обучения"][row])
+    appl.education_program = get_program(sheet["ID программы в заявке"][row])
     appl.group = get_group(sheet, row, appl.education_program)
     appl.education_center = appl.group.education_center
     appl.citizen_category = get_category(sheet["Категория гражданина"][row])
@@ -155,9 +155,9 @@ def get_category(category_name):
     return category
 
 
-def get_program(program_name):
+def get_program(atlas_id):
     try:
-        return EducationProgram.objects.get(program_name=program_name, is_atlas=True)
+        return EducationProgram.objects.get(atlas_id=atlas_id, is_atlas=True)
     except:
         return None
 
@@ -180,17 +180,29 @@ def get_citizen(sheet, row):
     return [citizen, is_new]
     
 
-new_s = ["Требуется личная явка", "Принято в работу", "Требуется проведение видеоконференцсвязи", "Приглашение отправлено", "Ожидание загрузки документов"]
-apprv_s = ["Договор ожидает подписания", "Договор на подписании", "Одобрено центром занятости населения", "Ожидает подписи соглашения", "Ожидание загрузки заявления", "Документы на иправлении"]
-empl_contract_s = ["Заключён договор", "Ожидание загрузки договора", "Заявление на иправлении", "Договор на иправлении"]
+new_s = [
+    "Новая", "Требуется личная явка", "Принято в работу", 
+    "Требуется проведение видеоконференцсвязи", "Приглашение отправлено", "Ожидание загрузки документов"
+]
+apprv_s = [
+    "Договор ожидает подписания", "Договор на подписании", 
+    "Одобрено центром занятости населения", "Ожидает подписи соглашения", 
+    "Ожидание загрузки заявления", "Документы на иправлении"
+]
+empl_contract_s = [
+    "Заключён договор", "Ожидание загрузки договора", 
+    "Заявление на иправлении", "Договор на иправлении"
+]
 ed_contract_s = ["Ожидает начала обучения", "Ожидает приказ на зачисление"]
-study_s = ["Обучается", "Проходит обучение"]
+study_s = ["Обучается",] #"Проходит обучение"
 cancel_s = ["Услуга прекращена", "Отклонена"]
 end_s = ['Услуга оказана',]
-    
+  
 def get_appl_status(rvr_status, atlas_status):
     short_name = "undefined"
-    if rvr_status in cancel_s or atlas_status in cancel_s:
+    if rvr_status in end_s:
+        short_name = "end"
+    elif rvr_status in cancel_s or atlas_status in cancel_s:
         short_name = "canceled"
     elif rvr_status in study_s or atlas_status in study_s:
         short_name = "studying"
