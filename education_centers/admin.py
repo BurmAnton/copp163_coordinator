@@ -141,7 +141,7 @@ EducationProgramForm = select2_modelform(EducationProgram, attrs={'width': '400p
 @admin.register(EducationProgram)
 class EducationProgramAdmin(admin.ModelAdmin):
     form = EducationProgramForm
-    list_display = ['program_name', 'flow_id', 'program_type', 'duration', 'flow_name', 'competence']
+    list_display = ['program_name', 'atlas_id', 'program_type', 'duration', 'flow_name', 'competence']
     filter_horizontal = ('teachers', 'workshops')
     list_filter = (
         ('program_type'),

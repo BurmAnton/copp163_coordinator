@@ -122,6 +122,7 @@ class EducationProgram(models.Model):
     notes = models.TextField("Примечания", null=True, blank=True)
 
     is_abilimpics = models.BooleanField("Абилимпикс?", default=False)
+    atlas_id = models.IntegerField('ID программы (Атлас)', null=True, blank=True) 
     is_atlas = models.BooleanField("Атлас?", default=False)
     period = models.CharField("Период обучения", max_length=500, blank=True, null=True)
     disability_types = models.ManyToManyField(

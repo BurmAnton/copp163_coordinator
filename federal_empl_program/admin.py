@@ -15,7 +15,7 @@ from users.models import Group, User
 from .models import (
     Application, CitizenApplication, 
     CitizenCategory, ClosingDocument, 
-    EmploymentInvoice, FlowStatus, ProjectYear, ApplStatus
+    EmploymentInvoice, FlowStatus, ProjectYear, ApplStatus, NetworkAgreement
 )
 
 
@@ -150,7 +150,7 @@ class EducationCenterProjectYearAdmin(admin.ModelAdmin):
     scratch_steps_check.short_description='Снять проверку этапов'
 
 
-#@admin.register(NetworkAgreement)
+@admin.register(NetworkAgreement)
 class NetworkAgreementAdmin(admin.ModelAdmin):
     list_display = ['get_ed_center', 'get_number', 'is_agreement_file_upload']
     search_fields = [
