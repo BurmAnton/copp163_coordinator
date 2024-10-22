@@ -290,8 +290,9 @@ def schools_applications(request):
 
 @csrf_exempt
 def center_events(request, ed_center_id):
-    project_year = 2023
+    project_year = 2024
     project_year = get_object_or_404(TicketProjectYear, year=project_year)
+    full_quota = get_object_or_404(TicketFullQuota, project_year=project_year)
     center_year = get_object_or_404(
         EducationCenterTicketProjectYear, 
         ed_center=ed_center_id, project_year=project_year
@@ -359,6 +360,9 @@ def center_events(request, ed_center_id):
             ).aggregate(reserved_quota_sum=Sum('reserved_quota'))['reserved_quota_sum']
             quota.reserved_quota = reserved_quota
             quota.save()
+        elif 'delete-quota' in request.POST:
+            quota = TicketQuota.objects.get(id=request.POST["quota_id"])
+            quota.delete()
         elif 'change-quota' in request.POST:
             quota = TicketQuota.objects.get(id=request.POST["quota_id"])
             school = School.objects.get(id=request.POST["school_id"])
@@ -460,9 +464,8 @@ def center_events(request, ed_center_id):
                 Case(When(events__ed_center=center_year, then=1),
                     output_field=IntegerField()),)
     ).prefetch_related('events')
-    quotas = TicketQuota.objects.filter(ed_center=center_year.ed_center).exclude(
-        approved_value=0
-    )
+    quotas = TicketQuota.objects.filter(ed_center=ed_center_id, quota=full_quota)
+
     professions = TicketProfession.objects.filter(
         quotas__in=quotas
     ).distinct()

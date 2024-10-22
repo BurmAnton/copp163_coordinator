@@ -496,13 +496,13 @@ class TicketQuota(models.Model):
 
     def __init__(self, *args, **kwargs):
         super(TicketQuota, self).__init__(*args, **kwargs)
-        self.free_quota = self.approved_value - self.reserved_quota
+        self.free_quota = self.value - self.reserved_quota
 
     def save(self, *args, **kwargs):
-        self.free_quota = int(self.approved_value) - self.reserved_quota
-        if self.reserved_quota > self.approved_value:
-            self.reserved_quota = self.approved_value
-        self.free_quota = int(self.approved_value) - self.reserved_quota
+        self.free_quota = int(self.value) - self.reserved_quota
+        if self.reserved_quota > self.value:
+            self.reserved_quota = self.value
+        self.free_quota = int(self.value) - self.reserved_quota
         super(TicketQuota, self).save(*args, **kwargs)
 
     def __str__(self):
