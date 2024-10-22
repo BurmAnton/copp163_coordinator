@@ -65,7 +65,7 @@ def generate_ticket_act(ed_center_year):
     is_ndc = ed_center_year.is_ndc
     ed_center = ed_center_year.ed_center
     
-    sign_position = TicketProjectPosition.objects.get(
+    sign_position = TicketProjectPosition.objects.get(project_year=ed_center_year.project_year,
         position="Должностное лицо, подписывающее договор")
     sign_employee = TicketEdCenterEmployeePosition.objects.get(
         ed_center=ed_center, position=sign_position)

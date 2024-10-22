@@ -226,7 +226,9 @@
                                 <div class="form mb-3 filter-selectpicker">
                                     <select class="selectpicker w-100 select-quota-profession" title="Квота" data-live-search="true" name="quota_id" required>
                                         {% for quota in quotas|get_event_quota:event %}
-                                            <option value='{{quota.id}}' data-quota="{{quota.free_quota}}">{{quota.school.name}} ({{quota.free_quota}}/{{quota.approved_value}})</option>
+                                            {% if quota.free_quota != 0 %}
+                                                <option value='{{quota.id}}' data-quota="{{quota.free_quota}}">{{quota.school.name}} ({{quota.free_quota}}/{{quota.value}})</option>
+                                            {% endif %}
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -353,11 +355,13 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <div class="d-grid gap-2">
+                            <div style="display: flex !important;flex-direction: row-reverse;justify-content: space-between;width: 100%;">
                                 <input type="submit" class="btn btn-primary" name="change-quota" value="Изменить" {% if quota.free_quota == 0 %} disabled {% endif %}> 
+                            </form>
+                            <input type="submit" class="btn btn-danger" name="delete-quota" value="Удалить" {% if quota.free_quota != quota.value %} disabled {% endif %}> 
                             </div>
                         </div>
-                    </form>
+                   
                 </div>
             </div>
         </div>
@@ -381,7 +385,7 @@
                             <input type="input" name="quota_ter_adm" class="form-control" value="{{quota.event_date}}" id="quota_event_date" readonly>
                         </div>
                         <div class="form mb-3" >
-                            <label for="participants_limit" class="form-label">Лимит участников</label>
+                            <label for="participants_limit" class="form-label">Участников</label>
                             <input type="number" name="transfered_quota" class="reserved_quota form-control" id="participants_limit" value="{{ quota.participants_limit }}" readonly>
                         </div>
                         <div class="mb-3">
@@ -411,7 +415,7 @@
     <div class="quotas-list">
         <div class="table-hdr">
             <h2>Выполнение квоты</h2>
-            {% if center_year.stage == 'ACT' %}
+            {% comment %} {% if center_year.stage == 'ACT' %}
                 <div class="alert alert-success w-90" role="alert">
                     Акт сформирован успешно, мы уведомив Вас, когда отправим его на подписание. После подписания Вы сможете подгрузить счёт на оплату.
                 </div>
@@ -491,7 +495,7 @@
                     </div>
                 {% endif %}
             {% endif %}
-            
+             {% endcomment %}
         </div>
         <table class="table quotas-table">
             <tr class="">
@@ -509,7 +513,7 @@
                 <tr>
                     <td scope="row">{{ quota.profession }}</td>
                     <td scope="row">{% if center_year.stage == 'FNSHD' %}<a href="" data-bs-toggle="modal" data-bs-target="#ChangeSchoolModal{{quota.id}}">{{ quota.school.name }}</a>{% else %}{{ quota.school.name }}{% endif %}</td>
-                    <td scope="row" class="td-center">{{ quota.approved_value }}</td>
+                    <td scope="row" class="td-center">{{ quota.value }}</td>
                     <td scope="row" class="td-center">{{ quota.reserved_quota }}</td>
                     <td scope="row" class="td-center">{{ quota.completed_quota }}</td>
                     <td scope="row" class="td-center">{{ quota.free_quota }}</td>
@@ -591,9 +595,9 @@
                             {% endif %}
                             <p><span class="field">ID мероприятия:</span> {{event.id }}</p>
                             <p><span class="field">Статус:</span> {{event.get_status_display }}</p>
+                            <p><span class="field">Участников:</span> {{event.participants_limit }}</p>
                             <p><span class="field">Дата проведения:</span> {% if event.start_time != None %}{{event.start_time}}{% endif %} {{event.event_date|date:"d.m.Y" }}</p>
-                            <p><span class="field">Лимит участников:</span> {{event.participants_limit }}</p>
-                            <p><span class="field link" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#ParticipantsModal{{event.id}}"><u>Участников загружено:</span> {{event.participants.all.count }}</u></p>
+                            
                             {% if event.photo_link is not None %}
                                 <p><span class="field"><a class="link" href="{{event.photo_link}}" target="_blank"><u>Фото и видеоматериалы</u></a></p>
                             {% endif %}
@@ -605,7 +609,7 @@
                                 {% for event_quota in event.quotas.all %}
                                     <tr>
                                         <td scope="row">{{ event_quota.quota.school.name }}</td>
-                                        <td scope="row" data-bs-toggle="modal" data-bs-target="#EventQuotaChangeModal{{event_quota.id}}"><u>{{ event_quota.reserved_quota }} квота</u></td>
+                                        <td scope="row" data-bs-toggle="modal" data-bs-target="#EventQuotaChangeModal{{event_quota.id}}" style="text-align: right;"><u>{{ event_quota.reserved_quota }} квота</u></td>
                                     </tr>
                                 {% empty %}
                                     <tr>
@@ -614,18 +618,16 @@
                                 {% endfor %}
                             </table>
                         </div>
-                        {% if center_year.stage == 'FNSHD' %}
+                        {% if center_year.stage == 'FNSHD' and event.participants_limit < 15 %}
                             <div class="event-card-footer">
-                                {% if event.participants_limit < 15 %}
                                 <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#AssignQuotaModal{{event.id}}">
                                     Добавить квоту
                                 </button>
-                                {% endif %}
-                                {% if event.participants_limit > 0 %}
+                                {% comment %} {% if event.participants_limit > 0 %}
                                     <button class="btn btn-sm btn-primary import-btn" data-bs-toggle="modal" data-bs-target="#ImportParticModal">
                                         Импортировать участников
                                     </button>
-                                {% endif %}
+                                {% endif %} {% endcomment %}
                             </div>
                         {% endif %}
                     </div>
