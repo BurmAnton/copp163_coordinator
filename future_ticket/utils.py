@@ -25,7 +25,7 @@ def generate_document_ticket(center_year, doc_type, register_number=None, downlo
     project_year = center_year.project_year
     ed_center = center_year.ed_center
     sign_position = TicketProjectPosition.objects.get(
-        position="Должностное лицо, подписывающее договор")
+        position="Должностное лицо, подписывающее договор", project_year=project_year)
     sign_employee = TicketEdCenterEmployeePosition.objects.get(
         ed_center=ed_center, position=sign_position)
     if register_number == None:

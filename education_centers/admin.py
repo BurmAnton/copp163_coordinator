@@ -214,14 +214,21 @@ class GroupAdmin(admin.ModelAdmin):
         ('name', DropdownFilter),
     )
     
-    search_fields = ['name', 'start_date', 'end_date']
-    list_display = ('education_program', 'ed_center', 'start_date', 'end_date')
+    search_fields = ['name', 'start_date', 'end_date', 'education_program__atlas_id']
+    list_display = ('education_program', 'ed_center', 'start_date', 'end_date', 'atlas_id')
     fieldsets = (
         (None, {'fields': (
-                'education_program', 'education_center', 'start_date', 'end_date'
+                'education_program', 'atlas_id', 'education_center', 'start_date', 'end_date'
             )}),
     )
+    readonly_fields = ['atlas_id', ]
 
+    def atlas_id(self, group):
+        return group.education_program.atlas_id
+
+    atlas_id.short_description = 'Атлас ID'
+    atlas_id.admin_order_field = 'education_program__atlas_id'
+    
     def ed_center(self, group):
         if group.education_center == None:
             return "-"
@@ -241,6 +248,8 @@ class CitizensInline(admin.TabularInline):
     model = Citizen
     form = CitizenForm
     fields = ('last_name', 'first_name', 'middle_name', 'phone_number', 'email')
+
+    
     
     def get_readonly_fields(self, request, obj=None):
         cl_group = users.models.Group.objects.filter(name='Представитель ЦО')
