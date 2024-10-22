@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'education_centers',
     'federal_empl_program',
     'future_ticket',
-    'coverage',
+    #'coverage',
     'debug_toolbar',
     'field_history',
     'django_admin_listfilter_dropdown',

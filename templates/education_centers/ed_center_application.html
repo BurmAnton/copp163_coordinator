@@ -2231,13 +2231,17 @@
                         {% endif %}
                     </form>
                 {% else %}
+                    <h3>Договор</h3>
                     <form style="padding-left: 0;" action="{% url 'ed_center_application' ed_center.id %}" method="post">
                         <input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>
+                        <!-- <input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required> -->
                         <input name="download-contract" type="submit" class="btn btn-outline-primary" value="Скачать договор">
                     </form>
                     
-                    <h3>Загрузить скан договора</h3>
-                    <a class="btn btn-outline-primary " href="{{contract.doc_file.url}}">Скачать скан договора</a>
+                    {% if user.is_superuser %}
+                        <a class="btn btn-outline-primary " href="{{contract.doc_file.url}}">Скачать скан договора</a>
+                    {% endif %}
+                   
                     <form action="{% url 'ed_center_application' ed_center.id %}" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             {% csrf_token %}

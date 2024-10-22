@@ -894,7 +894,7 @@ def ed_center_application(request, ed_center_id):
                 center_project_year.appl_track_number = request.POST['appl_track_number']
                 center_project_year.save()
         elif 'upload-contract' in request.POST:
-            stage = 8
+            stage = 9
             center_project_year.save()
             form = ImportTicketDataForm(request.POST, request.FILES)
             if form.is_valid():

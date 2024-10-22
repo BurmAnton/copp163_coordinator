@@ -43,10 +43,12 @@ def quotas(request):
             if int(approved_value) != quota.approved_value:
                 quota.approved_value = int(approved_value)
                 quota.save()
-    project_year = get_object_or_404(TicketProjectYear, year=2023)
+    project_year = get_object_or_404(TicketProjectYear, year=2024)
     centers_project_year = EducationCenterTicketProjectYear.objects.filter(
         project_year=project_year
     )
+    ffull_quota = get_object_or_404(TicketFullQuota, project_year=project_year)
+    
     quota_stat = dict()
     quota_stat_all = dict()
     quota_stat_all['full_qouta'] = 0
@@ -67,8 +69,7 @@ def quotas(request):
     for ter_admin in School.TER_CHOICES:
         quota_stat[ter_admin[1]] = dict()
         ter_admin_schools = School.objects.filter(territorial_administration=ter_admin[0])
-        schools_quota = TicketQuota.objects.filter(school__in=ter_admin_schools).distinct()
-        
+        schools_quota = TicketQuota.objects.filter(school__in=ter_admin_schools, quota=ffull_quota).distinct()
         
         federal_quota = schools_quota.filter(is_federal=True).distinct().aggregate(Sum("approved_value"), Sum("value"), Sum("reserved_quota"), Sum("completed_quota"))
         quota_event = QuotaEvent.objects.filter(quota__in=schools_quota.filter(is_federal=True))
@@ -130,8 +131,8 @@ def quotas(request):
         quota_stat_all['completed_full_qouta'] += full_quota['completed_quota__sum']
         quota_stat_all['completed_federal_quota'] += federal_quota['completed_quota__sum']
         quota_stat_all['completed_none_federal_quota'] += none_federal_quota['completed_quota__sum']
-    full_quota = get_object_or_404(TicketFullQuota, project_year=project_year)
-    quotas = TicketQuota.objects.exclude(
+    
+    quotas = TicketQuota.objects.filter(quota=ffull_quota).exclude(
         value=0, approved_value=0, reserved_quota=0, completed_quota=0
         ).select_related('quota', 'ed_center', 'school', 'profession')
     if 'export-quotas' in request.POST:
@@ -142,7 +143,7 @@ def quotas(request):
     return render(request, "future_ticket/quotas.html", {
         'project_year': project_year,
         'centers_project_year': centers_project_year,
-        'full_quota': full_quota,
+        'full_quota': ffull_quota,
         'quota_stat': quota_stat,
         'quota_stat_all': quota_stat_all,
         'quotas': quotas,
