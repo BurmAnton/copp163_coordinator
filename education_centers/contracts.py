@@ -18,13 +18,13 @@ from .models import (ApplicationDocEdu, ContractorsDocument, DocumentType, Educa
                      Teacher, Workshop)
 
 
-
 def generate_application_doc(application_doc: ApplicationDocEdu):
     doc_type = get_object_or_404(DocumentType, name="Заявление на отправку документа о квалификации")
     document = DocxTemplate(doc_type.template)
     context = {
         'application_doc': application_doc,
-        'creation_date': date_format(application_doc.created_at, 'd «E» Y г.'),
+        'citizen': application_doc.citizen,
+        'creation_date': date_format(date.today(), 'd «E» Y г.'),
         'passport_issued_date': date_format(application_doc.passport_issued_date, 'd.m.Y г.')
     }
     document.render(context)
@@ -35,8 +35,10 @@ def generate_application_doc(application_doc: ApplicationDocEdu):
     document_name = f"заявление_{application_doc.full_name}"
     path_to_doc = f'{path}/{document_name}.docx'
     document.save(path_to_doc)
+    
     application_doc.file.name = path_to_doc
     application_doc.save()
+    
     return document
 
 

@@ -8,6 +8,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 
+from citizens.models import Citizen
 from users.managers import CustomUserManager
 from users.models import DisabilityType, User
 
@@ -26,15 +27,20 @@ class Competence(models.Model):
     
 
 class ApplicationDocEdu(models.Model):
+    citizen = models.ForeignKey(Citizen, on_delete=CASCADE, verbose_name="Гражданин", related_name='application_docs', null=True, blank=True)
     created_at = models.DateTimeField("Дата создания", auto_now_add=True)
     full_name = models.CharField("ФИО", max_length=500)
     passport_series = models.CharField("Серия и номер паспорта", max_length=500)
     passport_issued_by = models.CharField("Кем выдан паспорт", max_length=500)
-    passport_issued_date = models.DateTimeField("Дата выдачи паспорта")
-    email = models.EmailField(_('email address'), blank=True, null=True)
-    phone = models.CharField("Телефон", max_length=120, blank=True, null=True)
+    passport_issued_date = models.DateTimeField("Дата выдачи паспорта", null=True, blank=False)
     index = models.CharField("Почтовый индекс", max_length=20, blank=True, null=True)
     address = models.TextField("Адрес", blank=True, null=True)
+    STATUS_DOC = (
+        ('NEW', 'Новое'),
+        ('GEN', 'Сгенерировано'),
+        ('UPL', 'Загружено')
+    )
+    status_doc = models.CharField("Статус документа", choices=STATUS_DOC, max_length=20, blank=True, null=True, default='NEW')
     file = models.FileField("документ", upload_to='media/application_docs/', blank=True, null=True)
     signed_file = models.FileField("Подписанный документ", upload_to='media/application_docs/', blank=True, null=True)
 

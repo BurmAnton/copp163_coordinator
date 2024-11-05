@@ -3,7 +3,7 @@ import math
 from openpyxl import load_workbook
 
 from citizens.models import Citizen
-from education_centers.models import EducationProgram, Group
+from education_centers.models import ApplicationDocEdu, EducationProgram, Group
 from federal_empl_program.models import ApplStatus, Application, CitizenCategory, ProjectYear
 
 
@@ -177,6 +177,13 @@ def get_citizen(sheet, row):
     citizen.phone_number = sheet["Контактная информация (телефон)"][row]
     citizen.res_region =  sheet["Регион"][row]
     citizen.save()
+    doc_ed, _ = ApplicationDocEdu.objects.get_or_create(
+        citizen=citizen)
+    doc_ed.passport_series=f'{sheet["Серия паспорта"][row]} {sheet["Номер паспорта"][row]}'
+    doc_ed.passport_issued_by=sheet["Кем выдан паспорт"][row]
+    doc_ed.passport_issued_date=datetime.strptime(sheet["Дата выдачи"][row], "%Y-%m-%d")
+    doc_ed.full_name=f'{citizen.last_name} {citizen.first_name} {citizen.middle_name}'
+    doc_ed.save()
     return [citizen, is_new]
     
 

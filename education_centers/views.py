@@ -61,53 +61,48 @@ def export_workshops(request):
 @csrf_exempt
 def application_docs(request):
     passport_series = None
+    message = None
+    form = "generate_application"
     if request.method == "POST":
         passport_series = request.POST['passport_series'].strip()
         passport_series = passport_series.replace(" ", "")
         if len(passport_series) >= 5:
-            passport_series = passport_series[:4] + " " + passport_series[5:]
+            passport_series = passport_series[:4] + " " + passport_series[4:]
         if 'generate-application' in request.POST:
             application_docs = ApplicationDocEdu.objects.filter(passport_series=passport_series)
+
             if len(application_docs) == 0:
-                application_doc = ApplicationDocEdu.objects.create(
-                    full_name=request.POST['full_name'],
-                    passport_series=passport_series,
-                    passport_issued_by=request.POST['passport_issued_by'],
-                    passport_issued_date=datetime.strptime(request.POST['passport_issued_date'], '%Y-%m-%d'),
-                    email=request.POST['email'],
-                    phone=request.POST['phone'],
-                    index=request.POST['index'],
-                    address=request.POST['address']
-                )
+                message = "404"
             else:
                 application_doc = application_docs.first()
-                application_doc.full_name = request.POST['full_name']
-                application_doc.passport_issued_by = request.POST['passport_issued_by']
-                application_doc.passport_issued_date = datetime.strptime(request.POST['passport_issued_date'], '%Y-%m-%d')
-                application_doc.email = request.POST['email']
-                application_doc.phone = request.POST['phone']
                 application_doc.index = request.POST['index']
                 application_doc.address = request.POST['address']
+                application_doc.status_doc = 'GEN'
                 application_doc.save()
-            doc = generate_application_doc(application_doc)
-            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-            response['Content-Disposition'] = f'attachment; filename=zayavlenie.docx'
-            doc.save(response)
-            return response
+                doc = generate_application_doc(application_doc)
+                response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+                response['Content-Disposition'] = f'attachment; filename=zayavlenie.docx'
+                doc.save(response)
+                return response
         elif 'upload-application' in request.POST:
+           form = "upload_application"
            application_docs = ApplicationDocEdu.objects.filter(passport_series=passport_series)
            if len(application_docs) == 0:
-               passport_series = "New"
+               message = "404"
            else:
                 application_doc = application_docs.first()
                 form = SignedApplicationDataForm(request.POST, request.FILES)
                 if form.is_valid():
-                    document = request.FILES['import_file']
+                    document = form.cleaned_data['import_file']
                     application_doc.signed_file = document
+                    application_doc.status_doc = 'UPL'
                     application_doc.save()
+                    message = "success_upload"
+                    
     return render(request, "education_centers/application_docs.html", {
         'file_input': SignedApplicationDataForm,
-        'passport_series': passport_series
+        'form': form,
+        'message': message
     })
 
 
