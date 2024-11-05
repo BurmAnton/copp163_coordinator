@@ -30,10 +30,10 @@ from users.models import DisabilityType
 
 from . import exports, imports
 from .contracts import (combine_all_docx, create_application, create_document,
-                        create_ticket_application, generate_concent_doc, generate_net_agreement)
+                        create_ticket_application, generate_application_doc, generate_concent_doc, generate_net_agreement)
 from .forms import (IRPOProgramForm, ImportDataForm, ImportTicketContractForm,
-                    ImportTicketDataForm)
-from .models import (AbilimpicsWinner, BankDetails, Competence,
+                    ImportTicketDataForm, SignedApplicationDataForm)
+from .models import (AbilimpicsWinner, ApplicationDocEdu, BankDetails, Competence,
                      ContractorsDocument, DocumentType, EducationCenter,
                      EducationProgram, Employee, Group, Teacher, Workshop)
 
@@ -57,6 +57,58 @@ def export_ed_centers(request):
 @csrf_exempt
 def export_workshops(request):
     return exports.workshops()
+
+@csrf_exempt
+def application_docs(request):
+    passport_series = None
+    if request.method == "POST":
+        passport_series = request.POST['passport_series'].strip()
+        passport_series = passport_series.replace(" ", "")
+        if len(passport_series) >= 5:
+            passport_series = passport_series[:4] + " " + passport_series[5:]
+        if 'generate-application' in request.POST:
+            application_docs = ApplicationDocEdu.objects.filter(passport_series=passport_series)
+            if len(application_docs) == 0:
+                application_doc = ApplicationDocEdu.objects.create(
+                    full_name=request.POST['full_name'],
+                    passport_series=passport_series,
+                    passport_issued_by=request.POST['passport_issued_by'],
+                    passport_issued_date=datetime.strptime(request.POST['passport_issued_date'], '%Y-%m-%d'),
+                    email=request.POST['email'],
+                    phone=request.POST['phone'],
+                    index=request.POST['index'],
+                    address=request.POST['address']
+                )
+            else:
+                application_doc = application_docs.first()
+                application_doc.full_name = request.POST['full_name']
+                application_doc.passport_issued_by = request.POST['passport_issued_by']
+                application_doc.passport_issued_date = datetime.strptime(request.POST['passport_issued_date'], '%Y-%m-%d')
+                application_doc.email = request.POST['email']
+                application_doc.phone = request.POST['phone']
+                application_doc.index = request.POST['index']
+                application_doc.address = request.POST['address']
+                application_doc.save()
+            doc = generate_application_doc(application_doc)
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            response['Content-Disposition'] = f'attachment; filename=zayavlenie.docx'
+            doc.save(response)
+            return response
+        elif 'upload-application' in request.POST:
+           application_docs = ApplicationDocEdu.objects.filter(passport_series=passport_series)
+           if len(application_docs) == 0:
+               passport_series = "New"
+           else:
+                application_doc = application_docs.first()
+                form = SignedApplicationDataForm(request.POST, request.FILES)
+                if form.is_valid():
+                    document = request.FILES['import_file']
+                    application_doc.signed_file = document
+                    application_doc.save()
+    return render(request, "education_centers/application_docs.html", {
+        'file_input': SignedApplicationDataForm,
+        'passport_series': passport_series
+    })
 
 
 @csrf_exempt

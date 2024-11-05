@@ -20,5 +20,6 @@ urlpatterns = [
     path('applications', views.applications, name='applications'),
     path('programs/import/', views.import_programs, name='import_programs'),
     path('centers/merge/', views.merge_centers, name='merge_centers'),
-    path('abilimpics/',  views.abilimpics, name='abilimpics')
+    path('abilimpics/',  views.abilimpics, name='abilimpics'),
+    path('application_docs/', views.application_docs, name='application_docs'),
 ]

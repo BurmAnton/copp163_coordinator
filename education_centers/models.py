@@ -25,6 +25,27 @@ class Competence(models.Model):
         return self.title
     
 
+class ApplicationDocEdu(models.Model):
+    created_at = models.DateTimeField("Дата создания", auto_now_add=True)
+    full_name = models.CharField("ФИО", max_length=500)
+    passport_series = models.CharField("Серия и номер паспорта", max_length=500)
+    passport_issued_by = models.CharField("Кем выдан паспорт", max_length=500)
+    passport_issued_date = models.DateTimeField("Дата выдачи паспорта")
+    email = models.EmailField(_('email address'), blank=True, null=True)
+    phone = models.CharField("Телефон", max_length=120, blank=True, null=True)
+    index = models.CharField("Почтовый индекс", max_length=20, blank=True, null=True)
+    address = models.TextField("Адрес", blank=True, null=True)
+    file = models.FileField("документ", upload_to='media/application_docs/', blank=True, null=True)
+    signed_file = models.FileField("Подписанный документ", upload_to='media/application_docs/', blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.full_name} ({self.created_at})'
+    
+    class Meta:
+        verbose_name = "Документ заявки"
+        verbose_name_plural = "Документы заявок"
+
+
 class EducationCenter(models.Model):
     name = models.CharField("Название организации", max_length=500)
     short_name = models.CharField("Краткое название организации", max_length=500, null=True, blank=True, default="")

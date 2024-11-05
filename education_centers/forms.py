@@ -43,6 +43,17 @@ class AbilimpicsWinnerCreationForm(UserCreationForm):
         fields = ('email',)
 
 
+class SignedApplicationDataForm(forms.Form):
+    import_file = forms.FileField(label="Подписанное заявление", max_length=200,
+    widget=forms.ClearableFileInput)
+
+    def __init__(self, *args, **kwargs):
+        super(SignedApplicationDataForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control irpo-file-input'
+            visible.field.widget.attrs['style'] = 'margin-bottom: 15px;'
+            visible.field.widget.attrs['onchange'] = "validateFile(this)"
+
 class AbilimpicsWinnerChangeForm(UserChangeForm):
     qs = Competence.objects.all()
     competence = forms.ModelChoiceField(queryset=qs, widget=Select2(),

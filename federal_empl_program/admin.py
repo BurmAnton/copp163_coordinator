@@ -8,7 +8,7 @@ from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter, 
 from easy_select2 import select2_modelform
 from rangefilter.filters import DateRangeFilterBuilder
 
-from education_centers.models import EducationCenter, EducationProgram
+from education_centers.models import ApplicationDocEdu, EducationCenter, EducationProgram
 from federal_empl_program import exports
 from users.models import Group, User
 
@@ -22,6 +22,11 @@ from .models import (
 @admin.register(ApplStatus)
 class ApplStatusAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(ApplicationDocEdu)
+class ApplicationDocEduAdmin(admin.ModelAdmin):
+    list_display = ['full_name', 'index', 'address', 'created_at']
 
 #@admin.register(Profstandart)
 class ClosingDocumentAdmin(admin.ModelAdmin):
