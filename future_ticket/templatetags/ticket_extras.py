@@ -50,4 +50,4 @@ def get_event_quota(quota, event):
 
 @register.filter()
 def quota_filter_school(schools, ter_admin):
-    return schools.filter(territorial_administration=ter_admin)
+    return schools

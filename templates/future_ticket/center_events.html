@@ -14,6 +14,11 @@
             $('#ImportResultModal').modal('show');
         });
     </script>
+    <style>
+        .assign-quota-modal .dropdown-menu {
+            width: 300px;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
@@ -128,7 +133,7 @@
                     <form action="{% url 'ticket_center_events' center_year.ed_center.id %}" method="post">
                         <div class="modal-body">
                             <input style="display: none;" type="text" name="cycle_id" value="{{cycle.id}}">
-                            <div class="form mb-3 filter-selectpicker">
+                            <div class="fselectedorm mb-3 filter-selectpicker">
                                 <label for="DurationInput">Дата проведения</label>
                                 <select class="selectpicker w-100" title="Дата проведения" data-live-search="true" name="event_date" required>
                                     {% for available_date in cycle|get_available_dates %}

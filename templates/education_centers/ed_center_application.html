@@ -2023,9 +2023,7 @@
                                 <th scope="row">№</th>
                                 <th scope="row">Школа</th>
                                 <th scope="row">Квота</th>
-                                {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
-                                    <th scope="row">Удалить?</th>
-                                {% endif %}
+                                <th scope="row">Удалить?</th>
                             </tr>
                                 {% for quota in center_quota|get_profession_quota:profession %}
                                 <tr>
@@ -2036,9 +2034,7 @@
                                         <form action="{% url 'ed_center_application' ed_center.id %}" method="post">
                                             <input type="input" style="display: none;" class="form-control" name="bilet" value="bilet" required>
                                             <input type="text" name='id' value="{{quota.id}}" style="display: none;">
-                                            {% if center_project_year.stage == 'FLLNG' or center_project_year.stage == 'RWRK' or user.is_superuser %}
-                                                <button class="btn btn-sm btn-outline-danger" name="delete-quota">Удалить квоту</button>
-                                            {% endif %}
+                                            <button class="btn btn-sm btn-outline-danger" name="delete-quota">Удалить квоту</button>
                                         </form>
                                     </td>
                                 </tr>
