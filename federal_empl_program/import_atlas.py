@@ -86,7 +86,11 @@ def import_atlas(form):
     for row in range(len(sheet['Номер заявления на РР'])):
         program = get_program(sheet['ID программы в заявке'][row])
         if program is None:
+<<<<<<< HEAD
             programs_404.add(f'{sheet["Программа обучения"][row]} ({sheet["ID программы в заявке"][row]})')
+=======
+            programs_404.add(f'{sheet['Программа обучения'][row]} ({sheet['ID программы в заявке'][row]})')
+>>>>>>> c5f9f4e9c5a90d8e6344179c1957be5bcd1dce23
         else:
             citizen, is_new = get_citizen(sheet, row)
             if is_new: citizens['added'].add(citizen)
@@ -137,7 +141,11 @@ def extract_date(date):
 def get_group(sheet, row, program):
     start_date = extract_date(sheet["Начало периода обучения"][row])
     end_date = extract_date(sheet["Окончание периода обучения"][row])
+<<<<<<< HEAD
     name = f'{program.program_name} (с {start_date.strftime("%d/%m")} по {start_date.strftime("%d/%m")})'
+=======
+    name = f'{program.program_name} (с {start_date.strftime('%d/%m')} по {start_date.strftime('%d/%m')})'
+>>>>>>> c5f9f4e9c5a90d8e6344179c1957be5bcd1dce23
     group, _ = Group.objects.get_or_create(
         name=name,
         education_program=program,
