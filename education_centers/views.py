@@ -111,6 +111,7 @@ def applications(request):
     project = request.GET.get('p', '')
     project_year = request.GET.get('y', '')
     programs_count = None
+    breakpoint()
     if 'bilet' in request.POST: project = 'bilet'
     if project_year != '': project_year = int(project_year)
     elif project == 'zan': project_year = 2023
