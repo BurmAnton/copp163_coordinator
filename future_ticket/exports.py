@@ -179,15 +179,13 @@ def qoutas(quotas):
         ws.cell(row=1, column=col_number, value=col_title)
 
     for row, quota in enumerate(quotas, start=2):
-        if quota.is_federal: is_federal = 'Да'
-        else: is_federal = 'Нет'
         ws.cell(row=row, column=1, value=quota.ed_center.short_name)
         ws.cell(row=row, column=2, value=quota.school.get_territorial_administration_display())
-        ws.cell(row=row, column=4, value=quota.value)
-        ws.cell(row=row, column=5, value=quota.reserved_quota)
-        ws.cell(row=row, column=6, value=quota.completed_quota)
-        ws.cell(row=row, column=7, value=quota.school.name)
-        ws.cell(row=row, column=8, value=quota.profession.name)
+        ws.cell(row=row, column=3, value=quota.value)
+        ws.cell(row=row, column=4, value=quota.reserved_quota)
+        ws.cell(row=row, column=5, value=quota.completed_quota)
+        ws.cell(row=row, column=6, value=quota.school.name)
+        ws.cell(row=row, column=7, value=quota.profession.name)
 
     wb.template = False
     response = HttpResponse(
