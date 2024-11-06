@@ -338,7 +338,12 @@ def center_events(request, ed_center_id):
             event = TicketEvent.objects.get(id=request.POST["event_id"])
             quota_events = QuotaEvent.objects.filter(event=event)
             event.delete()
-            
+            for quota_event in quota_events:
+                completed_quota = QuotaEvent.objects.filter(
+                    quota=quota_event.quota
+                ).aggregate(completed_quota_sum=Sum('completed_quota'))['completed_quota_sum']
+                quota_event.quota.completed_quota = completed_quota
+                quota_event.quota.save()
         elif 'assign-quota' in request.POST:
             event = TicketEvent.objects.get(id=request.POST["event_id"])
             quota = TicketQuota.objects.get(id=request.POST["quota_id"])
