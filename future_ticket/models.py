@@ -499,10 +499,9 @@ class TicketQuota(models.Model):
         self.free_quota = self.value - self.reserved_quota
 
     def save(self, *args, **kwargs):
-        if self.reserved_quota != None:
-            self.free_quota = int(self.value) - self.reserved_quota
-        else:
-            self.free_quota = int(self.value)
+        if self.reserved_quota == None:
+            self.reserved_quota = 0
+        self.free_quota = int(self.value) - self.reserved_quota
         if self.reserved_quota > self.value:
             self.reserved_quota = self.value
         self.free_quota = int(self.value) - self.reserved_quota
