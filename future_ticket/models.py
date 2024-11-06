@@ -499,7 +499,8 @@ class TicketQuota(models.Model):
         self.free_quota = self.value - self.reserved_quota
 
     def save(self, *args, **kwargs):
-        self.free_quota = int(self.value) - self.reserved_quota
+        if self.value != None:
+            self.free_quota = int(self.value) - self.reserved_quota
         if self.reserved_quota > self.value:
             self.reserved_quota = self.value
         self.free_quota = int(self.value) - self.reserved_quota
@@ -698,7 +699,7 @@ class EventsCycle(models.Model):
         blank=False,
         default="REG"
     )
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):completed_quota
         today = date.today()
         if self.end_reg_date >= today: self.status = 'REG'
         elif self.end_reg_date < today and self.start_period_date > today:
