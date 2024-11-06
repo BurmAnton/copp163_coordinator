@@ -423,8 +423,8 @@ def center_events(request, ed_center_id):
             completed_quota = QuotaEvent.objects.filter(
                 quota=quota_event.quota
             ).aggregate(completed_quota_sum=Sum('completed_quota'))['completed_quota_sum']
-            quota_event.quota.reserved_quota = reserved_quota
             quota_event.quota.completed_quota = completed_quota
+            quota_event.quota.reserved_quota = reserved_quota
             quota_event.quota.save()
         elif 'create-act' in request.POST:
            generate_ticket_act(center_year)
