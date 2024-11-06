@@ -600,7 +600,7 @@
                             {% endif %}
                             <p><span class="field">ID мероприятия:</span> {{event.id }}</p>
                             <p><span class="field">Статус:</span> {{event.get_status_display }}</p>
-                            <p><span class="field">Участников:</span> {{event.participants_limit }} ({{ quota_event.completed_quota }})</p>
+                            <p><span class="field">Участников:</span> {{event.participants_limit }} ({{ event.completed_quota }})</p>
                             <p><span class="field">Дата проведения:</span> {% if event.start_time != None %}{{event.start_time}}{% endif %} {{event.event_date|date:"d.m.Y" }}</p>
                             
                             {% if event.photo_link is not None %}
