@@ -26,7 +26,7 @@
                 <th scope="col" class="center" colspan="4" style="border: 0;">Всего</th>
             </tr> -->
             <tr>
-                <th scope="col" class="center">Тер. управление</th>
+                <th scope="col">Тер. управление</th>
                 <th scope="col" class="center">Запрос</th>
                 <!-- <th scope="col" class="center">Одобрено</th> -->
                 <th scope="row" class="center">Бронь</th>
@@ -151,7 +151,7 @@
                     <th scope="row" class="center">Одобрено</th>
                     <th scope="row" class="center">Бронь</th>
                     <!-- <th scope="row" class="center">Участников</th> -->
-                    <!--<th scope="row" class="center">Выполнено</th>-->
+                    <th scope="row" class="center">Выполнено</th>
                     <th scope="row">Школа</th>
                     <th scope="row">Профессия</th>
                 </tr>
@@ -164,7 +164,7 @@
                         <!-- <td scope="row" class="center"><input type="number" style="text-align: center;" name="{{quota.id}}" value="{{ quota.approved_value }}" required></td> -->
                         <td scope="row" class="center">{{ quota.reserved_quota }}</td>
                         <!-- <td scope="row" class="center">{{ quota|count_participants }}</td> -->
-                        <!--<td scope="row" class="center">{{ quota.completed_quota }}/{{ quota.approved_value }}</td>-->
+                        <td scope="row" class="center">{{ quota.completed_quota }}/{{ quota.approved_value }}</td>
                         <td scope="row">{{ quota.school.name }}</td>
                         <td scope="row">{{ quota.profession }}</td>
                     </tr>
