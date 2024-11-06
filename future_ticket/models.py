@@ -699,7 +699,7 @@ class EventsCycle(models.Model):
         blank=False,
         default="REG"
     )
-    def save(self, *args, **kwargs):completed_quota
+    def save(self, *args, **kwargs):
         today = date.today()
         if self.end_reg_date >= today: self.status = 'REG'
         elif self.end_reg_date < today and self.start_period_date > today:
