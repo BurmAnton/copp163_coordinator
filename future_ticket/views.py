@@ -334,6 +334,11 @@ def center_events(request, ed_center_id):
             photo_link = request.POST["photo_link"]
             if photo_link == "":
                 event.photo_link = None
+                for quota_event in quota_events:
+                    quota_event.completed_quota = 0
+                    quota_event.save()
+                    quota_event.quota.completed_quota = quota_event.quota.events.all().aggregate(completed_quota=Sum("completed_quota"))['completed_quota']
+                    quota_event.quota.save()
             else: 
                 event.photo_link = photo_link
                 quota_events = QuotaEvent.objects.filter(event=event)      
