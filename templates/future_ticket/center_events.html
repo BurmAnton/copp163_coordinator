@@ -614,7 +614,7 @@
                                 {% for event_quota in event.quotas.all %}
                                     <tr>
                                         <td scope="row">{{ event_quota.quota.school.name }}</td>
-                                        <td scope="row" data-bs-toggle="modal" data-bs-target="#EventQuotaChangeModal{{event_quota.id}}" style="text-align: right;"><u>{{ event_quota.reserved_quota }} квота  ({{ quota_event.completed_quota }})</u></td>
+                                        <td scope="row" data-bs-toggle="modal" data-bs-target="#EventQuotaChangeModal{{event_quota.id}}" style="text-align: right;"><u>{{ event_quota.reserved_quota }} квота  ({{ event_quota.completed_quota }})</u></td>
                                     </tr>
                                 {% empty %}
                                     <tr>
