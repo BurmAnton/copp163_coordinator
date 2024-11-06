@@ -329,7 +329,7 @@ def center_events(request, ed_center_id):
                 event.photo_link = photo_link
                 quota_events = QuotaEvent.objects.filter(event=event)      
                 for quota_event in quota_events:
-                    if quota_events.completed_quota == 0:
+                    if quota_event.completed_quota == 0:
                         quota_event.completed_quota = quota_event.reserved_quota
                         quota_event.quota.completed_quota += quota_event.reserved_quota
                         quota_event.quota.save()
