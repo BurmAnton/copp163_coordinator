@@ -327,10 +327,11 @@ def center_events(request, ed_center_id):
                 event.photo_link = None
             else: 
                 event.photo_link = photo_link
-                quota_event = QuotaEvent.objects.filter(event=event)
-                if quota_event.completed_quota == 0:
-                    quota_event.quota.completed_quota = quota_event.reserved_quota
-                    quota_event.quota.save()
+                quota_events = QuotaEvent.objects.filter(event=event)
+                if quota_events.completed_quota == 0:
+                    for quota_event in quota_events:
+                        quota_event.quota.completed_quota = quota_event.reserved_quota
+                        quota_event.quota.save()
             event.save()
         elif 'delete-event' in request.POST:
             event = TicketEvent.objects.get(id=request.POST["event_id"])
@@ -343,6 +344,7 @@ def center_events(request, ed_center_id):
                 event_quota = QuotaEvent.objects.create(
                     event=event,
                     quota=quota,
+                    completed_quota=0,
                     reserved_quota=reserved_quota
                 )
                 quota.reserved_quota += reserved_quota
