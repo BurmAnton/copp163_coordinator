@@ -410,6 +410,7 @@ def center_events(request, ed_center_id):
                 new_quota_event = QuotaEvent.objects.create(
                     quota = quota_event.quota,
                     event = quota_event.event,
+                    completed_quota = quota_event.completed_quota,
                     reserved_quota = quota_event.reserved_quota - minus_quota
                 )
             quota_event.delete()
