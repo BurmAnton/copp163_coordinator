@@ -348,11 +348,15 @@ def center_events(request, ed_center_id):
             event = TicketEvent.objects.get(id=request.POST["event_id"])
             quota = TicketQuota.objects.get(id=request.POST["quota_id"])
             reserved_quota = int(request.POST["reserved_quota"])
+            if event.photo_link != None and event.photo_link != "":
+                completed_quota = reserved_quota
+            else:
+                completed_quota = 0
             if quota.free_quota >= reserved_quota:
                 event_quota = QuotaEvent.objects.create(
                     event=event,
                     quota=quota,
-                    completed_quota=0,
+                    completed_quota=completed_quota,
                     reserved_quota=reserved_quota
                 )
                 quota.reserved_quota += reserved_quota
@@ -367,6 +371,7 @@ def center_events(request, ed_center_id):
                         reserved_quota += double_quota.reserved_quota
                     event_quota.reserved_quota += reserved_quota
                     quota.reserved_quota += reserved_quota
+                    quota.completed_quota += completed_quota
                     quota.save()
                     event_quota.save()
                     double_quota.delete()
