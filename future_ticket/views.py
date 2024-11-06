@@ -27,7 +27,8 @@ from .utils import generate_ticket_act
 def equalize_quotas(request):
     quotas = TicketQuota.objects.all()
     
-    quota_events = QuotaEvent.objects.exclude(photo_link="").exclude(photo_link=None)
+    events = TicketEvent.objects.exclude(photo_link="").exclude(photo_link=None)
+    quota_events = QuotaEvent.objects.filter(event__in=events)
     for quota_event in quota_events:
         quota_event.completed_quota = quota_event.reserved_quota
         quota_event.save()
