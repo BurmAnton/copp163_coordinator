@@ -331,7 +331,7 @@ def center_events(request, ed_center_id):
                 for quota_event in quota_events:
                     if quota_event.completed_quota == 0:
                         quota_event.completed_quota = quota_event.reserved_quota
-                        quota_event.quota.completed_quota += quota_event.reserved_quota
+                        quota_event.quota.completed_quota += QuotaEvent.objects.filter(event=event).aggregate(completed_quota=Sum("completed_quota"))['completed_quota']
                         quota_event.quota.save()
             event.save()
         elif 'delete-event' in request.POST:
