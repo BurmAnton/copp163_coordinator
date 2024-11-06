@@ -360,6 +360,7 @@ def center_events(request, ed_center_id):
                     reserved_quota=reserved_quota
                 )
                 quota.reserved_quota += reserved_quota
+                quota.completed_quota += completed_quota
                 quota.save()
                 double_quotas = QuotaEvent.objects.filter(
                     event=event,
