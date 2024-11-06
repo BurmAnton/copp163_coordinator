@@ -26,8 +26,16 @@ from .utils import generate_ticket_act
 
 def equalize_quotas(request):
     quotas = TicketQuota.objects.all()
+    
+    quota_events = QuotaEvent.objects.exclude(photo_link=None, photo_link="")
+    for quota_event in quota_events:
+        quota_event.completed_quota = quota_event.reserved_quota
+        quota_event.save()
     for quota in quotas:
-        quota.approved_value = quota.value
+        completed_quota = QuotaEvent.objects.filter(quota=quota).aggregate(completed_quota_sum=Sum('completed_quota'))['completed_quota_sum']
+        if completed_quota == None:
+            completed_quota = 0
+        quota.completed_quota = completed_quota
         quota.save()
 
     return HttpResponseRedirect(reverse("quotas"))
