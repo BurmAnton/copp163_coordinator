@@ -600,7 +600,7 @@
                             {% endif %}
                             <p><span class="field">ID мероприятия:</span> {{event.id }}</p>
                             <p><span class="field">Статус:</span> {{event.get_status_display }}</p>
-                            <p><span class="field">Участников:</span> {{event.participants_limit }} ({{ event.completed_quota }})</p>
+                            <p><span class="field">Участников:</span> {{event.participants_limit }}</p>
                             <p><span class="field">Дата проведения:</span> {% if event.start_time != None %}{{event.start_time}}{% endif %} {{event.event_date|date:"d.m.Y" }}</p>
                             
                             {% if event.photo_link is not None %}
@@ -614,7 +614,7 @@
                                 {% for event_quota in event.quotas.all %}
                                     <tr>
                                         <td scope="row">{{ event_quota.quota.school.name }}</td>
-                                        <td scope="row" data-bs-toggle="modal" data-bs-target="#EventQuotaChangeModal{{event_quota.id}}" style="text-align: right;"><u>{{ event_quota.reserved_quota }} квота</u></td>
+                                        <td scope="row" data-bs-toggle="modal" data-bs-target="#EventQuotaChangeModal{{event_quota.id}}" style="text-align: right;"><u>{{ event_quota.reserved_quota }} квота  ({{ quota_event.completed_quota }})</u></td>
                                     </tr>
                                 {% empty %}
                                     <tr>
