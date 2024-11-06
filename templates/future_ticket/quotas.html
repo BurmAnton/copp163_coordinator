@@ -26,6 +26,7 @@
                 <th scope="col" class="center" colspan="4" style="border: 0;">Всего</th>
             </tr> -->
             <tr>
+                <th scope="col" class="center">Тер. управление</th>
                 <th scope="col" class="center">Запрос</th>
                 <!-- <th scope="col" class="center">Одобрено</th> -->
                 <th scope="row" class="center">Бронь</th>
@@ -77,7 +78,7 @@
                 <!-- <th scope="row" class="center">{{ quota_stat_all|get_item:'approved_full_qouta' }}</th> -->
                 <th scope="row" class="center">{{ quota_stat_all|get_item:'reserved_full_qouta' }}</th>
                 <!-- <th scope="row" class="center">{{ quota_stat_all|get_item:'partic_full_qouta' }}</th> -->
-                <th scope="row" class="center">{{ quota_stat_all|get_item:'completed_full_qouta' }}/{{ full_quota.full_quota }}</th>
+                <th scope="row" class="center">{{ quota_stat_all|get_item:'completed_full_qouta' }}</th>
             </tr>
         </table>
     </div>
