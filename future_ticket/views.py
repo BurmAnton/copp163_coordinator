@@ -380,6 +380,9 @@ def center_events(request, ed_center_id):
                 quota=quota
             ).aggregate(reserved_quota_sum=Sum('reserved_quota'))['reserved_quota_sum']
             quota.reserved_quota = reserved_quota
+            quota.completed_quota = QuotaEvent.objects.filter(
+                quota=quota
+            ).aggregate(completed_quota_sum=Sum('completed_quota'))['completed_quota_sum']
             quota.save()
         elif 'delete-quota' in request.POST:
             quota = TicketQuota.objects.get(id=request.POST["quota_id"])
