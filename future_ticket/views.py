@@ -325,7 +325,12 @@ def center_events(request, ed_center_id):
             photo_link = request.POST["photo_link"]
             if photo_link == "":
                 event.photo_link = None
-            else: event.photo_link = photo_link
+            else: 
+                event.photo_link = photo_link
+                quota_event = QuotaEvent.objects.filter(event=event)
+                if quota_event.completed_quota == 0:
+                    quota_event.quota.completed_quota = quota_event.reserved_quota
+                    quota_event.quota.save()
             event.save()
         elif 'delete-event' in request.POST:
             event = TicketEvent.objects.get(id=request.POST["event_id"])

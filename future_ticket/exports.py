@@ -171,7 +171,7 @@ def qoutas(quotas):
         "Тер. управление",
         "Фед?",
         "Запрос",
-        "Одобрено",
+        "Распределенно",
         "Школа",
         "Профессия"
     ]
@@ -185,7 +185,7 @@ def qoutas(quotas):
         ws.cell(row=row, column=2, value=quota.school.get_territorial_administration_display())
         ws.cell(row=row, column=3, value=is_federal)
         ws.cell(row=row, column=4, value=quota.value)
-        ws.cell(row=row, column=5, value=quota.approved_value)
+        ws.cell(row=row, column=5, value=quota.reserved_quota)
         ws.cell(row=row, column=6, value=quota.school.name)
         ws.cell(row=row, column=7, value=quota.profession.name)
 

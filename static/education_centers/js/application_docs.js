@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
             $(".alert").slideUp(500);
         });
     });
-    document.querySelector('#upload-application #upload-application').addEventListener('submit', function() {
+    document.querySelector('#upload-application').addEventListener('submit', function() {
         $('#success-upload-alert').fadeTo(4000, 500).slideUp(4000, function(){
             $(".alert").slideUp(500);
         });

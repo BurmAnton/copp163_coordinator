@@ -884,6 +884,9 @@ class QuotaEvent(models.Model):
     reserved_quota = models.IntegerField(
         "Колво участников", blank=False, null=False
     )
+    completed_quota = models.IntegerField(
+        "Колво участников (выполнено)", blank=False, null=False
+    )
 
     def save(self, *args, **kwargs):
         super(QuotaEvent, self).save(*args, **kwargs)
@@ -893,7 +896,7 @@ class QuotaEvent(models.Model):
             )['participants_limit']
         self.event.participants_limit = participants_limit
         self.event.save()
-        #update_completed_quota.delay()
+
 
 @receiver(pre_delete, sender=QuotaEvent, dispatch_uid='quotaEvent_delete_signal')
 def change_quota(sender, instance, using, **kwargs):
