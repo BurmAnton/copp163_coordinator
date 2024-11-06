@@ -332,6 +332,7 @@ def center_events(request, ed_center_id):
             event.event_date = datetime.strptime(request.POST["event_date"], "%d.%m.%Y")
             event.start_time = request.POST["start_time"]
             photo_link = request.POST["photo_link"]
+            quota_events = QuotaEvent.objects.filter(event=event)  
             if photo_link == "":
                 event.photo_link = None
                 for quota_event in quota_events:
@@ -341,7 +342,6 @@ def center_events(request, ed_center_id):
                     quota_event.quota.save()
             else: 
                 event.photo_link = photo_link
-                quota_events = QuotaEvent.objects.filter(event=event)      
                 for quota_event in quota_events:
                     quota_event.completed_quota = quota_event.reserved_quota
                     quota_event.save()
