@@ -902,10 +902,8 @@ class QuotaEvent(models.Model):
 def change_quota(sender, instance, using, **kwargs):
     quota = instance.quota
     quota.reserved_quota -= instance.reserved_quota
+    quota.completed_quota -= instance.completed_quota
     quota.save()
-    event = instance.event
-    event.completed_quota -= instance.completed_quota
-    event.save()
     event = instance.event
     event.participants_limit -= instance.reserved_quota
     event.save()
