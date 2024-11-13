@@ -75,7 +75,7 @@ class DisabilityType(models.Model):
 
     def __str__(self):
         return self.name
-
+ 
 
 class Citizen(models.Model):
     first_name = models.CharField("Имя", max_length=30, null=True)

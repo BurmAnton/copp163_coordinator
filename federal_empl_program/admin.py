@@ -4,7 +4,7 @@ from django.db.models import Sum
 
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter, DropdownFilter
+from django_admin_listfilter_dropdown.filters import RelatedOnlyDropdownFilter, DropdownFilter, ChoiceDropdownFilter
 from easy_select2 import select2_modelform
 from rangefilter.filters import DateRangeFilterBuilder
 
@@ -26,7 +26,10 @@ class ApplStatusAdmin(admin.ModelAdmin):
 
 @admin.register(ApplicationDocEdu)
 class ApplicationDocEduAdmin(admin.ModelAdmin):
-    list_display = ['full_name', 'index', 'address', 'created_at']
+    list_display = ['full_name', 'status_doc',  'index', 'address']
+    list_filter = (
+        ('status_doc', ChoiceDropdownFilter),
+    )
 
 #@admin.register(Profstandart)
 class ClosingDocumentAdmin(admin.ModelAdmin):
